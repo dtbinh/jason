@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE saci SYSTEM "file:/Users/jomi/programming/agents/Jason/lib/saci/bin/applications.dtd">
+<?xml-stylesheet href="file:/Users/jomi/programming/agents/Jason/lib/saci/bin/applications.xsl" type="text/xsl" ?>
+<saci>
+<application id="auctionCent">
+<script id="run">
+
+	<killSocietyAgents society.name="auctionCent" />
+	<killFacilitator society.name="auctionCent" />
+	<startSociety society.name="auctionCent" />
+
+	<killSocietyAgents society.name="auctionCent-env" />
+	<killFacilitator society.name="auctionCent-env" />
+	<startSociety society.name="auctionCent-env" />
+
+	<startAgent 
+		name="environment" 
+		society.name="auctionCent-env" 
+		class="auctionEnv" />
+	<startAgent 
+		name="ag1" 
+		society.name="auctionCent" 
+		class="jason.architecture.CentralisedAgArch"
+		args="jason.asSemantics.Agent '/Users/jomi/programming/agents/Jason/examples/Auction/ag1.asl' "/>
+	<startAgent 
+		name="ag2" 
+		society.name="auctionCent" 
+		class="jason.architecture.CentralisedAgArch"
+		args="jason.asSemantics.Agent '/Users/jomi/programming/agents/Jason/examples/Auction/ag2.asl' "/>
+	<startAgent 
+		name="ag3" 
+		society.name="auctionCent" 
+		class="jason.architecture.CentralisedAgArch"
+		args="jason.asSemantics.Agent '/Users/jomi/programming/agents/Jason/examples/Auction/ag3.asl' "/>
+
+</script>
+</application>
+</saci>

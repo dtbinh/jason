@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE saci SYSTEM "file:/Users/jomi/programming/agents/Jason/bin/../lib/saci/bin/applications.dtd">
+<?xml-stylesheet href="file:/Users/jomi/programming/agents/Jason/bin/../lib/saci/bin/applications.xsl" type="text/xsl" ?>
+<saci>
+<application id="marsCent">
+<script id="run">
+
+	<killSocietyAgents society.name="marsCent" />
+	<killFacilitator society.name="marsCent" />
+	<startSociety society.name="marsCent" />
+
+	<killSocietyAgents society.name="marsCent-env" />
+	<killFacilitator society.name="marsCent-env" />
+	<startSociety society.name="marsCent-env" />
+
+	<startAgent 
+		name="environment" 
+		society.name="marsCent-env" 
+		class="marsEnv" />
+	<startAgent 
+		name="robot1" 
+		society.name="marsCent" 
+		class="jason.architecture.CentralisedAgArch"
+		args="jason.asSemantics.Agent '/Users/jomi/programming/agents/Jason/examples/Robot/r1.asl' "/>
+	<startAgent 
+		name="robot2" 
+		society.name="marsCent" 
+		class="jason.architecture.CentralisedAgArch"
+		args="jason.asSemantics.Agent '/Users/jomi/programming/agents/Jason/examples/Robot/r2.asl' "/>
+
+</script>
+</application>
+</saci>

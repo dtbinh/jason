@@ -1,0 +1,13 @@
+// creates a MAS called auction
+
+
+MAS auction {
+    architecture: Saci
+
+    environment: 
+        auctionEnv at localhost
+        // auctionEnv is the class that implements the environment
+    
+    agents: ag1; ag2; ag3;
+
+}

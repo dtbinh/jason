@@ -1,0 +1,10 @@
+MAS testOWCent {
+
+    architecture : Centralised
+
+    environment: 
+        testOWEnv
+    
+    agents:
+        tow tow.asl [verbose=3] #3;
+}

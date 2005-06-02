@@ -1,0 +1,31 @@
+// creates a simple MAS used to test Jason features
+
+// the agentSpeak code is at ./as directory
+// the java code is at ./myPkg directory
+
+MAS testCent {
+    
+    architecture: Centralised
+
+    environment: 
+        myPkg.testEnv at localhost
+        // testEnv is the class that implements the environment, 
+        // it is in the myPkg java package
+
+    executionControl: jason.control.ExecutionControl
+	// this execution control run all agents in synchronised mode
+    
+    agents:
+    
+        // runs two instances of the agent ag0
+        ag0 ./as/ag0.asl [verbose=1] #1;
+
+        ag1 ./as/ag1      // the .asl is the default extension for AgentSpeak files
+           agentArchClass myPkg.MyAgArch
+           agentClass myPkg.MyAgClass
+           at localhost;
+
+        agCount;
+
+
+}

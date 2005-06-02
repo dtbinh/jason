@@ -1,0 +1,13 @@
+MAS marsCent {
+    
+    architecture: Centralised
+
+    environment:
+        marsEnv
+
+    agents:
+
+        robot1 r1; // .asl is the default extension
+
+        robot2 r2.asl;
+}
