@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="run-saci" basedir=".." default="saci">
+
+    <property name="moiseJar"       value="${basedir}/bin/moise.jar"/>
+    <property name="saciJar"        value="${basedir}/bin/saci.jar"/>
+    <property name="launcherd-args" value="" />
+    <property name="userClassPath"  value="" />
+        
+    <property name="policyFile" value="${basedir}/bin/policy" />
+
+    <property environment="env" />
+
+    <path id="runPath">
+        <pathelement location="${saciJar}"/>
+        <pathelement location="${moiseJar}"/>
+        <pathelement path="${env.CLASSPATH}"/>
+        <fileset dir="${basedir}/ulib">
+           <include name="**/*.jar"/>
+        </fileset>
+    </path>
+    
+    <target name="saci" description="runs saci">
+        <java classname="saci.tools.SaciMenu" dir="bin" fork="yes">
+		<classpath refid="runPath" />
+		<classpath path="${userClassPath}" />
+		<sysproperty key="java.security.policy" value="${policyFile}" />
+		<sysproperty key="java.rmi.server.codebase" value="file:${saciJar}" />
+	</java>
+    </target>
+
+    <target name="launcherd" description="runs saci launcher deamom">
+        <java classname="saci.launcher.LauncherD" 
+              dir="bin" 
+              fork="yes">
+		<classpath refid="runPath" />
+		<classpath path="${userClassPath}" />
+		<sysproperty key="java.security.policy" value="${policyFile}" />
+		<sysproperty key="java.rmi.server.codebase" value="file:${saciJar}" />
+                <arg value="${launcherd-args} -applications applications.xml" />
+	</java>
+    </target>
+    
+    <target name="stopLauncher" description="stops the launcher">
+        <java classname="saci.launcher.StopLauncherD" >
+		<classpath path="${saciJar}" />
+	</java>
+    </target>
+</project>

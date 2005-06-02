@@ -1,0 +1,8 @@
+#!/bin/sh
+
+cd `dirname $0`
+. ./saci.env
+
+export PATH="$JAVA_HOME/bin":$PATH
+export CLASSPATH 
+java "$POL" "$RMI" saci.tools.SaciMenu

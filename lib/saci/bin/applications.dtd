@@ -1,0 +1,57 @@
+
+<!ELEMENT saci          (application*) >
+
+<!ELEMENT application   (agentType*, script*) >
+<!ATTLIST application   id CDATA #REQUIRED >
+
+<!ELEMENT agentType     (help?)>
+<!ATTLIST agentType     id             CDATA #REQUIRED
+                        class          CDATA #REQUIRED
+                        description    CDATA #IMPLIED
+                        defaultName    CDATA #IMPLIED
+                        defaultArgs    CDATA #IMPLIED
+                        defaultSociety CDATA #IMPLIED
+                        defaultHost    CDATA #IMPLIED
+                        creationMethod (thread|process) "thread" 
+                        classpath      CDATA #IMPLIED
+                        >
+
+<!ELEMENT help          (#PCDATA)>
+
+<!ELEMENT script        ( (startSociety|killFacilitator|killSocietyAgents|startAgent|sleep|runScript)*) >
+<!ATTLIST script        id          CDATA #REQUIRED
+                        description CDATA #IMPLIED >
+
+<!ELEMENT startSociety  EMPTY>
+<!ATTLIST startSociety  society.name   CDATA #IMPLIED
+                        type           (flat|moise) "flat"
+                        osURI          CDATA #IMPLIED
+                        purpose        CDATA #IMPLIED
+                        >
+
+<!ELEMENT killFacilitator  EMPTY>
+<!ATTLIST killFacilitator  society.name   CDATA #IMPLIED>
+
+<!ELEMENT killSocietyAgents  EMPTY>
+<!ATTLIST killSocietyAgents  society.name   CDATA #IMPLIED>
+                        
+<!ELEMENT startAgent    EMPTY>
+<!ATTLIST startAgent    agId           CDATA #IMPLIED
+                        class          CDATA #IMPLIED
+                        name           CDATA #IMPLIED
+                        society.name   CDATA #IMPLIED
+                        creationMethod (thread|process) "thread"
+                        args           CDATA #IMPLIED
+                        host           CDATA #IMPLIED
+                        qty            CDATA #IMPLIED
+                        classpath      CDATA #IMPLIED
+                        >
+
+<!ELEMENT sleep         EMPTY>
+<!ATTLIST sleep         milisec        CDATA #REQUIRED>
+
+<!ELEMENT runScript     EMPTY>
+<!ATTLIST runScript     scriptId       CDATA #REQUIRED
+                        host           CDATA #IMPLIED
+                        creationMethod (thread|process) "thread" >
+
