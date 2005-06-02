@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# start a program that enable you to start agents
+
+cd `dirname $0`
+source saci.env
+
+java -classpath $CLASSPATH saci.launcher.LauncherAdm $1
+
+

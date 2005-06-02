@@ -1,0 +1,10 @@
+#!/bin/Sh
+
+# start a program that allows you to create new societies
+
+cd `dirname $0`
+. ./saci.env
+
+java -classpath $CLASSPATH saci.launcher.SocLauncher
+
+

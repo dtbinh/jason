@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE saci SYSTEM "applications.dtd">
+
+<?xml-stylesheet href="applications.xsl" type="text/xsl" ?>
+
+<saci>
+
+
+<!--
+***
+***    Plus Demo resources
+***
+-->
+
+<application id="PlusDemo">
+
+<agentType id="ps2"
+           description="Agent able to sum two numbers"
+           class="PlusServer2">
+    <help>
+        It is a server agent that can answer sum asks
+    </help>
+</agentType>
+
+<agentType id="psReloaded"
+           description="Agent able to sum two numbers (in other classpath)"
+           class="PlusServer3"
+           classpath="file:/tmp/"
+           >
+    <help>
+        It is a server agent that can answer sum asks. This agent class is 
+        placed outside of the default classpath and is reload at each agent 
+        creation. 
+        
+        To run this agent, you have to put the PlusSever3.class at /tmp directory.
+        (and not add /tmp in your classpath)
+    </help>
+</agentType>
+
+<agentType id="pcApplet"
+           description="Interface agent that shows sum results"
+           class="PlusClientApplet"
+           creationMethod="thread"
+           defaultName="pCli"
+           defaultArgs="2+8">
+    <help>
+        This agent ask an agent of the the plus server type to make a sum.
+        The arguments can be a formula like X+Y
+    </help>
+</agentType>
+
+
+<script id="s3ps"
+        description="It starts 3 plus server agents">
+    <startAgent agId="ps2" name="ps" qty="3" />
+</script>
+
+</application>
+
+
+<!--
+***
+***    Pursuit resources
+***
+-->
+
+<application id="Pursuit">
+
+<agentType id="prey"
+           description="Prey agent"
+           defaultName="prey"
+           defaultSociety="pursuitSoc"
+           class="PreyAg">
+</agentType>
+
+
+<agentType id="cleverprey"
+           description="Look ahead prey agent"
+           defaultSociety="pursuitSoc"
+           class="LookAheadPrey"
+           defaultName="cleverPrey" >
+    <help>
+        This prey looks n steps forward in order to decide which
+        action will carry it to a best world:
+        A world near the center of the grid and far from the hunters.
+        It uses an space breadth search to find such action.
+        The argument can be the n value
+    </help>
+</agentType>
+
+<agentType id="hunter"
+           description="Hunter agent"
+           defaultSociety="pursuitSoc"
+           class="HunterAg"
+           defaultName="hunter" >
+    <help>
+        The argument can be the hunter's goal: U, D, L, or R.
+        If it is not informed, the Hunter will find out itself a goal
+    </help>
+</agentType>
+
+
+<agentType id="world"
+           description="World agent"
+           defaultSociety="pursuitSoc"
+           class="WorldAg"
+           defaultName="world" />
+
+
+<script id="s4h"
+        description="Starts 4 hunters">
+    <startAgent agId="hunter" args="U" />
+    <startAgent agId="hunter" args="D" />
+    <startAgent agId="hunter" args="R" />
+    <startAgent agId="hunter" args="L" />
+</script>
+
+<script id="clean" description="removes old society">
+    <killSocietyAgents society.name="pursuitSoc" />
+    <killFacilitator   society.name="pursuitSoc" />
+</script>
+
+
+<script id="sall"
+        description="Starts 1 world, 1 prey, and 4 hunters">
+
+    <runScript scriptId="clean" />
+
+    <startSociety society.name="pursuitSoc"/>
+    <startAgent agId="world" />
+    <sleep milisec="2000" />
+
+    <startAgent agId="prey" />
+
+    <runScript scriptId="s4h" />
+
+</script>
+
+</application>
+
+
+<!--
+***
+***    Modibilty demo
+***
+-->
+
+<application id="Mobility demo">
+
+<agentType id="m1"
+           description="Move to another host and ask something there"
+           defaultSociety="MobSoc"
+           defaultName="remAsk"
+           class="ItinerantAsk">
+</agentType>
+
+
+<agentType id="m2"
+           description="Move to another host and run 'who' command there"
+           defaultSociety="MobSoc"
+           defaultName="whoAg"
+           class="WhoAgent">
+	<help>
+	This agent must run in a Unix system.
+	</help>
+</agentType>
+
+</application>
+
+
+
+<!--
+***
+***    Test resources
+***
+-->
+
+<application id="Test">
+
+<agentType id="aTp1"
+           description="Agent able to sum two numbers"
+           defaultSociety="TestSoc"
+           defaultName="tag"
+           class="PlusServer2">
+</agentType>
+
+<script id="t1">
+    <startAgent agId="aTp1" qty="3" />
+    <sleep milisec="3000" />
+    <startAgent agId="atp1" />
+</script>
+
+<script id="t2">
+    <startAgent agId="aTp1" name="agInT2T" society.name="sdoT2" qty="4" />
+    <runScript  scriptId="t1" host="localhost" creationMethod="process" />
+    <startAgent agId="aTp1" name="agInT2P" creationMethod="process" qty="2" />
+</script>
+
+<script id="t3">
+    <startAgent agId="aTp1" creationMethod="process" />
+</script>
+
+<script id="t4">
+    <startAgent agId="aTp1" qty="80" />
+</script>
+
+</application>
+
+
+<!--
+***
+***    Moise+
+***
+-->
+
+<application id="Moise+">
+
+<agentType id="moiseTester"
+           description="Agent that allows the user to generate moise+ events"
+           defaultSociety="joj"
+           defaultName="moiseOrgTester"
+           class="saci.moise.testingAg.TestOrgManagerAg">
+    <help>
+This agent only works on Moise+ societies.
+Run the script "start a soccer team"
+to create the society OrgManaget.
+    </help>
+</agentType>
+
+<script id="team"
+        description="start a soccer team" >
+
+    <startSociety society.name="joj"
+	          type="moise"
+                  osURI="../examples/moise/tutorial/os1.xml"
+	          purpose="winTheGame" />
+    <sleep milisec="500" />
+    <startAgent agId="moiseTester" name="Cafu" />
+    <startAgent agId="moiseTester" name="Ronaldinho" />
+</script>
+
+
+</application>
+
+
+
+</saci>

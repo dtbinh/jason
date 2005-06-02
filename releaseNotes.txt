@@ -1,0 +1,201 @@
+-----------
+version 0.7
+-----------
+
+New features
+. atomic execution of intention. When an intention is created from a plan with 
+  a label that has an 'atomic' annotation 
+     @label[atomic] +.... : .... <- ....
+  this intention has highest priority, no other intention will be selected
+  until this one was finished. 
+
+Changes in the Environment programming
+. Each agent has its own perception list in version 0.7. 
+  In the application Environment class, the user can change these lists by
+  calling
+  . addPercept(P): add perception P in the perception of all agents;
+  . addPercept(A,P): add perception P only in the agent A's perception.
+  . removePercept(P): ...
+  . removePercept(A,P): ...
+  The method getPercepts(A) returns the perceptions for agent A.
+  See Environment javadoc API for more information.
+
+. Perception is now a list of Literals, thus there is not anymore a positive
+  and a negative list of Predicates.
+
+  a code like 
+    getPercepts().add(Term.parse("p(a)"));
+  should now be written as
+    addPercept(Literal.parseLiteral("p(a)"));
+
+  and a code like
+    getNegativePercepts().add(Term.parse("p(a)")); 
+  should now be written as
+    addPercept(Literal.parseLiteral("~p(a)"));
+
+Changes in Internal Actions
+   . Internal actions args are now terms and not Strings
+   . Internal actions implements InternalAction interface
+   . Each agent has its own IA objects -- IA has an state for its agent
+        
+Other changes
+   . auto-save before running
+
+-----------
+version 0.6
+-----------
+ 
+New features
+. Two execution modes: async and sync (see doc/faq.html)
+. Debugging execution mode with "mind inspector" tool
+   (works both for centralised and distributed agents)
+
+Agent Communication
+. new implementation: all received messages create an event that
+   is handled by standard AS plans (see bin/resources/kqmlPlans.asl file)
+. acceptTell/Trust functions are replaced by socAcc (see manual)
+
+Changes to AS syntax
+. variables can be used where literals are expected, and a few
+   other changes (see manual)
+
+Changes to .mas2j file syntax
+. user can set a controller class (see grammar) and doc/faq
+. Environment.notifyEvents() was renamed to informAgsEnvironmentChanged()
+. default architecture is centralised, not Saci.
+
+Changes in the API
+. the classes was reorganised into new packages. 
+  An User's environment class
+  needs the following imports:
+	import jason.*;
+	import jason.asSyntax.*;
+	import jason.environment.*;
+
+Other changes
+. the ulibs dir. is not used anymore. The user classes should be
+   placed in his/her project directory (or in any directory in your CLASSPATH)
+. source annotation in predicates now have the form "[source(self)]" instead of
+   "[self]" (similarly for perception and other agents as sources).
+. Saci is included in the distribuion
+  
+-----------
+version 0.5
+-----------
+
+Changes at .mas2j file syntax
+. the user can use java packages for his/her classes 
+  (see examples/Simple)
+
+Changes in agentSpeak syntax
+. the plan context can use infix relational operators (<, <=, >, >=, ==, \==, = (unify))
+  for example:
+      +p(X,Y) : X >= Y 
+                <- !doSomeThing().
+
+. the plan label must be prefixed by "@", e.g.:
+	@label +trigger : true <- action1; action2.
+
+Changes in the API
+. The jason packages was refactored. The user environment class imports 
+  likely will need to be rewritten to:
+   import jason.asSyntax.*;
+   import jason.environment.*;
+
+. Some methods' name has changed:
+  . Term.parameter -> Term.getTerm(i)
+  . Term.funcSymb -> Term.getFunctor()
+
+A new internal action, .broadcast(<ilforce>,<content>), was added.
+
+
+-----------
+version 0.4
+-----------
+
+The implementation of the user-defined environment class has been
+changed so as to allow users to specify customised perception for
+each individual agent.
+
+Users who used old-style environment code such as:
+
+public class marsEnv implements Environment {
+    <code1>
+    EnvironmentPerception envP = null;
+    public void setEnvironmentPerception(EnvironmentPerception ep) {
+        envP = ep;
+	<code2>
+    }
+    <code3>
+}
+
+should be changed to:
+
+public class marsEnv extends Environment {
+    <code1>    
+    public marsEnv() {
+        <code2>
+    }
+    <code3>
+}
+
+Briefly, the changes are as follows:
+
+  1. The user's environment class does not "implements Environment"
+     anymore, but "extends Environment". (See API documentation
+     for more information on this new class.)
+
+  2. The method setEnvironmentPerception, where the environment
+     initialisation was done, is replaced by the user environment
+     constructor.
+
+  3. To change the environment perception list use:
+     getPercepts().remove(g1); instead of
+     envP.getPercepts().remove(g1);
+
+  4. To send specific perceptions for an individual agent, override
+     the method getPercepts(agName); for example:
+
+     public class marsEnv extends Environment {
+       ...
+       public List getPercepts(String agName) {
+         if (agName.equals(...)) {
+           List customPercepts = new LinkedList(super.getPercepts(agName));
+           customPercepts.add(...);
+           customPercepts.remove(...);
+           return customPercepts;
+         } else {
+           return super.getPerceps(agName);
+         }
+       }
+       ...
+     }
+
+
+The option "event=retrieve" was added. It makes the selectOption function be called even if there is not relevant plans.
+
+
+-----------
+version 0.3
+-----------
+
+Jason now has an IDE! This version of Jason also runs on MS
+Windows, if you must.
+
+
+-----------
+version 0.2
+-----------
+
+First public release.
+
+Agent and AgentArchitecture classes are only required if the user
+needs to provide any customisation. The same environment code now
+works for Saci and Centralised.
+
+
+-----------
+version 0.1
+-----------
+
+The very first release of Jason!

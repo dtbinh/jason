@@ -1,0 +1,11 @@
+MAS mars {
+
+    architecture: Saci
+
+    environment: 
+        marsEnv
+    
+    agents:
+        r1;
+        r2;
+}

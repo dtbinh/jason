@@ -1,0 +1,11 @@
+MAS testOW {
+
+    architecture: Saci
+
+    environment: 
+        testOWEnv
+    
+    agents:
+        tow #3;
+
+}

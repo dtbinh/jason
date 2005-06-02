@@ -1,0 +1,39 @@
+#!/bin/sh
+
+# to run the launcher you may use the following parameters:
+#         [ -connect <host>[:<port>] ] : connect to another launcher,
+#         [ -registry <host>[:<port>] ] : define a host/port where the
+#                   launcher could find a rmiregistry. If not specified
+#                   localhost will be used
+#         ( [ -facilitator [<societyName>] ] )* : set of facilitators
+#                   that will be created, optionally with a society name
+#         ( [ -agent <class> <name> [<society>] ] )* : set of agents
+#                   that will be created from <class> with <name> and
+#                   optionally in the <society>
+#         [ -applications <filename> ] : indicate a file where a list of
+#                    agents classes is defined
+#         [ -d ] : turns debug on
+
+echo "Starting a launcher"
+
+
+cd `dirname $0`
+. ./saci.env
+
+#-Xmx128M
+#xterm -e \
+java $POL $RMI \
+    -classpath $CLASSPATH saci.launcher.LauncherD \
+    -applications applications.xml \
+    $* 
+
+    #-facilitator \
+    #-master avignon \
+    
+    #-agent PlusServer2 ServPlusTeste socB \
+    #-registry localhost:1111 \
+
+echo $! > $LAUNCHER_PID
+#echo Launcher PID is $!
+
+

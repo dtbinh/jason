@@ -1,0 +1,23 @@
+// creates a MAS called test
+
+MAS test {
+
+    architecture: Saci
+    
+    environment: 
+        myPkg.testEnv at localhost
+        // testEnv is the class that implements the environment, 
+        // it is in the myPkg java package
+    
+    agents:
+    
+        // runs two instances of the agent ag0
+        ag0 ./as/ag0.asl [verbose=1] #1;
+
+        ag1 ./as/ag1      // the .asl is the default extension for AgentSpeak files
+           agentClass myPkg.MyAgClass
+           at localhost;
+
+        agCount;
+
+}
