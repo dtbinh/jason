@@ -1,0 +1,106 @@
+Things for v 0.8
+   . backtraking for plan failure. generate -!g only when all applicable plans fail.
+   . applicable plans consider possible different unifications (the same plan will have one or more Option)
+ 
+Things for v 0.7
+   debug:
+      . fold/unfold mind's itens (more/less details)
+      . act on agent's mind (remove bel, intentention, ...)
+      . control at semantic action level
+      . stop/run buttons
+      . breakpoints
+   control:
+      . .moveTo
+   . online parsing on editing
+   . log system
+   . cicles for perception
+   
+. to FAQ: como criar uma internal action (ver email lista)
+          como fazer delay na execucao (Controller with delay)
+
+. test .untell, unachieve
+      
+. to manual: examples of communication (ask, tellHow, ...; annots, semantic in KQMLPlans.asl)
+
+. to use JITProlog internally? (like 3APL)
+
+. kqmlPlans/unachieve
+   TODO: what about many CCC desires? drop only the one from achieve!
+   . annot (rename var)
+ 
+ 
+. outro trabalho bom pra aluno e' fazer um plug-in pro PDT (Prometheus
+  Design Tool) gerar codigo Jason em vez de codigo JACK.
+         
+. remove MASConsole, use the JID output windows.
+
+. include the env. class in editors
+
+. syntax highlight for AS, Java, MAS2J
+
+. user ag arch not tied to architecture (cent/dist). If possible?
+
+. write an example of internal action that creates an AS agent. 
+  This internal action class could be placed in the example directory 
+  (and not in the stdlib -- ?). 
+  It could also shows how to call an internal action from the environment.
+  Creation with Cent/SACI
+  Put in FAQ
+
+. pensar sobre possibilidade de "lembrar" quais
+  os planos que ja falharam, e conferir se 
+  outras unificacoes sao tentadas
+
+. ver recurso de "capabilites" do JACK e do Jadex,
+  talvez valha a pena "copiar"???
+
+. write the internal action .clone that creates a new agent. 
+  The new agent as the same code, beliefs, intentions, .... ? that 
+  the agent which call the .clone.
+
+. idem for "killing" agents
+
+. send, o "to" pode ser uma lista de destinatários
+
+. expressoes aritméticas (+ - * / %)
+  Default literal will became a kind of Expression with eval method
+
+. pensar sobre fazer a opcao de NewFocus ser associada com o + e - 
+  direto, o problem e' que e' mais sintaxe, temos que discutir
+
+. ag arch multi-thread "A arquitetura do agente podia ser multi-threaded tambem. O raciocinador nao precisaria esperar o SACI mandar a acao ja no final do cicle. 
+O raciocinador vai enchendo o PA de acoes e o SACI vai mandando
+quando der.
+
+. SUGESTAO DO ALVARO:
+  Para o problema de propagacao de substituicao: mudar a definicao de
+  RelPlans e Applans de tal forma que elas retornem pares
+  $(p,\theta)$. Propagar essa mudanca para as duas regras abaixo de
+  acordo (verificar se nao tem que mudar em outro lugar tambem):
+
+. Future:
+  Confusao com os "clones", acho que no centralisado os percepts nao
+  estao sendo clonados profundamente. Talvez nao tenha problema. Em
+  varios lugares talvez nao precisariam clones tao profundos...
+
+. Rafael: (in the future?) fazer consistencia dos labels dos planos
+
+. LONG future: consistencia de crencas
+
+. Also in the future: use a profiling tool the detect critical performance
+  points in the system.
+
+. Future too: Check permissions (public/private) of every member and
+  every method of all classes!!!
+
+. colocar no stdlib funções para uso de YP
+
+. change the project extension from .mas2j to .mas
+
+. plug-in para eclipse
+
+Another controller demo for:
+Outras sugestoes foram um synchronous mode based on action, not on reasoning
+cycle... (quer dizer, so quando todos decidiram uma acao vai em frente um
+passo de simulacao: tipica simulacao reativa mas...)
+

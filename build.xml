@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project basedir="." default="all" name="Jason">
+
+    <property environment="env"/>
+
+    <property name="javaHome" value="/usr"/>
+	
+    <property name="saciHome" value="${basedir}/lib/saci"/>
+    <property name="saciJar" value="${saciHome}/bin/saci.jar"/>
+    <property name="jasonJar" value="${basedir}/bin/jason.jar"/>
+    <property name="jasonJarManifest" value="${basedir}/src/jasonManifest"/>
+
+	<property name="dist.properties" value="${basedir}/bin/dist.properties"/>
+    <property name="version" value="0"/>
+    <property name="release" value="7"/>
+    <property name="distDir" value="/tmp/Jason"/>
+    <property name="distFile" value="${env.HOME}/Jason-${version}.${release}"/>
+
+
+    <path id="allPath">
+        <pathelement location="${jasonJar}"/>
+        <pathelement location="${saciJar}"/>
+        <pathelement location="${basedir}/lib/junit.jar"/>
+    </path>
+
+    <target name="init">
+		<mkdir dir="${basedir}/build/classes" />
+    </target>
+
+
+    <target name="parsers" depends="init" >
+        <delete failonerror="no" >
+            <fileset dir="${basedir}/src/jIDE/parser" includes="*.java" />
+            <fileset dir="${basedir}/src/jason/asSyntax/parser" includes="*.java" />
+        </delete>
+
+        <java dir="${basedir}/src/jIDE/parser" classname="javacc" fork="yes">
+            <classpath location="${basedir}/lib/javacc.jar"/>
+            <arg line="MAS2JavaParser.jcc" />
+        </java>
+
+        <java dir="${basedir}/src/jason/asSyntax/parser" classname="javacc" fork="yes">
+            <classpath location="${basedir}/lib/javacc.jar"/>
+            <arg line="AS2JavaParser.jcc" />
+        </java>
+    </target>
+
+
+    <target name="compile" depends="init" >
+        <javac srcdir="src" destdir="${basedir}/build/classes" debug="true" deprecation="true" optimize="true" source="1.4" target="1.4">
+            <classpath refid="allPath"/>
+        </javac>
+    </target>
+
+    
+    
+    <target name="jar" depends="compile">
+        <jar jarfile="${jasonJar}" basedir="${basedir}/build/classes" manifest="${jasonJarManifest}">
+            <include name="**/*.class"/>
+        </jar>
+        <jar jarfile="${jasonJar}" basedir="${basedir}/src" update="true">
+            <include name="images/**/*"/>
+            <include name="asl/**/*"/>
+            <include name="xml/**/*"/>
+        </jar>
+    </target>
+
+    <target name="run" depends="jar" >
+        <java dir="bin" classname="jIDE.JasonID" fork="yes">
+            <classpath refid="allPath"/>
+            <!--arg line="${saciHome} ${javaHome} ../examples/Auction/auction.mas2j" /-->
+            <arg line="${saciHome} ${javaHome} ../examples/Simple/testCent.mas2j" />
+        </java>
+    </target>
+
+	<target name="test" depends="jar">
+	    <junit printsummary="yes" failureProperty="test.failure">
+	      <classpath refid="allPath" />
+	      <formatter type="plain" usefile="false" />
+	      <batchtest>
+	        <fileset dir="${basedir}/src" includes="**/test/*Test.java" />
+	      </batchtest>
+	    </junit>
+		<fail message="test failed" if="test.failure" />
+	</target>
+	
+	<target name="apidoc" depends="compile" >
+        <javadoc author="true" destdir="${basedir}/doc/api" packagenames="jason.*" sourcepath="${basedir}/src" use="true" version="true" windowtitle="AgentSpeak Java Interpreter">
+            <classpath refid="allPath"/>
+        </javadoc>
+    </target>
+
+
+    <target name="dist" depends="clean,cleanExamples,parsers,jar,test,apidoc" description="Build distribution." >
+
+          <propertyfile file="${dist.properties}">
+              <entry key="version" value="${version}"/>
+              <entry key="release" value="${release}"/>
+              <entry default="0" key="build" operation="+" type="int"/>
+              <entry key="build.date" type="date" value="now"/>
+          </propertyfile>
+          <property file="${dist.properties}"/>
+
+          <echo message="Generating Jason ${version}.${release}.${build}"/>
+
+          <fixcrlf eol="crlf" includes="**/*.txt,**/*.bat" srcdir="${basedir}"/>
+
+          <delete failonerror="no" includeEmptyDirs="true">
+            <fileset dir="${distDir}"/>
+          </delete>
+
+          <mkdir dir="${distDir}"/>
+
+          <copy todir="${distDir}">
+            <fileset dir="${basedir}" includes="*.*"/>
+            <fileset dir="${basedir}" includes="LICENSE"/>
+            <fileset dir="${basedir}" includes="README"/>
+
+            <fileset dir="${basedir}" includes="bin/**/*"/>
+            <fileset dir="${basedir}" includes="doc/**/*"/>
+            <fileset dir="${basedir}" includes="examples/**/*"/>
+            <fileset dir="${basedir}" includes="lib/**/*"/>
+            <fileset dir="${basedir}" includes="src/**/*"/>
+          </copy>
+
+          <zip basedir="${distDir}/.." includes="Jason*/**/*" zipfile="${distFile}.zip"/>
+
+          <tar compression="gzip" destfile="${distFile}.tgz">
+            <tarfileset dir="${distDir}/.." mode="755" >
+                <include name="Jason/**/*.sh"/>
+                <include name="Jason/lib/saci/bin/launcherd" />
+                <include name="Jason/lib/saci/bin/monitor" />
+                <include name="Jason/lib/saci/bin/saci" />
+                <include name="Jason/lib/saci/bin/socLauncher" />
+                <include name="Jason/lib/saci/bin/stoplauncher" />
+                <include name="Jason/lib/saci/bin/test" />
+            </tarfileset>
+            <tarfileset dir="${distDir}/.."  >
+               <include name="Jason*/**/*"/>
+               <exclude name="Jason/**/*.sh"/>
+               <exclude name="Jason/lib/saci/bin/launcherd" />
+               <exclude name="Jason/lib/saci/bin/monitor" />
+               <exclude name="Jason/lib/saci/bin/saci" />
+               <exclude name="Jason/lib/saci/bin/socLauncher" />
+               <exclude name="Jason/lib/saci/bin/stoplauncher" />
+               <exclude name="Jason/lib/saci/bin/test" />
+            </tarfileset>
+          </tar>
+    </target>
+
+    <target name="all" depends="parsers,compile,apidoc" description="Build everything." >
+        <echo message="Application built."/>
+    </target>
+
+    <target name="cleanExamples">
+        <delete failonerror="no" includeEmptyDirs="true" verbose="true">
+            <fileset dir="${basedir}/examples" includes="**/classes/*"/>
+            <fileset dir="${basedir}/examples" includes="**/classes"/>
+            <fileset dir="${basedir}/examples" includes="**/*.class"/>
+            <fileset dir="${basedir}/examples" includes="**/*.sh"/>
+            <fileset dir="${basedir}/examples" includes="**/*.bat"/>
+            <fileset dir="${basedir}/examples" includes="**/*.xml"/>
+        </delete>
+    </target>
+
+    <target name="clean">
+        <delete failonerror="no" includeEmptyDirs="true" verbose="true">
+            <fileset defaultexcludes="no" dir="${basedir}" includes="**/*~"/>
+            <fileset dir="${basedir}" includes="**/*.class"/>
+            <fileset dir="${basedir}" includes="**/core"/>
+            <fileset dir="${basedir}/doc/api" includes="**/*"/>
+            <fileset dir="${basedir}" includes="**/.nbattrs"/>
+            <fileset dir="${basedir}" includes="**/*.backup"/>
+            <fileset dir="${basedir}" includes="bin/jason.jar"/>
+            <fileset dir="${basedir}" includes="bin/*.old"/>
+            <fileset dir="${basedir}/lib/saci/bin" includes="work"/>
+        </delete>
+    </target>
+
+</project>
