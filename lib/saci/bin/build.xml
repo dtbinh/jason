@@ -4,6 +4,7 @@
 
     <property name="moiseJar"       value="${basedir}/bin/moise.jar"/>
     <property name="saciJar"        value="${basedir}/bin/saci.jar"/>
+    <property name="examplesJar"    value="${basedir}/bin/samples.jar"/>
     <property name="launcherd-args" value="" />
     <property name="userClassPath"  value="" />
         
@@ -14,10 +15,11 @@
     <path id="runPath">
         <pathelement location="${saciJar}"/>
         <pathelement location="${moiseJar}"/>
+        <pathelement location="${examplesJar}"/>
         <pathelement path="${env.CLASSPATH}"/>
-        <fileset dir="${basedir}/ulib">
+        <!--fileset dir="${basedir}/ulib">
            <include name="**/*.jar"/>
-        </fileset>
+        </fileset-->
     </path>
     
     <target name="saci" description="runs saci">
