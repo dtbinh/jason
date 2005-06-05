@@ -69,8 +69,8 @@
     <target name="run" depends="jar" >
         <java dir="bin" classname="jIDE.JasonID" fork="yes">
             <classpath refid="allPath"/>
-            <!--arg line="${saciHome} ${javaHome} ../examples/Auction/auction.mas2j" /-->
-            <arg line="${saciHome} ${javaHome} ../examples/Simple/testCent.mas2j" />
+            <arg line="${saciHome} ${javaHome} ../examples/Auction/auctionCent.mas2j" />
+            <!--arg line="${saciHome} ${javaHome} ../examples/Simple/testCent.mas2j" /-->
         </java>
     </target>
 
