@@ -47,6 +47,8 @@ Things for v 0.7
   Creation with Cent/SACI
   Put in FAQ
 
+. Environment optional in .mas2j. use Environment class when the user does not specify one.
+
 . pensar sobre possibilidade de "lembrar" quais
   os planos que ja falharam, e conferir se 
   outras unificacoes sao tentadas
