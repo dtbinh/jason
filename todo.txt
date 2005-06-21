@@ -15,6 +15,7 @@ Things for v 0.7
    . log system
    . cicles for perception
    
+   
 . to FAQ: como criar uma internal action (ver email lista)
           como fazer delay na execucao (Controller with delay)
 

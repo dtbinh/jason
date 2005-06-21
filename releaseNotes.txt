@@ -40,6 +40,8 @@ Changes in Internal Actions
         
 Other changes
    . auto-save before running
+   . brf() was moved to Agent class (and architecture perceive returns a List of perceptions)
+   
 
 -----------
 version 0.6

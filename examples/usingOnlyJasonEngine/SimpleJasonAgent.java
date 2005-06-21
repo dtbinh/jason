@@ -7,6 +7,8 @@ import jason.asSemantics.Agent;
 import jason.asSemantics.TransitionSystem;
 import jason.asSyntax.Literal;
 
+import java.util.List;
+
 /**
  * Example of an agent that only uses Jason BDI engine.
  * It runs without all Jason IDE stuff.
@@ -69,7 +71,7 @@ public class SimpleJasonAgent implements AgentArchitecture {
     
     // Not used methods 
 	// These simple agent does not have messages/control/...
-	public void perceive() {}
+	public List perceive() { return null; }
     public void sendMsg(jason.asSemantics.Message m) throws Exception {}
     public void broadcast(jason.asSemantics.Message m) throws Exception {}    
     public void checkMail() {}
