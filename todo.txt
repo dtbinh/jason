@@ -15,12 +15,29 @@ Things for v 0.7
    . log system
    . cicles for perception
    
+
+To discuss on September meeting
+. meta-plans
+. parallel arquitecture
+. persistent-goals
+. backtraking for plan failure
+. Check permissions (public/private) for BB/Plans
+
+. selection functions library
+. more internal actions to manipulate annots
+. BB as an interface with different implementations (current, in DB, in prolog, ....)
    
 . to FAQ: como criar uma internal action (ver email lista)
           como fazer delay na execucao (Controller with delay)
 
 . test .untell, unachieve
       
+. test "inference rule" like
+
+     ....; ?a(X) ;....  
+     
+     -?a(10) : b(5) & c(5) <- true.
+
 . to manual: examples of communication (ask, tellHow, ...; annots, semantic in KQMLPlans.asl)
 
 . to use JITProlog internally? (like 3APL)
