@@ -27,6 +27,27 @@ To discuss on September meeting
 . more internal actions to manipulate annots
 . BB as an interface with different implementations (current, in DB, in prolog, ....)
    
+
+-----
+Agent starter command: allows the user to start a new Jason/AgentSpeak agent that will enter in a running society of agents.
+
+GUI Fields:
+[if arc is saci:
+  Facilitator host:
+  MAS name:
+]
+AS file:
+Agent name:
+
+[Advanced options:
+Agent architecture, class, options, ....
+]
+
+It will be an option in the jIDE (that will fill some fields).
+
+Defined as an internal action to be used inside AS plans.
+----
+
 . to FAQ: como criar uma internal action (ver email lista)
           como fazer delay na execucao (Controller with delay)
 
