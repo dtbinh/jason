@@ -1,10 +1,11 @@
 
 
-import jason.D;
 import jason.architecture.AgentArchitecture;
 import jason.asSemantics.ActionExec;
 import jason.asSemantics.Agent;
+import jason.asSemantics.Intention;
 import jason.asSemantics.TransitionSystem;
+import jason.asSyntax.BeliefBase;
 import jason.asSyntax.Literal;
 
 import java.util.List;
@@ -57,7 +58,7 @@ public class SimpleJasonAgent implements AgentArchitecture {
 	// this method just add some belief in the agent Belief Set
 	public void brf() {
 		Literal bel = Literal.parseLiteral("x(10)");
-        fTS.getAg().addBel(bel, D.TSelf, fTS.getC(), D.EmptyInt);
+        fTS.getAg().addBel(bel, BeliefBase.TSelf, fTS.getC(), Intention.EmptyInt);
     }
 
 	// this method get the agent actions
