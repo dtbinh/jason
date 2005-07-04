@@ -1,7 +1,10 @@
 Things for v 0.8
    . backtraking for plan failure. generate -!g only when all applicable plans fail.
    . applicable plans consider possible different unifications (the same plan will have one or more Option)
- 
+   . new grammar based on expressions for Context 
+     (to support +-*/ > < == .... operators)
+   
+    
 Things for v 0.7
    debug:
       . fold/unfold mind's itens (more/less details)

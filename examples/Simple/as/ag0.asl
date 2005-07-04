@@ -16,7 +16,10 @@ t(b,c).
 
 +!g(Z) : not p(c) & not q(b,b) & r(X)
       <- .send(agCount, askAll, value(A,vl(A)), ListVl); .print(ListVl);
-         .getRelevantPlans("+!te1(X)", L); .send(agCount, tellHow, L); .send(agCount, achieve, te1(10)); 
+         
+         .getRelevantPlans("+!te1(X)", L); 
+         .send(agCount, tellHow, L); 
+         .send(agCount, achieve, te1(10)); 
          .send(ag1,achieve,g(b));
          .send(agCount, achieve, sayHello);
          //.send(agCount, askIf, ok, true); .print("Answer for askIf is true");
