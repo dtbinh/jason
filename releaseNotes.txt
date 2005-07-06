@@ -3,8 +3,8 @@ version 0.7
 -----------
 
 New features
-. atomic execution of intention. When an intention is created from a plan with 
-  a label that has an 'atomic' annotation 
+. atomic execution of intention. When an intention is created from
+  a plan with a label that has an 'atomic' annotation 
      @label[atomic] +.... : .... <- ....
   this intention has highest priority, no other intention will be selected
   until this one was finished. 
@@ -20,8 +20,8 @@ Changes in the Environment programming
   The method getPercepts(A) returns the perceptions for agent A.
   See Environment javadoc API for more information.
 
-. Perception is now a list of Literals, thus there is not anymore a positive
-  and a negative list of Predicates.
+. Perception is now a list of Literals, thus there is not anymore a
+  positive and a negative list of Predicates.
 
   a code like 
     getPercepts().add(Term.parse("p(a)"));
