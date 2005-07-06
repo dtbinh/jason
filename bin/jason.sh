@@ -46,7 +46,7 @@ if [ $OS == Darwin ] ; then
 fi
 
 # run jIDE
-java -classpath "$JASON_HOME/bin/jason.jar":"$SACI_HOME/bin/saci.jar"  $DPAR jIDE.JasonID "$SACI_HOME" "$JAVA_HOME" $1
+java -classpath "$JASON_HOME/bin/jason.jar":"$SACI_HOME/bin/saci.jar":"$JASON_HOME/lib/log4j.jar"  $DPAR jIDE.JasonID "$SACI_HOME" "$JAVA_HOME" $1
 
 # if the jIDE identified the SACI home
 if [ $? = '1' ] ; then
