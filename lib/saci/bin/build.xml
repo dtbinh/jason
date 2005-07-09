@@ -39,7 +39,7 @@
 		<classpath path="${userClassPath}" />
 		<sysproperty key="java.security.policy" value="${policyFile}" />
 		<sysproperty key="java.rmi.server.codebase" value="file:${saciJar}" />
-                <arg value="${launcherd-args} -applications applications.xml" />
+                <arg line="${launcherd-args} -applications applications.xml" />
 	</java>
     </target>
     
