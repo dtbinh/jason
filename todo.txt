@@ -1,3 +1,12 @@
+Things for v 0.7
+   debug:
+      . stop/run buttons
+      . breakpoints
+   control:
+      . .moveTo
+   . online parsing on editing
+   . cycles for perception
+
 Things for v 0.8
    . backtraking for plan failure. generate -!g only when all applicable plans fail.
    . applicable plans consider possible different unifications (the same plan will have one or more Option)
@@ -8,18 +17,7 @@ Things for v 0.8
       . fold/unfold mind's itens (more/less details)
       . act on agent's mind (remove bel, intentention, ...)
       . control at semantic action level
-   
     
-Things for v 0.7
-   debug:
-      . stop/run buttons
-      . breakpoints
-   control:
-      . .moveTo
-   . online parsing on editing
-   . log system
-   . cycles for perception
-   
 
 -------------------------   
 To discuss on September meeting
@@ -101,6 +99,7 @@ Documentation TODO
 
 . idem for "killing" agents
 
+. get something from http://www.cs.uu.nl/docs/vakken/map/faq.html
 
 
 -----------------------------------
@@ -113,6 +112,17 @@ Tests TODO
      ....; ?a(X) ;....  
      
      -?a(10) : b(5) & c(5) <- true.
+
+-----------------------------------
+Communication
+
+dropDesire
+do UNACHIEVE nos planos KQML tem que ser um "dropAllDesireFocuses"
+ou algo assim que procure todas as pilhas cujo plano
+bem de baixo tem um achieve goal que casa com o parametro.
+E' que um .dropDesire numa pilha nova (que imagino e' o
+que acontece com a msg tratada) nao vai ter efeito nenhum.
+Tem que ver isto em mais detalhes...
 
 -----------------------------------
 Questions?

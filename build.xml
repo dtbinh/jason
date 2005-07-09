@@ -64,6 +64,7 @@
             <include name="images/**/*"/>
             <include name="asl/**/*"/>
             <include name="xml/**/*"/>
+            <include name="log4j.configuration"/>
         </jar>
     </target>
 

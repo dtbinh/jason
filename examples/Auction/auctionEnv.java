@@ -1,9 +1,13 @@
 
-import java.util.*;
 
-import jason.*;
-import jason.asSyntax.*;
-import jason.environment.*;
+import jason.asSyntax.Literal;
+import jason.asSyntax.Term;
+import jason.environment.Environment;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
 
 public class auctionEnv extends Environment {
     
@@ -26,7 +30,8 @@ public class auctionEnv extends Environment {
     Map bid = new HashMap();
 	Literal auction, winner;
     
-    
+	static Logger logger = Logger.getLogger(auctionEnv.class);
+		
     public auctionEnv() {
 		init();
     }
@@ -52,7 +57,7 @@ public class auctionEnv extends Environment {
      * Implementation of the agents' basic actions
      */
     public boolean executeAction(String ag, Term action) {
-        if (action.hasFunctor("place_bid")) {
+        if (action.getFunctor().equals("place_bid")) {
             Integer x = new Integer(action.getTerm(1).toString());
             bid.put(ag,x);
         }
@@ -97,7 +102,7 @@ public class auctionEnv extends Environment {
             bid.put("ag2",NoBid);
             bid.put("ag3",NoBid);
             nauc++;
-            System.out.println("Winner of auction "+auction+": "+winner);
+            logger.info("Winner of auction "+auction+": "+winner);
             auction = Literal.parseLiteral("auction("+nauc+")");
 
 			// old style: auction = Term.parse("auction("+nauc+")");
@@ -108,7 +113,7 @@ public class auctionEnv extends Environment {
 				// old style: getPercepts().add(auction);				
 			} else if (trial < nrTrials) {
 				trial++;
-				System.out.println("----------------------- Trial "+trial);
+				logger.info("----------------------- Trial "+trial);
 				init();
 				addPercept(Literal.parseLiteral("trial("+trial+")"));
 				

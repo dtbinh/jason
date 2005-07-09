@@ -51,7 +51,7 @@ public class SimpleJasonAgent implements AgentArchitecture {
         }
     }
 	
-	public String getName() {
+	public String getAgName() {
 		return "JasonAgent";
 	}
 
@@ -65,11 +65,14 @@ public class SimpleJasonAgent implements AgentArchitecture {
 	public void act() {
     	ActionExec acExec = fTS.getC().getAction(); 
         if (acExec != null) {
-			System.out.println("Agent "+getName()+" is doing: "+acExec.getActionTerm());
+			System.out.println("Agent "+getAgName()+" is doing: "+acExec.getActionTerm());
         }
     }
     
-    
+    public boolean isRunning() {
+    	return true;
+    }
+	
     // Not used methods 
 	// These simple agent does not have messages/control/...
 	public List perceive() { return null; }

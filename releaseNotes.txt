@@ -41,6 +41,11 @@ Changes in Internal Actions
 Other changes
    . auto-save before running
    . brf() was moved to Agent class (and architecture perceive returns a List of perceptions)
+   . The log4j is used to output the execution. The default log configuration is in the
+     src/log4j.configuration file. The user can copy this file to its project directory
+     to customize the output format. 
+     See http://logging.apache.org/log4j/docs/ for more information.
+     
    
 
 -----------

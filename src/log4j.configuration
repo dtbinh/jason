@@ -1,15 +1,10 @@
 # Set root logger level to INFO and its only appender to Console1.
 
-log4j.rootLogger=INFO, Console1 
+log4j.rootLogger=INFO, MASConsole 
 #log4j.rootLogger=DEBUG, File1
 #log4j.rootLogger=DEBUG, Chainsaw
 
-# ------ Console1 --------
-# Console1 is set to be a ConsoleAppender.
-log4j.appender.Console1=org.apache.log4j.ConsoleAppender
-
-# Console1 uses PatternLayout.
-# codes:
+# PatternLayout codes:
 # %c - category
 # %C - class
 # %d - time/date
@@ -19,6 +14,14 @@ log4j.appender.Console1=org.apache.log4j.ConsoleAppender
 # %r - time elapsed
 # %t - thread
 
+# ------ MASConsole --------
+log4j.appender.MASConsole=jIDE.MASConsoleAppender
+log4j.appender.MASConsole.layout=org.apache.log4j.PatternLayout
+log4j.appender.MASConsole.layout.ConversionPattern=[%c{1}] %m%n
+
+# ------ Console1 --------
+# Console1 is set to be a ConsoleAppender.
+log4j.appender.Console1=org.apache.log4j.ConsoleAppender
 log4j.appender.Console1.layout=org.apache.log4j.PatternLayout
 #Console1.layout.ConversionPattern=%-4r %-5p [%t] %c %x - %m%n
 log4j.appender.Console1.layout.ConversionPattern=[%c{1}] %m%n

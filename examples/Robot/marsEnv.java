@@ -11,6 +11,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.border.EtchedBorder;
 
+import org.apache.log4j.Logger;
+
 public class marsEnv extends Environment {
 
 	public static final int NGarb = 3;
@@ -32,6 +34,8 @@ public class marsEnv extends Environment {
 	int nerr;
 
 	Random random = new Random(System.currentTimeMillis());
+
+	static Logger logger = Logger.getLogger(marsEnv.class);
 
 	// garbage places
 	boolean[][] mars = new boolean[GSize][GSize];
