@@ -13,7 +13,6 @@ if [ ! -f ./jason.sh ] ; then
    exit
 fi
 
-
 if [ -z $SACI_HOME ] ; then
 	export SACI_HOME=../lib/saci
 fi
@@ -37,7 +36,6 @@ if [ ! -f $JAVA_HOME/bin/javac ] ; then
    echo JAVA_HOME is not properly set!
 fi
 
-
 export PATH="$JAVA_HOME/bin":$PATH
 
 DPAR=""
@@ -46,15 +44,16 @@ if [ $OS == Darwin ] ; then
 fi
 
 # run jIDE
-java -classpath "$JASON_HOME/bin/jason.jar":"$SACI_HOME/bin/saci.jar":"$JASON_HOME/lib/log4j.jar"  $DPAR jIDE.JasonID "$SACI_HOME" "$JAVA_HOME" $1
+java -classpath "$JASON_HOME/bin/jason.jar":"$SACI_HOME/bin/saci.jar":"$JASON_HOME/lib/log4j.jar"  $DPAR jIDE.JasonID $1
+#"$SACI_HOME" "$JAVA_HOME"
 
 # if the jIDE identified the SACI home
-if [ $? = '1' ] ; then
+#if [ $? = '1' ] ; then
    #grep -v "^export SACI_HOME" jason.sh > x
    #grep -v "^export JAVA_HOME" x >> setenv.sh
    #rm x
-   mv jason.sh jason.sh.old
-   chmod u+x setenv.sh
-   mv setenv.sh jason.sh
-   ./jason.sh $1
-fi
+#   mv jason.sh jason.sh.old
+#   chmod u+x setenv.sh
+#   mv setenv.sh jason.sh
+#   ./jason.sh $1
+#fi

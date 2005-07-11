@@ -18,8 +18,8 @@ cd $CURDIR
 if [ -z $SACI_HOME ] ; then
 	export SACI_HOME=$JASONDIR/lib/saci
 fi
-
-java -classpath $JASONDIR/bin/jason.jar:$SACI_HOME/bin/saci.jar:$JASONDIR/lib/log4j.jar:. jIDE.parser.mas2j $1 $JASONDIR $SACI_HOME
+#echo "Jason dir is $JASONDIR"
+java -classpath $JASONDIR/bin/jason.jar:$SACI_HOME/bin/saci.jar:"$JASONDIR/lib/log4j.jar":. jIDE.parser.mas2j $1 $JASONDIR $SACI_HOME
 
 chmod u+x *.sh
 
