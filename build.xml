@@ -66,6 +66,7 @@
             <include name="xml/**/*"/>
             <include name="log4j.configuration"/>
         </jar>
+    	<signjar jar="${jasonJar}" alias="jomi" storepass="fred3271" keystore="${basedir}/src/jomiKeystore" />
     </target>
 
     <target name="run" depends="jar" >
