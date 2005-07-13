@@ -58,7 +58,9 @@
     
     <target name="jar" depends="compile">
         <jar jarfile="${jasonJar}" basedir="${basedir}/build/classes" manifest="${jasonJarManifest}">
-            <include name="**/*.class"/>
+            <include name="jason/**/*.class"/>
+            <include name="jIDE/**/*.class"/>
+            <include name="test/**/*.class"/>
         </jar>
         <jar jarfile="${jasonJar}" basedir="${basedir}/src" update="true">
             <include name="images/**/*"/>
@@ -66,13 +68,16 @@
             <include name="xml/**/*"/>
             <include name="log4j.configuration"/>
         </jar>
+        <jar jarfile="${jasonJar}" basedir="${basedir}/bin" update="true">
+            <include name="dist.properties"/>
+        </jar>
     	<signjar jar="${jasonJar}" alias="jomi" storepass="fred3271" keystore="${basedir}/src/jomiKeystore" />
     </target>
 
     <target name="run" depends="jar" >
         <java dir="bin" classname="jIDE.JasonID" fork="yes">
             <classpath refid="allPath"/>
-            <arg line="${saciHome} ${javaHome} ../examples/Auction/auctionCent.mas2j" />
+            <arg line="../examples/Auction/auctionCent.mas2j" />
             <!--arg line="${saciHome} ${javaHome} ../examples/Simple/testCent.mas2j" /-->
         </java>
     </target>

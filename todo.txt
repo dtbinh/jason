@@ -1,9 +1,6 @@
 Things for v 0.7
-   debug:
-      . stop/run buttons
-      . breakpoints
    control:
-      . .moveTo
+      . .moveTo/create/kill ag
    . online parsing on editing
    . cycles for perception
 
@@ -32,9 +29,7 @@ To discuss on September meeting
 . BB as an interface with different implementations (current, in DB, in prolog, ....)
 
 -------------------------   
-Jason IDE todo
-
-. remove MASConsole, use the JID output windows.
+Jason IDE TODO
 
 . include the env. class in editors
 
@@ -72,16 +67,11 @@ Defined as an internal action to be used inside AS plans.
 MAS2J TODO
 
 
-. Environment optional in .mas2j. use Environment class when the user does not specify one.
-
-
-
 -------------------------   
 AS TODO
 
 . expressoes aritméticas (+ - * / %)
   Default literal will became a kind of Expression with eval method
-
 
 
 -----------------------------------
@@ -112,6 +102,18 @@ Tests TODO
      ....; ?a(X) ;....  
      
      -?a(10) : b(5) & c(5) <- true.
+
+-----------------------------------
+Semantic TODO
+
+
+Rafael:
+Check if it's not more efficient to "ground"
+the TE of the finished plan and unify with
+the goal-call rather than "filter and compose"
+the unifiers (current version of the semantics)
+
+
 
 -----------------------------------
 Communication
