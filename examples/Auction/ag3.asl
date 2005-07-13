@@ -24,6 +24,7 @@ threshold(3).
    <- ?defaultBidValue(B);
       place_bid(N,B).
 
+@propAlliance[breakpoint] 
 +!alliance(A) : true
    <- .send(A,tell,alliance).
 
