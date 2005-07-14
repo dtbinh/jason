@@ -79,6 +79,6 @@ public class SimpleJasonAgent implements AgentArchitecture {
     public void sendMsg(jason.asSemantics.Message m) throws Exception {}
     public void broadcast(jason.asSemantics.Message m) throws Exception {}    
     public void checkMail() {}
-	public void informCycleFinished() {}
+	public void informCycleFinished(boolean breakpoint) {}
 
 }
