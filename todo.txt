@@ -1,15 +1,13 @@
 Things for v 0.7
    control:
-      . .moveTo/create/kill ag
    . online parsing on editing
    . cycles for perception
 
 Things for v 0.8
-   . backtraking for plan failure. generate -!g only when all applicable plans fail.
-   . applicable plans consider possible different unifications (the same plan will have one or more Option)
    . new grammar based on expressions for Context 
      (to support +-*/ > < == .... operators)
      new "is" command "X is 2+3";
+   . .moveTo/create/kill ag
    debug:
       . fold/unfold mind's itens (more/less details)
       . act on agent's mind (remove bel, intentention, ...)
@@ -27,6 +25,10 @@ To discuss on September meeting
 . selection functions library
 . more internal actions to manipulate annots
 . BB as an interface with different implementations (current, in DB, in prolog, ....)
+
+   . backtraking for plan failure. generate -!g only when all applicable plans fail.
+   . applicable plans consider possible different unifications (the same plan will have one or more Option)
+
 
 -------------------------   
 Jason IDE TODO

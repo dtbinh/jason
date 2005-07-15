@@ -9,6 +9,8 @@ New features
   this intention has highest priority, no other intention will be selected
   until this one was finished. 
 . breakpoint annotation in plans' label
+. editor syntax highlight for AS/MAS2J
+
 
 Changes in the Environment programming
 . Each agent has its own perception list in version 0.7. 
