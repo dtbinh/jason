@@ -9,7 +9,7 @@ checking(slots).
 // Plans
 // --------------
 
-+pos(r1,X,Y) : checking(slots) & not(garbage(r1))
++pos(r1,X,Y) : checking(slots) & not garbage(r1)
    <- next(slot).
 
 +garbage(r1) : checking(slots)

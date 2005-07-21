@@ -5,8 +5,9 @@ vl(a).
 vl(test(1)).
 vl(10).
 
+@p1[atomic]
 +!sayHello : true 
    <- ?count(X);
       .print(hello, X);
-      .plus(X,1,C);
+      C = X+1;
       -count(X);+count(C).
