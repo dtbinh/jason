@@ -13,7 +13,7 @@
 
 	<property name="dist.properties" value="${basedir}/bin/dist.properties"/>
     <property name="version" value="0"/>
-    <property name="release" value="7"/>
+    <property name="release" value="7beta"/>
     <property name="distDir" value="/tmp/Jason"/>
     <property name="distFile" value="${env.HOME}/Jason-${version}.${release}"/>
 
@@ -45,6 +45,19 @@
             <classpath location="${basedir}/lib/javacc.jar"/>
             <arg line="AS2JavaParser.jcc" />
         </java>
+
+        <java dir="${basedir}/src/jIDE/parser" classname="jjdoc" fork="yes">
+            <classpath location="${basedir}/lib/javacc.jar"/>
+            <arg line="MAS2JavaParser.jcc" />
+        </java>
+    	<move file="${basedir}/src/jIDE/parser/MAS2JavaParser.html" todir="${basedir}/doc" />
+
+        <java dir="${basedir}/src/jason/asSyntax/parser" classname="jjdoc" fork="yes">
+            <classpath location="${basedir}/lib/javacc.jar"/>
+            <arg line="AS2JavaParser.jcc" />
+        </java>
+    	<move file="${basedir}/src/jason/asSyntax/parser/AS2JavaParser.html" todir="${basedir}/doc" />
+    
     </target>
 
 
@@ -100,7 +113,8 @@
     </target>
 
 
-    <target name="dist" depends="clean,cleanExamples,parsers,jar,test,apidoc" description="Build distribution." >
+    <target name="dist" description="Build distribution." >
+    	<!--depends="clean,cleanExamples,parsers,jar,apidoc"  -->
 
           <propertyfile file="${dist.properties}">
               <entry key="version" value="${version}"/>
@@ -117,6 +131,7 @@
           <delete failonerror="no" includeEmptyDirs="true">
             <fileset dir="${distDir}"/>
           </delete>
+     	  <deltree dir="${distDir}"/>
 
           <mkdir dir="${distDir}"/>
 
@@ -130,6 +145,9 @@
             <fileset dir="${basedir}" includes="examples/**/*"/>
             <fileset dir="${basedir}" includes="lib/**/*"/>
             <fileset dir="${basedir}" includes="src/**/*"/>
+          </copy>
+	      <copy todir="${distDir}/doc">
+    	      <fileset dir="${basedir}/../../agents/Jason-doc" includes="*.*"/>
           </copy>
 
           <zip basedir="${distDir}/.." includes="Jason*/**/*" zipfile="${distFile}.zip"/>
@@ -180,10 +198,10 @@
             <fileset dir="${basedir}/doc/api" includes="**/*"/>
             <fileset dir="${basedir}" includes="**/.nbattrs"/>
             <fileset dir="${basedir}" includes="**/*.backup"/>
-            <fileset dir="${basedir}" includes="bin/jason.jar"/>
             <fileset dir="${basedir}" includes="bin/*.old"/>
             <fileset dir="${basedir}/lib/saci/bin" includes="work"/>
         </delete>
+    	<deltree dir="${basedir}/build"/>
     </target>
 
 </project>

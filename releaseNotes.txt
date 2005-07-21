@@ -10,6 +10,10 @@ New features
   until this one was finished. 
 . breakpoint annotation in plans' label
 . editor syntax highlight for AS/MAS2J
+. online parsing on editing
+. number of cycles until perception (see manual)
+. new AS grammar that supports expressions, e.g.
+  +b : true : X = 4; Y = X + 3 * X / 2; ...
 
 
 Changes in the Environment programming

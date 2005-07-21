@@ -1,12 +1,4 @@
-Things for v 0.7
-   control:
-   . online parsing on editing
-   . cycles for perception
-
 Things for v 0.8
-   . new grammar based on expressions for Context 
-     (to support +-*/ > < == .... operators)
-     new "is" command "X is 2+3";
    . .moveTo/create/kill ag
    debug:
       . fold/unfold mind's itens (more/less details)
@@ -33,9 +25,7 @@ To discuss on September meeting
 -------------------------   
 Jason IDE TODO
 
-. include the env. class in editors
-
-. syntax highlight for AS, Java, MAS2J
+? include the env. class in editors
 
 . write an example of internal action that creates an AS agent. 
   This internal action class could be placed in the example directory 
@@ -84,7 +74,6 @@ Documentation TODO
 
 . to manual: examples of communication (ask, tellHow, ...; annots, semantic in KQMLPlans.asl)
 
-
 . write the internal action .clone that creates a new agent. 
   The new agent as the same code, beliefs, intentions, .... ? that 
   the agent which call the .clone.
@@ -93,6 +82,15 @@ Documentation TODO
 
 . get something from http://www.cs.uu.nl/docs/vakken/map/faq.html
 
+. add to FAQ:
+  How to log the execution?
+  
+  How to enter an agent in a running MAS?
+    . inside AS code
+    . inside a Java program 
+       Centralised
+       Saci
+  (idem for stop)
 
 -----------------------------------
 Tests TODO
@@ -174,8 +172,6 @@ quando der.
   every method of all classes!!!
 
 . colocar no stdlib funções para uso de YP
-
-. change the project extension from .mas2j to .mas
 
 . plug-in para eclipse
 
