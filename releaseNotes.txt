@@ -43,7 +43,7 @@ Changes in the Environment programming
 Changes in Internal Actions
    . Internal actions args are now terms and not Strings
    . Internal actions implements InternalAction interface
-   . Each agent has its own IA objects -- IA has an state for its agent
+   . Each agent has its own IA objects -- IA has a state for its agent
         
 Other changes
    . auto-save before running
