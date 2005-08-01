@@ -5,16 +5,8 @@ cd "$JASON_HOME/.."
 JASON_HOME=`pwd`
 cd "$JASON_HOME/bin"
 
-# check current dir
-if [ ! -f ./jason.sh ] ; then
-   echo
-   echo Current directory is not Jason/bin,
-   echo Jason must be executed in this directory.
-   exit
-fi
-
 if [ -z $SACI_HOME ] ; then
-	export SACI_HOME=../lib/saci
+	export SACI_HOME=$JASON_HOME/lib/saci
 fi
 
 # check SACI_HOME
@@ -45,15 +37,3 @@ fi
 
 # run jIDE
 java -classpath "$JASON_HOME/bin/jason.jar":"$SACI_HOME/bin/saci.jar":"$JASON_HOME/lib/log4j.jar"  $DPAR jIDE.JasonID $1
-#"$SACI_HOME" "$JAVA_HOME"
-
-# if the jIDE identified the SACI home
-#if [ $? = '1' ] ; then
-   #grep -v "^export SACI_HOME" jason.sh > x
-   #grep -v "^export JAVA_HOME" x >> setenv.sh
-   #rm x
-#   mv jason.sh jason.sh.old
-#   chmod u+x setenv.sh
-#   mv setenv.sh jason.sh
-#   ./jason.sh $1
-#fi
