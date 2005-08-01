@@ -1,8 +1,0 @@
-#!/bin/sh
-
-
-cd `dirname $0`
-. ./saci.env
-
-#xterm -e 
-java -classpath $CLASSPATH saci.launcher.StopLauncherD $1

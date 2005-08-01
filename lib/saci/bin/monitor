@@ -1,8 +1,0 @@
-#!/bin/sh
-
-cd `dirname $0`
-. ./saci.env
-
-java $POL -classpath $CLASSPATH saci.tools.MonitorApp $*
-
-
