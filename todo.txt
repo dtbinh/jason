@@ -27,28 +27,23 @@ Jason IDE TODO
 
 ? include the env. class in editors
 
-. write an example of internal action that creates an AS agent. 
-  This internal action class could be placed in the example directory 
-  (and not in the stdlib -- ?). 
-  It could also shows how to call an internal action from the environment.
-  Creation with Cent/SACI
-  Put in FAQ
-
-
 -----
-Agent starter command: allows the user to start a new Jason/AgentSpeak agent that will enter in a running society of agents.
+Tools->new agent
+allows the user to start a new Jason/AgentSpeak agent that will enter in a running society of agents. OR define a new agent for the project.
 
-GUI Fields:
+GUI Fields (get from current execution?):
 [if arc is saci:
   Facilitator host:
   MAS name:
 ]
-AS file:
 Agent name:
+AS file:
 
 [Advanced options:
 Agent architecture, class, options, ....
 ]
+
+Two buttons: "Add in project" "Start it in current MAS" [se existir uma]
 
 It will be an option in the jIDE (that will fill some fields).
 
@@ -62,12 +57,17 @@ MAS2J TODO
 -------------------------   
 AS TODO
 
-. expressoes aritméticas (+ - * / %)
-  Default literal will became a kind of Expression with eval method
-
 
 -----------------------------------
 Documentation TODO
+
+
+. write an example of internal action that creates an AS agent. 
+  This internal action class could be placed in the example directory 
+  (and not in the stdlib -- ?). 
+  It could also shows how to call an internal action from the environment.
+  Creation with Cent/SACI
+  Put in FAQ
 
 . to FAQ: como criar uma internal action (ver email lista)
           como fazer delay na execucao (Controller with delay)
@@ -90,6 +90,7 @@ Documentation TODO
     . inside a Java program 
        Centralised
        Saci
+    . from jIDE
   (idem for stop)
 
 -----------------------------------
