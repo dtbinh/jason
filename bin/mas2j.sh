@@ -15,15 +15,6 @@ JASONDIR=`pwd`
 
 cd $CURDIR
 
-if [ -z $SACI_HOME ] ; then
-	export SACI_HOME=$JASONDIR/lib/saci
-fi
-#echo "Jason dir is $JASONDIR"
-java -classpath $JASONDIR/bin/jason.jar:$SACI_HOME/bin/saci.jar:"$JASONDIR/lib/log4j.jar":. jIDE.parser.mas2j $1 $JASONDIR $SACI_HOME
+java -classpath $JASONDIR/bin/jason.jar:$JASONDIR/lib/saci.jar:"$JASONDIR/lib/log4j.jar":. jIDE.parser.mas2j $1 $JASONDIR
 
 chmod u+x *.sh
-
-if [ -f ./compile.sh ]
-then
-    ./compile.sh
-fi

@@ -6,8 +6,7 @@
 
     <property name="javaHome" value="/usr"/>
 	
-    <property name="saciHome" value="${basedir}/lib/saci"/>
-    <property name="saciJar" value="${saciHome}/bin/saci.jar"/>
+    <property name="saciJar" value="${basedir}/lib/saci.jar"/>
     <property name="jasonJar" value="${basedir}/bin/jason.jar"/>
     <property name="jasonJarManifest" value="${basedir}/src/jasonManifest"/>
 

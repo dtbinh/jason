@@ -27,6 +27,8 @@ Jason IDE TODO
 
 ? include the env. class in editors
 
+<TAB> does not work with syntax highlight
+
 -----
 Tools->new agent
 allows the user to start a new Jason/AgentSpeak agent that will enter in a running society of agents. OR define a new agent for the project.

@@ -5,15 +5,6 @@ cd "$JASON_HOME/.."
 JASON_HOME=`pwd`
 cd "$JASON_HOME/bin"
 
-if [ -z $SACI_HOME ] ; then
-	export SACI_HOME=$JASON_HOME/lib/saci
-fi
-
-# check SACI_HOME
-if [ ! -f $SACI_HOME/bin/saci.jar ] ; then
-   echo SACI_HOME is not properly set!
-fi
-
 OS=`uname`
 if [ -z $JAVA_HOME ] ; then
 	if [ $OS == Darwin ] ; then
@@ -36,4 +27,4 @@ if [ $OS == Darwin ] ; then
 fi
 
 # run jIDE
-java -classpath "$JASON_HOME/bin/jason.jar":"$SACI_HOME/bin/saci.jar":"$JASON_HOME/lib/log4j.jar"  $DPAR jIDE.JasonID $1
+java -classpath "$JASON_HOME/bin/jason.jar":"$JASON_HOME/lib/saci.jar":"$JASON_HOME/lib/log4j.jar"  $DPAR jIDE.JasonID $1
