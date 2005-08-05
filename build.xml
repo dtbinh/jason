@@ -12,7 +12,7 @@
 
 	<property name="dist.properties" value="${basedir}/bin/dist.properties"/>
     <property name="version" value="0"/>
-    <property name="release" value="7beta"/>
+    <property name="release" value="7gamma"/>
     <property name="distDir" value="/tmp/Jason"/>
     <property name="distFile" value="${env.HOME}/Jason-${version}.${release}"/>
 
@@ -113,7 +113,7 @@
 
 
     <target name="dist" description="Build distribution." >
-    	<!--depends="clean,cleanExamples,parsers,jar,apidoc"  -->
+    	<!--depends="jar,clean,cleanExamples,parsers,jar,apidoc"  -->
 
           <propertyfile file="${dist.properties}">
               <entry key="version" value="${version}"/>
