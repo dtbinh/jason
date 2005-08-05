@@ -1,5 +1,5 @@
 @echo off
-SET JAVA_HOME=C:\j2sdk1.4.2
+SET JAVA_HOME=C:\Program Files\jdk1.5.0_03
 SET PATH="%JAVA_HOME%\bin";%PATH%
-java -jar jason.jar
+java -cp jason.jar;..\lib\log4j.jar;..\lib\saci.jar jIDE.JasonID
 
