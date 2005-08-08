@@ -186,6 +186,7 @@
             <fileset dir="${basedir}/examples" includes="**/*.sh"/>
             <fileset dir="${basedir}/examples" includes="**/*.bat"/>
             <fileset dir="${basedir}/examples" includes="**/*.xml"/>
+            <fileset dir="${basedir}/examples" includes="**/work"/>
         </delete>
     </target>
 
