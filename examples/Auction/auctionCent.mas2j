@@ -1,0 +1,9 @@
+// creates a MAS called auctionCent
+
+MAS auctionCent {
+    
+    architecture: Centralised
+
+    agents: ag1; ag2; ag3; 
+            auctionner agentArchClass AuctionnerGUI;
+}
