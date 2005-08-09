@@ -1,0 +1,11 @@
+// creates a MAS called auctionCent
+
+MAS auctionCent {
+    
+    architecture: Centralised
+
+    environment: auctionEnv
+
+    agents: ag1; ag2; ag3;
+    // from default file (ag1.asl, ag2.asl, ag3.asl)
+}
