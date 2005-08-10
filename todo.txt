@@ -20,6 +20,13 @@ To discuss on September meeting
 
    . backtraking for plan failure. generate -!g only when all applicable plans fail.
    . applicable plans consider possible different unifications (the same plan will have one or more Option)
+   . add new configuration option: add all instantiations in the set of
+     appl. plans instead of just one.
+
+  - complex goals (e.g., +!(p(X) /\ q(X)))
+  - msgs with complex formulae rather than atoms (p(X) /\ q(X))
+    or think about interesting uses of plan for +?g
+  - empty triggering event or +!true
 
 
 -------------------------   
