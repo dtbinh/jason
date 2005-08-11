@@ -1,32 +1,41 @@
 Things for v 0.8
+
    . .moveTo/create/kill ag
-   debug:
+   . debug:
       . fold/unfold mind's itens (more/less details)
-      . act on agent's mind (remove bel, intentention, ...)
+      . act on agent's mind (remove bel, intention, ...)
       . control at semantic action level
-    
 
 -------------------------   
-To discuss on September meeting
+
+To discuss in September meeting
 . meta-plans
 . parallel arquitecture
-. persistent-goals
-. backtraking for plan failure
+. declarative goals / persistent-goals etc.
+. backtraking for plan failure (just double check the existing mechanism)
 . Check permissions (public/private) for BB/Plans
+. OR as well as AND in context etc.
 
 . selection functions library
 . more internal actions to manipulate annots
 . BB as an interface with different implementations (current, in DB, in prolog, ....)
+. call the "system architecture" something else (e.g., "infrastructure")
+  to avoid confusion with agent architecture, overall architecture, etc.
 
-   . backtraking for plan failure. generate -!g only when all applicable plans fail.
-   . applicable plans consider possible different unifications (the same plan will have one or more Option)
-   . add new configuration option: add all instantiations in the set of
-     appl. plans instead of just one.
+. ver recurso de "capabilites" do JACK e do Jadex,
+  talvez valha a pena "copiar"??? Ou so botar
+  bibliotecas de planos e import?
+
+   . applicable plans: consider possible different unifications (the same plan will have one or more Options)
+     and add a new configuration option: add all instantiations in the set of
+     appl. plans instead or just one.
 
   - complex goals (e.g., +!(p(X) /\ q(X)))
   - msgs with complex formulae rather than atoms (p(X) /\ q(X))
     or think about interesting uses of plan for +?g
-  - empty triggering event or +!true
+  - empty triggering event or +!true (for maintenance goals ?)
+    is it really necessary? probably just syntatic sugar,
+    but extra part in the reasoning cycle or in place of event?
 
 
 -------------------------   
@@ -73,12 +82,13 @@ Documentation TODO
 
 . write an example of internal action that creates an AS agent. 
   This internal action class could be placed in the example directory 
-  (and not in the stdlib -- ?). 
-  It could also shows how to call an internal action from the environment.
+  (and not in the stdlib -- ???? --- this is probably very useful,
+   consider stdlib...). 
+  It could also show how to call an internal action from the environment.
   Creation with Cent/SACI
   Put in FAQ
 
-. to FAQ: como criar uma internal action (ver email lista)
+. to FAQ: como criar uma internal action (ver email list)
           como fazer delay na execucao (Controller with delay)
 
 . to manual: examples of communication (ask, tellHow, ...; annots, semantic in KQMLPlans.asl)
@@ -88,8 +98,6 @@ Documentation TODO
   the agent which call the .clone.
 
 . idem for "killing" agents
-
-. get something from http://www.cs.uu.nl/docs/vakken/map/faq.html
 
 . add to FAQ:
   How to log the execution?
@@ -109,21 +117,21 @@ Tests TODO
       
 . test "inference rule" like
 
-     ....; ?a(X) ;....  
+     ... ; ... <- ?a(X) ...  
      
-     -?a(10) : b(5) & c(5) <- true.
+     +?a(10) : b(5) & c(5) <- true.
 
 -----------------------------------
-Semantic TODO
-
+Semantics TODO
 
 Rafael:
-Check if it's not more efficient to "ground"
-the TE of the finished plan and unify with
-the goal-call rather than "filter and compose"
-the unifiers (current version of the semantics)
-
-
+. Check if it's not more efficient to "ground"
+  the TE of the finished plan and unify with
+  the goal-call rather than "filter and compose"
+  the unifiers (current version of the semantics)
+. fazer consistencia dos labels dos planos (2 planos
+  nao podem ter o mesmo label, e forcar que todos os
+  planos tenham algum label, gerado automaticamente se preciso)
 
 -----------------------------------
 Communication
@@ -141,7 +149,7 @@ Questions?
 
 . kqmlPlans/unachieve
    TODO: what about many CCC desires? drop only the one from achieve!
-   . annot (rename var)
+   annot (rename var) [IMPORTANT!!!!]
  
 -----------------------------------
 Others TODOs
@@ -149,16 +157,15 @@ Others TODOs
 . outro trabalho bom pra aluno e' fazer um plug-in pro PDT (Prometheus
   Design Tool) gerar codigo Jason em vez de codigo JACK.
          
-. ver recurso de "capabilites" do JACK e do Jadex,
-  talvez valha a pena "copiar"???
-. send, o "to" pode ser uma lista de destinatários
+. send, o "to" pode ser uma lista de destinatarios
 
 . pensar sobre fazer a opcao de NewFocus ser associada com o + e - 
   direto, o problem e' que e' mais sintaxe, temos que discutir
+  [anotacao a nivel de plano???]
 
 . ag arch multi-thread "A arquitetura do agente podia ser multi-threaded tambem. O raciocinador nao precisaria esperar o SACI mandar a acao ja no final do cicle. 
-O raciocinador vai enchendo o PA de acoes e o SACI vai mandando
-quando der.
+  O raciocinador vai enchendo o PA de acoes e o SACI vai mandando
+  quando der.
 
 . SUGESTAO DO ALVARO:
   Para o problema de propagacao de substituicao: mudar a definicao de
@@ -171,8 +178,6 @@ quando der.
   estao sendo clonados profundamente. Talvez nao tenha problema. Em
   varios lugares talvez nao precisariam clones tao profundos...
 
-. Rafael: (in the future?) fazer consistencia dos labels dos planos
-
 . LONG future: consistencia de crencas
 
 . Also in the future: use a profiling tool the detect critical performance
@@ -181,7 +186,7 @@ quando der.
 . Future too: Check permissions (public/private) of every member and
   every method of all classes!!!
 
-. colocar no stdlib funções para uso de YP
+. colocar no stdlib funcoes para uso de YP e webservices(?)
 
 . plug-in para eclipse
 
