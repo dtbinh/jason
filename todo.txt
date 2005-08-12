@@ -163,6 +163,8 @@ Others TODOs
   direto, o problem e' que e' mais sintaxe, temos que discutir
   [anotacao a nivel de plano???]
 
+. env arguments in mas2j (there's a "TODO" in the code about this)
+
 . ag arch multi-thread "A arquitetura do agente podia ser multi-threaded tambem. O raciocinador nao precisaria esperar o SACI mandar a acao ja no final do cicle. 
   O raciocinador vai enchendo o PA de acoes e o SACI vai mandando
   quando der.
