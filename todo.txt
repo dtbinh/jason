@@ -1,6 +1,6 @@
 Things for v 0.8
 
-   . .moveTo/create/kill ag
+   . .moveTo/kill ag
    . debug:
       . fold/unfold mind's itens (more/less details)
       . act on agent's mind (remove bel, intention, ...)
@@ -75,21 +75,13 @@ MAS2J TODO
 -------------------------   
 AS TODO
 
+. pensar sobre fazer a opcao de NewFocus ser associada com o + e - 
+  direto, o problem e' que e' mais sintaxe, temos que discutir
+  [anotacao a nivel de plano???]
+
 
 -----------------------------------
 Documentation TODO
-
-
-. write an example of internal action that creates an AS agent. 
-  This internal action class could be placed in the example directory 
-  (and not in the stdlib -- ???? --- this is probably very useful,
-   consider stdlib...). 
-  It could also show how to call an internal action from the environment.
-  Creation with Cent/SACI
-  Put in FAQ
-
-. to FAQ: como criar uma internal action (ver email list)
-          como fazer delay na execucao (Controller with delay)
 
 . to manual: examples of communication (ask, tellHow, ...; annots, semantic in KQMLPlans.asl)
 
@@ -99,16 +91,6 @@ Documentation TODO
 
 . idem for "killing" agents
 
-. add to FAQ:
-  How to log the execution?
-  
-  How to enter an agent in a running MAS?
-    . inside AS code
-    . inside a Java program 
-       Centralised
-       Saci
-    . from jIDE
-  (idem for stop)
 
 -----------------------------------
 Tests TODO
@@ -119,7 +101,7 @@ Tests TODO
 
      ... ; ... <- ?a(X) ...  
      
-     +?a(10) : b(5) & c(5) <- true.
+     -?a(10) : b(5) & c(5) <- true.
 
 -----------------------------------
 Semantics TODO
@@ -136,6 +118,9 @@ Rafael:
 -----------------------------------
 Communication
 
+. send, o "to" pode ser uma lista de destinatarios
+
+
 dropDesire
 do UNACHIEVE nos planos KQML tem que ser um "dropAllDesireFocuses"
 ou algo assim que procure todas as pilhas cujo plano
@@ -151,24 +136,16 @@ Questions?
    TODO: what about many CCC desires? drop only the one from achieve!
    annot (rename var) [IMPORTANT!!!!]
  
+
+-----------------------------------
+Projects (!)
+. PDT plug-in to generate AS code from MAS spec.
+. Eclipse plug-in to edit/run jason
+
+
 -----------------------------------
 Others TODOs
  
-. outro trabalho bom pra aluno e' fazer um plug-in pro PDT (Prometheus
-  Design Tool) gerar codigo Jason em vez de codigo JACK.
-         
-. send, o "to" pode ser uma lista de destinatarios
-
-. pensar sobre fazer a opcao de NewFocus ser associada com o + e - 
-  direto, o problem e' que e' mais sintaxe, temos que discutir
-  [anotacao a nivel de plano???]
-
-. env arguments in mas2j (there's a "TODO" in the code about this)
-
-. ag arch multi-thread "A arquitetura do agente podia ser multi-threaded tambem. O raciocinador nao precisaria esperar o SACI mandar a acao ja no final do cicle. 
-  O raciocinador vai enchendo o PA de acoes e o SACI vai mandando
-  quando der.
-
 . SUGESTAO DO ALVARO:
   Para o problema de propagacao de substituicao: mudar a definicao de
   RelPlans e Applans de tal forma que elas retornem pares
@@ -189,8 +166,6 @@ Others TODOs
   every method of all classes!!!
 
 . colocar no stdlib funcoes para uso de YP e webservices(?)
-
-. plug-in para eclipse
 
 Another controller demo for:
 Outras sugestoes foram um synchronous mode based on action, not on reasoning
