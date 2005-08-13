@@ -78,6 +78,7 @@ AS TODO
 . pensar sobre fazer a opcao de NewFocus ser associada com o + e - 
   direto, o problem e' que e' mais sintaxe, temos que discutir
   [anotacao a nivel de plano???]
+  [internal action to create a sub-goal??? with newFocus]
 
 
 -----------------------------------
@@ -111,6 +112,7 @@ Rafael:
   the TE of the finished plan and unify with
   the goal-call rather than "filter and compose"
   the unifiers (current version of the semantics)
+
 . fazer consistencia dos labels dos planos (2 planos
   nao podem ter o mesmo label, e forcar que todos os
   planos tenham algum label, gerado automaticamente se preciso)
@@ -141,7 +143,8 @@ Questions?
 Projects (!)
 . PDT plug-in to generate AS code from MAS spec.
 . Eclipse plug-in to edit/run jason
-
+. New infrasctructures (e.g. JADE) -- use a factory pattern 
+  to simplify new infrastructure for Jason.
 
 -----------------------------------
 Others TODOs
