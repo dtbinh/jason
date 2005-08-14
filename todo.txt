@@ -10,7 +10,7 @@ Things for v 0.8
 
 To discuss in September meeting
 . meta-plans
-. parallel arquitecture
+. parallel architecture
 . declarative goals / persistent-goals etc.
 . backtraking for plan failure (just double check the existing mechanism)
 . Check permissions (public/private) for BB/Plans
@@ -37,6 +37,7 @@ To discuss in September meeting
     is it really necessary? probably just syntatic sugar,
     but extra part in the reasoning cycle or in place of event?
 
+- inference in context (using the same inference available with ?).
 
 -------------------------   
 Jason IDE TODO
