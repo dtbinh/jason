@@ -1,9 +1,11 @@
 #!/bin/sh
 
+CURDIR=`pwd`
 JASON_HOME=`dirname $0`
 cd "$JASON_HOME/.."
 JASON_HOME=`pwd`
-cd "$JASON_HOME/bin"
+#cd "$JASON_HOME/bin"
+cd $CURDIR
 
 OS=`uname`
 if [ -z $JAVA_HOME ] ; then
