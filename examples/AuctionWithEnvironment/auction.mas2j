@@ -2,7 +2,7 @@
 
 
 MAS auction {
-    architecture: Saci
+    infrastructure: Saci
 
     environment: 
         auctionEnv at localhost

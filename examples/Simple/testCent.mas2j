@@ -5,14 +5,14 @@
 
 MAS testCent {
     
-    architecture: Centralised
+    infrastructure: Centralised
 
     environment: 
         myPkg.testEnv at localhost
         // testEnv is the class that implements the environment, 
         // it is in the myPkg java package
 
-    executionControl: jason.control.ExecutionControl
+    //executionControl: jason.control.ExecutionControl
 	// this execution control run all agents in synchronised mode
     
     agents:
@@ -25,5 +25,5 @@ MAS testCent {
            agentClass myPkg.MyAgClass
            at localhost;
 
-        agCount [verbose=1];
+        ///agCount [verbose=1];
 }

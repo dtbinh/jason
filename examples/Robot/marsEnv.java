@@ -1,4 +1,3 @@
-
 import jason.asSyntax.Literal;
 import jason.asSyntax.Term;
 import jason.environment.Environment;
@@ -94,6 +93,11 @@ public class marsEnv extends Environment {
 			addPercept(g2);
 		
 		gui = new MarsGUI();
+	}
+	
+	public void stop() {
+		super.stop();
+		gui.setVisible(false);
 	}
 
 	public boolean executeAction(String ag, Term action) {

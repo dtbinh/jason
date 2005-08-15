@@ -1,6 +1,6 @@
 MAS mars {
 
-    architecture: Saci
+    infrastructure: Saci
 
     environment: 
         marsEnv

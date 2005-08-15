@@ -2,7 +2,7 @@
 
 MAS auctionCent {
     
-    architecture: Centralised
+    infrastructure: Centralised
 
     environment: auctionEnv
 

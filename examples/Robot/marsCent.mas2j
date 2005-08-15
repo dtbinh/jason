@@ -1,7 +1,4 @@
 MAS marsCent {
-    
-    architecture: Centralised
-
     environment:
         marsEnv
 
