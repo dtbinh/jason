@@ -1,7 +1,6 @@
 package myPkg;
 
 import jason.architecture.CentralisedAgArch;
-import jason.architecture.SaciAgArch;
 
 import java.util.List;
 
