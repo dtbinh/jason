@@ -1,6 +1,6 @@
 
 
-import jason.architecture.AgentArchitecture;
+import jason.architecture.AgArchInterface;
 import jason.asSemantics.ActionExec;
 import jason.asSemantics.Agent;
 import jason.asSemantics.TransitionSystem;
@@ -20,7 +20,7 @@ import org.apache.log4j.PatternLayout;
  * 
  * The class must implement AgentArchitecture to be used by the Jason engine.
  */
-public class SimpleJasonAgent implements AgentArchitecture {
+public class SimpleJasonAgent implements AgArchInterface {
 
     private static Logger logger = Logger.getLogger(SimpleJasonAgent.class);
     
