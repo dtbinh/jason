@@ -5,6 +5,7 @@ Things for v 0.8
       . fold/unfold mind's itens (more/less details)
       . act on agent's mind (remove bel, intention, ...)
       . control at semantic action level
+   . user agArch should be used independently of the infrastructure
 
 -------------------------   
 
@@ -19,8 +20,6 @@ To discuss in September meeting
 . selection functions library
 . more internal actions to manipulate annots
 . BB as an interface with different implementations (current, in DB, in prolog, ....)
-. call the "system architecture" something else (e.g., "infrastructure")
-  to avoid confusion with agent architecture, overall architecture, etc.
 
 . ver recurso de "capabilites" do JACK e do Jadex,
   talvez valha a pena "copiar"??? Ou so botar
@@ -72,6 +71,7 @@ Defined as an internal action to be used inside AS plans.
 -------------------------   
 MAS2J TODO
 
+use @<host> instead of at<host>
 
 -------------------------   
 AS TODO
@@ -91,7 +91,7 @@ Documentation TODO
   The new agent as the same code, beliefs, intentions, .... ? that 
   the agent which call the .clone.
 
-. idem for "killing" agents
+. to FAQ: How to use internal action inside environment 
 
 
 -----------------------------------
@@ -146,6 +146,7 @@ Projects (!)
 . Eclipse plug-in to edit/run jason
 . New infrasctructures (e.g. JADE) -- use a factory pattern 
   to simplify new infrastructure for Jason.
+. Jason for large scale
 
 -----------------------------------
 Others TODOs
