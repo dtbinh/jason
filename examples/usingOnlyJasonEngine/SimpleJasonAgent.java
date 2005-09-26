@@ -17,8 +17,9 @@ import org.apache.log4j.PatternLayout;
 /**
  * Example of an agent that only uses Jason BDI engine.
  * It runs without all Jason IDE stuff.
+ * (see Jason FAQ for more information about this example)
  * 
- * The class must implement AgentArchitecture to be used by the Jason engine.
+ * The class must implement AgArchInterface to be used by the Jason engine.
  */
 public class SimpleJasonAgent implements AgArchInterface {
 
