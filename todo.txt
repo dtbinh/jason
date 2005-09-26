@@ -30,13 +30,21 @@ To discuss in September meeting
      appl. plans instead or just one.
 
   - complex goals (e.g., +!(p(X) /\ q(X)))
+  - complex consult (e.g. ?(p(X) \/ q(X))
   - msgs with complex formulae rather than atoms (p(X) /\ q(X))
     or think about interesting uses of plan for +?g
   - empty triggering event or +!true (for maintenance goals ?)
     is it really necessary? probably just syntatic sugar,
     but extra part in the reasoning cycle or in place of event?
+  - inference in context (using the same inference available with ?).
 
-- inference in context (using the same inference available with ?).
+Se um agente ag1 manda um achieve para outro ag2 e ag2 nao faz, o que acontece? Ocorre uma falha de plano no ag2 mas o ag1 nem fica sabendo, certo?
+Nao seria o caso de incluir tratamento de falha nos planos KQML, algo como
+@kqmlReceiveAchieve
++received(S, achieve  , KQMLcontentVar, M) : true <- !doAchieve(KQMLcontentVar, S).
++!doAchieve(K,S) : true <- addAnnot(K, source(S), CA); !CA.
+-!doAchieve(K,S) : true <- send(S, tell, failToAchieve(K)).
+
 
 -------------------------   
 Jason IDE TODO

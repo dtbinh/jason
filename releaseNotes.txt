@@ -14,7 +14,8 @@ New features
 . number of cycles until perception (see manual)
 . new AS grammar that supports expressions, e.g.
   +b : true : X = 4; Y = X + 3 * X / 2; ...
-
+. jar files in the application lib directory are automatically added in the
+  classpath
 
 Changes in the Environment programming
 . Each agent has its own perception list in version 0.7. 
@@ -50,7 +51,7 @@ Other changes
    . brf() was moved to Agent class (and architecture perceive returns a List of perceptions)
    . The log4j is used to output the execution. The default log configuration is in the
      src/log4j.configuration file. The user can copy this file to its project directory
-     to customize the output format.
+     to customise the output format.
      See http://logging.apache.org/log4j/docs/ for more information.
    . environment is optional in mas2j
    . initial beliefs generate events like + operator.
