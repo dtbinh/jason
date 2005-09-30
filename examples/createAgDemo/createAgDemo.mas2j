@@ -1,0 +1,7 @@
+// this example shows how an agente
+// can create another (see ag1.asl source)
+
+MAS createAgDemo {
+   infrastructure : Saci
+   agents: ag1;
+}
