@@ -1,57 +1,126 @@
 Things for v 0.8
 
-   . .moveTo/kill ag
+   . .moveTo
    . debug:
       . fold/unfold mind's itens (more/less details)
-      . act on agent's mind (remove bel, intention, ...)
+      . act on agent's mind (remove bel, intention, generate event,...)
       . control at semantic action level
    . user agArch should be used independently of the infrastructure
+   . BB customisation - DB for literal
+   . BB with clauses
+   . compilation directives (include)
+   . TE as <VAR>
+   . all Semantics TODOs
+
+-----------------------------------
+Projects (!)
+. PDT plug-in to generate AS code from MAS spec.
+. Eclipse plug-in to edit/run jason
+. New infrastructures (e.g. JADE) -- use a factory pattern 
+  to simplify new infrastructure for Jason.
+. Jason for large scale
 
 -------------------------   
+MAS2J TODO
 
-To discuss in September meeting
-. meta-plans
-. parallel architecture
-. declarative goals / persistent-goals etc.
-. backtraking for plan failure (just double check the existing mechanism)
-. Check permissions (public/private) for BB/Plans
-. OR as well as AND in context etc.
+. user parameters for its customised classes (env, ag, arch, bb, ...)
+. BB customisation 
+   agent ag1 BeliefBaseClass userBBclass
+  examples of using DB BB
+     the predicate a is in DB
+        +a -> insert
+        -a -> delete
+        ?a -> select
+  BB interface: add, remove, logCons (to consult)  
 
-. selection functions library
-. more internal actions to manipulate annots
-. BB as an interface with different implementations (current, in DB, in prolog, ....)
+-------------------------   
+AS TODO
 
-. ver recurso de "capabilites" do JACK e do Jadex,
-  talvez valha a pena "copiar"??? Ou so botar
-  bibliotecas de planos e import?
+. create <le> (logical expression) with & and | used in context
+  the |= evaluate the expression
+  the ? operator tries |=, if fail generate the event +? 
+    (as occurs currently)
 
-   . applicable plans: consider possible different unifications (the same plan will have one or more Options)
-     and add a new configuration option: add all instantiations in the set of
-     appl. plans instead or just one.
+. create <clause> ::= <literal> [ <- <le> ]. 
+  the logical consequence will do inference
+  used to built the BB
+    e.g. 
+       a. b. c <- a & b.
 
-  - complex goals (e.g., +!(p(X) /\ q(X)))
-  - complex consult (e.g. ?(p(X) \/ q(X))
-  - msgs with complex formulae rather than atoms (p(X) /\ q(X))
-    or think about interesting uses of plan for +?g
-  - empty triggering event or +!true (for maintenance goals ?)
-    is it really necessary? probably just syntatic sugar,
-    but extra part in the reasoning cycle or in place of event?
-  - inference in context (using the same inference available with ?).
+  TE can be +<clause> 
+  Operator +<clause>
+  Question: do not use <- since clauses are used inside plans!
 
-Se um agente ag1 manda um achieve para outro ag2 e ag2 nao faz, o que acontece? Ocorre uma falha de plano no ag2 mas o ag1 nem fica sabendo, certo?
-Nao seria o caso de incluir tratamento de falha nos planos KQML, algo como
-@kqmlReceiveAchieve
-+received(S, achieve  , KQMLcontentVar, M) : true <- !doAchieve(KQMLcontentVar, S).
-+!doAchieve(K,S) : true <- addAnnot(K, source(S), CA); !CA.
--!doAchieve(K,S) : true <- send(S, tell, failToAchieve(K)).
+. compilation directives (? is it the right name)
+  e.g. 
+   { include("bla.asl"); goalPattern(a) }
+
+. TE as <var>
+  e.g.
+    +!X[source(S)] : not friend(S) <- .send(S, tell, no).
+
+
+-----------------------------------
+Semantics TODO
+
+. BRF is always called, even from operator +.
+  BRF return a pair <setOfAdds, setOfDels>
+  used to generate the events in the TS
+
+
+Rafael:
+. Check if it's not more efficient to "ground"
+  the TE of the finished plan and unify with
+  the goal-call rather than "filter and compose"
+  the unifiers (current version of the semantics)
+
+. fazer consistencia dos labels dos planos (2 planos
+  nao podem ter o mesmo label, e forcar que todos os
+  planos tenham algum label, gerado automaticamente se preciso)
+
+. applicable plans: consider possible different unifications (the same plan will have one or more Options) and add a new configuration option: add all instantiations in the set of appl. plans instead or just one.
+
+. new BRF function
+
+-----------------------------------
+Communication
+
+. send, o "to" pode ser uma lista de destinatarios
+
+. new performative: achievefb
+  received(achievefb,Contet) <- !fb(Content).
+  +!fb(C) <- !C; send(Sender, tell, ok(C).
+  -!fb(C) <- send(Sender, tell, noOk(C).
+  
+
+dropDesire
+do UNACHIEVE nos planos KQML tem que ser um "dropAllDesireFocuses"
+ou algo assim que procure todas as pilhas cujo plano
+bem de baixo tem um achieve goal que casa com o parametro.
+E' que um .dropDesire numa pilha nova (que imagino e' o
+que acontece com a msg tratada) nao vai ter efeito nenhum.
+Tem que ver isto em mais detalhes...
+
+
+
+-----------------------------------
+Documentation TODO
+
+. to manual: examples of communication (ask, tellHow, ...; annots, semantic in KQMLPlans.asl)
+
+. write the internal action .clone that creates a new agent. 
+  The new agent as the same code, beliefs, intentions, .... ? that 
+  the agent which call the .clone.
+
+. to FAQ: why Jason does not have plans backtracking
+  (actions can not undo)
+
 
 
 -------------------------   
 Jason IDE TODO
 
 ? include the env. class in editors
-
-<TAB> does not work with syntax highlight
 
 -----
 Tools->new agent
@@ -72,89 +141,31 @@ Agent architecture, class, options, ....
 Two buttons: "Add in project" "Start it in current MAS" [se existir uma]
 
 It will be an option in the jIDE (that will fill some fields).
-
-Defined as an internal action to be used inside AS plans.
 ----
-
--------------------------   
-MAS2J TODO
-
-use @<host> instead of at<host>
-
--------------------------   
-AS TODO
-
-. pensar sobre fazer a opcao de NewFocus ser associada com o + e - 
-  direto, o problem e' que e' mais sintaxe, temos que discutir
-  [anotacao a nivel de plano???]
-  [internal action to create a sub-goal??? with newFocus]
-
-
------------------------------------
-Documentation TODO
-
-. to manual: examples of communication (ask, tellHow, ...; annots, semantic in KQMLPlans.asl)
-
-. write the internal action .clone that creates a new agent. 
-  The new agent as the same code, beliefs, intentions, .... ? that 
-  the agent which call the .clone.
-
-. to FAQ: How to use internal action inside environment 
 
 
 -----------------------------------
 Tests TODO
 
 . test .untell, unachieve
-      
-. test "inference rule" like
+. X(a) = p(a) must not work!
+. X[a(B)] = p(a)[a(xx)] must work.
 
-     ... ; ... <- ?a(X) ...  
-     
-     -?a(10) : b(5) & c(5) <- true.
-
------------------------------------
-Semantics TODO
-
-Rafael:
-. Check if it's not more efficient to "ground"
-  the TE of the finished plan and unify with
-  the goal-call rather than "filter and compose"
-  the unifiers (current version of the semantics)
-
-. fazer consistencia dos labels dos planos (2 planos
-  nao podem ter o mesmo label, e forcar que todos os
-  planos tenham algum label, gerado automaticamente se preciso)
-
------------------------------------
-Communication
-
-. send, o "to" pode ser uma lista de destinatarios
-
-
-dropDesire
-do UNACHIEVE nos planos KQML tem que ser um "dropAllDesireFocuses"
-ou algo assim que procure todas as pilhas cujo plano
-bem de baixo tem um achieve goal que casa com o parametro.
-E' que um .dropDesire numa pilha nova (que imagino e' o
-que acontece com a msg tratada) nao vai ter efeito nenhum.
-Tem que ver isto em mais detalhes...
-
+  
 -----------------------------------
 Questions?
 
 . kqmlPlans/unachieve
    TODO: what about many CCC desires? drop only the one from achieve!
    annot (rename var) [IMPORTANT!!!!]
- 
 
------------------------------------
-Projects (!)
-. PDT plug-in to generate AS code from MAS spec.
-. Eclipse plug-in to edit/run jason
-. New infrasctructures (e.g. JADE) -- use a factory pattern 
-  to simplify new infrastructure for Jason.
-. Jason for large scale
+. pensar sobre fazer a opcao de NewFocus ser associada com o + e - 
+  direto, o problem e' que e' mais sintaxe, temos que discutir
+  [anotacao a nivel de plano???]
+  [internal action to create a sub-goal??? with newFocus]
+  ++a;
+  !!a;
+ 
 
 -----------------------------------
 Others TODOs
@@ -165,23 +176,43 @@ Others TODOs
   $(p,\theta)$. Propagar essa mudanca para as duas regras abaixo de
   acordo (verificar se nao tem que mudar em outro lugar tambem):
 
-. Future:
-  Confusao com os "clones", acho que no centralisado os percepts nao
-  estao sendo clonados profundamente. Talvez nao tenha problema. Em
-  varios lugares talvez nao precisariam clones tao profundos...
-
-. LONG future: consistencia de crencas
-
 . Also in the future: use a profiling tool the detect critical performance
   points in the system.
 
-. Future too: Check permissions (public/private) of every member and
-  every method of all classes!!!
+. colocar no stdlib funcoes para uso de YP
 
-. colocar no stdlib funcoes para uso de YP e webservices(?)
+. Another controller demo for:
+  Outras sugestoes foram um synchronous mode based on action, not on reasoning cycle... (quer dizer, so quando todos decidiram uma acao vai em frente um passo de simulacao: tipica simulacao reativa mas...)
 
-Another controller demo for:
-Outras sugestoes foram um synchronous mode based on action, not on reasoning
-cycle... (quer dizer, so quando todos decidiram uma acao vai em frente um
-passo de simulacao: tipica simulacao reativa mas...)
+
+-------------------------   
+
+Discussed in September/05 meeting
+. meta-plans (postponed)
+. Check permissions (public/private) for BB/Plans (postponed)
+  - complex goals (e.g., +!(p(X) /\ q(X)))
+    complex consult (e.g. ?(p(X) \/ q(X))
+    msgs with complex formulae rather than atoms (p(X) /\ q(X))
+    or think about interesting uses of plan for +?g
+    (postponed)
+
+  - empty triggering event or +!true (for maintenance goals ?)
+    is it really necessary? probably just syntatic sugar,
+    but extra part in the reasoning cycle or in place of event?
+    (postponed)
+
+
+. parallel architecture (no)
+. declarative goals / persistent-goals etc. (Ok as goal patterns)
+. backtraking for plan failure (just double check the existing mechanism) (FAQ)
+. OR as well as AND in context etc. (ok)
+
+. selection functions library (TODO)
+. more internal actions to manipulate annots (create .removeAnnot)
+. BB as an interface with different implementations (current, in DB, in prolog, ....) (TODO)
+
+   . applicable plans: consider possible different unifications (the same plan will have one or more Options) and add a new configuration option: add all instantiations in the set of appl. plans instead or just one. (TODO)
+
+  - inference in context (using the same inference available with ?).
+    (TODO with clauses)
 
