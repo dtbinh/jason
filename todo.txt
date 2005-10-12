@@ -19,6 +19,8 @@ Projects (!)
 . New infrastructures (e.g. JADE) -- use a factory pattern 
   to simplify new infrastructure for Jason.
 . Jason for large scale
+. AS to Java for to run in the Lego JVM
+
 
 -------------------------   
 MAS2J TODO
