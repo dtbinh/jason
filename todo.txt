@@ -5,12 +5,9 @@ Things for v 0.8
       . fold/unfold mind's itens (more/less details)
       . act on agent's mind (remove bel, intention, generate event,...)
       . control at semantic action level
-   . user agArch should be used independently of the infrastructure
    . BB customisation - DB for literal
    . BB with clauses
    . compilation directives (include)
-   . TE as <VAR>
-   . all Semantics TODOs
 
 -----------------------------------
 Projects (!)
@@ -25,7 +22,6 @@ Projects (!)
 -------------------------   
 MAS2J TODO
 
-. user parameters for its customised classes (env, ag, arch, bb, ...)
 . BB customisation 
    agent ag1 BeliefBaseClass userBBclass
   examples of using DB BB
@@ -60,7 +56,7 @@ AS TODO
 . TE as <var>
   e.g.
     +!X[source(S)] : not friend(S) <- .send(S, tell, no).
-
+  (see the PlanLibrary problem -- relevant plans)
 
 -----------------------------------
 Semantics TODO
