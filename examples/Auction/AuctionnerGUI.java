@@ -5,7 +5,7 @@ import jason.asSemantics.ActionExec;
 import javax.swing.*;
 
 /** example of agent architecture's functions overriding */
-public class AuctionnerGUI extends CentralisedAgArch {
+public class AuctionnerGUI extends AgArch {
 
    JTextArea jt;
    JFrame f;

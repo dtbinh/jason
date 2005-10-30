@@ -2,6 +2,6 @@
 // can create another (see ag1.asl source)
 
 MAS createAgDemo {
-   infrastructure : Saci
+   infrastructure : Centralised
    agents: ag1;
 }
