@@ -58,6 +58,9 @@ AS TODO
     +!X[source(S)] : not friend(S) <- .send(S, tell, no).
   (see the PlanLibrary problem -- relevant plans)
 
+. Context as <var>
+  e.g ....: X[source(a)] <- .....
+
 -----------------------------------
 Semantics TODO
 
