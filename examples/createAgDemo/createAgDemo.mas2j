@@ -1,7 +1,6 @@
-// this example shows how an agente
+// this example shows how an agent
 // can create another (see ag1.asl source)
 
 MAS createAgDemo {
-   infrastructure : Centralised
    agents: ag1;
 }

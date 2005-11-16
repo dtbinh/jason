@@ -1,11 +1,8 @@
 MAS mars {
 
-    infrastructure: Saci
+    infrastructure: Centralised
 
-    environment: 
-        marsEnv
+    environment: marsEnv
     
-    agents:
-        r1;
-        r2;
+    agents: r1; r2;
 }

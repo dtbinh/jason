@@ -30,7 +30,7 @@ public class AuctionnerGUI extends AgArch {
    }
 
    public void stopAg() {
-	f.setVisible(false);
+	f.dispose();
 	super.stopAg();
    }
 }

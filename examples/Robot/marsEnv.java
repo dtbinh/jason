@@ -97,7 +97,7 @@ public class marsEnv extends Environment {
 	
 	public void stop() {
 		super.stop();
-		gui.setVisible(false);
+		gui.dispose();
 	}
 
 	public boolean executeAction(String ag, Term action) {
