@@ -1,7 +1,5 @@
 MAS testOW {
 
-    architecture: Saci
-
     environment: 
         testOWEnv
     

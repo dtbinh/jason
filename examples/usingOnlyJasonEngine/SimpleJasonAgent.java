@@ -43,8 +43,8 @@ public class SimpleJasonAgent implements AgArchInterface {
 		try {
 			Agent ag = new Agent();
 			// Create args for the agent
-			// args[1] = AgentSpeak source
-			String[] args = { null, "demo.asl" };
+			// args[2] = AgentSpeak source
+			String[] args = { null, null, "demo.asl" };
 			fTS = ag.initAg(args, this);
 		} catch (Exception e) {
 			logger.error("Init error", e);
