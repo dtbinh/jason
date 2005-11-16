@@ -12,7 +12,7 @@
 
 	<property name="dist.properties" value="${basedir}/bin/dist.properties"/>
     <property name="version" value="0"/>
-    <property name="release" value="7.1"/>
+    <property name="release" value="8alpha"/>
     <property name="distDir" value="/tmp/Jason-${version}.${release}"/>
     <property name="distFile" value="${env.HOME}/Jason-${version}.${release}"/>
 
@@ -69,7 +69,15 @@
     
     
     <target name="jar" depends="compile">
-        <jar jarfile="${jasonJar}" basedir="${basedir}/build/classes" manifest="${jasonJarManifest}">
+        <propertyfile file="${dist.properties}">
+            <entry key="version" value="${version}"/>
+            <entry key="release" value="${release}"/>
+            <entry default="0" key="build" operation="+" type="int"/>
+            <entry key="build.date" type="date" value="now"/>
+        </propertyfile>
+        <property file="${dist.properties}"/>
+
+    	<jar jarfile="${jasonJar}" basedir="${basedir}/build/classes" manifest="${jasonJarManifest}">
             <include name="jason/**/*.class"/>
             <include name="jIDE/**/*.class"/>
             <include name="test/**/*.class"/>
@@ -114,14 +122,6 @@
 
     <target name="dist" description="Build distribution." >
     	<!--depends="clean,cleanExamples,parsers,apidoc"  -->
-
-          <propertyfile file="${dist.properties}">
-              <entry key="version" value="${version}"/>
-              <entry key="release" value="${release}"/>
-              <entry default="0" key="build" operation="+" type="int"/>
-              <entry key="build.date" type="date" value="now"/>
-          </propertyfile>
-          <property file="${dist.properties}"/>
 	    
     	  <antcall target="jar" />
     	
