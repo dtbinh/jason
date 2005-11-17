@@ -1,3 +1,8 @@
+// this agent bids 3,
+// if it looses 3 auctions, it proposes an alliance to
+// ag2 and therefore it bids 7 (3 from itself + 4 from ag2)
+
+
 defaultBidValue(3).
 ally(ag2).
 threshold(3).

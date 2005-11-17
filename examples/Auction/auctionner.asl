@@ -1,3 +1,5 @@
+// this agent starts the auction and identify the winner
+
 auction(1).
 
 +auction(N) : true 

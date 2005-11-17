@@ -1,3 +1,6 @@
+// This agent usually bids 4, 
+// when it has an alliance with ag3, it bids 0
+
 defaultBidValue(4).
 ally(ag3).
 
