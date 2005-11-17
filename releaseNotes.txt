@@ -6,8 +6,9 @@ Changes in .mas2j file
    . The user can inform its own parameters in the agent declaration, e.g.:
      .... agents: ag1 [verbose=2,file="a.xml",value=45];
      These extra parameters are stored in the Settings class and can be
-     consulted in the programmer classes by, for example, 
-       TransitionSystem.getSettings().getUserParameter("file");
+     consulted in the programmer classes by getUserParameter method, 
+     for example, 
+       ts.getSettings().getUserParameter("file");
 
 Changes in the agent architecture customisation
    . In this version, the user extends AgArch class instead of Centralised
