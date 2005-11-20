@@ -82,7 +82,11 @@ public class SimpleJasonAgent implements AgArchInterface {
         }
     }
     
-    public boolean isRunning() {
+    public boolean canSleep() {
+		return true;
+	}
+
+	public boolean isRunning() {
     	return true;
     }
 	
