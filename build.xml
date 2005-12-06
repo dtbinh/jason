@@ -16,12 +16,15 @@
     <property name="distDir" value="/tmp/Jason-${version}.${release}"/>
     <property name="distFile" value="${env.HOME}/Jason-${version}.${release}"/>
 
+	<property name="jedit.install.dir"  value="${env.HOME}/bin/jEdit 4.2"/>
+    <property name="plugin.jar.name"  value="jason-jedit-plugin.jar"/>
 
     <path id="allPath">
         <pathelement location="${jasonJar}"/>
         <pathelement location="${saciJar}"/>
         <pathelement location="${basedir}/lib/junit.jar"/>
         <pathelement location="${basedir}/lib/log4j.jar"/>
+    	<pathelement location="${jedit.install.dir}/jedit.jar"/>
     </path>
 
     <target name="init">
@@ -66,8 +69,7 @@
         </javac>
     </target>
 
-    
-    
+        
     <target name="jar" depends="compile">
         <propertyfile file="${dist.properties}">
             <entry key="version" value="${version}"/>
@@ -93,7 +95,23 @@
         </jar>
     	<signjar jar="${jasonJar}" alias="jomi" storepass="fred3271" keystore="${basedir}/src/jomiKeystore" />
     </target>
-
+  
+	<target name="plugin" depends="compile">
+	    <jar jarfile="${jedit.install.dir}/jars/${plugin.jar.name}">
+		      <fileset dir="${basedir}/src/jason/jeditplugin">
+			        <include name="**/*.props"/>
+		    	    <include name="**/*.html"/>
+		        	<include name="actions.xml"/>
+			        <include name="dockables.xml"/>
+		      </fileset>
+		      <fileset dir="${basedir}/build/classes">
+			        <include name="jason/jeditplugin/**/*.class"/>
+		      </fileset>
+		      <fileset dir="${basedir}/build/classes">
+			        <include name="JasonIDPlugin.class"/>
+		      </fileset>
+	    </jar>
+	  </target>
     <target name="run" depends="jar" >
         <java dir="bin" classname="jIDE.JasonID" fork="yes">
             <classpath refid="allPath"/>
