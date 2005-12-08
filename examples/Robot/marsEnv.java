@@ -101,6 +101,7 @@ public class marsEnv extends Environment {
 	}
 
 	public boolean executeAction(String ag, Term action) {
+		logger.debug("Agent "+ag+" doing "+action+" in the environment");
 		if (action.equals(ns)) {
 			cr1[X]++;
 			if (cr1[X] == GSize) {
