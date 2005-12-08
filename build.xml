@@ -25,6 +25,7 @@
         <pathelement location="${basedir}/lib/junit.jar"/>
         <pathelement location="${basedir}/lib/log4j.jar"/>
     	<pathelement location="${jedit.install.dir}/jedit.jar"/>
+    	<pathelement location="${env.HOME}/.jedit/jars/ErrorList.jar"/>
     </path>
 
     <target name="init">
@@ -34,11 +35,11 @@
 
     <target name="parsers" depends="init" >
         <delete failonerror="no" >
-            <fileset dir="${basedir}/src/jIDE/parser" includes="*.java" />
+            <fileset dir="${basedir}/src/jason/mas2j/parser" includes="*.java" />
             <fileset dir="${basedir}/src/jason/asSyntax/parser" includes="*.java" />
         </delete>
 
-        <java dir="${basedir}/src/jIDE/parser" classname="javacc" fork="yes">
+        <java dir="${basedir}/src/jason/mas2j/parser" classname="javacc" fork="yes">
             <classpath location="${basedir}/lib/javacc.jar"/>
             <arg line="MAS2JavaParser.jcc" />
         </java>
@@ -48,11 +49,11 @@
             <arg line="AS2JavaParser.jcc" />
         </java>
 
-        <java dir="${basedir}/src/jIDE/parser" classname="jjdoc" fork="yes">
+        <java dir="${basedir}/src/jason/mas2j/parser" classname="jjdoc" fork="yes">
             <classpath location="${basedir}/lib/javacc.jar"/>
             <arg line="MAS2JavaParser.jcc" />
         </java>
-    	<move file="${basedir}/src/jIDE/parser/MAS2JavaParser.html" todir="${basedir}/doc" />
+    	<move file="${basedir}/src/jason/mas2j/parser/MAS2JavaParser.html" todir="${basedir}/doc" />
 
         <java dir="${basedir}/src/jason/asSyntax/parser" classname="jjdoc" fork="yes">
             <classpath location="${basedir}/lib/javacc.jar"/>
@@ -79,19 +80,21 @@
         </propertyfile>
         <property file="${dist.properties}"/>
 
-    	<jar jarfile="${jasonJar}" basedir="${basedir}/build/classes" manifest="${jasonJarManifest}">
-            <include name="jason/**/*.class"/>
-            <include name="jIDE/**/*.class"/>
-            <include name="test/**/*.class"/>
-        </jar>
-        <jar jarfile="${jasonJar}" basedir="${basedir}/src" update="true">
-            <include name="images/**/*"/>
-            <include name="asl/**/*"/>
-            <include name="xml/**/*"/>
-            <include name="log4j.configuration"/>
-        </jar>
-        <jar jarfile="${jasonJar}" basedir="${basedir}/bin" update="true">
-            <include name="dist.properties"/>
+    	<jar jarfile="${jasonJar}" manifest="${jasonJarManifest}">
+		      <fileset dir="${basedir}/build/classes">
+		            <include name="jason/**/*.class"/>
+		            <include name="jIDE/**/*.class"/>
+	    	        <include name="test/**/*.class"/>
+		      </fileset>
+		      <fileset dir="${basedir}/src">
+		            <include name="images/**/*"/>
+		            <include name="asl/**/*"/>
+	    	        <include name="xml/**/*"/>
+	        	    <include name="log4j.configuration"/>
+		      </fileset>
+		      <fileset dir="${basedir}/bin">
+		            <include name="dist.properties"/>
+		      </fileset>
         </jar>
     	<signjar jar="${jasonJar}" alias="jomi" storepass="fred3271" keystore="${basedir}/src/jomiKeystore" />
     </target>
@@ -105,10 +108,10 @@
 			        <include name="dockables.xml"/>
 		      </fileset>
 		      <fileset dir="${basedir}/build/classes">
-			        <include name="jason/jeditplugin/**/*.class"/>
+	      	    	<include name="**/*.class"/>
 		      </fileset>
-		      <fileset dir="${basedir}/build/classes">
-			        <include name="JasonIDPlugin.class"/>
+		      <fileset dir="${basedir}/src">
+	      	    	<include name="images/**/*"/>
 		      </fileset>
 	    </jar>
 	  </target>
