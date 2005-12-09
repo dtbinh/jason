@@ -16,7 +16,7 @@
     <property name="distDir" value="/tmp/Jason-${version}.${release}"/>
     <property name="distFile" value="${env.HOME}/Jason-${version}.${release}"/>
 
-	<property name="jedit.install.dir"  value="${env.HOME}/bin/jEdit 4.2"/>
+	<property name="jedit.install.dir"  value="${basedir}/lib/jedit"/>
     <property name="plugin.jar.name"  value="jason-jedit-plugin.jar"/>
 
     <path id="allPath">
@@ -25,7 +25,7 @@
         <pathelement location="${basedir}/lib/junit.jar"/>
         <pathelement location="${basedir}/lib/log4j.jar"/>
     	<pathelement location="${jedit.install.dir}/jedit.jar"/>
-    	<pathelement location="${env.HOME}/.jedit/jars/ErrorList.jar"/>
+    	<pathelement location="${jedit.install.dir}/jars/ErrorList.jar"/>
     </path>
 
     <target name="init">
@@ -114,11 +114,18 @@
 	      	    	<include name="images/**/*"/>
 		      </fileset>
 	    </jar>
+	    <copy todir="${jedit.install.dir}/modes">
+		      <fileset dir="${basedir}/src/jason/jeditplugin">
+		        	<include name="agentSpeak.xml"/>
+			        <include name="jasonProject.xml"/>
+			        <include name="catalog"/>
+		      </fileset>
+	    </copy>
 	  </target>
     <target name="run" depends="jar" >
         <java dir="bin" classname="jIDE.JasonID" fork="yes">
             <classpath refid="allPath"/>
-            <arg line="../examples/Auction/auctionCent.mas2j" />
+            <arg line="../examples/Auction/auction.mas2j" />
             <!--arg line="${saciHome} ${javaHome} ../examples/Simple/testCent.mas2j" /-->
         </java>
     </target>
@@ -170,6 +177,9 @@
           </copy>
 	      <copy todir="${distDir}/doc">
     	      <fileset dir="${basedir}/../../agents/Jason-doc" includes="*.*"/>
+          </copy>
+          <copy todir="${distDir}/lib/jedit">
+            <fileset dir="${jedit.install.dir}" includes="**/*"/>
           </copy>
 
           <zip basedir="${distDir}/.." includes="Jason*/**/*" zipfile="${distFile}.zip"/>
