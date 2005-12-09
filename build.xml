@@ -28,9 +28,20 @@
     	<pathelement location="${jedit.install.dir}/jars/ErrorList.jar"/>
     </path>
 
-    <target name="init">
+    <target name="init" depends="untar-jedit">
 		<mkdir dir="${basedir}/build/classes" />
     </target>
+
+	<target name="untar-jedit" unless="jedit-ok">
+        <echo message="Uncompressing jEdit" />
+		<untar compression="gzip" dest="${basedir}/lib" src="${basedir}/lib/jedit.tgz" />
+	</target>
+
+	<condition property="jedit-ok" value="ok" >
+		<and>
+	            <available file="${basedir}/lib/jedit"/>
+		</and>
+	</condition>
 
 
     <target name="parsers" depends="init" >
