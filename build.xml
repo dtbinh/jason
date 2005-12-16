@@ -26,6 +26,7 @@
         <pathelement location="${basedir}/lib/log4j.jar"/>
     	<pathelement location="${jedit.install.dir}/jedit.jar"/>
     	<pathelement location="${jedit.install.dir}/jars/ErrorList.jar"/>
+    	<pathelement location="${jedit.install.dir}/jars/ProjectViewer.jar"/>
     </path>
 
     <target name="init" depends="untar-jedit">

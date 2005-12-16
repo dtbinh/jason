@@ -29,5 +29,5 @@ if [ $OS == Darwin ] ; then
 fi
 
 # run jIDE
-java -classpath "$JASON_HOME/bin/jason.jar":"$JASON_HOME/lib/saci.jar":"$JASON_HOME/lib/log4j.jar":"$JASON_HOME/lib/jedit/jedit.jar"  $DPAR org.gjt.sp.jedit.jEdit $1
+java -classpath "$JASON_HOME/bin/jason.jar":"$JASON_HOME/lib/saci.jar":"$JASON_HOME/lib/log4j.jar":"$JASON_HOME/lib/jedit/jedit.jar"  $DPAR org.gjt.sp.jedit.jEdit $1 2> .err
 #-settings=$JASON_HOME/bin/.jedit 
