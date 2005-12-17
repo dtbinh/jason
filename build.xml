@@ -35,12 +35,14 @@
 
 	<target name="untar-jedit" unless="jedit-ok">
         <echo message="Uncompressing jEdit" />
+		<delete dir="${basedir}/lib/jedit" />
 		<untar compression="gzip" dest="${basedir}/lib" src="${basedir}/lib/jedit.tgz" />
 	</target>
 
 	<condition property="jedit-ok" value="ok" >
 		<and>
-	            <available file="${basedir}/lib/jedit"/>
+	    	<uptodate property="jedit-ok" targetfile="${basedir}/lib/jedit" srcfile="${basedir}/lib/jedit.tgz" />
+            <!--available file="${basedir}/lib/jedit"/-->
 		</and>
 	</condition>
 
@@ -241,7 +243,7 @@
             <fileset dir="${basedir}" includes="bin/*.old"/>
             <fileset dir="${basedir}/lib/saci/bin" includes="work"/>
         </delete>
-    	<deltree dir="${basedir}/build"/>
+    	<delete dir="${basedir}/build"/>
     </target>
 
 </project>
