@@ -10,13 +10,13 @@
     <property name="jasonJar" value="${basedir}/bin/jason.jar"/>
     <property name="jasonJarManifest" value="${basedir}/src/jasonManifest"/>
 
-	<property name="dist.properties" value="${basedir}/bin/dist.properties"/>
+    <property name="dist.properties" value="${basedir}/bin/dist.properties"/>
     <property name="version" value="0"/>
     <property name="release" value="8alpha"/>
     <property name="distDir" value="${env.HOME}/tmp/Jason-${version}.${release}"/>
     <property name="distFile" value="${env.HOME}/Jason-${version}.${release}"/>
 
-	<property name="jedit.install.dir"  value="${basedir}/lib/jedit"/>
+    <property name="jedit.install.dir"  value="${basedir}/lib/jedit"/>
     <property name="plugin.jar.name"  value="jason-jedit-plugin.jar"/>
 
     <path id="allPath">
@@ -34,18 +34,18 @@
 		<mkdir dir="${basedir}/build/classes" />
     </target>
 
-	<target name="untar-jedit" unless="jedit-ok">
+    <target name="untar-jedit" unless="jedit-ok">
         <echo message="Uncompressing jEdit" />
 		<delete dir="${basedir}/lib/jedit" />
 		<untar compression="gzip" dest="${basedir}/lib" src="${basedir}/lib/jedit.tgz" />
-	</target>
+    </target>
 
-	<condition property="jedit-ok" value="ok" >
+    <condition property="jedit-ok" value="ok" >
 		<and>
 	    	<uptodate property="jedit-ok" targetfile="${basedir}/lib/jedit" srcfile="${basedir}/lib/jedit.tgz" />
             <!--available file="${basedir}/lib/jedit"/-->
 		</and>
-	</condition>
+    </condition>
 
 
     <target name="parsers" depends="init" >
@@ -145,7 +145,9 @@
 		      </fileset>
 	    </copy>
 	  </target>
-    <target name="run" depends="jar" >
+    
+	  
+    <target name="run" depends="jar,plugin" >
         <java dir="bin" classname="org.gjt.sp.jedit.jEdit" fork="yes">
             <classpath refid="allPath"/>
             <arg line="../examples/Auction/auction.mas2j" />
