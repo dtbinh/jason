@@ -123,10 +123,10 @@
 			        <include name="dockables.xml"/>
 		      </fileset>
 		      <fileset dir="${basedir}/build/classes">
-		           	<!--include name="jason/mas2j/**/*.class"/>
-	            	<include name="jason/runtime/**/*.class"/-->
+		           	<include name="jason/mas2j/**/*.class"/>
+	            	<include name="jason/runtime/**/*.class"/>
           		  	<include name="jason/jeditplugin/**/*.class"/>
-		           	<!--include name="jIDE/**/*.class"/-->
+		           	<include name="jIDE/**/*.class"/>
 		      </fileset>
 		      <fileset dir="${basedir}/src">
 	      	    	<include name="images/**/*"/>
