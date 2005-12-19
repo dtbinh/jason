@@ -1,14 +1,3 @@
-Things for v 0.8
-
-   . .moveTo
-   . debug:
-      . fold/unfold mind's itens (more/less details)
-      . act on agent's mind (remove bel, intention, generate event,...)
-      . control at semantic action level
-   . BB customisation - DB for literal
-   . BB with clauses
-   . compilation directives (include)
-
 -----------------------------------
 Projects (!)
 . PDT plug-in to generate AS code from MAS spec.
@@ -17,6 +6,15 @@ Projects (!)
   to simplify new infrastructure for Jason.
 . Jason for large scale
 . AS to Java for to run in the Lego JVM
+
+-------------------------   
+jIDE 
+
+   . debug:
+      . fold/unfold mind's itens (more/less details)
+      . act on agent's mind (remove bel, intention, generate event,...)
+      . control at semantic action level
+
 
 
 -------------------------   
@@ -116,33 +114,7 @@ Documentation TODO
 . to FAQ: why Jason does not have plans backtracking
   (actions can not undo)
 
-
-
--------------------------   
-Jason IDE TODO
-
-? include the env. class in editors
-
------
-Tools->new agent
-allows the user to start a new Jason/AgentSpeak agent that will enter in a running society of agents. OR define a new agent for the project.
-
-GUI Fields (get from current execution?):
-[if arc is saci:
-  Facilitator host:
-  MAS name:
-]
-Agent name:
-AS file:
-
-[Advanced options:
-Agent architecture, class, options, ....
-]
-
-Two buttons: "Add in project" "Start it in current MAS" [se existir uma]
-
-It will be an option in the jIDE (that will fill some fields).
-----
+. Getting start 
 
 
 -----------------------------------
@@ -152,6 +124,10 @@ Tests TODO
 . X(a) = p(a) must not work!
 . X[a(B)] = p(a)[a(xx)] must work.
 
+-----------------------------------
+Internal actions
+   . .moveTo
+   . removeAnnot
   
 -----------------------------------
 Questions?

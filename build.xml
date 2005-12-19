@@ -111,10 +111,10 @@
 		            <include name="dist.properties"/>
 		      </fileset>
         </jar>
-    	<signjar jar="${jasonJar}" alias="jomi" storepass="fred3271" keystore="${basedir}/src/jomiKeystore" />
+    	<!--signjar jar="${jasonJar}" alias="jomi" storepass="fred3271" keystore="${basedir}/src/jomiKeystore" /-->
     </target>
   
-	<target name="plugin" depends="compile">
+	<target name="plugin" depends="compile, jar">
 	    <jar jarfile="${jedit.install.dir}/jars/${plugin.jar.name}">
 		      <fileset dir="${basedir}/src/jeditPlugin">
 			        <include name="Jason.props"/>
@@ -123,10 +123,10 @@
 			        <include name="dockables.xml"/>
 		      </fileset>
 		      <fileset dir="${basedir}/build/classes">
-		           	<include name="jason/mas2j/**/*.class"/>
-	            	<include name="jason/runtime/**/*.class"/>
+		           	<!--include name="jason/mas2j/**/*.class"/>
+	            	<include name="jason/runtime/**/*.class"/-->
           		  	<include name="jason/jeditplugin/**/*.class"/>
-		           	<include name="jIDE/**/*.class"/>
+		           	<!--include name="jIDE/**/*.class"/-->
 		      </fileset>
 		      <fileset dir="${basedir}/src">
 	      	    	<include name="images/**/*"/>
