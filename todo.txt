@@ -16,7 +16,6 @@ jIDE
       . control at semantic action level
 
 
-
 -------------------------   
 MAS2J TODO
 
@@ -34,30 +33,22 @@ AS TODO
 
 . create <le> (logical expression) with & and | used in context
   the |= evaluate the expression
-  the ? operator tries |=, if fail generate the event +? 
+  the ? operator tries |=, if fails, generate the event +? 
     (as occurs currently)
 
-. create <clause> ::= <literal> [ <- <le> ]. 
+. create <rule> ::= <literal> [ :- <le> ]. 
   the logical consequence will do inference
   used to built the BB
     e.g. 
-       a. b. c <- a & b.
+       a. b. 
+       c :- a & b.
 
-  TE can be +<clause> 
-  Operator +<clause>
-  Question: do not use <- since clauses are used inside plans!
+  TE can be +<rule> 
+  Operator +<rule>
 
 . compilation directives (? is it the right name)
   e.g. 
    { include("bla.asl"); goalPattern(a) }
-
-. TE as <var>
-  e.g.
-    +!X[source(S)] : not friend(S) <- .send(S, tell, no).
-  (see the PlanLibrary problem -- relevant plans)
-
-. Context as <var>
-  e.g ....: X[source(a)] <- .....
 
 -----------------------------------
 Semantics TODO
@@ -113,21 +104,23 @@ Documentation TODO
 
 . to FAQ: why Jason does not have plans backtracking
   (actions can not undo)
-
+. to FAQ: how to remove an annotation
+	To remove annotation "a" form p[a,b,c] use unification like
+		X[a] = p[a,b,c]
+	X will be p[b,c]
+	
 . Getting start 
 
 
 -----------------------------------
 Tests TODO
 
-. test .untell, unachieve
-. X(a) = p(a) must not work!
-. X[a(B)] = p(a)[a(xx)] must work.
+. test unachieve
+
 
 -----------------------------------
 Internal actions
    . .moveTo
-   . removeAnnot
   
 -----------------------------------
 Questions?

@@ -30,25 +30,39 @@
     	<pathelement location="${jedit.install.dir}/jars/SideKick.jar"/>
     </path>
 
-    <target name="init" depends="untar-jedit">
-		<mkdir dir="${basedir}/build/classes" />
-    </target>
+    <condition property="jedit-ok" value="ok" >
+		<and>
+	    	<uptodate property="jedit-ok" 
+	    		targetfile="${basedir}/lib/jedit" 
+	    		srcfile="${basedir}/lib/jedit.tgz" />
+            <!--available file="${basedir}/lib/jedit"/-->
+		</and>
+    </condition>
 
-    <target name="untar-jedit" unless="jedit-ok">
+	<target name="untar-jedit" unless="jedit-ok">
         <echo message="Uncompressing jEdit" />
 		<delete dir="${basedir}/lib/jedit" />
 		<untar compression="gzip" dest="${basedir}/lib" src="${basedir}/lib/jedit.tgz" />
     </target>
 
-    <condition property="jedit-ok" value="ok" >
+
+	<target name="init" depends="untar-jedit">
+		<mkdir dir="${basedir}/build/classes" />
+    </target>
+
+
+    <condition property="parsers-ok" value="ok" >
 		<and>
-	    	<uptodate property="jedit-ok" targetfile="${basedir}/lib/jedit" srcfile="${basedir}/lib/jedit.tgz" />
-            <!--available file="${basedir}/lib/jedit"/-->
+	    	<uptodate property="parsers-ok"
+	    		targetfile="${basedir}/src/jason/mas2j/parser/mas2j.java" 
+	    		srcfile="${basedir}/src/jason/mas2j/parser/MAS2JavaParser.jcc" />
+	    	<uptodate property="parsers-ok"
+	    		targetfile="${basedir}/src/jason/asSyntax/parser/as2j.java" 
+	    		srcfile="${basedir}/src/jason/asSyntax/parser/AS2JavaParser.jcc" />
 		</and>
     </condition>
 
-
-    <target name="parsers" depends="init" >
+    <target name="parsers" depends="init" unless="parsers-ok">
         <delete failonerror="no" >
             <fileset dir="${basedir}/src/jason/mas2j/parser" includes="*.java" />
             <fileset dir="${basedir}/src/jason/asSyntax/parser" includes="*.java" />
@@ -79,7 +93,7 @@
     </target>
 
 
-    <target name="compile" depends="init" >
+    <target name="compile" depends="init,parsers" >
         <javac srcdir="src" destdir="${basedir}/build/classes" debug="true" deprecation="true" optimize="true" source="1.4" target="1.4">
             <classpath refid="allPath"/>
         </javac>

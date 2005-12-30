@@ -13,6 +13,22 @@ Changes in .mas2j file
      for example, 
        ts.getSettings().getUserParameter("file");
 
+Changes in ASL syntax
+   . the unnamed variable ("_") is added
+   . annotations are an AS list, so it is possible constructions like
+	     p(t)[a,b,c] = p(t)[b|R]     (R is [a,c])
+   . variables can have annotations, e.g.
+         X[a,b,c] = p[a,b,c,d] (unifies and X is p[d], it could be used to delete an annot)
+         p[a,b] = X[a,b,c]     (unifies and X is p[a,b])
+         X[a,b] = p[a]         (do not unify)
+         p[a,b] = X[a]         (do not unify)
+     e.g in a plan
+         +te : X[source(ag1)] <- do(X).
+   . plans' trigger event can be a variable
+     e.g.
+    	+!X[source(S)] : not friend(S) <- .send(S, tell, no).
+   	     
+   	     
 Changes in the agent architecture customisation
    . In this version, the user extends AgArch class instead of Centralised
      or Saci architectures. Thus, the same architecture
