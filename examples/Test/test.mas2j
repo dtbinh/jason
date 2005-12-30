@@ -12,7 +12,7 @@ MAS testCent {
         // testEnv is the class that implements the environment, 
         // it is in the myPkg java package
 
-    //executionControl: jason.control.ExecutionControl
+	//executionControl: jason.control.ExecutionControl
 	// this execution control run all agents in synchronised mode
     
     agents:

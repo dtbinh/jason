@@ -31,7 +31,7 @@ checking(slots).
    <- pick(garb);
       !ensure_pick(S).
 
-+!ensure_pick(S) : true <- true.
++!ensure_pick(_) : true <- true.
 
 +!continue(check) : true
    <- !go(back);
