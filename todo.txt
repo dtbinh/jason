@@ -104,10 +104,6 @@ Documentation TODO
 
 . to FAQ: why Jason does not have plans backtracking
   (actions can not undo)
-. to FAQ: how to remove an annotation
-	To remove annotation "a" form p[a,b,c] use unification like
-		X[a] = p[a,b,c]
-	X will be p[b,c]
 	
 . Getting start 
 

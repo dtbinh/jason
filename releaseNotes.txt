@@ -18,16 +18,20 @@ Changes in ASL syntax
    . annotations are an AS list, so it is possible constructions like
 	     p(t)[a,b,c] = p(t)[b|R]     (R is [a,c])
    . variables can have annotations, e.g.
-         X[a,b,c] = p[a,b,c,d] (unifies and X is p[d], it could be used to delete an annot)
-         p[a,b] = X[a,b,c]     (unifies and X is p[a,b])
+         X[a,b,c] = p[a,b,c,d] (unifies and X is p)
+         p[a,b] = X[a,b,c]     (unifies and X is p)
          X[a,b] = p[a]         (do not unify)
          p[a,b] = X[a]         (do not unify)
      e.g in a plan
          +te : X[source(ag1)] <- do(X).
-   . plans' trigger event can be a variable
-     e.g.
+   . plans' trigger event can be a variable, e.g.
     	+!X[source(S)] : not friend(S) <- .send(S, tell, no).
-   	     
+   . new operator =.. used to (de)construct literals, syntax:
+       <literal> =.. <list>
+     where <list> is [<functor>, <list of annots>, <term0>, <term1> ....] 
+     e.g.
+       p(t1,t2)[a1,a2] =.. L    (L is [p,[a1,a2],t1,t2])
+       X =.. [p,[a1,a2],t1,t2]  (P is p(t1,t2)[a1,a2])
    	     
 Changes in the agent architecture customisation
    . In this version, the user extends AgArch class instead of Centralised
