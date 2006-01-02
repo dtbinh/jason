@@ -28,10 +28,10 @@ Changes in ASL syntax
     	+!X[source(S)] : not friend(S) <- .send(S, tell, no).
    . new operator =.. used to (de)construct literals, syntax:
        <literal> =.. <list>
-     where <list> is [<functor>, <list of annots>, <term0>, <term1> ....] 
+     where <list> is [<functor>, <term0>, <term1>, ...., <list of annots>] 
      e.g.
-       p(t1,t2)[a1,a2] =.. L    (L is [p,[a1,a2],t1,t2])
-       X =.. [p,[a1,a2],t1,t2]  (P is p(t1,t2)[a1,a2])
+       p(t1,t2)[a1,a2] =.. L    (L is [p,t1,t2,[a1,a2]])
+       X =.. [p,t1,t2,[a1,a2]]  (P is p(t1,t2)[a1,a2])
    	     
 Changes in the agent architecture customisation
    . In this version, the user extends AgArch class instead of Centralised
