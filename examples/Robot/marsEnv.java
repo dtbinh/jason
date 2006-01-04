@@ -5,12 +5,11 @@ import jason.environment.Environment;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.util.Random;
+import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.border.EtchedBorder;
-
-import org.apache.log4j.Logger;
 
 public class marsEnv extends Environment {
 
@@ -34,7 +33,7 @@ public class marsEnv extends Environment {
 
 	Random random = new Random(System.currentTimeMillis());
 
-	static Logger logger = Logger.getLogger(marsEnv.class);
+	static Logger logger = Logger.getLogger(marsEnv.class.getName());
 
 	// garbage places
 	boolean[][] mars = new boolean[GSize][GSize];
@@ -101,7 +100,7 @@ public class marsEnv extends Environment {
 	}
 
 	public boolean executeAction(String ag, Term action) {
-		logger.debug("Agent "+ag+" doing "+action+" in the environment");
+		logger.fine("Agent "+ag+" doing "+action+" in the environment");
 		if (action.equals(ns)) {
 			cr1[X]++;
 			if (cr1[X] == GSize) {

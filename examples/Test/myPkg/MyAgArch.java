@@ -1,11 +1,9 @@
 package myPkg;
 
-import jason.architecture.*;
+import jason.architecture.AgArch;
 
 import java.util.List;
-
-import org.apache.log4j.Logger;
-
+import java.util.logging.Logger;
 
 /** example of agent architecture's functions overriding */
 public class MyAgArch extends AgArch {

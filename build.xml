@@ -23,7 +23,6 @@
         <pathelement location="${jasonJar}"/>
         <pathelement location="${saciJar}"/>
         <pathelement location="${basedir}/lib/junit.jar"/>
-        <pathelement location="${basedir}/lib/log4j.jar"/>
     	<pathelement location="${jedit.install.dir}/jedit.jar"/>
     	<pathelement location="${jedit.install.dir}/jars/ErrorList.jar"/>
     	<pathelement location="${jedit.install.dir}/jars/ProjectViewer.jar"/>
@@ -119,7 +118,7 @@
 		            <include name="images/**/*"/>
 		            <include name="asl/**/*"/>
 	    	        <include name="xml/**/*"/>
-	        	    <include name="log4j.configuration"/>
+	        	    <include name="logging.properties"/>
 		      </fileset>
 		      <fileset dir="${basedir}/bin">
 		            <include name="dist.properties"/>

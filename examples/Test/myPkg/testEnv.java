@@ -1,8 +1,8 @@
 package myPkg;
 
-import java.util.*;
-import jason.asSyntax.*;
-import jason.environment.*;
+import jason.asSyntax.Literal;
+import jason.asSyntax.Term;
+import jason.environment.Environment;
 
 public class testEnv extends Environment {
     

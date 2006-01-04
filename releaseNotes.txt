@@ -28,16 +28,22 @@ Changes in ASL syntax
     	+!X[source(S)] : not friend(S) <- .send(S, tell, no).
    . new operator =.. used to (de)construct literals, syntax:
        <literal> =.. <list>
-     where <list> is [<functor>, <term0>, <term1>, ...., <list of annots>] 
+     where <list> is [<functor>, <list of terms>, <list of annots>] 
      e.g.
-       p(t1,t2)[a1,a2] =.. L    (L is [p,t1,t2,[a1,a2]])
-       X =.. [p,t1,t2,[a1,a2]]  (P is p(t1,t2)[a1,a2])
+       p(t1,t2)[a1,a2] =.. L      (L is [p,[t1,t2],[a1,a2]])
+       X =.. [p,[t1,t2],[a1,a2]]  (X is p(t1,t2)[a1,a2])
    	     
 Changes in the agent architecture customisation
    . In this version, the user extends AgArch class instead of Centralised
      or Saci architectures. Thus, the same architecture
      customisation can be used in both infrastructures.
 
+Other changes
+   . The Java logging API is used to output the execution. 
+     The default log configuration is in the
+     src/logging.properties file. The user can copy this file to its 
+     project directory to customise the output format.
+ 
 
 -----------
 version 0.7

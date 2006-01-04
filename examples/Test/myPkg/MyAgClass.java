@@ -1,9 +1,10 @@
 package myPkg;
 
-import jason.asSemantics.*;
-import java.util.*;
+import jason.asSemantics.Agent;
+import jason.asSemantics.Event;
 
-import org.apache.log4j.Logger;
+import java.util.List;
+import java.util.logging.Logger;
 
 /** example of agent function overriding */
 public class MyAgClass extends Agent {

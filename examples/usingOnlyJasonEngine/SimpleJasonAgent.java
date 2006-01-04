@@ -5,14 +5,13 @@ import jason.asSemantics.ActionExec;
 import jason.asSemantics.Agent;
 import jason.asSemantics.TransitionSystem;
 import jason.asSyntax.Literal;
+import jason.runtime.RunCentralisedMAS;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
 
 /**
  * Example of an agent that only uses Jason BDI engine.
@@ -23,14 +22,10 @@ import org.apache.log4j.PatternLayout;
  */
 public class SimpleJasonAgent implements AgArchInterface {
 
-    private static Logger logger = Logger.getLogger(SimpleJasonAgent.class);
+    private static Logger logger = Logger.getLogger(SimpleJasonAgent.class.getName());
     
     public static void main(String[] a) {
-    	// Jason classes uses log4j to output messages,
-    	// so we need to configure it.
-       	Logger.getRootLogger().addAppender(new ConsoleAppender(new PatternLayout("[%c{1}] %m%n")));
-       	Logger.getRootLogger().setLevel(Level.INFO);
-
+    	RunCentralisedMAS.setupLogger();
        	SimpleJasonAgent ag = new SimpleJasonAgent();
        	ag.run();
     }
@@ -47,7 +42,7 @@ public class SimpleJasonAgent implements AgArchInterface {
 			String[] args = { null, null, "demo.asl" };
 			fTS = ag.initAg(args, this);
 		} catch (Exception e) {
-			logger.error("Init error", e);
+			logger.log(Level.SEVERE, "Init error", e);
 		}
     }
     
@@ -55,11 +50,11 @@ public class SimpleJasonAgent implements AgArchInterface {
 		try {
 			while (isRunning()) {
 				// calls the Jason engine to perform one reasoning cycle
-				logger.debug("Reasoning....");
+				logger.fine("Reasoning....");
 				fTS.reasoningCycle();
 			}
 		} catch (Exception e) {
-			logger.error("Run error",e);
+			logger.log(Level.SEVERE, "Run error",e);
 		}
 	}
 	
