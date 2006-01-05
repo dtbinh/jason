@@ -50,6 +50,14 @@ AS TODO
   e.g. 
    { include("bla.asl"); goalPattern(a) }
 
+. pensar sobre fazer a opcao de NewFocus ser associada com o + e - 
+  direto, o problem e' que e' mais sintaxe, temos que discutir
+  Proposta:
+  ++a; (o evento ficara com newFocus)
+  !!a;
+  (se for o caso, remover a opcao newfocus do .mas2j)
+ 
+
 -----------------------------------
 Semantics TODO
 
@@ -70,7 +78,7 @@ Rafael:
 
 . applicable plans: consider possible different unifications (the same plan will have one or more Options) and add a new configuration option: add all instantiations in the set of appl. plans instead or just one.
 
-. new BRF function
+. new BRF function (See DALT paper)
 
 -----------------------------------
 Communication
@@ -98,10 +106,6 @@ Documentation TODO
 
 . to manual: examples of communication (ask, tellHow, ...; annots, semantic in KQMLPlans.asl)
 
-. write the internal action .clone that creates a new agent. 
-  The new agent as the same code, beliefs, intentions, .... ? that 
-  the agent which call the .clone.
-
 . to FAQ: why Jason does not have plans backtracking
   (actions can not undo)
 	
@@ -116,7 +120,12 @@ Tests TODO
 
 -----------------------------------
 Internal actions
-   . .moveTo
+
+. moveTo
+. write the internal action .clone that creates a new agent. 
+  The new agent as the same code, beliefs, intentions, .... ? that 
+  the agent which call the .clone.
+
   
 -----------------------------------
 Questions?
@@ -124,14 +133,6 @@ Questions?
 . kqmlPlans/unachieve
    TODO: what about many CCC desires? drop only the one from achieve!
    annot (rename var) [IMPORTANT!!!!]
-
-. pensar sobre fazer a opcao de NewFocus ser associada com o + e - 
-  direto, o problem e' que e' mais sintaxe, temos que discutir
-  [anotacao a nivel de plano???]
-  [internal action to create a sub-goal??? with newFocus]
-  ++a;
-  !!a;
- 
 
 -----------------------------------
 Others TODOs
