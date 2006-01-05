@@ -16,20 +16,26 @@ c(0).
          .print("finish s(Y)").
 
 +!g(Z) : not p(c) & not q(b,b) & r(X)
-      <- .send(agCount, askAll, value(A,vl(A)), ListVl); .print(ListVl);
+      <- .print("begining g, testing performatives ----");
+      
+	 .send(agCount, askAll, value(A,vl(A)), ListVl); 
+	 .print("should be [10,a,test(1)] = ",ListVl);
          
+         .send(agCount, achieve, sayHello);
+
+         .send(agCount, askOne, count(Count), Rc);
+         .print("---- Answer for askOne count(C) is ", Rc);
+
+         .send(agCount, askIf, ok, true); 
+	 .print("Answer for askIf is true");
+
          .getRelevantPlans("+!te1(X)", L); .print("Relevant plans for +te1(X) ",L);
          .send(agCount, tellHow, L);
-
-         ?c(C); N = C+1; -c(C); +c(N);
-         .send(agCount, achieve, te1(N)); 
+         ?c(C); -c(C); +c(C+1);
+         .send(agCount, achieve, te1(C)); 
 
          .send(ag1,achieve,g(b));
-         .send(agCount, achieve, sayHello);
-         //.send(agCount, askIf, ok, true); .print("Answer for askIf is true");
-         .send(agCount, askOne, count(Count), R);
-         .print("---- Answer for askOne is ", R);
-         b(Y).
+         b(b).
 
 // a plan to be send to others
 @alabel1 +!te1(X) : ok & X > 3  <- .print(" ** X > 3 ",ok(X)).

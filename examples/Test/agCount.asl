@@ -1,13 +1,14 @@
 count(0).
 ok.
 
+vl(10).
 vl(a).
 vl(test(1)).
-vl(10).
 
 @p1[atomic]
-+!sayHello : true 
-   <- ?count(X);
-      .print(hello, X);
-      C = X+1;
-      -count(X);+count(C).
++!sayHello[source(S)] : true 
+   <- ?count(X); -count(X);
+      .print("hello for ",S,": ", X);
+      +count(X+1).
+      
+      
