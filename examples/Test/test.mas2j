@@ -21,8 +21,8 @@ MAS test {
         ag0 ./as/ag0.asl [verbose=1] #1;
 
         ag1 ./as/ag1 [verbose=0] // the .asl is the default extension for AgentSpeak files
-           //agentArchClass myPkg.MyAgArch
-           //agentClass myPkg.MyAgClass
+           agentArchClass myPkg.MyAgArch
+           agentClass myPkg.MyAgClass
            at "localhost";
 
         agCount [verbose=1,bla="blas/x1 y/t.txt",x=1,y="a a a"];

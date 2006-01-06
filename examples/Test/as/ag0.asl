@@ -31,11 +31,13 @@ c(0).
 
          .getRelevantPlans("+!te1(X)", L); .print("Relevant plans for +te1(X) ",L);
          .send(agCount, tellHow, L);
-         ?c(C); -c(C); +c(C+1);
+	 
+         -c(C); +c(C+1);
          .send(agCount, achieve, te1(C)); 
 
          .send(ag1,achieve,g(b));
-         b(b).
+	 
+         b(c).
 
 // a plan to be send to others
 @alabel1 +!te1(X) : ok & X > 3  <- .print(" ** X > 3 ",ok(X)).

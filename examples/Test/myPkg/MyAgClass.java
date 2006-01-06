@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 
 /** example of agent function overriding */
 public class MyAgClass extends Agent {
-	Logger logger = Logger.getLogger(MyAgClass.class.getName());
+    Logger logger = Logger.getLogger(MyAgClass.class.getName());
 
     public Event selectEvent(List evList) {
         logger.info("Selecting an event from "+evList);
