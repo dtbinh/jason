@@ -93,7 +93,10 @@
 
 
     <target name="compile" depends="init,parsers" >
-        <javac srcdir="src" destdir="${basedir}/build/classes" debug="true" deprecation="true" optimize="true" source="1.4" target="1.4">
+        <javac srcdir="src" destdir="${basedir}/build/classes" 
+        	debug="true" deprecation="true" optimize="true" 
+        	nowarn="true"
+        	source="1.4" target="1.4">
             <classpath refid="allPath"/>
         </javac>
     </target>
@@ -163,7 +166,7 @@
     <target name="run" depends="jar,plugin" >
         <java dir="bin" classname="org.gjt.sp.jedit.jEdit" fork="yes">
             <classpath refid="allPath"/>
-            <arg line="../examples/Auction/auction.mas2j" />
+            <!--arg line="../examples/Auction/auction.mas2j" /-->
             <!--arg line="${saciHome} ${javaHome} ../examples/Simple/testCent.mas2j" /-->
         </java>
     </target>
