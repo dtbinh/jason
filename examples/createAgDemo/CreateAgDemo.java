@@ -1,6 +1,5 @@
 
 import jason.stdlib.*;
-import org.apache.log4j.*;
 
 /** 
  *   This program creates a new agent for SACI infrastructure.
@@ -9,9 +8,6 @@ import org.apache.log4j.*;
  */
 public class CreateAgDemo {
   public static void main(String[] args) {
-      // setup a logger
-      PropertyConfigurator.configure(createAgent.class.getResource("/log4j.configuration"));
-
       // calls an Internal Action to create the agent
       new createAgent().createSaciAg(
          "anotherAg",     // agent name
