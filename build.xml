@@ -30,12 +30,12 @@
     </path>
 
     <condition property="jedit-ok" value="ok" >
-		<and>
-	    	<uptodate property="jedit-ok" 
+		<or>
+			<not><available file="${basedir}/lib/jedit.tgz" /></not>
+	    	<uptodate 
 	    		targetfile="${basedir}/lib/jedit" 
 	    		srcfile="${basedir}/lib/jedit.tgz" />
-            <!--available file="${basedir}/lib/jedit"/-->
-		</and>
+		</or>
     </condition>
 
 	<target name="untar-jedit" unless="jedit-ok">
