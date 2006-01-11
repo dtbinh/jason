@@ -139,9 +139,7 @@
 			        <include name="dockables.xml"/>
 		      </fileset>
 		      <fileset dir="${basedir}/build/classes">
-		           	<include name="jason/mas2j/**/*.class"/>
-	            	<include name="jason/runtime/**/*.class"/>
-          		  	<include name="jason/jeditplugin/**/*.class"/>
+		           	<include name="jason/**/*.class"/>
 		           	<include name="jIDE/**/*.class"/>
 		      </fileset>
 		      <fileset dir="${basedir}/src">
@@ -221,8 +219,6 @@
           <copy todir="${distDir}/lib/jedit">
             <fileset dir="${jedit.install.dir}" includes="**/*"/>
           </copy>
-
-          <zip basedir="${distDir}/.." includes="Jason*/**/*" zipfile="${distFile}.zip"/>
 
           <tar compression="gzip" destfile="${distFile}.tgz">
             <tarfileset dir="${distDir}/.." mode="755" >
