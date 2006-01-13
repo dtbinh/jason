@@ -14,7 +14,8 @@ ally(ag3).
    <- .send(S, tell, place_bid(N,0)).
 
 @p3 // alliance proposal from another agent
-+alliance[source(A)] : .myName(I) & ally(A)
++alliance[source(A)] 
+   :  .myName(I) & ally(A)
    <- .print("Alliance proposed by ", A);
       ?defaultBidValue(B);
       .send(A,tell,bid(I,B));
