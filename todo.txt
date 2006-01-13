@@ -72,10 +72,6 @@ Rafael:
   the goal-call rather than "filter and compose"
   the unifiers (current version of the semantics)
 
-. fazer consistencia dos labels dos planos (2 planos
-  nao podem ter o mesmo label, e forcar que todos os
-  planos tenham algum label, gerado automaticamente se preciso)
-
 . applicable plans: consider possible different unifications (the same plan will have one or more Options) and add a new configuration option: add all instantiations in the set of appl. plans instead or just one.
 
 . new BRF function (See DALT paper)
