@@ -144,6 +144,7 @@
 		      </fileset>
 		      <fileset dir="${basedir}/src">
 	      	    	<include name="images/**/*"/>
+	         	<include name="logging.properties"/>
 		      </fileset>
 	    </jar>
 	    <copy todir="${jedit.install.dir}/modes">
