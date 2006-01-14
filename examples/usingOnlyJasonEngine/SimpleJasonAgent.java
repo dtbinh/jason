@@ -6,6 +6,7 @@ import jason.asSemantics.Agent;
 import jason.asSemantics.TransitionSystem;
 import jason.asSyntax.Literal;
 import jason.runtime.RunCentralisedMAS;
+import jason.runtime.Settings;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,10 +38,7 @@ public class SimpleJasonAgent implements AgArchInterface {
     	// set up the Jason agent
 		try {
 			Agent ag = new Agent();
-			// Create args for the agent
-			// args[2] = AgentSpeak source
-			String[] args = { null, null, "demo.asl" };
-			fTS = ag.initAg(args, this);
+			fTS = ag.initAg(this, "demo.asl", new Settings());
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Init error", e);
 		}
