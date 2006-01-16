@@ -256,6 +256,7 @@
             <fileset dir="${basedir}/doc/api" includes="**/*"/>
             <fileset dir="${basedir}" includes="**/.nbattrs"/>
             <fileset dir="${basedir}" includes="**/*.backup"/>
+            <fileset dir="${basedir}" includes="**/*.*~"/>
             <fileset dir="${basedir}" includes="bin/*.old"/>
             <fileset dir="${basedir}" includes="**/.err"/>
             <fileset dir="${basedir}/lib/saci/bin" includes="work"/>
