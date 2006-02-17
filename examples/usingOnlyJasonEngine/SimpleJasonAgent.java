@@ -1,6 +1,6 @@
 
 
-import jason.architecture.AgArchInterface;
+import jason.architecture.AgArch;
 import jason.asSemantics.ActionExec;
 import jason.asSemantics.Agent;
 import jason.asSemantics.TransitionSystem;
@@ -19,9 +19,9 @@ import java.util.logging.Logger;
  * It runs without all Jason IDE stuff.
  * (see Jason FAQ for more information about this example)
  * 
- * The class must implement AgArchInterface to be used by the Jason engine.
+ * The class must extend AgArch class to be used by the Jason engine.
  */
-public class SimpleJasonAgent implements AgArchInterface {
+public class SimpleJasonAgent extends AgArch {
 
     private static Logger logger = Logger.getLogger(SimpleJasonAgent.class.getName());
     
