@@ -4,7 +4,11 @@ version 0.8
 
 New features
    . Jason is now a jEdit (www.jedit.org) plugin.
-
+   . Jason was prepared for new infrastructures (Jade, MadKit, ...)
+     To create a new infrastructure, you shoud add an infrastrucure Factory
+     in .jason/user.properties file and implement some classes. 
+     See jason.infra.centralised and jason.infra.saci packages as examples.
+   
 Changes in .mas2j file
    . The user can inform its own parameters in the agent declaration, e.g.:
      .... agents: ag1 [verbose=2,file="a.xml",value=45];
