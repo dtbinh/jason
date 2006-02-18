@@ -5,7 +5,7 @@ import jason.asSemantics.ActionExec;
 import jason.asSemantics.Agent;
 import jason.asSemantics.TransitionSystem;
 import jason.asSyntax.Literal;
-import jason.runtime.RunCentralisedMAS;
+import jason.infra.centralised.RunCentralisedMAS;
 import jason.runtime.Settings;
 
 import java.util.ArrayList;
