@@ -18,3 +18,8 @@ type has been used by the builder, it asks all agents to go after resource
 type 2 (shown as green circles), and then type 3 (shown as blue circles). When
 the construction is finished, the builder informs this to all miners who then
 make their way back to the builder's location.
+
+The code in this Jason application was written by Rob Clarke and Andy Buck
+as 2nd coursework for the Multi-Agent Systems Module run in 2004-2005 at
+the University of Durham, U.K.
+The AgentSpeak code and planetEnv.java were edited by Rafael Bordini.
