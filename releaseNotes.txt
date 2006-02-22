@@ -47,6 +47,8 @@ Other changes
      The default log configuration is in the
      src/logging.properties file. The user can copy this file to its 
      project directory to customise the output format.
+   . The internalAction removePlan use plan's label as argument instead of
+     plan's strings.
  
 
 -----------
