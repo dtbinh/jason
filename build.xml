@@ -12,7 +12,7 @@
 
     <property name="dist.properties" value="${basedir}/bin/dist.properties"/>
     <property name="version" value="0"/>
-    <property name="release" value="8beta"/>
+    <property name="release" value="8"/>
     <property name="distDir" value="${env.HOME}/tmp/Jason-${version}.${release}"/>
     <property name="distFile" value="${env.HOME}/Jason-${version}.${release}"/>
 
@@ -187,8 +187,7 @@
         </javadoc>
     </target>
 
-    <target name="dist" description="Build distribution." >
-    	<!--depends="clean,cleanExamples,parsers,apidoc"  -->
+    <target name="dist" depends="clean,cleanExamples,plugin" description="Build distribution." >
 	
     	  <antcall target="jar" />
     	
