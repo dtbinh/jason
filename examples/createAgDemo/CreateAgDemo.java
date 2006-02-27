@@ -8,7 +8,10 @@ import jason.infra.saci.*;
  */
 public class CreateAgDemo {
   public static void main(String[] args) throws Exception {
-      // calls an Internal Action to create the agent
+      // gets a reference to Saci runtime services and
+      // calls createAg method. "createAgDemo" is the MAS Id 
+      // set in the .mas2j project.
+
       new SaciRuntimeServices("createAgDemo").createAgent(
          "anotherAg",     // agent name
          "ag1.asl",       // AgentSpeak source
