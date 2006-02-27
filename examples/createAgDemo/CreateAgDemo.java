@@ -1,5 +1,5 @@
 
-import jason.stdlib.*;
+import jason.infra.saci.*;
 
 /** 
  *   This program creates a new agent for SACI infrastructure.
@@ -7,12 +7,13 @@ import jason.stdlib.*;
  *   MAS called "createAgDemo" that must be already running.
  */
 public class CreateAgDemo {
-  public static void main(String[] args) {
+  public static void main(String[] args) throws Exception {
       // calls an Internal Action to create the agent
-      new createAgent().createSaciAg(
+      new SaciRuntimeServices("createAgDemo").createAgent(
          "anotherAg",     // agent name
-         "createAgDemo",  // MAS name
          "ag1.asl",       // AgentSpeak source
-         false);          // synchronous execution is false
+	 null,            // default agent class
+	 null,            // default architecture class
+         null);           // default settings
   }
 }

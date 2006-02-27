@@ -2,5 +2,7 @@
 // can create another (see ag1.asl source)
 
 MAS createAgDemo {
-   agents: ag1;
+	infrastructure: Centralised
+  	environment: env
+	agents: ag1;
 }
