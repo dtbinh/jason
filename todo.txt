@@ -79,8 +79,6 @@ Rafael:
 -----------------------------------
 Communication
 
-. send, o "to" pode ser uma lista de destinatarios
-
 . new performative: achievefb
   received(achievefb,Contet) <- !fb(Content).
   +!fb(C) <- !C; send(Sender, tell, ok(C).
