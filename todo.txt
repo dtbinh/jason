@@ -72,7 +72,10 @@ Rafael:
   the goal-call rather than "filter and compose"
   the unifiers (current version of the semantics)
 
-. applicable plans: consider possible different unifications (the same plan will have one or more Options) and add a new configuration option: add all instantiations in the set of appl. plans instead or just one.
+. applicable plans: consider possible different unifications 
+  (the same plan will have one or more Options) and add a new 
+  configuration option: add all instantiations in the set of appl. 
+  plans instead or just one.
 
 . new BRF function (See DALT paper)
 
@@ -99,17 +102,12 @@ Tem que ver isto em mais detalhes...
 Documentation TODO
 
 . to manual: examples of communication (ask, tellHow, ...; annots, semantic in KQMLPlans.asl)
-
-. to FAQ: why Jason does not have plans backtracking
-  (actions can not undo)
 	
 . Getting start 
 
 
 -----------------------------------
 Tests TODO
-
-. test unachieve
 
 
 -----------------------------------
