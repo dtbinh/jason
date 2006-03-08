@@ -187,7 +187,7 @@
         </javadoc>
     </target>
 
-    <target name="dist" depends="clean,cleanExamples,plugin" description="Build distribution." >
+    <target name="dist" depends="cleanExamples,plugin" description="Build distribution." >
 	
     	  <antcall target="jar" />
     	
