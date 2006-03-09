@@ -8,6 +8,25 @@ Projects (!)
 . AS to Java for to run in the Lego JVM
 
 -------------------------   
+Plan for Jason 0.9
+
+. Jason is not an acronym anymore
+
+. send ask (not askIf or One) with 3 args (remote unification)
+  	.send(jomi,ask,father(X,Y))
+. receiving messages are treated as  +!kqmlReceived (achieve goal, to have fail handling)
+
+. getting started (Moe's bar based on House)
+
+. BelBase customisation (with SGBD) - and BUF/BRF (Dalt paper)
+. Patterns - Dalt paper
+  . stackable failure (!) see email discussion
+  . dropGoal
+  . pre-parser
+
+. many applicable plans when we have multiple unification of context
+
+-------------------------   
 jIDE 
 
    . debug:
