@@ -96,7 +96,7 @@
         <javac srcdir="src" destdir="${basedir}/build/classes" 
         	debug="true" deprecation="true" optimize="true" 
         	nowarn="true"
-        	source="1.4" target="1.4">
+        	source="1.5" target="1.5">
             <classpath refid="allPath"/>
         </javac>
     </target>
