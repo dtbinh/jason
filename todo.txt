@@ -26,6 +26,12 @@ Plan for Jason 0.9
 
 . many applicable plans when we have multiple unification of context
 
+. check: 
+	+!int(A)[source(S)] : bel(A)
+ 	+!int(A) : bel(A)
+
+. !! ++ -- ??
+
 -------------------------   
 jIDE 
 
