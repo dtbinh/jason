@@ -8,11 +8,10 @@
 	
     <property name="saciJar" value="${basedir}/lib/saci.jar"/>
     <property name="jasonJar" value="${basedir}/bin/jason.jar"/>
-    <property name="jasonJarManifest" value="${basedir}/src/jasonManifest"/>
 
     <property name="dist.properties" value="${basedir}/bin/dist.properties"/>
     <property name="version" value="0"/>
-    <property name="release" value="8"/>
+    <property name="release" value="8.1"/>
     <property name="distDir" value="${env.HOME}/tmp/Jason-${version}.${release}"/>
     <property name="distFile" value="${env.HOME}/Jason-${version}.${release}"/>
 
@@ -23,6 +22,8 @@
         <pathelement location="${jasonJar}"/>
         <pathelement location="${saciJar}"/>
         <pathelement location="${basedir}/lib/junit.jar"/>
+        <pathelement location="${basedir}/lib/ant-launcher.jar"/>
+        <pathelement location="${basedir}/lib/ant.jar"/>
     	<pathelement location="${jedit.install.dir}/jedit.jar"/>
     	<pathelement location="${jedit.install.dir}/jars/ErrorList.jar"/>
     	<pathelement location="${jedit.install.dir}/jars/ProjectViewer.jar"/>
@@ -96,7 +97,7 @@
         <javac srcdir="src" destdir="${basedir}/build/classes" 
         	debug="true" deprecation="true" optimize="true" 
         	nowarn="true"
-        	source="1.5" target="1.5">
+        	source="1.4" target="1.4">
             <classpath refid="allPath"/>
         </javac>
     </target>
@@ -111,11 +112,9 @@
         </propertyfile>
         <property file="${dist.properties}"/>
 
-    	<jar jarfile="${jasonJar}" manifest="${jasonJarManifest}">
+    	<jar jarfile="${jasonJar}" >
 		      <fileset dir="${basedir}/build/classes">
-		            <include name="jason/**/*.class"/>
-		            <include name="jIDE/**/*.class"/>
-	    	        <include name="test/**/*.class"/>
+		           <include name="jason/**/*.class"/>
 		      </fileset>
 		      <fileset dir="${basedir}/src">
 		            <include name="images/**/*"/>
@@ -140,11 +139,11 @@
 		      </fileset>
 		      <fileset dir="${basedir}/build/classes">
 		           	<include name="jason/**/*.class"/>
-		           	<include name="jIDE/**/*.class"/>
 		      </fileset>
 		      <fileset dir="${basedir}/src">
 	      	    	<include name="images/**/*"/>
-	         	<include name="logging.properties"/>
+        	        <include name="xml/**/*"/>
+		         	<include name="logging.properties"/>
 		      </fileset>
 	    </jar>
 	    <copy todir="${jedit.install.dir}/modes">
@@ -170,9 +169,9 @@
         </java>
     </target>
 
-	<target name="test" depends="jar">
+	<target name="test" depends="compile">
 	    <junit printsummary="yes" failureProperty="test.failure">
-	      <classpath refid="allPath" />
+	      <classpath path="${basedir}/build/classes" />
 	      <formatter type="plain" usefile="false" />
 	      <batchtest>
 	        <fileset dir="${basedir}/src" includes="**/test/*Test.java" />
@@ -219,6 +218,12 @@
           <copy todir="${distDir}/lib/jedit">
             <fileset dir="${jedit.install.dir}" includes="**/*"/>
           </copy>
+    	
+          <delete failonerror="no" includeEmptyDirs="true">
+              <fileset dir="${distDir}/.settings"/>
+              <fileset dir="${distDir}" includes=".project"/>
+              <fileset dir="${distDir}" includes=".classpath"/>
+          </delete>
 
           <tar compression="gzip" destfile="${distFile}.tgz">
             <tarfileset dir="${distDir}/.." mode="755" >
@@ -244,6 +249,7 @@
             <fileset dir="${basedir}/examples" includes="**/*.bat"/>
             <fileset dir="${basedir}/examples" includes="**/*.xml"/>
             <fileset dir="${basedir}/examples" includes="**/work"/>
+            <fileset dir="${basedir}/examples" includes="**/build.xml"/>
         </delete>
     </target>
 

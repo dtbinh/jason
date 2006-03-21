@@ -49,7 +49,8 @@ Other changes
      project directory to customise the output format.
    . The internalAction removePlan use plan's label as argument instead of
      plan's strings.
- 
+   . Ant is used to run the MAS, for each project a build.xml file is
+     created.
 
 -----------
 version 0.7
