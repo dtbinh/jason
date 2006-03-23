@@ -145,6 +145,9 @@
         	        <include name="xml/**/*"/>
 		         	<include name="logging.properties"/>
 		      </fileset>
+		      <fileset dir="${basedir}/bin">
+		            <include name="dist.properties"/>
+		      </fileset>
 	    </jar>
 	    <copy todir="${jedit.install.dir}/modes">
 		      <fileset dir="${basedir}/src/jeditPlugin">
@@ -227,11 +230,11 @@
 
           <tar compression="gzip" destfile="${distFile}.tgz">
             <tarfileset dir="${distDir}/.." mode="755" >
-                <include name="Jason*/**/*.sh"/>
+                <include name="${distDir}/**/*.sh"/>
             </tarfileset>
             <tarfileset dir="${distDir}/.."  >
-               <include name="Jason*/**/*"/>
-               <exclude name="Jason*/**/*.sh"/>
+               <include name="${distDir}/**/*"/>
+               <exclude name="${distDir}/**/*.sh"/>
             </tarfileset>
           </tar>
     </target>
