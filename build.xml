@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project basedir="." default="all" name="Jason">
+<project basedir="." default="run" name="Jason">
 
     <property environment="env"/>
 
-    <property name="javaHome" value="/usr"/>
-	
     <property name="saciJar" value="${basedir}/lib/saci.jar"/>
-    <property name="jasonJar" value="${basedir}/bin/jason.jar"/>
+    <property name="jasonJar" value="${basedir}/lib/jason.jar"/>
 
-    <property name="dist.properties" value="${basedir}/bin/dist.properties"/>
+    <property name="build.dir" value="${basedir}/bin/classes"/>
+
+	<property name="dist.properties" value="${basedir}/bin/dist.properties"/>
     <property name="version" value="0"/>
-    <property name="release" value="8.1"/>
+    <property name="release" value="8.2"/>
     <property name="distDir" value="${env.HOME}/tmp/Jason-${version}.${release}"/>
     <property name="distFile" value="${env.HOME}/Jason-${version}.${release}"/>
 
-    <property name="jedit.install.dir"  value="${basedir}/lib/jedit"/>
-    <property name="plugin.jar.name"  value="jason-jedit-plugin.jar"/>
+    <property name="jedit.install.dir" value="${basedir}/lib/jedit"/>
+    <property name="plugin.jar.name"   value="jason-jedit-plugin.jar"/>
 
-    <path id="allPath">
+    <path id="project.classpath">
         <pathelement location="${jasonJar}"/>
         <pathelement location="${saciJar}"/>
         <pathelement location="${basedir}/lib/junit.jar"/>
@@ -47,7 +47,7 @@
 
 
 	<target name="init" depends="untar-jedit">
-		<mkdir dir="${basedir}/build/classes" />
+		<mkdir dir="${build.dir}" />
     </target>
 
 
@@ -94,11 +94,11 @@
 
 
     <target name="compile" depends="init,parsers" >
-        <javac srcdir="src" destdir="${basedir}/build/classes" 
+        <javac srcdir="src" destdir="${build.dir}" 
         	debug="true" deprecation="true" optimize="true" 
         	nowarn="true"
         	source="1.4" target="1.4">
-            <classpath refid="allPath"/>
+            <classpath refid="project.classpath"/>
         </javac>
     </target>
 
@@ -113,7 +113,7 @@
         <property file="${dist.properties}"/>
 
     	<jar jarfile="${jasonJar}" >
-		      <fileset dir="${basedir}/build/classes">
+		      <fileset dir="${build.dir}">
 		           <include name="jason/**/*.class"/>
 		      </fileset>
 		      <fileset dir="${basedir}/src">
@@ -137,7 +137,7 @@
 		        	<include name="actions.xml"/>
 			        <include name="dockables.xml"/>
 		      </fileset>
-		      <fileset dir="${basedir}/build/classes">
+		      <fileset dir="${build.dir}">
 		           	<include name="jason/**/*.class"/>
 		      </fileset>
 		      <fileset dir="${basedir}/src">
@@ -166,15 +166,13 @@
 	  
     <target name="run" depends="jar,plugin" >
         <java dir="bin" classname="org.gjt.sp.jedit.jEdit" fork="yes">
-            <classpath refid="allPath"/>
-            <!--arg line="../examples/Auction/auction.mas2j" /-->
-            <!--arg line="${saciHome} ${javaHome} ../examples/Simple/testCent.mas2j" /-->
+            <classpath refid="project.classpath"/>
         </java>
     </target>
 
 	<target name="test" depends="compile">
 	    <junit printsummary="yes" failureProperty="test.failure">
-	      <classpath path="${basedir}/build/classes" />
+	      <classpath path="${build.dir}" />
 	      <formatter type="plain" usefile="false" />
 	      <batchtest>
 	        <fileset dir="${basedir}/src" includes="**/test/*Test.java" />
@@ -184,8 +182,10 @@
 	</target>
 	
 	<target name="apidoc" depends="compile" >
-        <javadoc author="true" destdir="${basedir}/doc/api" packagenames="jason.*" sourcepath="${basedir}/src" use="true" version="true" windowtitle="AgentSpeak Java Interpreter">
-            <classpath refid="allPath"/>
+        <javadoc author="true" destdir="${basedir}/doc/api" packagenames="jason.*" 
+        	      sourcepath="${basedir}/src" use="true" version="true" 
+        	      windowtitle="Jason - AgentSpeak Java Interpreter">
+            <classpath refid="project.classpath"/>
         </javadoc>
     </target>
 
@@ -209,7 +209,7 @@
             <fileset dir="${basedir}" includes="LICENSE"/>
             <fileset dir="${basedir}" includes="README"/>
 
-            <fileset dir="${basedir}" includes="bin/**/*"/>
+            <fileset dir="${basedir}" includes="bin/**/*" excludes="bin/classes/**/*" />
             <fileset dir="${basedir}" includes="doc/**/*"/>
             <fileset dir="${basedir}" includes="examples/**/*"/>
             <fileset dir="${basedir}" includes="lib/**/*" excludes="lib/jedit.tgz" />
@@ -224,6 +224,7 @@
     	
           <delete failonerror="no" includeEmptyDirs="true">
               <fileset dir="${distDir}/.settings"/>
+              <fileset dir="${distDir}/bin/classes"/>
               <fileset dir="${distDir}" includes=".project"/>
               <fileset dir="${distDir}" includes=".classpath"/>
           </delete>
@@ -269,7 +270,7 @@
             <fileset dir="${basedir}" includes="**/.err"/>
             <fileset dir="${basedir}/lib/saci/bin" includes="work"/>
         </delete>
-    	<delete dir="${basedir}/build"/>
+    	<delete dir="${build.dir}"/>
     </target>
 
 </project>

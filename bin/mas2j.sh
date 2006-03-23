@@ -15,6 +15,6 @@ JASONDIR=`pwd`
 
 cd $CURDIR
 
-java -classpath $JASONDIR/bin/jason.jar:$JASONDIR/lib/saci.jar:. jason.mas2j.parser.mas2j $1
+java -classpath $JASONDIR/lib/jason.jar:$JASONDIR/lib/saci.jar:. jason.mas2j.parser.mas2j $1
 
 #chmod u+x *.sh
