@@ -9,13 +9,13 @@
 
     <property name="build.dir" value="${basedir}/bin/classes"/>
 
-	<property name="dist.properties" value="${basedir}/bin/dist.properties"/>
+    <property name="dist.properties" value="${basedir}/bin/dist.properties"/>
     <property name="version" value="0"/>
     <property name="release" value="8.2"/>
     <property name="distDir" value="${env.HOME}/tmp/Jason-${version}.${release}"/>
     <property name="distFile" value="${env.HOME}/Jason-${version}.${release}"/>
 
-    <property name="jedit.install.dir" value="${basedir}/lib/jedit"/>
+    <property name="jedit.install.dir" value="${basedir}/bin/jedit"/>
     <property name="plugin.jar.name"   value="jason-jedit-plugin.jar"/>
 
     <path id="project.classpath">
@@ -26,28 +26,27 @@
         <pathelement location="${basedir}/lib/ant.jar"/>
     	<pathelement location="${jedit.install.dir}/jedit.jar"/>
     	<pathelement location="${jedit.install.dir}/jars/ErrorList.jar"/>
-    	<pathelement location="${jedit.install.dir}/jars/ProjectViewer.jar"/>
     	<pathelement location="${jedit.install.dir}/jars/SideKick.jar"/>
     </path>
 
     <condition property="jedit-ok" value="ok" >
 		<or>
-			<not><available file="${basedir}/lib/jedit.tgz" /></not>
+			<not><available file="${basedir}/bin/jedit.tgz" /></not>
 	    	<uptodate 
-	    		targetfile="${basedir}/lib/jedit" 
-	    		srcfile="${basedir}/lib/jedit.tgz" />
+	    		targetfile="${jedit.install.dir}" 
+	    		srcfile="${basedir}/bin/jedit.tgz" />
 		</or>
     </condition>
 
-	<target name="untar-jedit" unless="jedit-ok">
+    <target name="untar-jedit" unless="jedit-ok">
         <echo message="Uncompressing jEdit" />
-		<delete dir="${basedir}/lib/jedit" />
-		<untar compression="gzip" dest="${basedir}/lib" src="${basedir}/lib/jedit.tgz" />
+	<delete dir="${jedit.install.dir}" />
+	<untar compression="gzip" dest="${basedir}/bin" src="${basedir}/bin/jedit.tgz" />
     </target>
 
 
-	<target name="init" depends="untar-jedit">
-		<mkdir dir="${build.dir}" />
+    <target name="init" depends="untar-jedit">
+	<mkdir dir="${build.dir}" />
     </target>
 
 
@@ -209,18 +208,19 @@
             <fileset dir="${basedir}" includes="LICENSE"/>
             <fileset dir="${basedir}" includes="README"/>
 
-            <fileset dir="${basedir}" includes="bin/**/*" excludes="bin/classes/**/*" />
+            <fileset dir="${basedir}" includes="bin/**/*" excludes="bin/classes/**/*, bin/jedit.tgz" />
             <fileset dir="${basedir}" includes="doc/**/*"/>
             <fileset dir="${basedir}" includes="examples/**/*"/>
-            <fileset dir="${basedir}" includes="lib/**/*" excludes="lib/jedit.tgz" />
+            <fileset dir="${basedir}" includes="lib/**/*" />
             <fileset dir="${basedir}" includes="src/**/*"/>
           </copy>
 	      <copy todir="${distDir}/doc">
     	      <fileset dir="${basedir}/../../agents/Jason-doc" includes="*.*"/>
           </copy>
-          <copy todir="${distDir}/lib/jedit">
+
+          <!--copy todir="${distDir}/bin/jedit">
             <fileset dir="${jedit.install.dir}" includes="**/*"/>
-          </copy>
+          </copy-->
     	
           <delete failonerror="no" includeEmptyDirs="true">
               <fileset dir="${distDir}/.settings"/>
