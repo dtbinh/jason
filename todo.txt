@@ -1,3 +1,59 @@
+
+-------------------------   
+Plan for Jason 0.9 
+                         -- April/06 meeting
+
+
+. Jason is not an acronym anymore
+
+. send ask (not askIf nor One) with 3 args (remote unification)
+  	.send(jomi,ask,father(X,Y))
+. receiving messages are treated as  +!kqmlReceived (achieve goal, to have fail handling)
+
+. & and | in context (see bellow)
+
+. !! ++ -- ??
+
+. +!idle event. (see email)
+
+. BelBase customisation (with SGBD) - and BUF/BRF (Dalt paper)
+  (see bellow)
+
+. compilation directives
+  . pattern
+  . include
+
+. Patterns - Dalt paper
+  . stackable failure (!) see email discussion
+  . dropGoal
+
+. many applicable plans when we have multiple unification of context
+
+  how to deal with
+	a(1).
+	a(2).
+	a(3).
+	+x : a(V) <- .print(V).
+  and we want to print 1, 2, and 3.
+  Discuss:
+        .foreach(X,a(X),call(.print(X)); // syntax problem
+  or
+	+x : true <- .findall(V,a(V),L); !do(L). // too verbose
+        +!do([]) : true <- true.
+        +!do([H|T]) : true <- .print(H); !do(T).
+  or 
+        +x : true <- { foreach(X,a(X),.print(X)) }.
+
+  If agreed, define a patterns for the above problem
+
+. discuss: 
+	+!int(A)[source(S)] : bel(A)
+ 	+!int(A) : bel(A)
+
+
+. getting started (Moe's bar based on House)
+
+
 -----------------------------------
 Projects (!)
 . PDT plug-in to generate AS code from MAS spec.
@@ -5,37 +61,14 @@ Projects (!)
 . New infrastructures (e.g. JADE) -- use a factory pattern 
   to simplify new infrastructure for Jason.
 . Jason for large scale
-. AS to Java for to run in the Lego JVM
+. AS to Java for running in the Lego JVM
 
--------------------------   
-Plan for Jason 0.9
-
-. Jason is not an acronym anymore
-
-. send ask (not askIf or One) with 3 args (remote unification)
-  	.send(jomi,ask,father(X,Y))
-. receiving messages are treated as  +!kqmlReceived (achieve goal, to have fail handling)
-
-. getting started (Moe's bar based on House)
-
-. BelBase customisation (with SGBD) - and BUF/BRF (Dalt paper)
-. Patterns - Dalt paper
-  . stackable failure (!) see email discussion
-  . dropGoal
-  . pre-parser
-
-. many applicable plans when we have multiple unification of context
-
-. check: 
-	+!int(A)[source(S)] : bel(A)
- 	+!int(A) : bel(A)
-
-. !! ++ -- ??
 
 -------------------------   
 jIDE 
 
    . debug:
+      . stop flicking, step one agent, sniffer, ...
       . fold/unfold mind's itens (more/less details)
       . act on agent's mind (remove bel, intention, generate event,...)
       . control at semantic action level
@@ -45,7 +78,27 @@ jIDE
 MAS2J TODO
 
 . BB customisation 
-   agent ag1 BeliefBaseClass userBBclass
+
+  Syntax:
+  In mas2j:
+     agent ag1 BeliefBaseClass D3B
+
+  Discuss:
+     . AS syntax
+       b(1). // normal bel
+       a[driver=jdbc,url=mysql:bla,user=xx,passwd=yyy,table=ta].
+       // problem: there is no "a" bel indeed!
+     or
+       { d3b(a,jdbc,mysql:bla,xx,yyy,ta). }
+       // Problem: what the pre-compiler will generate?
+     or
+       agent ag1 BeliefBaseClass D3B 
+             [d3b=config(jdbc,mysql:bla,xx,yyy,
+                         [bel(a,ta),bel(b,tb)]
+                        )];
+       // problem: defined outside the AS code
+
+  Code of D3B
   examples of using DB BB
      the predicate a is in DB
         +a -> insert
@@ -73,15 +126,8 @@ AS TODO
 
 . compilation directives (? is it the right name)
   e.g. 
-   { include("bla.asl"); goalPattern(a) }
+   { include("bla.asl"); pattern(a) }
 
-. pensar sobre fazer a opcao de NewFocus ser associada com o + e - 
-  direto, o problem e' que e' mais sintaxe, temos que discutir
-  Proposta:
-  ++a; (o evento ficara com newFocus)
-  !!a;
-  (se for o caso, remover a opcao newfocus do .mas2j)
- 
 
 -----------------------------------
 Semantics TODO
