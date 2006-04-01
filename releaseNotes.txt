@@ -50,7 +50,9 @@ Other changes
    . The internalAction removePlan use plan's label as argument instead of
      plan's strings.
    . Ant is used to run the MAS, for each project a build.xml file is
-     created.
+     created. The build template file is located in src/xml directory.
+     If the project has a file called c-build.xml, the build.xml file
+     is not created and this script is used instead.
 
 -----------
 version 0.7
