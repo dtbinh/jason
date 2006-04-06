@@ -18,7 +18,7 @@ public class WorldView extends JFrame {
 	
 	// singleton pattern
 	private static WorldView view = null;
-	public static WorldView create(WorldModel model) {
+	synchronized public static WorldView create(WorldModel model) {
 		if (view == null) {
 			view = new WorldView(model);
 		}

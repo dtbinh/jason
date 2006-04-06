@@ -29,6 +29,7 @@ public class ClimaArchitecture extends AgArch {
 	ClimaProxy clima;
 	List perceptions = new ArrayList();
 	
+	ActionExec acExec;
 	
 	public void initAg(String agClass, String asSrc, Settings stts) throws JasonException {
 		super.initAg(agClass, asSrc, stts);
@@ -58,6 +59,9 @@ public class ClimaArchitecture extends AgArch {
 	public void doPerception(List p) {
 		perceptions = p;
 		getTS().newMessageHasArrived(); // it starts a reasoning cycle
+		if (acExec != null) {
+			getTS().getC().getFeedbackActions().add(acExec);
+		}
 	}
 	
 	public List perceive() {
@@ -65,18 +69,17 @@ public class ClimaArchitecture extends AgArch {
 	}
 
 	public void act() {
-    	ActionExec acExec = getTS().getC().getAction(); 
-        if (acExec == null) {
-            return;
-        }
-        Term acTerm = acExec.getActionTerm();
-        logger.info("doing: "+acTerm);
-
-        if (acTerm.getFunctor().equals("do")){
-        	clima.send(acTerm.getTerm(0).toString()); //, removeQuotes(acTerm.getTerm(1).toString()));
-            acExec.setResult(true);
-        }
-        getTS().getC().getFeedbackActions().add(acExec);
+		if (getTS().getC().getAction() == null) {
+			return;
+		}
+		acExec = getTS().getC().getAction(); 
+		Term acTerm = acExec.getActionTerm();
+		logger.info("doing: "+acTerm);
+		
+		if (acTerm.getFunctor().equals("do")){
+			clima.send(acTerm.getTerm(0).toString()); //, removeQuotes(acTerm.getTerm(1).toString()));
+			acExec.setResult(true);
+		}
 	}
 
 	/*

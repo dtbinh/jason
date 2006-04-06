@@ -187,7 +187,7 @@ public class ClimaProxy extends ClimaAgent {
 			}
 
 			Literal lpos = new Literal(Literal.LPos, new Pred("pos"));
-			lpos.addTerm(new NumberTermImpl(step));
+			//lpos.addTerm(new NumberTermImpl(step));
 			lpos.addTerm(new NumberTermImpl(agX));
 			lpos.addTerm(new NumberTermImpl(agY));
 			//lpos.addTerm(new StringTermImpl(rid));

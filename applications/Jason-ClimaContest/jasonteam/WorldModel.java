@@ -17,7 +17,7 @@ public class WorldModel {
 	
 	// singleton pattern
 	private static WorldModel model = null;
-	public static WorldModel create(int w, int h) {
+	synchronized public static WorldModel create(int w, int h) {
 		if (model == null) {
 			model = new WorldModel(w,h);
 		}
