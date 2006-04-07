@@ -36,7 +36,9 @@ Changes in ASL syntax
      e.g.
        p(t1,t2)[a1,a2] =.. L      (L is [p,[t1,t2],[a1,a2]])
        X =.. [p,[t1,t2],[a1,a2]]  (X is p(t1,t2)[a1,a2])
-   	     
+   . new operator "!!": sub-goal with new focus
+   . new operator "div": integer division
+   
 Changes in the agent architecture customisation
    . In this version, the user extends AgArch class instead of Centralised
      or Saci architectures. Thus, the same architecture

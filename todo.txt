@@ -1,8 +1,6 @@
 
 -------------------------   
 Plan for Jason 0.9 
-                         -- April/06 meeting
-
 
 . Jason is not an acronym anymore
 
@@ -12,46 +10,19 @@ Plan for Jason 0.9
 
 . & and | in context (see bellow)
 
-. !! ++ -- ??
-
-. +!idle event. (see email)
-
 . BelBase customisation (with SGBD) - and BUF/BRF (Dalt paper)
   (see bellow)
 
 . compilation directives
-  . pattern
+  . patterns
   . include
 
 . Patterns - Dalt paper
-  . stackable failure (!) see email discussion
+  . stackable failure (see email)
   . dropGoal
 
-. many applicable plans when we have multiple unification of context
+. add option relPlans=(singleUnif | multiUnif)
 
-  how to deal with
-	a(1).
-	a(2).
-	a(3).
-	+x : a(V) <- .print(V).
-  and we want to print 1, 2, and 3.
-  Discuss:
-        .foreach(X,a(X),call(.print(X)); // syntax problem
-  or
-	+x : true <- .findall(V,a(V),L); !do(L). // too verbose
-        +!do([]) : true <- true.
-        +!do([H|T]) : true <- .print(H); !do(T).
-  or 
-        +x : true <- { foreach(X,a(X),.print(X)) }.
-
-  If agreed, define a patterns for the above problem
-
-. discuss: 
-	+!int(A)[source(S)] : bel(A)
- 	+!int(A) : bel(A)
-
-
-. getting started (Moe's bar based on House)
 
 
 -----------------------------------
@@ -81,22 +52,10 @@ MAS2J TODO
 
   Syntax:
   In mas2j:
-     agent ag1 BeliefBaseClass D3B
-
-  Discuss:
-     . AS syntax
-       b(1). // normal bel
-       a[driver=jdbc,url=mysql:bla,user=xx,passwd=yyy,table=ta].
-       // problem: there is no "a" bel indeed!
-     or
-       { d3b(a,jdbc,mysql:bla,xx,yyy,ta). }
-       // Problem: what the pre-compiler will generate?
-     or
        agent ag1 BeliefBaseClass D3B 
              [d3b=config(jdbc,mysql:bla,xx,yyy,
                          [bel(a,ta),bel(b,tb)]
                         )];
-       // problem: defined outside the AS code
 
   Code of D3B
   examples of using DB BB
@@ -128,6 +87,32 @@ AS TODO
   e.g. 
    { include("bla.asl"); pattern(a) }
 
+
+
+--------------------------------
+Patterns
+
+  how to deal with
+	a(1).
+	a(2).
+	a(3).
+	+x : a(V) <- .print(V).
+  and we want to print 1, 2, and 3.
+  Discuss:
+        .foreach(X,a(X),call(.print(X)); // syntax problem
+  or
+	+x : true <- .findall(V,a(V),L); !do(L). // too verbose
+        +!do([]) : true <- true.
+        +!do([H|T]) : true <- .print(H); !do(T).
+  or 
+        +x : true <- { foreach(X,a(X),.print(X)) }.
+
+  If agreed, define a patterns for the above problem
+
+--
++(b and c) : .....
+===> +b: c <- ....
+     +c: b <- ......
 
 -----------------------------------
 Semantics TODO
@@ -180,6 +165,9 @@ Documentation TODO
 -----------------------------------
 Tests TODO
 
+	+!int(A)[source(S)] : bel(A)
+ 	+!int(A) : bel(A)
+
 
 -----------------------------------
 Internal actions
@@ -213,6 +201,24 @@ Others TODOs
 
 . Another controller demo for:
   Outras sugestoes foram um synchronous mode based on action, not on reasoning cycle... (quer dizer, so quando todos decidiram uma acao vai em frente um passo de simulacao: tipica simulacao reativa mas...)
+
+-------------------------   
+
+Discussed in April 06 meeting
+
+. !! -> implemented
+. div -> implemented
+
+. +!idle event. (postponed)
+  As an alternative: empty TE with 2 options:
+  . high priority: evaluated before normal events
+  . low: evaluated after normal events (or no event)
+
+. stackable failure (TODO)
+
+. many applicable plans when we have multiple unification of context
+  TODO: add option relPlans=(singleUnif | multiUnif)
+
 
 
 -------------------------   
