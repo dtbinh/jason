@@ -17,6 +17,7 @@ MAS jasonTeam {
 		        [host="localhost", port=12300, username=blumenau3, password=bu43] 
    		        agentArchClass jasonteam.ClimaArchitecture;
 		miner4 miner.asl
-		        [host="localhost", port=12300, username=blumenau4, password=bu43, verbose=0] 
+		        [host="localhost", port=12300, username=blumenau4, password=bu43]
 		        agentArchClass jasonteam.ClimaArchitecture;
 }
+
