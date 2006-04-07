@@ -7,7 +7,7 @@ MAS jasonTeam {
 	infrastructure: Centralised
 	agents:
 	    // official host agentslave.in.tu-clausthal.de
-		miner1 miner.asl
+		miner1 leader.asl
 		        [host="localhost", port=12300, username=blumenau1, password=bu43] 
 		        agentArchClass jasonteam.ClimaArchitecture;
 		miner2 miner.asl

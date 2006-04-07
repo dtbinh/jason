@@ -1,13 +1,53 @@
-// miner agent
+// leader agent
 
 lastDir(null).
 
-+pos(X,Y) : not myQuad(_,_,_,_) <- .send(miner1,tell,myInitPos(X,Y)).
++pos(X,Y) : not myQuad(_,_,_,_) <- +myInitPos(X,Y)[source(miner1)].
 
-+myQuad(X1,Y1,X2,Y2) : true
-  <- .print(myQuad(X1,Y1,X2,Y2));
-     +dir(X1,Y1);
-     !around(X1,Y1).
++gsize(_,W,H) : true
+  <- +quad(1, 0, 0, W div 2 - 1, H div 2 - 1);
+     +quad(2, W div 2, 0, W-1, H div 2 - 1);
+     +quad(3, 0, H div 2, W div 2 - 1, H - 1);
+     +quad(4, W div 2, H div 2, W - 1, H - 1).
+
++myInitPos(X,Y)[source(A)]
+  :  myInitPos(X1,Y1)[source(B)] & myInitPos(X2,Y2)[source(C)] & myIniPos(X3,Y3)[source(D)] &
+     A \== B & B \== C & C \== D & D \== A & C \== A & D \== B
+  <- !assignAllQuads([miner1,miner2,miner3,miner4]);
+     !backToMinerRole.
+
++!assignAllQuads([]) : true <- true.
++!assignAllQuads([A|T]) : true
+  <- ?gsize(_,W,H);
+     !assignQuad(A,d(0,q(0,W+H+1)),Q);
+     .print(A, "'s Quadrant is: ",Q);
+     Q = q(I,_);
+     ?quad(I,X1,Y1,X2,Y2);
+     -quad(I,X1,Y1,X2,Y2);
+     .send(A,tell,myQuad(X1,Y1,X2,Y2));
+     !assignAllQuads(T).
+
+// Already checked all (at most) 4 quadrants available for agent A
++!assignQuad(A,d(5,Q),Q) : true <- true.
+// 
++!assignQuad(A,d(I,q(ID,D)),Q) : NI = I+1 & quad(NI,X1,Y1,_,_)
+  <- ?myInitPos(X2,Y2)[source(A)];
+     jia.dist(X1,Y1,X2,Y2,ND);
+     !getSmaller(q(ID,D),q(NI,ND),SQ); // shall we add conditional expressions in AS?
+     !assignQuad(A,d(NI,SQ),Q).
+// Quadrant 'I' already assigned to another agent
++!assignQuad(A,d(I,D),Q) : true
+  <- NI = I+1;
+     !assignQuad(A,d(NI,D),Q).
+
++!getSmaller( q(Q1,D1), q(Q2,D2), q(Q1,D1) ) : D1 <= D2 <- true.
++!getSmaller( q(Q1,D1), q(Q2,D2), q(Q2,D2) ) : D2 <  D1 <- true.
+
++!backToMinerRole : true
+  <- ?myQuad(X,Y,X1,Y1);
+     .print(myQuad(X,Y,X1,Y1));
+     +dir(X,Y);
+     !around(X,Y).
 
 +around(X1,Y1): myQuad(X1,Y1,X2,Y2)
   <- .print("Honey, I'm home!");
