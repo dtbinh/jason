@@ -60,14 +60,14 @@ public class WorldView extends JFrame {
 	class MyCanvas extends Canvas {
 		public void paint(Graphics g) {
 			cellSizeW = getWidth() / (model.width);
-			cellSizeH = getHeight() / (model.height+1);
+			cellSizeH = getHeight() / (model.height);
 			
 			g.setColor(Color.lightGray);
-			for (int l=1; l<=(model.height+1); l++) {
+			for (int l=1; l<=model.height; l++) {
 				g.drawLine(0, l*cellSizeH, model.width*cellSizeW, l*cellSizeH);
 			}
 			for (int c=1; c<=model.width; c++) {
-				g.drawLine(c*cellSizeW, 0, c*cellSizeW, (model.height+1)*cellSizeH);
+				g.drawLine(c*cellSizeW, 0, c*cellSizeW, model.height*cellSizeH);
 			}
 			
 			for (int x=0; x<model.width; x++) {
@@ -91,6 +91,13 @@ public class WorldView extends JFrame {
 							drawAlly(g, x, y);
 						}
 					}
+				}
+			}
+			
+			for (int i=0; i<4; i++) {
+				int[] pos = model.getAgPos(i);
+				if (pos != null) {
+					drawAllyId(g, pos[0], pos[1], i);
 				}
 			}
 		}
@@ -131,6 +138,11 @@ public class WorldView extends JFrame {
 			g.fillOval(x*cellSizeW+1, y*cellSizeH+1, cellSizeW-8, cellSizeH-8);
 		}
 	
+		public void drawAllyId(Graphics g, int x, int y, int id) {
+			g.setColor(Color.white);
+			g.drawString(""+id, x*cellSizeW+7, y*cellSizeH+16);
+		}
+
 		public void drawEnemy(Graphics g, int x, int y) {
 			g.setColor(Color.red);
 			g.fillOval(x*cellSizeW+7, y*cellSizeH+7, cellSizeW-8, cellSizeH-8);
@@ -152,6 +164,7 @@ public class WorldView extends JFrame {
 		m.add(m.EMPTY, 10,2);
 
 		m.add(m.ALLY, 1,1);
+		m.setAgPos(1,1,1);
 		m.add(m.ENEMY, 1,1);
 		m.add(m.GOLD, 1,2);
 		m.add(m.ENEMY, 2,2);
@@ -166,12 +179,14 @@ public class WorldView extends JFrame {
 		Thread.sleep(1000);
 		m.add(m.GOLD, 13,10);
 		m.add(m.ALLY, 13,10);
+		m.setAgPos(1,13,10);
 		m.add(m.ENEMY, 0,0);
 		m.add(m.EMPTY, 0,0);
 		m.add(m.ALLY, 19,19);
-
+		m.setAgPos(0,19,19);
 		m.add(m.GOLD, 5,5);
 		m.add(m.ALLY, 5,5);
+		m.setAgPos(2,5,5);
 		m.add(m.ENEMY,5,5);
 		v.repaint();
 	}

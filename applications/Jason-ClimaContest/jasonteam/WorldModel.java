@@ -14,6 +14,8 @@ public class WorldModel {
 	byte[][] data = null;
 	
 	int depotx, depoty;	
+
+	int[][] agPos = new int[4][2];
 	
 	// singleton pattern
 	private static WorldModel model = null;
@@ -39,6 +41,11 @@ public class WorldModel {
 				data[i][j] = UNKNOWN;
 			}
 		}
+		
+		for (int i=0; i<agPos.length; i++) {
+			agPos[i][0] = -1;
+			agPos[i][1] = -1;
+		}
 	}
 
 	public void setDepot(int x, int y) {
@@ -49,6 +56,22 @@ public class WorldModel {
 
 	public void add(byte value, int x, int y) {
 		data[x][y] |= value;
+	}
+	
+	public void setAgPos(int ag, int x, int y) {
+		agPos[ag][0] = x;
+		agPos[ag][1] = y;
+	}
+	
+	public int[] getAgPos(int ag) {
+		try {
+			if (agPos[ag][0] == -1) 
+				return null;
+			else
+				return agPos[ag];
+		} catch (Exception e) {
+			return null;
+		}
 	}
 	
 	public void clearAgView(int x, int y) {
