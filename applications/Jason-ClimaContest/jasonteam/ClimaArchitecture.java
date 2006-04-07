@@ -51,13 +51,14 @@ public class ClimaArchitecture extends AgArch {
 	public void addBel(Literal bel) {
 		getTS().getAg().addBel(bel, BeliefBase.TSelf, getTS().getC(), Intention.EmptyInt);
 	}
+	
 	public void remBel(Literal bel) {
 		Unifier u = new Unifier();
-        if (getTS().getAg().believes(bel,u)) {
-        	u.apply(bel);
-        	getTS().getAg().delBel(bel, BeliefBase.TSelf, getTS().getC(), Intention.EmptyInt);
+		Literal bInBB = getTS().getAg().believes(bel,u);
+        if (bInBB != null) {
+        	getTS().getAg().delBel(bInBB, BeliefBase.TSelf, getTS().getC(), Intention.EmptyInt);
         } else {
-        	logger.info("Can not remove "+bel+" since I don't believ in it!");
+        	logger.info("Can not remove "+bel+" since I don't believe in it!");
         }
 	}
 
