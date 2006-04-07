@@ -3,7 +3,6 @@ package jasonteam;
 import jason.asSyntax.Literal;
 import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Pred;
-import jason.asSyntax.StringTermImpl;
 import jason.asSyntax.Term;
 
 import java.util.ArrayList;
@@ -34,6 +33,8 @@ public class ClimaProxy extends ClimaAgent {
 	private int steps;
 	
 	private int agX=-1, agY=-1;
+	private int agId = -1;
+	
 	String rid; // the response id of the current cycle
 	
 	ClimaArchitecture arq;
@@ -46,6 +47,10 @@ public class ClimaProxy extends ClimaAgent {
 	private Transformer transformer;
 	private DocumentBuilder documentbuilder;
 
+	public void setAgId(int i) {
+		agId = i;
+	}
+	
 	public ClimaProxy(ClimaArchitecture arq, String host, int port, String username, String password) {
 		logger = Logger.getLogger(ClimaProxy.class.getName()+"."+arq.getAgName());
 		if (host.startsWith("\"")) {
@@ -119,6 +124,9 @@ public class ClimaProxy extends ClimaAgent {
 			agX = Integer.parseInt(perception.getAttribute("posx"));
 			agY = Integer.parseInt(perception.getAttribute("posy"));
 			model.add(model.ALLY, agX, agY);
+			if (agId != -1) {
+				model.setAgPos(agId, agX, agY);
+			}
 			rid = perception.getAttribute("id");
 			
 			NodeList nl = perception.getElementsByTagName("cell");

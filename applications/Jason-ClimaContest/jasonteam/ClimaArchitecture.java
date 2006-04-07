@@ -35,11 +35,16 @@ public class ClimaArchitecture extends AgArch {
 		super.initAg(agClass, asSrc, stts);
 		logger = Logger.getLogger(ClimaArchitecture.class.getName()+"."+getAgName());
 		clima = new ClimaProxy(this, 
-				    stts.getUserParameter("host"), 
-					Integer.parseInt(stts.getUserParameter("port")),
-					stts.getUserParameter("username"),
-					stts.getUserParameter("password"));
+				stts.getUserParameter("host"), 
+				Integer.parseInt(stts.getUserParameter("port")),
+				stts.getUserParameter("username"),
+				stts.getUserParameter("password"));
 		//launch proxy agent
+		try {
+			// try to discover the ag id
+			int id = Integer.parseInt(getAgName().substring(5));
+			clima.setAgId(id-1);
+		} catch (Exception e) {}
 		clima.start();
 	}
 
