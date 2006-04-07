@@ -1,9 +1,10 @@
 package env;
 
-import java.util.*;
-import jason.*;
-import jason.asSyntax.*;
-import jason.environment.*;
+import jason.asSyntax.Literal;
+import jason.asSyntax.Term;
+import jason.environment.Environment;
+
+import java.util.Random;
 
 public class planetEnv extends Environment {
 

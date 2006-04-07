@@ -45,7 +45,7 @@ public class GUI extends JFrame {
 		
 		c.add(box);
 		setSize(610, 750);
-		show();
+		setVisible(true);
 	}
 	
 	public void out(String out) {
