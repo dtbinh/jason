@@ -60,10 +60,9 @@
 <scheme id="meeting_point" root-goal="mp">
 
   <plan head-goal="mp" operator="sequence" >
-    <goal id="proposeMP"/>
+    <goal id="proposeMP" />
     <goal id="goldAtDepot"/>
   </plan>
-
   <plan head-goal="goldAtDepot" operator="choice" >
     <goal id="option1"/>
     <goal id="option2"/>
@@ -71,11 +70,11 @@
   <plan head-goal="option1" operator="sequence" >
     <goal id="agreeMP"/>
     <goal id="gotoMP"/>
-    <goal id="courierCarryGoldDepot"/>
+    <goal id="courierCarryGoldToDepot"/>
   </plan>
   <plan head-goal="option2" operator="sequence" >
     <goal id="refuseMP"/>
-    <goal id="minerCarryGoldDepot"/>
+    <goal id="minerCarryGoldToDepot"/>
   </plan>
   
   <mission id="mMiner" min="1" max="1">
@@ -83,16 +82,16 @@
     <goal id="proposeMP"/>
     <goal id="goldAtDepot"/>
     <goal id="gotoMP"/>
-    <goal id="minerCarryGoldDepot"/>
+    <goal id="minerCarryGoldToDepot"/>
   </mission>
 
   <mission id="mCourier" min="1" max="1">
-    <goal id="goldAtDepot"/>
+    <!--goal id="goldAtDepot"/-->
     <goal id="option1"/>
     <goal id="option2"/>
     <goal id="agreeMP"/>
     <goal id="refuseMP"/>
-    <goal id="courierCarryGoldDepot"/>
+    <goal id="courierCarryGoldToDepot"/>
   </mission>
 </scheme>
 

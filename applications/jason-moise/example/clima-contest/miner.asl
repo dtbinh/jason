@@ -10,27 +10,36 @@ init.
    ---------------------
 */
 
+
+/* Structural events */
+
 // when a team is created, adopts the role miner
 // miner1 is also the leader
 +group(team,GId) : .myName(miner1) 
-   <- jmoise.adoptRole(miner,GId);
-      jmoise.adoptRole(leader,GId).
-
-// when a team is created, adopts the role miner
-// miner2 is also the courier
-+group(team,GId) : .myName(miner2) 
-   <- jmoise.adoptRole(miner,GId);
-      jmoise.adoptRole(courier,GId).
-
-// when a team is created, adopts the role miner
-// miner3 also starts a meeting poinr scheme
-+group(team,GId) : .myName(miner3) 
-   <- jmoise.adoptRole(miner,GId);
-      jmoise.startScheme(meeting_point).
-
+   <- jmoise.adoptRole(leader,GId);
+      jmoise.adoptRole(miner,GId).
+      
 // when a team is created, adopts the role miner
 +group(team,GId) : true 
    <- jmoise.adoptRole(miner,GId).
+
+// if i am the leader, decide who is the courier
++play(A,leader,GId) : .myName(A)
+   <- .send(miner2, achieve, adoptRole(courier, GId)).
+
+// if the leader ask me to adopt a role, i do
++!adoptRole(R,GId)[source(A)]
+   : true
+   <- jmoise.adoptRole(R,GId).
+
+
+
+/* Functional events */
+
+// miner3 starts a meeting point scheme
++play(miner3,miner,GId) : .myName(miner3)
+   <- .print("Creating a MP scheme");
+      jmoise.startScheme(meeting_point).
 
 // finish the scheme if it has no more players
 +schPlayers(Sch,0) 
@@ -43,6 +52,10 @@ init.
 +scheme(meeting_point,SId)[owner(A)] 
    : group(team,GId) & .myName(A)
    <- jmoise.addResponsibleGroup(SId, GId).
+
+
+
+/* Deontic events */
    
 // when I have an obligation for a mission, commit to it
 +obligation( Sch, Mission) : true 
@@ -51,23 +64,20 @@ init.
 // when I have a permission to mMiner mission in the meeting point scheme,
 // commit to it if I am miner3
 +permission(Sch, mMiner) 
-   :  scheme(meeting_point, Sch) & .myName(miner3) 
+   :  scheme(meeting_point, Sch) & .myName(miner3)
    <- jmoise.commitToMission(mMiner,Sch).
 
 // when the root goal of the scheme is satisfied, remove my missions
 +goalState(Sch, mp, satisfied) : true
    <- jmoise.removeMission(Sch).
+
+
    
 /*
    Organisational Goals' plans
    ---------------------------
 */
 
-// a generic plan for organisational goals (they have scheme(_) annotation)
-+!minerCarryGoldDepot[scheme(Sch)] : true
-   <- .print("gold at depot!!! ");
-      jmoise.setGoalState(Sch,minerCarryGoldDepot,satisfied);
-      jmoise.setGoalState(Sch,goldAtDepot,satisfied).
 
 +!mp[scheme(Sch)] : true 
    <- .print("***** FINISH! *****");
@@ -75,7 +85,7 @@ init.
 
       
 // a generic plan for organisational goals (they have scheme(_) annotation)
-+!X[scheme(Sch)] : X \== agreeMP & X \== goldAtDepot
++!X[scheme(Sch)] : X \== agreeMP 
    <- .print("doing organisational goal ",X);
       jmoise.setGoalState(Sch,X,satisfied).
 
