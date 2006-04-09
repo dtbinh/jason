@@ -1,0 +1,10 @@
+MAS writePaper {
+   infrastructure: Centralised
+   agents:
+       orgManager [osfile="wp-os.xml",gui=no] 
+                  agentArchClass jmoise.OrgManager;
+
+       jaime      [verbose=1] agentArchClass jmoise.OrgAgent;
+       olivier    agentArchClass jmoise.OrgAgent;
+       jomi       agentArchClass jmoise.OrgAgent;
+}

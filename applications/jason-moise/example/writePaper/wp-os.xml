@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<organisational-specification id="wp">
+<structural-specification>
+
+<role-definitions>
+<role id="author">
+<extends role="soc"/>
+</role>
+<role id="writer">
+<extends role="author"/>
+</role>
+<role id="editor">
+<extends role="author"/>
+</role>
+</role-definitions>
+
+<link-types>
+<link-type id="authority"/>
+<link-type id="acquaintance"/>
+<link-type id="communication"/>
+</link-types>
+<group-specification id="wpgroup">
+<roles>
+<role id="writer"/>
+<role id="editor"/>
+</roles>
+<links>
+<link from="writer" to="editor" type="acquaintance" scope="intra-group" extendsToSubGroups="true" symmetric="false"/>
+<link from="editor" to="writer" type="authority" scope="intra-group" extendsToSubGroups="true" symmetric="false"/>
+<link from="author" to="author" type="communication" scope="intra-group" extendsToSubGroups="true" symmetric="false"/>
+</links>
+
+<formation-constraints>
+<cardinality min="1" max="5" object="role" id="writer"/>
+<cardinality min="1" max="1" object="role" id="editor"/>
+<compatibility from="editor" to="writer" type="compatibility" scope="intra-group" extendsToSubGroups="false" symmetric="true"/>
+</formation-constraints>
+</group-specification>
+</structural-specification>
+
+
+
+<functional-specification>
+<scheme id="writePaperSch" root-goal="wpGoal">
+<goal id="wpGoal"/>
+<goal id="wtitle">Write a title</goal>
+<goal id="wsecs">Write sections</goal>
+<goal id="wsectitles">Write the sections' title</goal>
+<goal id="wconc">Write a conclusion</goal>
+<goal id="wrefs">Complete and link references</goal>
+<goal id="sv">Submission Version</goal>
+<goal id="wabs">Write an abstract</goal>
+<goal id="fdv">First Draft Version</goal>
+
+<plan head-goal="sv" operator="sequence">
+<goal id="wsecs"/>
+<goal id="wconc"/>
+<goal id="wrefs"/>
+</plan>
+<plan head-goal="fdv" operator="sequence">
+<goal id="wtitle"/>
+<goal id="wabs"/>
+<goal id="wsectitles"/>
+</plan>
+<plan head-goal="wpGoal" operator="sequence" >
+<goal id="fdv"/>
+<goal id="sv"/>
+</plan>
+
+<mission id="mColaborator" min="1" max="5">
+<goal id="wsecs"/>
+</mission>
+
+<mission id="mManager" min="1" max="1">
+<goal id="fdv"/>
+<goal id="wabs"/>
+<goal id="wpGoal"/>
+<goal id="wtitle"/>
+<goal id="wconc"/>
+<goal id="wsectitles"/>
+</mission>
+
+<mission id="mBib" min="1" max="1">
+<goal id="sv"/>
+<goal id="wrefs"/>
+<preferable id="mColaborator"/>
+<preferable id="mManager"/>
+</mission>
+</scheme>
+</functional-specification>
+
+<deontic-specification>
+<deontic-operators>
+<deontic-operator id="obligation"/>
+<deontic-operator id="permission"/>
+</deontic-operators>
+
+<deontic-relation type="obligation" 
+                  role="writer" 
+                  mission="mBib" />
+<deontic-relation type="obligation" 
+                  role="writer" 
+                  mission="mColaborator" />
+<deontic-relation type="permission" 
+                  role="editor" 
+                  mission="mManager" />
+</deontic-specification>
+</organisational-specification>
+

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<organisational-specification id="jason-clima-team">
+
+<structural-specification>
+
+<role-definitions>
+  <role id="miner"/>
+  <role id="leader">
+    <extends role="miner"/>
+  </role>
+  <role id="courier">
+    <extends role="miner"/>
+  </role>
+</role-definitions>
+
+<link-types>
+  <link-type id="authority"/>
+  <link-type id="acquaintance"/>
+  <link-type id="communication"/>
+</link-types>
+
+
+<group-specification id="team">
+  <roles>
+      <role id="miner"/>
+	  <role id="leader"/>
+	  <role id="courier"/>
+  </roles>
+  <links>
+      <link from="miner" to="miner" 
+         type="communication" 
+         scope="intra-group" 
+         symmetric="false"/>
+      <link from="leader" to="miner" 
+         type="authority" 
+         scope="intra-group" 
+         symmetric="false"/>
+  </links>
+
+  <formation-constraints>
+    <cardinality min="4" max="4" object="role" id="miner"/>
+    <cardinality min="1" max="1" object="role" id="leader"/>
+    <cardinality min="1" max="1" object="role" id="courier"/>
+    <compatibility from="miner" to="leader" type="compatibility" 
+                   scope="intra-group" extendsToSubGroups="false" 
+                   symmetric="true"/>
+    <compatibility from="miner" to="courier" type="compatibility" 
+                   scope="intra-group" extendsToSubGroups="false" 
+                   symmetric="true"/>
+    <compatibility from="courier" to="leader" type="compatibility"
+                   scope="intra-group" extendsToSubGroups="false" 
+                   symmetric="true"/>
+  </formation-constraints>
+</group-specification>
+
+</structural-specification>
+
+<functional-specification>
+
+<scheme id="meeting_point" root-goal="mp">
+
+  <plan head-goal="mp" operator="sequence" >
+    <goal id="proposeMP"/>
+    <goal id="goldAtDepot"/>
+  </plan>
+
+  <plan head-goal="goldAtDepot" operator="choice" >
+    <goal id="option1"/>
+    <goal id="option2"/>
+  </plan>
+  <plan head-goal="option1" operator="sequence" >
+    <goal id="agreeMP"/>
+    <goal id="gotoMP"/>
+    <goal id="courierCarryGoldDepot"/>
+  </plan>
+  <plan head-goal="option2" operator="sequence" >
+    <goal id="refuseMP"/>
+    <goal id="minerCarryGoldDepot"/>
+  </plan>
+  
+  <mission id="mMiner" min="1" max="1">
+    <goal id="mp"/>
+    <goal id="proposeMP"/>
+    <goal id="goldAtDepot"/>
+    <goal id="gotoMP"/>
+    <goal id="minerCarryGoldDepot"/>
+  </mission>
+
+  <mission id="mCourier" min="1" max="1">
+    <goal id="goldAtDepot"/>
+    <goal id="option1"/>
+    <goal id="option2"/>
+    <goal id="agreeMP"/>
+    <goal id="refuseMP"/>
+    <goal id="courierCarryGoldDepot"/>
+  </mission>
+</scheme>
+
+</functional-specification>
+
+
+<deontic-specification>
+  <deontic-operators>
+    <deontic-operator id="obligation"/>
+    <deontic-operator id="permission"/>
+  </deontic-operators>
+  
+  <deontic-relation type="permission" 
+                    role="miner" mission="mMiner" />
+  <deontic-relation type="obligation" 
+                    role="courier" mission="mCourier" />
+</deontic-specification>
+
+</organisational-specification>
+
