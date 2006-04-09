@@ -7,7 +7,7 @@
 
     <path id="project.classpath">
         <pathelement location="src"/>
-        <pathelement location="/Users/jomi/programming/cvs/Jason/bin/jason.jar"/>
+        <pathelement location="../../lib/jason.jar"/>
         <pathelement location="${basedir}/lib/moise.jar"/>
     </path>
 
