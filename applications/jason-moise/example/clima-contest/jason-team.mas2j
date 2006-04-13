@@ -1,7 +1,7 @@
 MAS jasonteam {
    infrastructure: Centralised
    agents:
-       orgManager [osfile="jason-team-OS.xml",gui=yes] agentArchClass jmoise.OrgManager;
+       orgManager [osfile="jason-team-OS.xml",gui=no] agentArchClass jmoise.OrgManager;
 
        miner      [verbose=1] agentArchClass jmoise.OrgAgent #4;
 }

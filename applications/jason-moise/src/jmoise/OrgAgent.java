@@ -2,22 +2,16 @@ package jmoise;
 
 import jason.JasonException;
 import jason.architecture.AgArch;
-import jason.asSemantics.Event;
-import jason.asSemantics.Intention;
-import jason.asSemantics.Message;
-import jason.asSyntax.Literal;
-import jason.asSyntax.Pred;
-import jason.asSyntax.Trigger;
+import jason.asSemantics.*;
+import jason.asSyntax.*;
 import jason.runtime.Settings;
 
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import moise.oe.GoalInstance;
-import moise.oe.OE;
-import moise.oe.OEAgent;
-import moise.oe.Permission;
+import moise.oe.*;
+import moise.os.fs.*;
 
 import java.util.logging.*;
 
@@ -25,6 +19,8 @@ public class OrgAgent extends AgArch {
 
 	OE currentOE = null;
 	Set alreadyGeneratedEvents = new HashSet();
+	
+	Term managerSource = Term.parse("source(orgManager)");
 	
 	Logger logger = Logger.getLogger(OrgAgent.class.getName());
 
@@ -39,37 +35,6 @@ public class OrgAgent extends AgArch {
 		}
 	}
 	
-	/*
-	private static Term orgManagerTerm = new Term("orgManager");
-	private static Term achievePerfTerm = new Term("achieve");
-	
-	public void act() {
-    	ActionExec acExec = fTS.getC().getAction(); 
-        if (acExec == null) {
-            return;
-        }
-        Term acTerm = acExec.getActionTerm();
-		// if an OE act, do it here
-        if (acTerm.getFunctor().startsWith("oe_")) {
-        	// send acTerm as message to OrgManager
-        	try {
-        		Term sendTerm = new Term(".send");
-        		sendTerm.addTerm(orgManagerTerm);
-        		sendTerm.addTerm(achievePerfTerm);
-        		sendTerm.addTerm(acTerm);
-        		if (logger.isDebugEnabled()) logger.debug("doing:"+acTerm);
-        		fTS.getIA("jason.stdlib.send").execute(fTS, acExec.getIntention().peek().getUnif(), sendTerm.getTermsArray());
-                acExec.setResult(true);
-        	} catch (Exception e) {
-        		logger.error("Error sending "+acTerm+" to OrgManager.",e);
-                acExec.setResult(false);
-        	}
-        	fTS.getC().getFeedbackActions().add(acExec);
-        } else {
-        	super.act();
-        }
-	}
-	*/
 
 	public void checkMail() {
 		super.checkMail(); // get the messages
@@ -90,8 +55,11 @@ public class OrgAgent extends AgArch {
 					} else if (content.startsWith("updateGoals")) { // I need to generate AS Trigger like !<orggoal>
 						i.remove();
 						generateOrgGoalEvents();
-					} else if (content.startsWith("goalState")) { // the state of a scheme i belong has changed
+						updateGoalBels();
+					} else if (content.startsWith("goalState")) { // the state of a scheme i belong to has changed
+						i.remove();
 						generateOrgGoalEvents();
+						updateGoalBels(Pred.parsePred(content));
 					//} else if (m.getIlForce().equals("untell") && content.startsWith("schP")) {
 					//	logger.info("** "+content);
 						
@@ -113,29 +81,23 @@ public class OrgAgent extends AgArch {
 		String grId = m.getTerm(1).toString();
 		Set obligations = new HashSet();
 		
-		Iterator iObl = getMyOEAgent().getObligations().iterator();
-		while (iObl.hasNext()) {
-			Permission p = (Permission)iObl.next();
-			if (p.getRolePlayer().getGroup().getId().equals(grId) &&
-				p.getScheme().getId().equals(schId)) {
-					obligations.add(p);
-					Literal l = Literal.parseLiteral("obligation("+p.getScheme().getId()+","+p.getMission().getId()+")["+
-							"role("+p.getRolePlayer().getRole().getId()+"),group("+p.getRolePlayer().getGroup().getGrSpec().getId()+")]");
-					fTS.getAg().addBel(l, null, fTS.getC(), Intention.EmptyInt);
-					logger.fine("New obligation: "+l);
+		// obligations
+		for (Permission p: getMyOEAgent().getObligations()) {
+			if (p.getRolePlayer().getGroup().getId().equals(grId) && p.getScheme().getId().equals(schId)) {
+				obligations.add(p);
+				Literal l = Literal.parseLiteral("obligation("+p.getScheme().getId()+","+p.getMission().getId()+")["+
+						"role("+p.getRolePlayer().getRole().getId()+"),group("+p.getRolePlayer().getGroup().getGrSpec().getId()+")]");
+				fTS.getAg().addBel(l, managerSource, fTS.getC(), Intention.EmptyInt);
+				logger.fine("New obligation: "+l);
 			}
 		}
 
-		Iterator iPer = getMyOEAgent().getPermissions().iterator();	
-		while (iPer.hasNext()) {
-			Permission p = (Permission)iPer.next();
-			if (p.getRolePlayer().getGroup().getId().equals(grId) &&
-				p.getScheme().getId().equals(schId) &&
-				!obligations.contains(p)) {
-
+		// permissions
+		for (Permission p: getMyOEAgent().getPermissions()) {
+			if (p.getRolePlayer().getGroup().getId().equals(grId) && p.getScheme().getId().equals(schId) && !obligations.contains(p)) {
 				Literal l = Literal.parseLiteral("permission("+p.getScheme().getId()+","+p.getMission().getId()+")["+
 						"role("+p.getRolePlayer().getRole().getId()+"),group("+p.getRolePlayer().getGroup().getGrSpec().getId()+")]");
-				fTS.getAg().addBel(l, null, fTS.getC(), Intention.EmptyInt);
+				fTS.getAg().addBel(l, managerSource, fTS.getC(), Intention.EmptyInt);
 				logger.fine("New permission: "+l);
 			}
 		}
@@ -143,15 +105,12 @@ public class OrgAgent extends AgArch {
 	
 	
 	void generateOrgGoalEvents() {
-		Iterator ig = getMyOEAgent().getPossibleAndPermittedGoals().iterator();
-		while (ig.hasNext()) {
-			GoalInstance gi = (GoalInstance)ig.next();
+		for (GoalInstance gi: getMyOEAgent().getPossibleAndPermittedGoals()) {
 			if (!alreadyGeneratedEvents.contains(gi)) {
 				alreadyGeneratedEvents.add(gi);
 				
-				
 				Literal l = Literal.parseLiteral(gi.getAsProlog()+"["+
-						"scheme("+gi.getSCH().getId()+")"+
+						"scheme("+gi.getScheme().getId()+")"+
 						//"role(notimplemented),group(notimplemented)"+
 						"]");
 				// TODO: add annots: role, group (percorrer as missoes do ag que em GI, procurar os papel com obrigacao para essa missao)
@@ -167,7 +126,7 @@ public class OrgAgent extends AgArch {
 		Iterator i = alreadyGeneratedEvents.iterator();
 		while (i.hasNext()) {
 			GoalInstance gi = (GoalInstance)i.next();
-			if (gi.getSCH().getId().equals(schId)) {
+			if (gi.getScheme().getId().equals(schId)) {
 				i.remove();
 			}
 		}
@@ -179,16 +138,83 @@ public class OrgAgent extends AgArch {
 	private static Literal goalStateLiteral = Literal.parseLiteral("goalState(s,g,state)");
 	private static Literal schPlayersLiteral = Literal.parseLiteral("schPlayers(s,n)");
 	
+	/** remove all bels related to a Scheme */
 	void removeBeliefs(String schId) {
-		fTS.getAg().getBS().removeAll(obligationLiteral);
-		fTS.getAg().getBS().removeAll(permissionLiteral);
-		fTS.getAg().getBS().removeAll(schemeGroupLiteral);
-		fTS.getAg().getBS().removeAll(goalStateLiteral);
-		fTS.getAg().getBS().removeAll(schPlayersLiteral);
+		BeliefBase bb = fTS.getAg().getBS();
+		bb.removeAll(obligationLiteral);
+		bb.removeAll(permissionLiteral);
+		bb.removeAll(schemeGroupLiteral);
+		bb.removeAll(goalStateLiteral);
+		bb.removeAll(schPlayersLiteral);
 	}
 	
 	OEAgent getMyOEAgent() {
 		return currentOE.getAgent(getAgName());
+	}
+
+	
+	/** add/remove bel regarding the goals' state */
+	void updateGoalBels() {
+		// for all missions
+		//    for all goals
+		//       if not in BB, add
+		//       if different from BB, remove/add
+		for (MissionPlayer mp: getMyOEAgent().getMissions()) {
+			for (GoalInstance gi: mp.getScheme().getGoals()) {
+				updateGoalBels(gi);
+			}
+		}
+	}
+
+	void updateGoalBels(Pred arg) {
+		String schId = arg.getTerm(0).toString();
+		String goalId = arg.getTerm(1).toString();
+		for (SchemeInstance sch: getMyOEAgent().getAllMySchemes()) {
+			if (sch.getId().equals(schId)) {
+				GoalInstance gi = sch.getGoal(goalId);
+				if (gi != null) {
+					updateGoalBels(gi);
+				}
+			}
+		}
+	}
+
+	void updateGoalBels(GoalInstance gi) {
+		BeliefBase bb = fTS.getAg().getBS();
+        String gState = "unsatisfied";
+        if (gi.isSatisfied()) {
+        	gState = "satisfied";
+        } else if (gi.isImpossible()) {
+        	gState = "impossible";
+        }
+
+        Literal gil = new Literal(Literal.LPos, new Pred("goalState"));
+        gil.addTerm(new Term(gi.getScheme().getId()));
+        gil.addTerm(new Term(gi.getSpec().getId()));
+        gil.addTerm(new VarTerm("S"));
+		Unifier u = new Unifier();
+		Literal gilInBB = fTS.getAg().believes(gil, u);
+		if (gilInBB != null) {
+			// believe in the goal, remove if different
+			if (! u.get("S").equals(gState)) {
+				fTS.getAg().delBel(gilInBB, null, fTS.getC(), Intention.EmptyInt);
+				if (logger.isLoggable(Level.FINE)) {
+					logger.fine("Remove goal belief: "+gilInBB);
+				}
+			}
+		}
+		
+		gil = new Literal(Literal.LPos, new Pred("goalState"));
+		gil.addTerm(new Term(gi.getScheme().getId()));
+		gil.addTerm(new Term(gi.getSpec().getId()));
+		gil.addTerm(new Term(gState));
+		gilInBB = fTS.getAg().believes(gil, u);
+		if (gilInBB == null) {
+			fTS.getAg().addBel(gil, managerSource, fTS.getC(), Intention.EmptyInt);
+			if (logger.isLoggable(Level.FINE)) {
+				logger.fine("New goal belief: "+gil);
+			}
+		}
 	}
 	
 	/*

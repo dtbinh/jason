@@ -57,7 +57,7 @@
 
 <functional-specification>
 
-<scheme id="meeting_point" root-goal="mp">
+<scheme id="meeting_point" root-goal="mp(X,Y)">
 
   <plan operator="sequence" >
     <goal id="proposeMP" />

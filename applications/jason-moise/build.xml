@@ -16,7 +16,8 @@
     </target>
 	
     <target name="compile" depends="init">
-    	<javac srcdir="${basedir}/src" destdir="${basedir}/bin/classes">
+    	<javac srcdir="${basedir}/src" destdir="${basedir}/bin/classes" 
+           		source="1.5" target="1.5">
             <classpath refid="project.classpath"/>
         </javac>
     </target>

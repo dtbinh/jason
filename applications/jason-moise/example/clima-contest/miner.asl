@@ -79,10 +79,22 @@ init.
 */
 
 
-+!mp[scheme(Sch)] : true 
++!mp(X,Y)[scheme(Sch)] : true 
    <- .print("***** FINISH! *****");
       jmoise.setGoalState(Sch,mp,satisfied).
 
+
+// a generic plan for organisational goals (they have scheme(_) annotation)
++!goldAtDepot[scheme(Sch)] 
+   :  .myName(miner2)
+   <- .print("i do not satisfy gold at depot!").
+
++!proposeMP[scheme(Sch)] 
+   :  true
+   <- jmoise.setGoalArg(Sch,mp,"X", 3);
+      jmoise.setGoalArg(Sch,mp,"Y", 5);
+      jmoise.setGoalState(Sch,proposeMP,satisfied);
+      .print("propose MP -> ok").
       
 // a generic plan for organisational goals (they have scheme(_) annotation)
 +!X[scheme(Sch)] : X \== agreeMP 
