@@ -87,7 +87,7 @@ public class ClimaProxy extends ClimaAgent {
 			arq.addBel(Literal.parseLiteral("depot("+simulationID+","+	depotx+","+depoty+")"));
 
 			// create the model and the view
-			model = WorldModel.create(gsizex, gsizey);
+			model = WorldModel.create(gsizex, gsizey, 4);
 			view  = WorldView.create(model);
 			
 			model.setDepot(depotx, depoty);
@@ -106,6 +106,7 @@ public class ClimaProxy extends ClimaAgent {
 			arq.remBel(Literal.parseLiteral("gsize(S,X,Y)"));
 			arq.remBel(Literal.parseLiteral("depot(S,X,Y)"));
             String score = result.getAttribute("score") +"-"+ result.getAttribute("result");
+            arq.addBel(Literal.parseLiteral("endOfSimulation("+simulationID+","+result.getAttribute("result")+")"));
 			logger.fine("End of simulation "+simulationID+": "+score);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "error processing end",e);

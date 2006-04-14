@@ -134,7 +134,7 @@ public class OrgManager extends AgArch {
 
             	// send schemes of this group to sender
             	for (SchemeInstance sch: gr.getRespSchemes()) {
-            		updateMembersOE(sender,"schemeGroup("+sch.getId()+","+grId+")",false, true);
+            		updateMembersOE(sender,"schemeGroup("+sch.getId()+","+grId+")",true, true);
             	}
             	
             	// send players of this group to sender

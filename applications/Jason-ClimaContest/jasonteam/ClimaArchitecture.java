@@ -56,7 +56,7 @@ public class ClimaArchitecture extends AgArch {
 		Unifier u = new Unifier();
 		Literal bInBB = getTS().getAg().believes(bel,u);
         if (bInBB != null) {
-        	getTS().getAg().delBel(bInBB, BeliefBase.TSelf, getTS().getC(), Intention.EmptyInt);
+        	getTS().getAg().delBel(bInBB, getTS().getC(), Intention.EmptyInt);
         } else {
         	logger.info("Can not remove "+bel+" since I don't believe in it!");
         }

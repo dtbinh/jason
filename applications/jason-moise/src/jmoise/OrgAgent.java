@@ -2,23 +2,35 @@ package jmoise;
 
 import jason.JasonException;
 import jason.architecture.AgArch;
-import jason.asSemantics.*;
-import jason.asSyntax.*;
+import jason.asSemantics.Event;
+import jason.asSemantics.Intention;
+import jason.asSemantics.Message;
+import jason.asSemantics.Unifier;
+import jason.asSyntax.BeliefBase;
+import jason.asSyntax.Literal;
+import jason.asSyntax.Pred;
+import jason.asSyntax.Term;
+import jason.asSyntax.Trigger;
+import jason.asSyntax.VarTerm;
 import jason.runtime.Settings;
 
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import moise.oe.*;
-import moise.os.fs.*;
-
-import java.util.logging.*;
+import moise.oe.GoalInstance;
+import moise.oe.MissionPlayer;
+import moise.oe.OE;
+import moise.oe.OEAgent;
+import moise.oe.Permission;
+import moise.oe.SchemeInstance;
 
 public class OrgAgent extends AgArch {
 
 	OE currentOE = null;
-	Set alreadyGeneratedEvents = new HashSet();
+	Set<GoalInstance> alreadyGeneratedEvents = new HashSet<GoalInstance>();
 	
 	Term managerSource = Term.parse("source(orgManager)");
 	
@@ -60,8 +72,9 @@ public class OrgAgent extends AgArch {
 						i.remove();
 						generateOrgGoalEvents();
 						updateGoalBels(Pred.parsePred(content));
-					//} else if (m.getIlForce().equals("untell") && content.startsWith("schP")) {
-					//	logger.info("** "+content);
+                        
+					//} else if (m.getIlForce().equals("untell")) { // && content.startsWith("schP")) {
+					//    logger.fine("** "+content + " from " + m.getSender());
 						
 					} else if (m.getIlForce().equals("untell") && content.startsWith("scheme")) {
 						String schId = Pred.parsePred(content).getTerm(1).toString();
@@ -79,8 +92,10 @@ public class OrgAgent extends AgArch {
 		// computes this agent obligations in the scheme
 		String schId = m.getTerm(0).toString();
 		String grId = m.getTerm(1).toString();
-		Set obligations = new HashSet();
-		
+		Set<Permission> obligations = new HashSet<Permission>();
+		if (logger.isLoggable(Level.FINE)) {
+		    logger.fine("Computing obl/per for "+m+" in obl="+getMyOEAgent().getObligations()+" and per="+getMyOEAgent().getPermissions());
+        }
 		// obligations
 		for (Permission p: getMyOEAgent().getObligations()) {
 			if (p.getRolePlayer().getGroup().getId().equals(grId) && p.getScheme().getId().equals(schId)) {
@@ -137,6 +152,7 @@ public class OrgAgent extends AgArch {
 	private static Literal schemeGroupLiteral = Literal.parseLiteral("schemeGroup(s,g)");
 	private static Literal goalStateLiteral = Literal.parseLiteral("goalState(s,g,state)");
 	private static Literal schPlayersLiteral = Literal.parseLiteral("schPlayers(s,n)");
+    private static Literal commitmentLiteral = Literal.parseLiteral("commitment(ag,m,sec)");
 	
 	/** remove all bels related to a Scheme */
 	void removeBeliefs(String schId) {
@@ -146,6 +162,7 @@ public class OrgAgent extends AgArch {
 		bb.removeAll(schemeGroupLiteral);
 		bb.removeAll(goalStateLiteral);
 		bb.removeAll(schPlayersLiteral);
+        bb.removeAll(commitmentLiteral);
 	}
 	
 	OEAgent getMyOEAgent() {
@@ -180,6 +197,13 @@ public class OrgAgent extends AgArch {
 	}
 
 	void updateGoalBels(GoalInstance gi) {
+        Pred gap = Pred.parsePred(gi.getAsProlog());
+        if (!gap.isGround()) {
+            return;
+        }
+        if (gi.getScheme().getRoot() == gi) {
+            gap.addAnnot(new Term("root"));
+        }
 		BeliefBase bb = fTS.getAg().getBS();
         String gState = "unsatisfied";
         if (gi.isSatisfied()) {
@@ -190,14 +214,14 @@ public class OrgAgent extends AgArch {
 
         Literal gil = new Literal(Literal.LPos, new Pred("goalState"));
         gil.addTerm(new Term(gi.getScheme().getId()));
-        gil.addTerm(new Term(gi.getSpec().getId()));
+        gil.addTerm(gap);
         gil.addTerm(new VarTerm("S"));
 		Unifier u = new Unifier();
 		Literal gilInBB = fTS.getAg().believes(gil, u);
 		if (gilInBB != null) {
 			// believe in the goal, remove if different
 			if (! u.get("S").equals(gState)) {
-				fTS.getAg().delBel(gilInBB, null, fTS.getC(), Intention.EmptyInt);
+				fTS.getAg().delBel(gilInBB, fTS.getC(), Intention.EmptyInt);
 				if (logger.isLoggable(Level.FINE)) {
 					logger.fine("Remove goal belief: "+gilInBB);
 				}
@@ -206,7 +230,7 @@ public class OrgAgent extends AgArch {
 		
 		gil = new Literal(Literal.LPos, new Pred("goalState"));
 		gil.addTerm(new Term(gi.getScheme().getId()));
-		gil.addTerm(new Term(gi.getSpec().getId()));
+		gil.addTerm(gap);
 		gil.addTerm(new Term(gState));
 		gilInBB = fTS.getAg().believes(gil, u);
 		if (gilInBB == null) {

@@ -88,16 +88,19 @@ public class WorldView extends JFrame {
 							drawEnemy(g, x, y);
 						}
 						if ((model.data[x][y] & WorldModel.ALLY) != 0) {
-							drawAlly(g, x, y);
+							drawAlly(g, x, y, Color.blue);
 						}
 					}
 				}
 			}
 			
-			for (int i=0; i<4; i++) {
-				int[] pos = model.getAgPos(i);
+			for (int i=0; i<model.getNbOfAgs(); i++) {
+				Location pos = model.getAgPos(i);
 				if (pos != null) {
-					drawAllyId(g, pos[0], pos[1], i);
+                    if (model.isCarryingGold(i)) {
+                        drawAlly(g, pos.x, pos.y, Color.yellow);                        
+                    }
+                    drawAllyId(g, pos.x, pos.y, i);
 				}
 			}
 		}
@@ -133,13 +136,13 @@ public class WorldView extends JFrame {
 			g.fillPolygon(vx, vy, 4);
 		}
 		
-		public void drawAlly(Graphics g, int x, int y) {
-			g.setColor(Color.blue);
+		public void drawAlly(Graphics g, int x, int y, Color c) {
+			g.setColor(c);
 			g.fillOval(x*cellSizeW+1, y*cellSizeH+1, cellSizeW-8, cellSizeH-8);
 		}
 	
 		public void drawAllyId(Graphics g, int x, int y, int id) {
-			g.setColor(Color.white);
+			g.setColor(Color.black);
 			g.drawString(""+id, x*cellSizeW+7, y*cellSizeH+16);
 		}
 
@@ -150,7 +153,7 @@ public class WorldView extends JFrame {
 	}
 	
 	public static void main(String[] a) throws Exception {
-		WorldModel m = WorldModel.create(20,20);
+		WorldModel m = WorldModel.create(20,20,4);
 		WorldView v  = WorldView.create(m);
 		m.setDepot(10,10);
 		m.add(m.OBSTACLE, 3,1);

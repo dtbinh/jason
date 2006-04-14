@@ -4,6 +4,8 @@ package jia;
 
 import jason.asSemantics.*;
 import jason.asSyntax.*;
+import jasonteam.Location;
+
 import java.util.logging.*;
 
 public class dist implements jason.asSemantics.InternalAction {
@@ -20,7 +22,7 @@ public class dist implements jason.asSemantics.InternalAction {
 			int iagy = (int)agy.solve();
 			int itox = (int)tox.solve();
 			int itoy = (int)toy.solve();
-			int dist = Math.abs(iagx - itox) + Math.abs(iagy - itoy);
+			int dist = new Location(iagx,iagy).distance(new Location(itox,itoy));
 			return un.unifies(terms[4], new NumberTermImpl(dist));
 		} catch (Throwable e) {
 			e.printStackTrace();

@@ -2,9 +2,13 @@
 
 package jia;
 
-import jason.asSemantics.*;
-import jason.asSyntax.*;
-import java.util.logging.*;
+import jason.asSemantics.TransitionSystem;
+import jason.asSemantics.Unifier;
+import jason.asSyntax.NumberTerm;
+import jason.asSyntax.Term;
+import jasonteam.Location;
+
+import java.util.logging.Logger;
 
 public class neighbour implements jason.asSemantics.InternalAction {
 
@@ -20,9 +24,7 @@ public class neighbour implements jason.asSemantics.InternalAction {
 			int iagy = (int)agy.solve();
 			int itox = (int)tox.solve();
 			int itoy = (int)toy.solve();
-			if (Math.abs(iagx - itox) + Math.abs(iagy - itoy) == 1) return true;
-			if (Math.abs(iagx - itox) == 1 && Math.abs(iagy - itoy) == 1) return true;
-			return false;
+            return new Location(iagx,iagy).isNeigbour(new Location(itox,itoy));
 		} catch (Throwable e) {
 			e.printStackTrace();
 			return false;

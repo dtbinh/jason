@@ -68,7 +68,8 @@ init.
    <- jmoise.commitToMission(mMiner,Sch).
 
 // when the root goal of the scheme is satisfied, remove my missions
-+goalState(Sch, mp, satisfied) : true
++goalState(Sch, G[root], satisfied) 
+   :  true
    <- jmoise.removeMission(Sch).
 
 

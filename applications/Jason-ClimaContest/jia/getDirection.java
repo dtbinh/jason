@@ -5,16 +5,12 @@ import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.NumberTerm;
 import jason.asSyntax.Term;
-import jasonteam.ClimaArchitecture;
 import jasonteam.WorldModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import busca.AEstrela;
-import busca.Busca;
-import busca.BuscaIterativo;
-import busca.BuscaLargura;
 import busca.Estado;
 import busca.Heuristica;
 import busca.Nodo;
@@ -26,7 +22,9 @@ public class getDirection implements InternalAction {
 	
 	public boolean execute(TransitionSystem ts, Unifier un, Term[] terms) throws Exception {
 		try {
-			model = getClimaArch(ts).getModel();
+            String sAction = "skip";
+
+            model = WorldModel.get();
 	
 			NumberTerm agx = (NumberTerm)terms[0].clone(); un.apply((Term)agx);
 			NumberTerm agy = (NumberTerm)terms[1].clone(); un.apply((Term)agy);
@@ -36,43 +34,28 @@ public class getDirection implements InternalAction {
 			int iagy = (int)agy.solve();
 			itox = (int)tox.solve();
 			itoy = (int)toy.solve();
-	
-			AEstrela searchAlg = new AEstrela();
-			searchAlg.setQuieto(true);
-			//searchAlg.setMaxF(20);
-			//System.out.println("-- from "+iagx+","+iagy+" to "+tox+","+toy);
-			Nodo solution = searchAlg.busca(new MinerState(iagx, iagy, this, "initial"));
-			//if (solution == null) {
-			//	solution = searchAlg.getTheBest();
-			//}
-			Nodo root = solution;
-			Estado prev1 = null;
-			Estado prev2 = null;
-			while (root != null) {
-				prev2 = prev1;
-				prev1 = root.getEstado();
-				root = root.getPai();
-			}
-			String sAction = "skip";
-			if (prev2 != null) {
-				//System.out.println("-- "+solution.montaCaminho());
-				sAction =  ((MinerState)prev2).op;
-			} 
-	
-			
-			/*
-			Term action;
-			if (iagx < itox) { 
-				action = new Term("right"); 
-			} else if (iagx > itox) {
-				action = new Term("left");
-			} else if (iagy < itoy) {
-				action = new Term("down");
-			} else {
-				action = new Term("up");
-			}
-			*/
-			
+			if (itox < model.getWidth() && itoy < model.getHeight()) {
+    			AEstrela searchAlg = new AEstrela();
+    			searchAlg.setQuieto(true);
+    			//searchAlg.setMaxF(20);
+    			//System.out.println("-- from "+iagx+","+iagy+" to "+tox+","+toy);
+    			Nodo solution = searchAlg.busca(new MinerState(iagx, iagy, this, "initial"));
+    			//if (solution == null) {
+    			//	solution = searchAlg.getTheBest();
+    			//}
+    			Nodo root = solution;
+    			Estado prev1 = null;
+    			Estado prev2 = null;
+    			while (root != null) {
+    				prev2 = prev1;
+    				prev1 = root.getEstado();
+    				root = root.getPai();
+    			}
+    			if (prev2 != null) {
+    				//System.out.println("-- "+solution.montaCaminho());
+    				sAction =  ((MinerState)prev2).op;
+    			} 
+            }
 			return un.unifies(terms[4], new Term(sAction));
 		} catch (Throwable e) {
 			e.printStackTrace();
@@ -80,19 +63,12 @@ public class getDirection implements InternalAction {
 		}
 	}
 
-	ClimaArchitecture getClimaArch(TransitionSystem myTS) {
-		if (myTS != null && myTS.getUserAgArch() instanceof ClimaArchitecture) {
-			return (ClimaArchitecture)myTS.getUserAgArch();
-		}
-		return null;
-	}
-	
 	// just for testing 
 	public static void main(String[] a) {
 		getDirection ia = new getDirection();
 		ia.itox = 80;
 		ia.itoy = 80;
-		ia.model = WorldModel.create(100,100);
+		ia.model = WorldModel.create(100,100,4);
 		ia.model.add(WorldModel.OBSTACLE, 1,1);
 		ia.model.add(WorldModel.OBSTACLE, 2,1);
 		ia.model.add(WorldModel.OBSTACLE, 2,2);

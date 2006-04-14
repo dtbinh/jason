@@ -1,0 +1,14 @@
+/* Jason Team for Clima Contest VII
+ * (http://cig.in.tu-clausthal.de/CLIMAContest)
+ *
+ */
+
+MAS jasonTeam {
+	infrastructure: Centralised
+	environment: simLocalEnv
+	agents:	miner1 leader; 
+	        miner2 miner;
+	        miner3 miner;
+	        miner4 miner;
+}
+

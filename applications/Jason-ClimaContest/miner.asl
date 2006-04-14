@@ -1,79 +1,62 @@
 // miner agent
 
+// Rafa, apaguei os comentarios que eram para eu ler, qdo vc ler os "Rafa, ..."
+// pode apagar tb. Eu tb. prefiro o fonte mais limpo :-)
+
+
 lastDir(null).
+free. // Rafa, inicia free, para o caso de ja ver ouro bem no inicio
 
-+pos(X,Y) : not myQuad(_,_,_,_) <- .send(miner1,tell,myInitPos(X,Y)).
+// TODO, plano muito pessado, a cada ciclo 'e percebido pos!
+// resolver com initial goal ou moise scheme
++pos(X,Y) : not sentMyPos <- +sendMyPos; .send(miner1,tell,myInitPos(X,Y)).
 
-+myQuad(X1,Y1,X2,Y2) : true
++myQuad(X1,Y1,X2,Y2) 
+  :  free
   <- .print(myQuad(X1,Y1,X2,Y2));
      +nextPos(X1,Y1);
-     +free.
-//     !around(X1,Y1).
+     -free; +free.
 
-//+around(X1,Y1): myQuad(X1,Y1,X2,Y2)
-//  <- .print("Honey, I'm home!");
-//     +free.
 
-// GOLD-SEARCHING PLANS
+/* plans for wandering in my quadrant when I'm free */
 
-//+free : true <- !!wander.
-+free : true <- ?nextPos(X,Y); !around(X,Y).
++free : nextPos(X,Y) <- !around(X,Y).
 
-//// BCG / RCG
-////+!wander : true <- !next; ?wander.
-//+!wander : true <- !next; !!wander.
-////+!wander : true <- !wander.
-//-!wander : true <- !!wander.
-//// -free : true <- .dropGoal(wander, true).
-//// -free : true <- .dropIntention(wander).
++around(X1,Y1) : myQuad(X1,Y1,X2,Y2) & free
+  <- .print("in Q1 to ",X2,"x",Y1); 
+     -around(X1,Y1); !around(X2,Y1).
 
-+around(X1,Y1) : myQuad(X1,Y1,X2,Y2) & free <- .print("Q1"); -around(X1,Y1); !around(X2,Y1).
-+around(X2,Y) : myQuad(X1,Y1,X2,Y2) & free  <- .print("Q2"); -around(X2,Y); !around(X1,Y+3).
-@pn3[atomic]// needed?
-+around(X1,Y) : myQuad(X1,Y1,X2,Y2) & free & Y+3 > Y2 <- .print("Q3,Y>Y2"); -around(X1,Y); !around(X2,Y2).
-@pn4[atomic]// needed?
-+around(X1,Y) : myQuad(X1,Y1,X2,Y2) & free  <- .print("Q3"); -around(X1,Y); !around(X2,Y+3).
-+around(X2,Y2) : myQuad(X1,Y1,X2,Y2) & free <- .print("Q4"); -around(X2,Y2); !around(X1,Y1).
++around(X2,Y2) : myQuad(X1,Y1,X2,Y2) & free 
+  <- .print("in Q4 to ",X1,"x",Y1); 
+     -around(X2,Y2); !around(X1,Y1).
 
-//+!next : myQuad(X1,Y1,X2,Y2) & around(X1,Y1) <- .print("Q1"); -around(X1,Y1); !around(X2,Y1).
-//+!next : myQuad(X1,Y1,X2,Y2) & around(X2,Y)  <- .print("Q2"); -around(X2,Y); !around(X1,Y+3).
-//@pn3[atomic]// needed?
-//+!next : myQuad(X1,Y1,X2,Y2) & around(X1,Y) & Y+3 > Y2 <- .print("Q3,Y>Y2"); -around(X1,Y); !around(X2,Y2).
-//@pn4[atomic]// needed?
-//+!next : myQuad(X1,Y1,X2,Y2) & around(X1,Y)  <- .print("Q3"); -around(X1,Y); !around(X2,Y+3).
-//+!next : myQuad(X1,Y1,X2,Y2) & around(X2,Y2) <- .print("Q4"); -around(X2,Y2); !around(X1,Y1).
-//+!next : true <- true.
-////+!next : .desire(around(X,Y)) <- .print("DESIRE: ",X," ",Y); !next_step(X,Y).
++around(X2,Y) : myQuad(X1,Y1,X2,Y2) & free  
+  <- !calcNewY(Y,Y2,YF);
+     .print("in Q2 to ",X1,"x",YF);
+     -around(X2,Y); !around(X1,YF).
 
-// THIS DOESN'T WORK! Maybe because of !! or .desire and .intend don't work.
-//+pos(X,Y) : .desire(around(XG,YG)) & lastDir(skip)
-//  <- +around(XG,YG); .print("DESIRE: ",X," ",Y).
-//+pos(X,Y) : .desire(around(XG,YG)) & jia.neighbour(X,Y,XG,YG)
-//  <- +around(XG,YG); .print("DESIRE: ",X," ",Y).
++around(X1,Y) : myQuad(X1,Y1,X2,Y2) & free  
+  <- !calcNewY(Y,Y2,YF);
+     .print("in Q3 to ", X2, "x", YF); 
+     -around(X1,Y); !around(X2,YF).
 
-// these are very old, not used for a long time...
-// +!go_to(X,Y) : around(X,Y) <- .print("Here!",X,Y).
-// +!go_to(X,Y) : true <- !next_step(X,Y); !!go_to(X,Y).
+// the last around was not any Q above
++around(X,Y) : myQuad(X1,Y1,X2,Y2) & free & Y <= Y2 & Y >= Y1  
+  <- .print("in no Q, going to X1");
+     -around(X,Y); !around(X1,Y).
++around(X,Y) : myQuad(X1,Y1,X2,Y2) & free & X <= X2 & X >= X1  
+  <- .print("in no Q, going to Y1");
+     -around(X,Y); !around(X,Y1).
+
++!calcNewY(Y,Y2,Y2) : Y+3 > Y2 <- true.
++!calcNewY(Y,Y2,YF) : true <- YF = Y+3.
+
 
 // BCG!
 +!around(X,Y) : pos(AgX,AgY) & jia.neighbour(AgX,AgY,X,Y) <- +around(X,Y).
 +!around(X,Y) : not around(X,Y)
   <- !next_step(X,Y);
-     .print("OK DOK, gonna be around soon.");
-     !!around(X,Y). // only used to go home, OK to be async.
-// TO FIX
-//     ?around(X,Y).
-//-!around(X,Y) : true <- !around(X,Y).
-
-// BCG!
-+!pos(X,Y) : pos(X,Y) <- true.
-+!pos(X,Y) : not pos(X,Y)
-  <- !next_step(X,Y);
-     !pos(X,Y).
-// TO FIX
-//     ?pos(X,Y).
-//-!pos(X,Y) : true <- !pos(X,Y).
-
+     !!around(X,Y). 
 
 @pns[atomic]
 +!next_step(X,Y)
@@ -81,44 +64,63 @@ lastDir(null).
   <- jia.getDirection(AgX, AgY, X, Y, D);
      -lastDir(_); +lastDir(D);
      do(D).
-// only for the eventuality of no "pos" info (needed???)
 +!next_step(X,Y) : true <- true.
 
 
-// GOLD-HANDLING PLANS
 
+/* Gold-searching Plans */
+
+// I perceived gold
 +cell(X,Y,gold) : true <- +gold(X,Y).
 
+// someone else send me gold location
 +gold(X1,Y1)[source(A)] : A \== self & free
   <- ?pos(X2,Y2);
      jia.dist(X1,Y1,X2,Y2,D);
      .send(miner1,tell,freeFor(gold(X1,Y1),D)).
++gold(X1,Y1)[source(A)] : A \== self & not free
+  <- .send(miner1,tell,freeFor(gold(X1,Y1),99)).
 
-+gold(X,Y)[source(self)] : not free
-  <- .broadcast(tell,gold(X,Y)).
+// i've perceived gold, but i'm alredy carrying gold, so announce to others
++gold(X,Y)[source(self)] 
+  :  not free //.intend(handle(gold(_,_))) // is processing  another gold
+  <- .print("announcing gold to others");
+     .broadcast(tell,gold(X,Y));
+     .send(miner1,tell,freeFor(gold(X,Y),99)). // send my bid
 
-@pg3[atomic]
+
+//@pg3[atomic]
+  // Rafa, [jomi said] removed atomic, since the agent should perceive gold, 
+  // answer to other, ... while handling gold
 +gold(X,Y) : free
   <- // -free; // OK to use @ph1? Any chance of another gold event interfering?
 //     .dropAllDesires;
 //     .dropAllIntentions;
-     .print("Oh well, at least I'm here!!!");
+     //.print("Oh well, at least I'm here!!!",gold(X,Y));
      !handle(gold(X,Y)).
 
-+allocatedTo(Gold,Ag) : .myName(Ag)
+// Rafa, parece que os dois planos abaixo nao sao usados, o leader manda
+// direto !handle(Gold), ok?
+/*
++allocatedTo(Gold,Ag) : .myName(Ag) & free // i am still free
   <- .print("I've been allocated to handle ",Gold);
      !handle(Gold).
-+allocatedTo(Gold,Ag) : not .myName(Ag)
++allocatedTo(Gold,Ag) : true //not .myName(Ag)
   <- -Gold.
+*/
 
 // Hopefully going first to home if never got there because some gold was found
 -gold(X,Y) : not gold(_,_) <- +free.
+
 // Finished one gold, but others left
 -gold(_,_) : gold(X,Y) <- !handle(gold(X,Y)).
 
-@ph1[atomic]
+
+// TODO: use the SGA (sequential goal) here, the should not deal with to golds!
+// it is possible with communicated golds
+//@ph1[atomic]
 +!handle(Gold) : free
-  <- -free;
+  <- -free; 
      ?pos(X,Y);
      +nextPos(X,Y);
      .dropAllDesires; // must be dropDesire(around) but causes conc. modif. exception...
@@ -132,6 +134,14 @@ lastDir(null).
      !pos(DX,DY);
      !ensure(drop);
      -gold(X,Y).
+
+// BCG!
++!pos(X,Y) : lastDir(skip) <- .print("It is not possible to go to ",X,Y). // in future +lastDir(skip) <- .dropGoal(pos)
++!pos(X,Y) : pos(X,Y) <- true.
++!pos(X,Y) : not pos(X,Y)
+  <- !next_step(X,Y);
+     !pos(X,Y).
+
 
 // need to check if really carrying gold, otherwise drop goal, etc...
 +!ensure(pick) : pos(X,Y) & gold(X,Y) // & not carryingGold
