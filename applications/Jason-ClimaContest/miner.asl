@@ -79,14 +79,14 @@ free. // Rafa, inicia free, para o caso de ja ver ouro bem no inicio
      jia.dist(X1,Y1,X2,Y2,D);
      .send(miner1,tell,freeFor(gold(X1,Y1),D)).
 +gold(X1,Y1)[source(A)] : A \== self & not free
-  <- .send(miner1,tell,freeFor(gold(X1,Y1),99)).
+  <- .send(miner1,tell,freeFor(gold(X1,Y1),1000)).
 
 // i've perceived gold, but i'm alredy carrying gold, so announce to others
 +gold(X,Y)[source(self)] 
   :  not free //.intend(handle(gold(_,_))) // is processing  another gold
   <- .print("announcing gold to others");
      .broadcast(tell,gold(X,Y));
-     .send(miner1,tell,freeFor(gold(X,Y),99)). // send my bid
+     .send(miner1,tell,freeFor(gold(X,Y),1000)). // send my bid
 
 
 //@pg3[atomic]

@@ -61,10 +61,8 @@
   <- !allocateMinerFor(Gold).
 +freeFor(Gold,D)[source(A)] : true <- .print("bid from ",A," is ",D).  
  
-// TODO: it not working well, the sort is not working with number, they are beging considered as term no NumberTerm!
 +!allocateMinerFor(Gold) : true
   <- .findall(op(Dist,A),freeFor(Gold,Dist)[source(A)],LD);
-     .sort(LD,LS); .print(LS);
      .sort(LD,[op(_,Closer)|_]); 
      .print("Gold ",Gold," was allocated to ",Closer, " options was ",LD);
      .send(Closer,achieve,handle(Gold)).
