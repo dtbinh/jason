@@ -8,6 +8,15 @@ New features
      To create a new infrastructure, you shoud add an infrastrucure Factory
      in .jason/user.properties file and implement some classes. 
      See jason.infra.centralised and jason.infra.saci packages as examples.
+   . AS syntax was changed to support include directive,
+     e.g. in an AS file:
+	.... plans ....
+	{ include("anotherfile.asl") }
+	.... more plans ....
+   . new internal action wait, e.g. in an AS file:
+	+a : true <- .wait(1000). // waits 1 second
+	+a : true <- .wait("+!x"). // waits an event
+
    
 Changes in .mas2j file
    . The user can inform its own parameters in the agent declaration, e.g.:
