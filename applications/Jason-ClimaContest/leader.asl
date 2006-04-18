@@ -55,17 +55,19 @@
 */
 
 +freeFor(Gold,_) 
-  :  freeFor(Gold,D1)[source(miner1)] & freeFor(Gold,D2)[source(miner2)] & 
-     freeFor(Gold,D3)[source(miner3)] & freeFor(Gold,D4)[source(miner4)] 
-     //M1 \== M2 & M1 \== M3 & M2 \== M3 // TODO: it seems a bug in jason M1 as miner3 and M3 as miner3 pass to this test!!!!
+  :  freeFor(Gold,D1)[source(M1)] & freeFor(Gold,D2)[source(M2)] & 
+     freeFor(Gold,D3)[source(M3)] &
+     M1 \== M2 & M1 \== M3 & M2 \== M3
   <- !allocateMinerFor(Gold).
 +freeFor(Gold,D)[source(A)] : true <- .print("bid from ",A," is ",D).  
  
 +!allocateMinerFor(Gold) : true
   <- .findall(op(Dist,A),freeFor(Gold,Dist)[source(A)],LD);
-     .sort(LD,[op(_,Closer)|_]); 
+     .sort(LD,[op(DistCloser,Closer)|_]);
+     DistCloser < 1000;
      .print("Gold ",Gold," was allocated to ",Closer, " options was ",LD);
      .send(Closer,achieve,handle(Gold)).
+-!allocateMinerFor(Gold) : true <- .print("could not allocate gold ",Gold).
 
 /* old version     
 +!allocateMinerFor(Gold) : true
