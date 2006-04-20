@@ -6,7 +6,6 @@ import jasonteam.Location;
 import jasonteam.WorldModel;
 import jasonteam.WorldView;
 
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,7 +16,10 @@ public class simLocalEnv extends jason.environment.Environment {
     WorldModel model;
     WorldView view;
     
-    public static final int SIM_TIME = 10; // in seconds
+    int simId = 1;
+    int nbWorlds = 4;
+    
+    public static final int SIM_TIME = 30; // in seconds
     
     Term up    = Term.parse("do(up)");
     Term down  = Term.parse("do(down)");
@@ -34,7 +36,7 @@ public class simLocalEnv extends jason.environment.Environment {
     
     
     public simLocalEnv() {
-    	initWorld(3);
+    	initWorld(1);
         new Thread() {
         	public void run() {
         		while (true) {
@@ -54,27 +56,29 @@ public class simLocalEnv extends jason.environment.Environment {
 		case 1: world1(); break;
 		case 2: world2(); break;
 		case 3: world3(); break;
+        case 4: world4(); break;
 		default: logger.info("Invalid index!"); return;
 		}
         view = WorldView.create(model);
         
-		addPercept(Literal.parseLiteral("gsize(teste,"+model.getWidth()+","+model.getHeight()+")"));
-        addPercept(Literal.parseLiteral("depot(teste,"+model.getDepot().x+","+model.getDepot().y+")"));
+		addPercept(Literal.parseLiteral("gsize("+simId+","+model.getWidth()+","+model.getHeight()+")"));
+        addPercept(Literal.parseLiteral("depot("+simId+","+model.getDepot().x+","+model.getDepot().y+")"));
         
         updateAgsPercept();    	
     }
     
     private void endSimulation() {
-    	clearPercepts();
-		addPercept(Literal.parseLiteral("endOfSimulation(teste,0)"));
+    	clearPercepts();   
+		addPercept(Literal.parseLiteral("endOfSimulation("+simId+",0)"));
+        simId++;
 		WorldView.destroy();
 		WorldModel.destroy();
-		initWorld(new Random().nextInt(3)+1);
+		initWorld( (simId % nbWorlds) +1);//new Random().nextInt(3)+1);
     }
         
     /** no gold/no obstacle world */
     private void world1() {
-        model = WorldModel.create(25,25,4);
+        model = WorldModel.create(21,21,4);
         model.setDepot(5,7);
         model.setAgPos(0, 1, 0);
         model.setAgPos(1, 20, 0);
@@ -82,15 +86,29 @@ public class simLocalEnv extends jason.environment.Environment {
         model.setAgPos(3, 20, 20);
     }
 
-    /** world with gold, no obstacle */
     private void world2() {
-        world1();
-        model.add(WorldModel.GOLD, 20,20);
-        model.add(WorldModel.GOLD, 20,15);
+        model = WorldModel.create(10,10,4);
+        model.setDepot(5,7);
+        model.setAgPos(0, 1, 0);
+        model.setAgPos(1, 1, 2);
+        model.setAgPos(2, 1, 3);
+        model.setAgPos(3, 1, 4);
     }
 
     /** world with gold, no obstacle */
     private void world3() {
+        model = WorldModel.create(15,15,4);
+        model.setDepot(5,7);
+        model.setAgPos(0, 1, 0);
+        model.setAgPos(1, 10, 0);
+        model.setAgPos(2, 3, 10);
+        model.setAgPos(3, 10, 10);
+        model.add(WorldModel.GOLD, 10,10);
+        model.add(WorldModel.GOLD, 10,14);
+    }
+
+    /** world with gold, no obstacle */
+    private void world4() {
         model = WorldModel.create(35,35,4);
         model.setDepot(5,27);
         model.setAgPos(0, 1, 0);
@@ -109,6 +127,7 @@ public class simLocalEnv extends jason.environment.Environment {
         model.add(WorldModel.GOLD, 20,24);
         model.add(WorldModel.GOLD, 19,20);
         model.add(WorldModel.GOLD, 19,21);
+        model.add(WorldModel.GOLD, 34,34);
     }
 
     private void updateAgsPercept() {
@@ -213,7 +232,7 @@ public class simLocalEnv extends jason.environment.Environment {
         Location l = model.getAgPos(ag);
         if (model.isCarryingGold(ag)) {
             if (l.equals(model.getDepot())) {
-                logger.info("Agent "+ag+" carried a gold to depot!");
+                logger.info("Agent "+(ag+1)+" carried a gold to depot!");
             } else {
                 model.add(WorldModel.GOLD,l.x,l.y);
             }
@@ -225,7 +244,9 @@ public class simLocalEnv extends jason.environment.Environment {
     }
 
     public boolean executeAction(String ag, Term action) {
+        
         try {
+            Thread.sleep(50);
             int agId = (Integer.parseInt(ag.substring(5))) -1;
         
             if (action.equals(up))           { return move(UP, agId);

@@ -1,18 +1,27 @@
 // leader agent
 
-+gsize(_,W,H) : true
-  <- +quad(1, 0, 0, W div 2 - 1, H div 2 - 1);
-     +quad(2, W div 2, 0, W-1, H div 2 - 1);
-     +quad(3, 0, H div 2, W div 2 - 1, H - 1);
-     +quad(4, W div 2, H div 2, W - 1, H - 1).
+@quands[atomic]
++gsize(S,W,H) : true
+  <- .print("Defining quadrants for ",W,"x",H," simulation ",S);
+     +quad(S,1, 0, 0, W div 2 - 1, H div 2 - 1);
+     +quad(S,2, W div 2, 0, W-1, H div 2 - 1);
+     +quad(S,3, 0, H div 2, W div 2 - 1, H - 1);
+     +quad(S,4, W div 2, H div 2, W - 1, H - 1).
 
-+myInitPos(X,Y)[source(A)]
-  :  myInitPos(X1,Y1)[source(miner1)] & myInitPos(X2,Y2)[source(miner2)] &
-     myInitPos(X3,Y3)[source(miner3)] & myInitPos(X4,Y4)[source(miner4)]
-  <- .print("* InitPos ",A," is ",X," ",Y);
-     !assignAllQuads([miner1,miner2,miner3,miner4],[1,2,3,4]).
-//     !backToMinerRole.
-+myInitPos(X,Y)[source(A)] : true <- .print("- InitPos ",A," is ",X," ",Y).
++myInitPos(S,X,Y)[source(A)]
+  :  myInitPos(S,X1,Y1)[source(miner1)] & myInitPos(S,X2,Y2)[source(miner2)] &
+     myInitPos(S,X3,Y3)[source(miner3)] & myInitPos(S,X4,Y4)[source(miner4)]
+     //quad(S,4,_,_,_,_)
+  <- .print("* InitPos ",A," is ",X,"x",Y);
+     !assignAllQuads(S,[miner1,miner2,miner3,miner4],[1,2,3,4]).
+/*+myInitPos(S,X,Y)[source(A)]
+  :  myInitPos(S,X1,Y1)[source(miner1)] & myInitPos(S,X2,Y2)[source(miner2)] &
+     myInitPos(S,X3,Y3)[source(miner3)] & myInitPos(S,X4,Y4)[source(miner4)]
+  <- .print("wait gsize");
+     .wait("+quad(_,4,_,_,_,_)");
+     !assignAllQuads(S,[miner1,miner2,miner3,miner4],[1,2,3,4]).
+     */
++myInitPos(S,X,Y)[source(A)] : true <- .print("- InitPos ",A," is ",X,"x",Y).
 
 // Jomi, estas partes que sao "prolog", era melhor se a gente ja tivesse
 // aquelas regras na BB, pra nao confundir o uso de planos; acho que fica
@@ -20,39 +29,32 @@
 
 // Rafa, talvez refazer essa parte usando o sort. (TODO)
 
-+!assignAllQuads([],_) : true <- true.
++!assignAllQuads(_,[],_) : true <- true.
 // Give priority based on agent number, this is NOT the optimal allocation
-+!assignAllQuads([A|T],[I|L]) : true
-  <- ?quad(I,X1,Y1,_,_);
-     ?myInitPos(X2,Y2)[source(A)];
++!assignAllQuads(S,[A|T],[I|L]) : true
+  <- ?quad(S,I,X1,Y1,_,_);
+     ?myInitPos(S,X2,Y2)[source(A)];
      jia.dist(X1,Y1,X2,Y2,D);
-     !assignQuad(A,q(I,D),q(AQ,_),L,[],NL); // Using Q instead of AQ here makes last call, with L=[] already, not to
-                                            // unify directly with the first assignQuad plan below. Is this a bug
+     !assignQuad(S,A,q(I,D),q(AQ,_),L,[],NL); // Using Q instead of AQ here makes last call, with L=[] already, not to
+                                              // unify directly with the first assignQuad plan below. Is this a bug
 					    // with Jason's handling of logical variagbles and unification?
      .print(A, "'s Quadrant is: ",AQ);
-     ?quad(AQ,X3,Y3,X4,Y4);
+     ?quad(S,AQ,X3,Y3,X4,Y4);
      .send(A,tell,myQuad(X3,Y3,X4,Y4)); // .send works for the agent itself
-     !assignAllQuads(T,NL).
+     !assignAllQuads(S,T,NL).
 
 // Already checked all quadrants available for agent A
-+!assignQuad(A,Q,Q,[],L,L) : true <- true.
++!assignQuad(_,A,Q,Q,[],L,L) : true <- true.
 //
-+!assignQuad(A,q(ID,D),Q,[I|T],L,FL) : true
-  <- ?quad(I,X1,Y1,_,_);
-     ?myInitPos(X2,Y2)[source(A)];
++!assignQuad(S,A,q(ID,D),Q,[I|T],L,FL) : true
+  <- ?quad(S,I,X1,Y1,_,_);
+     ?myInitPos(S,X2,Y2)[source(A)];
      jia.dist(X1,Y1,X2,Y2,ND);
      !getSmaller(q(ID,D),q(I,ND),SQ,LI); // shall we add conditional expressions to AS?
-     !assignQuad(A,SQ,Q,T,[LI|L],FL).
+     !assignQuad(S,A,SQ,Q,T,[LI|L],FL).
 
 +!getSmaller( q(Q1,D1), q(Q2,D2), q(Q1,D1), Q2 ) : D1 <= D2 <- true.
 +!getSmaller( q(Q1,D1), q(Q2,D2), q(Q2,D2), Q1 ) : D2 <  D1 <- true.
-
-/*
-+endOfSimulation(SimId,Result) : true <- !checkFreeMiners.
-
-+!checkFreeMiners : not freeFor(_) <- true.
-+!checkFreeMiners : freeFor(Gold) <- !allocateMinerFor(Gold); !checkFreeMiners.
-*/
 
 +freeFor(Gold,_) 
   :  freeFor(Gold,D1)[source(M1)] & freeFor(Gold,D2)[source(M2)] & 
@@ -92,12 +94,13 @@
 
 /* end of simulation plans */     
 
-+endOfSimulation(_,_) : true 
-  <- .dropAllDesires; 
+@end[atomic]
++endOfSimulation(S,_) : true 
+  <- .print("-- END ",S," --");
+     .dropAllDesires; 
      .dropAllIntentions;
      !clearInitPos.
   
-+!clearInitPos : myInitPos(_,_) <- -myInitPos(_,_); !clearInitPos.
++!clearInitPos : myInitPos(S,_,_) <- -myInitPos(S,_,_); !clearInitPos.
 +!clearInitPos : true <- true.
 
-     

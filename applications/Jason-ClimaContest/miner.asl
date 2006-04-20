@@ -11,7 +11,8 @@ free. // Rafa, inicia free, para o caso de ja ver ouro bem no inicio
 // does not work, bug in .wait?
 //+init : true <- .wait("+pos(X,Y)"); .send(leader,tell,myInitPos(X,Y)).
 
-+pos(X,Y) : not sentMyInitPos <- +sentMyInitPos; .send(leader,tell,myInitPos(X,Y)).
++pos(X,Y) : gsize(S,_,_) & not sentMyInitPos(S)  
+  <- +sentMyInitPos(S); .send(leader,tell,myInitPos(S,X,Y)).
 
 // security plan: if something else stop working, start again!
 /* does not work! (problem with .desire?)
@@ -95,7 +96,8 @@ free. // Rafa, inicia free, para o caso de ja ver ouro bem no inicio
 @pcell[atomic] // atomic: to not handle another event until handle gold is carryin on
 +cell(X,Y,gold) 
   :  not gold(X,Y) & free 
-  <- -free; 
+  <- -free;
+     !update(nextPos(X,Y));
      +gold(X,Y);
      !!handle(gold(X,Y)). // must use !! to process handle as not atomic
      
@@ -111,16 +113,16 @@ free. // Rafa, inicia free, para o caso de ja ver ouro bem no inicio
 
      
 // someone else send me gold location
-+gold(X1,Y1)[source(A)] : A \== self & free
-  <- ?pos(X2,Y2);
-     jia.dist(X1,Y1,X2,Y2,D);
++gold(X1,Y1)[source(A)] : A \== self & free & pos(X2,Y2)
+  <- jia.dist(X1,Y1,X2,Y2,D);
      .send(leader,tell,freeFor(gold(X1,Y1),D)).
-+gold(X1,Y1)[source(A)] : A \== self & not free
++gold(X1,Y1)[source(A)] : A \== self
   <- .send(leader,tell,freeFor(gold(X1,Y1),1000)).
 
 +!allocated(Gold)[source(leader)] 
   :  free // I am still free
   <- -free;
+     !update(nextPos(X,Y));
      !handle(Gold).
 +!allocated(_) : true <- true.
   
@@ -184,12 +186,13 @@ free. // Rafa, inicia free, para o caso de ja ver ouro bem no inicio
 // Hopefully going first to home if never got there because some gold was found
 +!choose_gold 
   :  not gold(_,_)
-  <- +free.
+  <- !update(free).
 
 // Finished one gold, but others left
 // TODO: only pursue this gold in case no other is doing it (committed to this gold)
 +!choose_gold 
   :  gold(X,Y) // todo: do not work with gold(_,_)!!!!!! see email that describe bug to find "maior" in a list
+               // todo: write an IA meanwhile....
   <- .findall(gold(X,Y),gold(X,Y),LG); .print("Gold distances: ",LG);
      !calcGoldDistance(LG,LD); 
      .sort(LD,[d(_,G)|_]);
@@ -237,18 +240,28 @@ free. // Rafa, inicia free, para o caso de ja ver ouro bem no inicio
 
 /* end of a simulation */
 
-+endOfSimulation(_,_) : true 
-  <- .print("-- END --");
+@end[atomic]
++endOfSimulation(S,_) : true 
+  <- .print("-- END ",S," --");
      .dropAllDesires; 
      .dropAllIntentions;
-     -sentMyInitPos;
      !clearMyQuad;
      !clearGold;
+     !clearNextPos;
      !fixLastDir;
-     !update(free).
+     -pos(_,_);
+     !clearMyInitPos;
+     !!update(free).
+
 +!clearMyQuad : myQuad(_,_,_,_) <- -myQuad(_,_,_,_).
 +!clearMyQuad : true <- true.
 
++!clearMyInitPos : sentMyInitPos(_) <- -sentMyInitPos(_).
++!clearMyInitPos : true <- true.
+
 +!clearGold : gold(_,_) <- -gold(_,_); !clearGold.
 +!clearGold : true <- true.
+
++!clearNextPos : nextPos(_,_) <- -nextPos(_,_); !clearNextPos.
++!clearNextPos : true <- true.
 
