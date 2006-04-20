@@ -6,6 +6,7 @@
 MAS jasonTeam {
 	infrastructure: Centralised
 	agents:
+        leader; 
 	    // official host agentslave.in.tu-clausthal.de
 		miner1 leader.asl
 		        [host="localhost", port=12300, username=blumenau1, password=bu43] 
