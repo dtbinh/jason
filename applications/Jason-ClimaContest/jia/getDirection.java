@@ -17,14 +17,11 @@ import busca.Nodo;
 
 public class getDirection implements InternalAction {
 	
-	int itox, itoy;
-	WorldModel model;
-	
 	public boolean execute(TransitionSystem ts, Unifier un, Term[] terms) throws Exception {
 		try {
             String sAction = "skip";
 
-            model = WorldModel.get();
+            WorldModel model = WorldModel.get();
 	
 			NumberTerm agx = (NumberTerm)terms[0].clone(); un.apply((Term)agx);
 			NumberTerm agy = (NumberTerm)terms[1].clone(); un.apply((Term)agy);
@@ -32,14 +29,14 @@ public class getDirection implements InternalAction {
 			NumberTerm toy = (NumberTerm)terms[3].clone(); un.apply((Term)toy);
 			int iagx = (int)agx.solve();
 			int iagy = (int)agy.solve();
-			itox = (int)tox.solve();
-			itoy = (int)toy.solve();
+			int itox = (int)tox.solve();
+			int itoy = (int)toy.solve();
 			if (itox < model.getWidth() && itoy < model.getHeight()) {
     			AEstrela searchAlg = new AEstrela();
     			searchAlg.setQuieto(true);
     			//searchAlg.setMaxF(20);
     			//System.out.println("-- from "+iagx+","+iagy+" to "+tox+","+toy);
-    			Nodo solution = searchAlg.busca(new MinerState(iagx, iagy, this, "initial"));
+    			Nodo solution = searchAlg.busca(new MinerState(iagx, iagy, itox, itoy, model, "initial"));
     			//if (solution == null) {
     			//	solution = searchAlg.getTheBest();
     			//}
@@ -65,21 +62,17 @@ public class getDirection implements InternalAction {
 
 	// just for testing 
 	public static void main(String[] a) {
-		getDirection ia = new getDirection();
-		ia.itox = 80;
-		ia.itoy = 80;
-		ia.model = WorldModel.create(100,100,4);
-		ia.model.add(WorldModel.OBSTACLE, 1,1);
-		ia.model.add(WorldModel.OBSTACLE, 2,1);
-		ia.model.add(WorldModel.OBSTACLE, 2,2);
-		//ia.model.add(WorldModel.OBSTACLE, 3,1);
+		WorldModel model = WorldModel.create(100,100,4);
+		model.add(WorldModel.OBSTACLE, 1,1);
+		model.add(WorldModel.OBSTACLE, 2,1);
+		model.add(WorldModel.OBSTACLE, 2,2);
 
-		ia.model.add(WorldModel.EMPTY, 2,0);
-		ia.model.add(WorldModel.EMPTY, 3,0);
-		ia.model.add(WorldModel.EMPTY, 3,1);
-		ia.model.add(WorldModel.EMPTY, 3,2);
+		model.add(WorldModel.EMPTY, 2,0);
+		model.add(WorldModel.EMPTY, 3,0);
+		model.add(WorldModel.EMPTY, 3,1);
+		model.add(WorldModel.EMPTY, 3,2);
 		
-		MinerState initial = new MinerState(0, 3, ia, "initial");
+		MinerState initial = new MinerState(19, 17, 5, 7, model, "initial");
 		AEstrela searchAlg = new AEstrela();
 		searchAlg.setQuieto(false);
 		Nodo solution = searchAlg.busca(initial);
@@ -102,17 +95,20 @@ class MinerState implements Estado, Heuristica {
 
 	// State information
 	int x,y;
-	getDirection ia;
 	String op;
 	int cost;
+	int tox, toy;
+	WorldModel model;
 	
-	public MinerState(int x, int y, getDirection ia, String op) {
+	public MinerState(int x, int y, int tox, int toy, WorldModel model, String op) {
 		this.x = x;
 		this.y = y;
-		this.ia = ia;
+		this.tox = tox;
+		this.toy = toy;
+		this.model = model;
 		this.op = op;
 		this.cost = 3;
-		if (ia.model.isUnknown(x,y)) this.cost = 2; // unknown places are preferable
+		if (model.isUnknown(x,y)) this.cost = 2; // unknown places are preferable
 	}
 	
 	public int custo() {
@@ -120,7 +116,7 @@ class MinerState implements Estado, Heuristica {
 	}
 
 	public boolean ehMeta() {
-		return x == ia.itox && y == ia.itoy;
+		return x == tox && y == toy;
 	}
 
 	public String getDescricao() {
@@ -128,28 +124,39 @@ class MinerState implements Estado, Heuristica {
 	}
 
 	public int h() {
-		return (Math.abs(x - ia.itox) + Math.abs(y - ia.itoy)) * 3;
+		return (Math.abs(x - tox) + Math.abs(y - toy)) * 3;
 	}
 
 	public List sucessores() {
 		List s = new ArrayList(4);
 		// four directions
-		if (ia.model.isFree(x,y-1)) {
-			s.add(new MinerState(x,y-1,ia,"up"));
+		if (model.isFree(x,y-1)) {
+			s.add(new MinerState(x,y-1,tox,toy,model,"up"));
 		}
-		if (ia.model.isFree(x,y+1)) {
-			s.add(new MinerState(x,y+1,ia,"down"));
+		if (model.isFree(x,y+1)) {
+			s.add(new MinerState(x,y+1,tox,toy,model,"down"));
 		}
-		if (ia.model.isFree(x-1,y)) {
-			s.add(new MinerState(x-1,y,ia, "left"));
+		if (model.isFree(x-1,y)) {
+			s.add(new MinerState(x-1,y,tox,toy,model, "left"));
 		}
-		if (ia.model.isFree(x+1,y)) {
-			s.add(new MinerState(x+1,y,ia, "right"));
+		if (model.isFree(x+1,y)) {
+			s.add(new MinerState(x+1,y,tox,toy,model, "right"));
 		}
-		//System.out.println(this + " suc is "+s);
 		return s;
 	}
 	
+    public boolean equals(Object o) {
+        try {
+            MinerState m = (MinerState)o;
+            return x == m.x && y == m.y;
+        } catch (Exception e) {}
+        return false;
+    }
+    
+    public int hashCode() {
+        return (x + "," + y).hashCode();
+    }
+            
 	public String toString() {
 		return "(" + x + "," + y + "-" + op + "/" + cost + ")"; 
 	}

@@ -100,7 +100,7 @@ public class WorldView extends JFrame {
                     if (model.isCarryingGold(i)) {
                         drawAlly(g, pos.x, pos.y, Color.yellow);                        
                     }
-                    drawAllyId(g, pos.x, pos.y, i);
+                    drawAllyId(g, pos.x, pos.y, (i+1));
 				}
 			}
 		}

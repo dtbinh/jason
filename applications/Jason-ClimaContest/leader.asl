@@ -66,7 +66,7 @@
      .sort(LD,[op(DistCloser,Closer)|_]);
      DistCloser < 1000;
      .print("Gold ",Gold," was allocated to ",Closer, " options was ",LD);
-     .send(Closer,achieve,handle(Gold)).
+     .send(Closer,achieve,allocated(Gold)).
 -!allocateMinerFor(Gold) : true <- .print("could not allocate gold ",Gold).
 
 /* old version     
@@ -89,5 +89,15 @@
      // +dir(X,Y);
      // !around(X,Y).
 
-{ include("miner.asl") }
 
+/* end of simulation plans */     
+
++endOfSimulation(_,_) : true 
+  <- .dropAllDesires; 
+     .dropAllIntentions;
+     !clearInitPos.
+  
++!clearInitPos : myInitPos(_,_) <- -myInitPos(_,_); !clearInitPos.
++!clearInitPos : true <- true.
+
+     
