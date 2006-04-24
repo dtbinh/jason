@@ -56,12 +56,12 @@ public class simLocalEnv extends jason.environment.Environment {
 		case 1: world1(); break;
 		case 2: world2(); break;
 		case 3: world3(); break;
-        case 4: world4(); break;
+		case 4: world4(); break;
 		default: logger.info("Invalid index!"); return;
 		}
         view = WorldView.create(model);
         
-		addPercept(Literal.parseLiteral("gsize("+simId+","+model.getWidth()+","+model.getHeight()+")"));
+	addPercept(Literal.parseLiteral("gsize("+simId+","+model.getWidth()+","+model.getHeight()+")"));
         addPercept(Literal.parseLiteral("depot("+simId+","+model.getDepot().x+","+model.getDepot().y+")"));
         
         updateAgsPercept();    	
@@ -70,7 +70,7 @@ public class simLocalEnv extends jason.environment.Environment {
     private void endSimulation() {
     	clearPercepts();   
 		addPercept(Literal.parseLiteral("endOfSimulation("+simId+",0)"));
-        simId++;
+		simId++;
 		WorldView.destroy();
 		WorldModel.destroy();
 		initWorld( (simId % nbWorlds) +1);//new Random().nextInt(3)+1);

@@ -7,6 +7,6 @@ MAS jasonTeam {
 	infrastructure: Centralised
 	environment: simLocalEnv
 	agents:	leader; 
-	        miner miner #4;
+	        miner #4;
 }
 

@@ -1,39 +1,45 @@
 // miner agent
 
-// Rafa, apaguei os comentarios que eram para eu ler, qdo vc ler os "Rafa, ..."
-// pode apagar tb. Eu tb. prefiro o fonte mais limpo :-)
-
-
 lastDir(null).
-free. // Rafa, inicia free, para o caso de ja ver ouro bem no inicio
+free.
 
 //init.
 // does not work, bug in .wait?
 //+init : true <- .wait("+pos(X,Y)"); .send(leader,tell,myInitPos(X,Y)).
 
-+pos(X,Y) : gsize(S,_,_) & not sentMyInitPos(S)  
-  <- +sentMyInitPos(S); .send(leader,tell,myInitPos(S,X,Y)).
+//+pos(X,Y) : gsize(S,_,_) & not sentMyInitPos(S)  
+//  <- +sentMyInitPos(S); .send(leader,tell,myInitPos(S,X,Y)).
+
++gsize(S,_,_) : pos(X,Y)
+  <- .send(leader,tell,myInitPos(S,X,Y)).
++gsize(S,_,_) : not pos(X,Y)
+  <- .send("This SHOULD NOT have happened!!!").
+
 
 // security plan: if something else stop working, start again!
 /* does not work! (problem with .desire?)
 +pos(X,Y) : not .desire(handle(_)) & not .desire(around(_,_))
-  <- .print("**** Reseting!"); !update(free).
 +pos(X,Y) : true <- true.
 */
 
-+myQuad(X1,Y1,X2,Y2)
-  :  free
-  <- .print(myQuad(X1,Y1,X2,Y2));
-     !update(free).
-+myQuad(X1,Y1,X2,Y2) 
-  :  true
-  <- .print(myQuad(X1,Y1,X2,Y2), " but I am not free").
+//+myQuad(X1,Y1,X2,Y2)
+//  :  free
+//  <- .print(myQuad(X1,Y1,X2,Y2));
+//     !update(free).
+//+myQuad(X1,Y1,X2,Y2) 
+//  :  true
+//  <- .print(myQuad(X1,Y1,X2,Y2), " but I am not free").
 
 
 /* plans for wandering in my quadrant when I'm free */
 
-+free : nextPos(X,Y) <- !around(X,Y).
++free : lastChecked(XC,YC) & goingTo(XG,YG) <- !around(XC,YC); !around(XG,YG).
 +free : myQuad(X1,Y1,X2,Y2) <- !around(X1,Y1).
++free : free <- !waitForQuad.
+@pwfq[atomic]
++!waitForQuad : free & myQuad(_,_,_,_) <- -free; +free.
++!waitForQuad : free <- !!waitForQuad.
++!waitForQuad : not free <- .print("No longer free while waiting for myQuad.").
 
 +around(X1,Y1) : myQuad(X1,Y1,X2,Y2) & free
   <- .print("in Q1 to ",X2,"x",Y1); 
@@ -54,6 +60,7 @@ free. // Rafa, inicia free, para o caso de ja ver ouro bem no inicio
      -around(X1,Y); !around(X2,YF).
 
 // the last around was not any Q above
+// RHB: WHY DO WE NEED THESE PLANS??
 +around(X,Y) : myQuad(X1,Y1,X2,Y2) & free & Y <= Y2 & Y >= Y1  
   <- .print("in no Q, going to X1");
      -around(X,Y); !around(X1,Y).
@@ -74,7 +81,8 @@ free. // Rafa, inicia free, para o caso de ja ver ouro bem no inicio
 +!around(X,Y) : lastDir(skip) <- +around(X,Y).
 +!around(X,Y) : not around(X,Y)
   <- !next_step(X,Y);
-     !!around(X,Y). 
+     !!around(X,Y).
++!around(X,Y) : true <- !!around(X,Y).
 
 +!next_step(X,Y)
   :  pos(AgX,AgY)
@@ -82,12 +90,13 @@ free. // Rafa, inicia free, para o caso de ja ver ouro bem no inicio
      .print("from ",AgX,"x",AgY," to ", X,"x",Y," -> ",D);
      -lastDir(_); +lastDir(D);
      do(D).
--!next_step(X,Y) : true 
-     <-.print("Failed next_step to ", X,"x",Y," fixing and trying again!");
-     !fixLastDir;
+-!next_step(X,Y) : true // not lastDir(fail)
+  <- .print("Failed next_step to ", X,"x",Y," fixing and trying again!");
+     !fixLastDir; // RHB: is this working?
      !next_step(X,Y).
-+!fixLastDir : lastDir(_) <- -lastDir(_); !fixLastDir.
-+!fixLastDir : true <- +lastDir(null).
+//-!next_step(X,Y) : true <- true. // WHAT TO DO HERE? Not sure what else to do. Can't keep trying blindly like a chicken
++!fixLastDir : lastDir(_) <- -lastDir(_); +lastDir(null).
++!fixLastDir : true <- .print("Should NOT be here!").
 
 
 /* Gold-searching Plans */
@@ -96,8 +105,8 @@ free. // Rafa, inicia free, para o caso de ja ver ouro bem no inicio
 @pcell[atomic] // atomic: to not handle another event until handle gold is carryin on
 +cell(X,Y,gold) 
   :  not gold(X,Y) & free 
-  <- -free;
-     !update(nextPos(X,Y));
+  <- //-free;
+     //!update(nextPos(X,Y));
      +gold(X,Y);
      !!handle(gold(X,Y)). // must use !! to process handle as not atomic
      
@@ -112,20 +121,23 @@ free. // Rafa, inicia free, para o caso de ja ver ouro bem no inicio
      .broadcast(tell,gold(X,Y)). 
 
      
-// someone else send me gold location
+// someone else sent me gold location
 +gold(X1,Y1)[source(A)] : A \== self & free & pos(X2,Y2)
   <- jia.dist(X1,Y1,X2,Y2,D);
-     .send(leader,tell,freeFor(gold(X1,Y1),D)).
+     .send(leader,tell,bidFor(gold(X1,Y1),D)).
 +gold(X1,Y1)[source(A)] : A \== self
-  <- .send(leader,tell,freeFor(gold(X1,Y1),1000)).
+  <- .send(leader,tell,bidFor(gold(X1,Y1),1000)).
 
+/*
+@palloc[atomic]
 +!allocated(Gold)[source(leader)] 
   :  free // I am still free
   <- -free;
      !update(nextPos(X,Y));
-     !handle(Gold).
-+!allocated(_) : true <- true.
-  
+     !!handle(Gold).
++!allocated(_) : true <- true. // Jomi, don't we have to say we are not going to the allocated one?
+*/
+
 /* this is now called by +cell, to void handling many golds when many perceived
 //@pg3[atomic]
   // Rafa, [jomi said] removed atomic, since the agent should perceive gold, 
@@ -138,40 +150,44 @@ free. // Rafa, inicia free, para o caso de ja ver ouro bem no inicio
      !handle(gold(X,Y)).
 */
 
-// someone else catch a gold I saw, remove from my bels
-// TODO: if my intend handle this gold, drop this intention and choose another gold
-+pick(gold(X,Y)) : gold(X,Y) <- -gold(X,Y).
-+pick(_) : true <- true.
+// someone else caught a gold I saw, remove from my bels
+// TODO: if I intend handle this gold, drop this intention and choose another gold
++picked(gold(X,Y)) : gold(X,Y) <- -gold(X,Y).
++picked(_) : true <- true.
 
 // TODO: use the SGA (sequential goal) here, it should not deal with two golds!
 // it is possible with communicated golds
-//@ph1[atomic]
-/* moved to +cell(gold)
-+!handle(Gold) : free
-  <- -free; 
-     ?pos(X,Y);
-     !update(nextPos(X,Y));
-     .print("Dropping desires and intentions to handle ",Gold);
-     .dropAllDesires;    // must be dropDesire(around) but causes conc. modif. exception...
-     .dropAllIntentions; // ... this way can cause problems at least with leader (in the beginning)
-     !handle(Gold).
-*/
+@ph1[atomic]
+///* moved to +cell(gold)
++!handle(Gold) : free 
+  <- -free;
+     .print("Dropping around(_,_) desires and intentions to handle ",Gold);
+     .dropDesire(around(_,_));
+     .dropIntention(around(_,_));
+     .print("Dropped around(_,_) desires and intentions to handle ",Gold);
+     !updatePos;
+     !!handle(Gold).
+
++!updatePos : free & .desire(around(XA,YA))
+  <- ?pos(XP,YP);
+     !update(lastChecked(XP,YP));
+     !update(goingTo(XA,YA)).
+// do we need another alternative? I couldn't think of another. If free but no desire
+// probably was still going home
++!updatePos : true <- true.
 
 +!handle(gold(X,Y)) 
-  :  true
+  :  not free
   <- .print("Handling ",gold(X,Y)," now.");
-     //.print("Dropping desires and intentions to handle ",Gold);
-     .dropAllDesires;    // must be dropDesire(around) but causes conc. modif. exception...
-     .dropAllIntentions; // ... this way can cause problems at least with leader (in the beginning)
      !pos(X,Y);
-     !ensure(pick);
+     !ensure(pick,gold(X,Y));
      // broadcast that I got the gold(X,Y), to avoid someone else to pursue this gold
-     .broadcast(tell,pick(gold(X,Y)));
+     .broadcast(tell,picked(gold(X,Y)));
      ?depot(_,DX,DY);
      !pos(DX,DY);
      !ensure(drop, 0);
      -gold(X,Y); 
-     .print("Finish to handle gold ",gold(X,Y));
+     .print("Finish handling gold ",gold(X,Y));
      !!choose_gold.
 
 // if ensure(pick/drop) failed, pursue another gold
@@ -180,7 +196,7 @@ free. // Rafa, inicia free, para o caso de ja ver ouro bem no inicio
      -G;
      !!choose_gold.
 -!handle(G) : true
-  <- .print("failed to handle gold, it isn't in BB anyway");
+  <- .print("failed to handle gold, it isn't in the BB anyway");
      !!choose_gold.
 
 // Hopefully going first to home if never got there because some gold was found
@@ -197,7 +213,7 @@ free. // Rafa, inicia free, para o caso de ja ver ouro bem no inicio
      !calcGoldDistance(LG,LD); 
      .sort(LD,[d(_,G)|_]);
      .print("Next gold is ",G);
-     !handle(G).
+     !!handle(G).
 
 +!calcGoldDistance([],[]) : true <- true.
 +!calcGoldDistance([gold(GX,GY)|R],[d(D,gold(GX,GY))|RD]) 
@@ -209,7 +225,13 @@ free. // Rafa, inicia free, para o caso de ja ver ouro bem no inicio
 // BCG!
 // !pos is used when it is algways possible to go 
 // so this plans should not be used: +!pos(X,Y) : lastDir(skip) <- .print("It is not possible to go to ",X,"x",Y). // in future +lastDir(skip) <- .dropGoal(pos)
-+!pos(X,Y) : pos(X,Y) <- .print("I reach ",X,"x",Y).
++!pos(X,Y) : pos(X,Y) <- .print("I've reached ",X,"x",Y).
+// is this OK?????????? (for the environment with failure)
++!pos(X,Y) : lastDir(skip)
+  <- .print("GIVING UP!");
+     .dropDesire(pos(X,Y));
+     .dropIntention(pos(X,Y));
+     !update(free).
 +!pos(X,Y) : not pos(X,Y)
   <- !next_step(X,Y);
      !pos(X,Y).
@@ -217,9 +239,16 @@ free. // Rafa, inicia free, para o caso de ja ver ouro bem no inicio
 
 // need to check if really carrying gold, otherwise drop goal, etc...
 // we should have environment feedback for pick!
-+!ensure(pick) : pos(X,Y) & cell(X,Y,gold) //gold(X,Y) // & not carryingGold
++!ensure(pick,gold(X,Y)) : pos(X,Y) & cell(X,Y,gold) //gold(X,Y) // & not carryingGold
   <- do(pick).
 // fail if no gold there! handle will "catch" this failure. //+!ensure(pick) : true <- true.
+// !!!
+// Jomi, parece que o stackable failure nao ta funcionando, por isto estes planos:
++!ensure(pick,G) : G
+  <- -G;
+     !!choose_gold.
++!ensure(pick,G) : true
+  <- !!choose_gold.
 
 +!ensure(drop, _) : pos(X,Y) & depot(_,X,Y) // & carryingGold
   <- do(drop). // we should have feedback for drop!
@@ -231,37 +260,39 @@ free. // Rafa, inicia free, para o caso de ja ver ouro bem no inicio
 
 
 // update bels
-+!update(nextPos(X,Y)) : nextPos(_,_) <- -nextPos(_,_); +nextPos(X,Y).
-+!update(nextPos(X,Y)) : true <- +nextPos(X,Y).
++!update(lastChecked(X,Y)) : lastChecked(_,_) <- -lastChecked(_,_); +lastChecked(X,Y).
++!update(lastChecked(X,Y)) : true <- +lastChecked(X,Y).
++!update(goingTo(X,Y)) : goingTo(_,_) <- -goingTo(_,_); +goingTo(X,Y).
++!update(goingTo(X,Y)) : true <- +goingTo(X,Y).
 
 +!update(free) : free <- -free; +free.
 +!update(free) : true <- +free.
-
 
 /* end of a simulation */
 
 @end[atomic]
 +endOfSimulation(S,_) : true 
-  <- .print("-- END ",S," --");
-     .dropAllDesires; 
+  <- .dropAllDesires; 
      .dropAllIntentions;
      !clearMyQuad;
      !clearGold;
-     !clearNextPos;
-     !fixLastDir;
+     !clearPos;
+//     !fixLastDir;
      -pos(_,_);
-     !clearMyInitPos;
-     !!update(free).
+//     !clearMyInitPos;
+     !update(free);
+     .print("-- END ",S," --").
 
 +!clearMyQuad : myQuad(_,_,_,_) <- -myQuad(_,_,_,_).
 +!clearMyQuad : true <- true.
 
-+!clearMyInitPos : sentMyInitPos(_) <- -sentMyInitPos(_).
-+!clearMyInitPos : true <- true.
+//+!clearMyInitPos : sentMyInitPos(_) <- -sentMyInitPos(_).
+//+!clearMyInitPos : true <- true.
 
 +!clearGold : gold(_,_) <- -gold(_,_); !clearGold.
 +!clearGold : true <- true.
 
-+!clearNextPos : nextPos(_,_) <- -nextPos(_,_); !clearNextPos.
-+!clearNextPos : true <- true.
++!clearPos : lastChecked(_,_) <- -lastChecked(_,_); !clearPos.
++!clearPos : goingTo(_,_) <- -goingTo(_,_); !clearPos.
++!clearPos : true <- true.
 
