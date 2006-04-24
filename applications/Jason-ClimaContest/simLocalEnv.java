@@ -36,7 +36,7 @@ public class simLocalEnv extends jason.environment.Environment {
     
     
     public simLocalEnv() {
-    	initWorld(1);
+    	initWorld(4);
         new Thread() {
         	public void run() {
         		while (true) {
@@ -61,14 +61,17 @@ public class simLocalEnv extends jason.environment.Environment {
 		}
         view = WorldView.create(model);
         
-	addPercept(Literal.parseLiteral("gsize("+simId+","+model.getWidth()+","+model.getHeight()+")"));
+        addPercept(Literal.parseLiteral("gsize("+simId+","+model.getWidth()+","+model.getHeight()+")"));
         addPercept(Literal.parseLiteral("depot("+simId+","+model.getDepot().x+","+model.getDepot().y+")"));
         
         updateAgsPercept();    	
     }
     
     private void endSimulation() {
-    	clearPercepts();   
+    	clearPercepts();
+        for (int i=0; i<model.getNbOfAgs(); i++) {
+            clearPercepts("miner"+(i+1));
+        }
 		addPercept(Literal.parseLiteral("endOfSimulation("+simId+",0)"));
 		simId++;
 		WorldView.destroy();

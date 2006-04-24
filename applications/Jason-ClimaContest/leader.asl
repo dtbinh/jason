@@ -12,16 +12,9 @@
 +myInitPos(S,X,Y)[source(A)]
   :  myInitPos(S,X1,Y1)[source(miner1)] & myInitPos(S,X2,Y2)[source(miner2)] &
      myInitPos(S,X3,Y3)[source(miner3)] & myInitPos(S,X4,Y4)[source(miner4)]
-     //quad(S,4,_,_,_,_)
   <- .print("*** InitPos ",A," is ",X,"x",Y);
      !assignAllQuads(S,[miner1,miner2,miner3,miner4],[1,2,3,4]).
-/*+myInitPos(S,X,Y)[source(A)]
-  :  myInitPos(S,X1,Y1)[source(miner1)] & myInitPos(S,X2,Y2)[source(miner2)] &
-     myInitPos(S,X3,Y3)[source(miner3)] & myInitPos(S,X4,Y4)[source(miner4)]
-  <- .print("wait gsize");
-     .wait("+quad(_,4,_,_,_,_)");
-     !assignAllQuads(S,[miner1,miner2,miner3,miner4],[1,2,3,4]).
-     */
+
 +myInitPos(S,X,Y)[source(A)] : true <- .print("- InitPos ",A," is ",X,"x",Y).
 
 // Rafa, talvez refazer essa parte usando o sort. (TODO)
@@ -43,7 +36,7 @@
 
 // Already checked all quadrants available for agent A
 +!assignQuad(_,A,Q,Q,[],L,L) : true <- true.
-//
+
 +!assignQuad(S,A,q(ID,D),Q,[I|T],L,FL) : true
   <- ?quad(S,I,X1,Y1,_,_);
      ?myInitPos(S,X2,Y2)[source(A)];
@@ -66,28 +59,8 @@
      .sort(LD,[op(DistCloser,Closer)|_]);
      DistCloser < 1000;
      .print("Gold ",Gold," was allocated to ",Closer, " options was ",LD);
-     .send(Closer,achieve,handle(Gold)).
+     .send(Closer,achieve,allocated(Gold)).
 -!allocateMinerFor(Gold) : true <- .print("could not allocate gold ",Gold).
-
-/* old version     
-+!allocateMinerFor(Gold) : true
-  <- .findall(freeFor(Gold,Dist)[source(A)],A,[HA|TAs]);
-     !calcClosest(TAs,Gold,c(HA,Dist),CA);
-     .send(CA,achieve,handle(Gold)).
-
-+!calcClosest([],_,c(A,_),A) : true <- true.
-+!calcClosest([A|T],Gold,c(CA,CD),FA) : freeFor(Gold,D)[source(A)]
-  <- !getClosest(c(CA,CD),c(A,D),C);
-     !calcClosest(T,Gold,C,FA).
-
-+!getClosest( c(A1,D1), c(A2,D2), c(A1,D1) ) : A1 >= A2 <- true.
-+!getClosest( c(A1,D1), c(A2,D2), c(A2,D2) ) : A2 >  A1 <- true.
-*/
-// +!backToMinerRole : true
-  // <- ?myQuad(X,Y,X1,Y1);
-     // .print("Leader's quad: ",myQuad(X,Y,X1,Y1));
-     // +dir(X,Y);
-     // !around(X,Y).
 
 
 /* end of simulation plans */     

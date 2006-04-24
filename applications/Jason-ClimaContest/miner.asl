@@ -7,29 +7,24 @@ free.
 // does not work, bug in .wait?
 //+init : true <- .wait("+pos(X,Y)"); .send(leader,tell,myInitPos(X,Y)).
 
-//+pos(X,Y) : gsize(S,_,_) & not sentMyInitPos(S)  
-//  <- +sentMyInitPos(S); .send(leader,tell,myInitPos(S,X,Y)).
++pos(X,Y) : gsize(S,_,_) & not sentMyInitPos(S)  
+  <- +sentMyInitPos(S); .send(leader,tell,myInitPos(S,X,Y)).
 
-+gsize(S,_,_) : pos(X,Y)
-  <- .send(leader,tell,myInitPos(S,X,Y)).
-+gsize(S,_,_) : not pos(X,Y)
-  <- .send("This SHOULD NOT have happened!!!").
+// Rafa, acho que esses planos abaixo nao funcionam. a percepcao de gzise pode ocorrer
+// antes de perceber pos. No simulador da competicao, com certeza 'e assim.
+// comentei e voltei pro anterior.
 
++gsize(S,_,_) : pos(X,Y) & not sentMyInitPos(S) 
+  <- +sentMyInitPos(S); .send(leader,tell,myInitPos(S,X,Y)).
+/*+gsize(S,_,_) : not pos(X,Y)
+  <- .print("This SHOULD NOT have happened!!!").
+*/
 
 // security plan: if something else stop working, start again!
 /* does not work! (problem with .desire?)
 +pos(X,Y) : not .desire(handle(_)) & not .desire(around(_,_))
 +pos(X,Y) : true <- true.
 */
-
-//+myQuad(X1,Y1,X2,Y2)
-//  :  free
-//  <- .print(myQuad(X1,Y1,X2,Y2));
-//     !update(free).
-//+myQuad(X1,Y1,X2,Y2) 
-//  :  true
-//  <- .print(myQuad(X1,Y1,X2,Y2), " but I am not free").
-
 
 /* plans for wandering in my quadrant when I'm free */
 
@@ -38,7 +33,7 @@ free.
 +free : free <- !waitForQuad.
 @pwfq[atomic]
 +!waitForQuad : free & myQuad(_,_,_,_) <- -free; +free.
-+!waitForQuad : free <- !!waitForQuad.
++!waitForQuad : free <- .print("waiting myQuad"); !!waitForQuad.
 +!waitForQuad : not free <- .print("No longer free while waiting for myQuad.").
 
 +around(X1,Y1) : myQuad(X1,Y1,X2,Y2) & free
@@ -61,6 +56,9 @@ free.
 
 // the last around was not any Q above
 // RHB: WHY DO WE NEED THESE PLANS??
+// para o caso do agente ter ficado fora do seu quadrante. Por explo, ele inicia numa
+// posicao que tem ouro, mas nao 'e seu quadrante, qdo terminar de carrtar o outro, tem
+// que voltar para o seu quadrante e nao onde estava.
 +around(X,Y) : myQuad(X1,Y1,X2,Y2) & free & Y <= Y2 & Y >= Y1  
   <- .print("in no Q, going to X1");
      -around(X,Y); !around(X1,Y).
@@ -90,6 +88,8 @@ free.
      .print("from ",AgX,"x",AgY," to ", X,"x",Y," -> ",D);
      -lastDir(_); +lastDir(D);
      do(D).
++!next_step(X,Y) : not pos(_,_) // i still do not know my position
+  <- !next_step(X,Y).
 -!next_step(X,Y) : true // not lastDir(fail)
   <- .print("Failed next_step to ", X,"x",Y," fixing and trying again!");
      !fixLastDir; // RHB: is this working?
@@ -105,10 +105,13 @@ free.
 @pcell[atomic] // atomic: to not handle another event until handle gold is carryin on
 +cell(X,Y,gold) 
   :  not gold(X,Y) & free 
-  <- //-free;
-     //!update(nextPos(X,Y));
+  <- -free; // Rafa, precisar dizer aqui que esta free, para pegar o handle gold correto
+            // sei que deveria entrar no handle e tirar o free la, ja que 'e atomic.
+            // mas na pratica nao funcionou!
+            // No world4, ele percebe 3 ouros e sai tentando carregar os 3!
+     .print("Gold perceived: ",gold(X,Y));
      +gold(X,Y);
-     !!handle(gold(X,Y)). // must use !! to process handle as not atomic
+     !init_handle(gold(X,Y)).
      
 // TODO: if i see gold and are free but not carrying gold (i'm probably going to it), 
 // abort handle(gold) and catch this one that is near
@@ -117,7 +120,7 @@ free.
 +cell(X,Y,gold) 
   :  not gold(X,Y) 
   <- +gold(X,Y);
-     .print("announcing gold ",gold(X,Y)," to others");
+     .print("Announcing gold ",gold(X,Y)," to others");
      .broadcast(tell,gold(X,Y)). 
 
      
@@ -128,27 +131,20 @@ free.
 +gold(X1,Y1)[source(A)] : A \== self
   <- .send(leader,tell,bidFor(gold(X1,Y1),1000)).
 
-/*
+
+// Rafa, precisa ter esse allocated, senao o leader manda um agente handle um ouro eqto
+// ja handling outro, ja que a nogociacao pode demorar.
 @palloc[atomic]
 +!allocated(Gold)[source(leader)] 
   :  free // I am still free
   <- -free;
-     !update(nextPos(X,Y));
-     !!handle(Gold).
-+!allocated(_) : true <- true. // Jomi, don't we have to say we are not going to the allocated one?
-*/
+     .print("Gold ",Gold," allocated to me");
+     !init_handle(Gold).
++!allocated(_) : true <- true. 
+// Jomi, don't we have to say we are not going to the allocated one?
+// Jomi: yes.
 
-/* this is now called by +cell, to void handling many golds when many perceived
-//@pg3[atomic]
-  // Rafa, [jomi said] removed atomic, since the agent should perceive gold, 
-  // answer to other, ... while handling gold
-+gold(X,Y) : free
-  <- // -free; // OK to use @ph1? Any chance of another gold event interfering?
-     //     .dropAllDesires;
-     //     .dropAllIntentions;
-     //.print("Oh well, at least I'm here!!!",gold(X,Y));
-     !handle(gold(X,Y)).
-*/
+
 
 // someone else caught a gold I saw, remove from my bels
 // TODO: if I intend handle this gold, drop this intention and choose another gold
@@ -157,16 +153,16 @@ free.
 
 // TODO: use the SGA (sequential goal) here, it should not deal with two golds!
 // it is possible with communicated golds
-@ph1[atomic]
-///* moved to +cell(gold)
-+!handle(Gold) : free 
-  <- -free;
+//@ph1[atomic]
+
++!init_handle(Gold) : true //free 
+  <- //-free;
      .print("Dropping around(_,_) desires and intentions to handle ",Gold);
      .dropDesire(around(_,_));
      .dropIntention(around(_,_));
      .print("Dropped around(_,_) desires and intentions to handle ",Gold);
      !updatePos;
-     !!handle(Gold).
+     !!handle(Gold). // must use !! to process handle as not atomic
 
 +!updatePos : free & .desire(around(XA,YA))
   <- ?pos(XP,YP);
@@ -207,10 +203,10 @@ free.
 // Finished one gold, but others left
 // TODO: only pursue this gold in case no other is doing it (committed to this gold)
 +!choose_gold 
-  :  gold(X,Y) // todo: do not work with gold(_,_)!!!!!! see email that describe bug to find "maior" in a list
+  :  gold(_,_) // todo: do not work with gold(_,_)!!!!!! see email that describe bug to find "maior" in a list
                // todo: write an IA meanwhile....
-  <- .findall(gold(X,Y),gold(X,Y),LG); .print("Gold distances: ",LG);
-     !calcGoldDistance(LG,LD); 
+  <- .findall(gold(X,Y),gold(X,Y),LG); 
+     !calcGoldDistance(LG,LD); .print("Gold distances: ",LD );
      .sort(LD,[d(_,G)|_]);
      .print("Next gold is ",G);
      !!handle(G).
@@ -276,21 +272,25 @@ free.
      .dropAllIntentions;
      !clearMyQuad;
      !clearGold;
+     !clearPicked;
      !clearPos;
 //     !fixLastDir;
-     -pos(_,_);
-//     !clearMyInitPos;
+     !clearMyInitPos;
+     //-pos(_,_); we should not remove the pos perceived in the same cycle than endOfSim
      !update(free);
      .print("-- END ",S," --").
 
 +!clearMyQuad : myQuad(_,_,_,_) <- -myQuad(_,_,_,_).
 +!clearMyQuad : true <- true.
 
-//+!clearMyInitPos : sentMyInitPos(_) <- -sentMyInitPos(_).
-//+!clearMyInitPos : true <- true.
++!clearMyInitPos : sentMyInitPos(_) <- -sentMyInitPos(_).
++!clearMyInitPos : true <- true.
 
 +!clearGold : gold(_,_) <- -gold(_,_); !clearGold.
 +!clearGold : true <- true.
+
++!clearPicked : picked(_) <- -picked(_); !clearPicked.
++!clearPicked : true <- true.
 
 +!clearPos : lastChecked(_,_) <- -lastChecked(_,_); !clearPos.
 +!clearPos : goingTo(_,_) <- -goingTo(_,_); !clearPos.
