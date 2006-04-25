@@ -51,11 +51,12 @@
   :  bidFor(Gold,_)[source(M2)] & bidFor(Gold,_)[source(M3)] &
      M1 \== M2 & M1 \== M3 & M2 \== M3
   <- .print("bid from ",M1," for ",Gold," is ",D);
-     !allocateMinerFor(Gold).
+     !allocateMinerFor(Gold);
+     !clearBids(Gold).
 +bidFor(Gold,D)[source(A)] : true <- .print("bid from ",A," for ",Gold," is ",D).  
  
 +!allocateMinerFor(Gold) : true
-  <- .findall(op(Dist,A),freeFor(Gold,Dist)[source(A)],LD);
+  <- .findall(op(Dist,A),bidFor(Gold,Dist)[source(A)],LD);
      .sort(LD,[op(DistCloser,Closer)|_]);
      DistCloser < 1000;
      .print("Gold ",Gold," was allocated to ",Closer, " options was ",LD);
@@ -71,9 +72,10 @@
      .dropAllDesires; 
      .dropAllIntentions;
      !clearInitPos.
-// jomi: do these need to be atomic too? or do we check if any plan below in the intention is "atomic" ??
-@end2[atomic]
+
 +!clearInitPos : myInitPos(S,_,_) <- -myInitPos(S,_,_); !clearInitPos.
-@end3[atomic]
 +!clearInitPos : true <- true.
+
++!clearBids(Gold) : bidFor(Gold,_) <- -bidFor(Gold,_); !clearBids(Gold).
++!clearBids(Gold) : true <- true.
 

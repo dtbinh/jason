@@ -3,22 +3,17 @@
 lastDir(null).
 free.
 
-//init.
-// does not work, bug in .wait?
-//+init : true <- .wait("+pos(X,Y)"); .send(leader,tell,myInitPos(X,Y)).
-
+/*
 +pos(X,Y) : gsize(S,_,_) & not sentMyInitPos(S)
   <- +sentMyInitPos(S); .send(leader,tell,myInitPos(S,X,Y)).
-
-// Rafa, acho que esses planos abaixo nao funcionam. a percepcao de gzise pode ocorrer
-// antes de perceber pos. No simulador da competicao, com certeza 'e assim.
-// comentei e voltei pro anterior.
-
-+gsize(S,_,_) : pos(X,Y) & not sentMyInitPos(S) 
-  <- +sentMyInitPos(S); .send(leader,tell,myInitPos(S,X,Y)).
-/*+gsize(S,_,_) : not pos(X,Y)
-  <- .print("This SHOULD NOT have happened!!!").
 */
+
+// Rafa, mudei um pouco os planos abaixo nao funcionam. a percepcao de gzise pode ocorrer
+// antes de perceber pos. No simulador da competicao, com certeza 'e assim.
+// Passei a usar wait!
+// mesmo assim, parece que o evento +gsize nao 'e gerado no final de uma simulacao!
++gsize(S,_,_) : pos(X,Y)     <- .send(leader,tell,myInitPos(S,X,Y)).
++gsize(S,_,_) : not pos(_,_) <- .wait("+pos(X,Y)"); .send(leader,tell,myInitPos(S,X,Y)).
 
 // security plan: if something else stop working, start again!
 /* does not work! (problem with .desire?)
@@ -34,7 +29,7 @@ free.
 @pwfq[atomic]
 +!waitForQuad : free & myQuad(_,_,_,_) <- -free; +free.
 +!waitForQuad : free 
-  <- .print("waiting myQuad"); .wait("+myQuad(_,_,_,_)"); .print("received my quad"); 
+  <- .print("waiting myQuad"); .wait("+myQuad(X1,Y1,X2,Y2)"); .print("received ",myQuad(X1,Y1,X2,Y2)); 
      !!waitForQuad.
 +!waitForQuad : not free <- .print("No longer free while waiting for myQuad.").
 
@@ -242,14 +237,14 @@ free.
 // need to check if really carrying gold, otherwise drop goal, etc...
 // we should have environment feedback for pick!
 +!ensure(pick,G) : pos(X,Y) & cell(X,Y,gold) //gold(X,Y) // & not carryingGold
-  <- .print("*****PICK",G); do(pick).
+  <- do(pick).
 // fail if no gold there! handle will "catch" this failure. //+!ensure(pick) : true <- true.
 // !!!
 // Jomi, parece que o stackable failure nao ta funcionando, por isto estes planos:
 // Rafa, parecia funcionar.... as msgs na tela continuam, mas o evento era sempre o
 // -!handle. Vc me manda o erro que estava ocorrendo?
 +!ensure(pick,G) : G
-  <- .print("Not picked gold!!!",G);
+  <- .print("Gold not picked gold!!!",G);
      -G;
      !!choose_gold.
 +!ensure(pick,G) : true
