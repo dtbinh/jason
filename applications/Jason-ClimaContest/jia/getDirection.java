@@ -130,16 +130,16 @@ class MinerState implements Estado, Heuristica {
 	public List sucessores() {
 		List s = new ArrayList(4);
 		// four directions
-		if (model.isFree(x,y-1)) {
+		if (model.isFreeOfObstacle(x,y-1)) {
 			s.add(new MinerState(x,y-1,tox,toy,model,"up"));
 		}
-		if (model.isFree(x,y+1)) {
+		if (model.isFreeOfObstacle(x,y+1)) {
 			s.add(new MinerState(x,y+1,tox,toy,model,"down"));
 		}
-		if (model.isFree(x-1,y)) {
+		if (model.isFreeOfObstacle(x-1,y)) {
 			s.add(new MinerState(x-1,y,tox,toy,model, "left"));
 		}
-		if (model.isFree(x+1,y)) {
+		if (model.isFreeOfObstacle(x+1,y)) {
 			s.add(new MinerState(x+1,y,tox,toy,model, "right"));
 		}
 		return s;

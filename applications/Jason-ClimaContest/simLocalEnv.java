@@ -221,14 +221,13 @@ public class simLocalEnv extends jason.environment.Environment {
 	            model.remove(WorldModel.GOLD,l.x,l.y);
 	            model.setAgCarryingGold(ag);
 	            updateAgPercept(ag);
-	            return true;
         	} else {
             	logger.warning("Agent "+(ag+1)+" is trying the pick gold, but it is already carrying gold!");        		
         	}
         } else {
         	logger.warning("Agent "+(ag+1)+" is trying the pick gold, but there is no gold at "+l.x+"x"+l.y+"!");
         }
-        return false;
+        return true; // as in Clima contest, do action does not fail.
     }
     
     private boolean drop(int ag) {

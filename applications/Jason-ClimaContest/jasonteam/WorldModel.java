@@ -129,10 +129,15 @@ public class WorldModel {
 	
 	public boolean isFree(int x, int y) {
 		return y >= 0 && y < height && x >= 0 && x < width 
-				&& (data[x][y] & OBSTACLE) == 0;
-				//&& (data[x][y] & ALLY) == 0
-				//&& (data[x][y] & ENEMY) == 0;
+				&& (data[x][y] & OBSTACLE) == 0
+				&& (data[x][y] & ALLY) == 0
+				&& (data[x][y] & ENEMY) == 0;
 	}
+
+    public boolean isFreeOfObstacle(int x, int y) {
+        return y >= 0 && y < height && x >= 0 && x < width 
+                && (data[x][y] & OBSTACLE) == 0;
+    }
 	
 	public boolean isUnknown(int x, int y) {
 		return y >= 0 && y < height && x >= 0 && x < width && (data[x][y] == UNKNOWN);

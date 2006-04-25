@@ -1,5 +1,7 @@
 // leader agent
 
+/* quadrant allocation */
+
 @quads[atomic]
 +gsize(S,W,H) : true
   <- .print("Defining quadrants for ",W,"x",H," simulation ",S);
@@ -21,7 +23,8 @@
 
 +!assignAllQuads(_,[],_) : true <- true.
 +!assignAllQuads(S,A,I) : not quad(S,4,_,_,_,_)
-  <- !!assignAllQuads(S,A,I). // wait for quad calculation to finish
+  <- .wait("quad(S,4,_,_,_,_)", 500); // wait for quad calculation to finish
+     !!assignAllQuads(S,A,I). 
 // Give priority based on agent number, this is NOT the optimal allocation
 +!assignAllQuads(S,[A|T],[I|L]) : true
   <- ?quad(S,I,X1,Y1,_,_);
@@ -47,6 +50,9 @@
 +!getSmaller( q(Q1,D1), q(Q2,D2), q(Q1,D1), Q2 ) : D1 <= D2 <- true.
 +!getSmaller( q(Q1,D1), q(Q2,D2), q(Q2,D2), Q1 ) : D2 <  D1 <- true.
 
+
+/* negotiation for found gold */
+
 +bidFor(Gold,D)[source(M1)]
   :  bidFor(Gold,_)[source(M2)] & bidFor(Gold,_)[source(M3)] &
      M1 \== M2 & M1 \== M3 & M2 \== M3
@@ -69,12 +75,10 @@
 @end[atomic]
 +endOfSimulation(S,_) : true 
   <- .print("-- END ",S," --");
-     //.dropAllDesires; 
-     //.dropAllIntentions;
-     !clearInitPos.
+     !clearInitPos(S).
 
-+!clearInitPos : myInitPos(S,_,_) <- -myInitPos(S,_,_); !clearInitPos.
-+!clearInitPos : true <- true.
++!clearInitPos(S) : myInitPos(S,_,_) <- -myInitPos(S,_,_); !clearInitPos(S).
++!clearInitPos(_) : true <- true.
 
 +!clearBids(Gold) : bidFor(Gold,_) <- -bidFor(Gold,_); !clearBids(Gold).
 +!clearBids(Gold) : true <- true.

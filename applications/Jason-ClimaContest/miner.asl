@@ -3,36 +3,27 @@
 lastDir(null).
 free.
 
-/*
-+pos(X,Y) : gsize(S,_,_) & not sentMyInitPos(S)
-  <- +sentMyInitPos(S); .send(leader,tell,myInitPos(S,X,Y)).
-*/
-
 // Rafa, mudei um pouco os planos abaixo nao funcionam. a percepcao de gzise pode ocorrer
 // antes de perceber pos. No simulador da competicao, com certeza 'e assim.
 // Passei a usar wait!
-// mesmo assim, parece que o evento +gsize nao 'e gerado no final de uma simulacao!
-+gsize(S,_,_) : pos(X,Y)     <- .send(leader,tell,myInitPos(S,X,Y)); .print("sent1:",myInitPos(S,X,Y)).
-+gsize(S,_,_) : not pos(_,_) <- .wait("+pos(X,Y)"); .send(leader,tell,myInitPos(S,X,Y)); .print("sent2:",myInitPos(S,X,Y)).
++gsize(S,_,_) : pos(X,Y)     <- .send(leader,tell,myInitPos(S,X,Y)).
++gsize(S,_,_) : not pos(_,_) <- .wait("+pos(X,Y)"); .send(leader,tell,myInitPos(S,X,Y)).
 
 // security plan: if something else stop working, start again!
 /* does not work! (problem with .desire?)
-+pos(X,Y) : not .desire(handle(_)) & not .desire(around(_,_))
++pos(X,Y) : not .desire(handle(_)) & not .desire(around(_,_)) <- ????
 +pos(X,Y) : true <- true.
 */
 
-/* plans for wandering in my quadrant when I'm free */
 
-//+!idle : true <- .print("I am in idle"); !update(free).
+/* plans for wandering in my quadrant when I'm free */
 
 +free : lastChecked(XC,YC) & goingTo(XG,YG) <- !around(XC,YC); !around(XG,YG).
 +free : myQuad(X1,Y1,X2,Y2) <- !around(X1,Y1).
 +free : free <- !waitForQuad.
 @pwfq[atomic]
 +!waitForQuad : free & myQuad(_,_,_,_) <- -free; +free.
-+!waitForQuad : free 
-  <- .print("waiting myQuad"); .wait("+myQuad(X1,Y1,X2,Y2)"); .print("received ",myQuad(X1,Y1,X2,Y2)); 
-     !!waitForQuad.
++!waitForQuad : free     <- .wait("+myQuad(X1,Y1,X2,Y2)", 500); !!waitForQuad.
 +!waitForQuad : not free <- .print("No longer free while waiting for myQuad.").
 
 +around(X1,Y1) : myQuad(X1,Y1,X2,Y2) & free
@@ -94,7 +85,7 @@ free.
   <- !next_step(X,Y).
 -!next_step(X,Y) : true // not lastDir(fail)
   <- .print("Failed next_step to ", X,"x",Y," fixing and trying again!");
-     !fixLastDir; // RHB: is this working?
+     !fixLastDir; // RHB: is this working? i hose so :-) o erro ocorria qdo nao tinha -lastDir para tirar
      !next_step(X,Y).
 //-!next_step(X,Y) : true <- true. // WHAT TO DO HERE? Not sure what else to do. Can't keep trying blindly like a chicken
 +!fixLastDir : lastDir(_) <- -lastDir(_); +lastDir(null).
@@ -111,12 +102,17 @@ free.
             // sei que deveria entrar no handle e tirar o free la, ja que 'e atomic.
             // mas na pratica nao funcionou!
             // No world4, ele percebe 3 ouros e sai tentando carregar os 3!
+            // Depois de muitas mudancas em varios lugares, nao sei se nao
+            // funcionaria voltar a versao original.....
      .print("Gold perceived: ",gold(X,Y));
      +gold(X,Y);
      !init_handle(gold(X,Y)).
      
-// TODO: if i see gold and are free but not carrying gold (i'm probably going to it), 
+// ***** TODO: if i see gold and are not free but also not carrying gold yet
+// (i'm probably going to it), 
 // abort handle(gold) and catch this one that is near
+// Rafa, esse todo seria importante, fica feio ver os nossos agentes passarem ao lado de outro e 
+// nao pegar :-)
 
 // I am not free, just add gold belief and announce to others
 +cell(X,Y,gold) 
@@ -152,10 +148,6 @@ free.
 // TODO: if I intend handle this gold, drop this intention and choose another gold
 +picked(gold(X,Y)) : gold(X,Y) <- -gold(X,Y).
 +picked(_) : true <- true.
-
-// TODO: use the SGA (sequential goal) here, it should not deal with two golds!
-// it is possible with communicated golds
-//@ph1[atomic]
 
 +!init_handle(Gold) : true //free 
   <- //-free;
@@ -239,18 +231,24 @@ free.
 // need to check if really carrying gold, otherwise drop goal, etc...
 // we should have environment feedback for pick!
 +!ensure(pick,G) : pos(X,Y) & cell(X,Y,gold) //gold(X,Y) // & not carryingGold
-  <- do(pick).
+  <- do(pick); do(pick). // do twice to ensure! (only in clima contest)
 // fail if no gold there! handle will "catch" this failure. //+!ensure(pick) : true <- true.
 // !!!
 // Jomi, parece que o stackable failure nao ta funcionando, por isto estes planos:
-// Rafa, parecia funcionar.... as msgs na tela continuam, mas o evento era sempre o
-// -!handle. Vc me manda o erro que estava ocorrendo?
+// Rafa, 
+// Eu comentei os planos de falha para ensure, eles estavam causando
+// o fato do agente ter 2 golds, um antes da falha (que continuava sendo buscado, ja que
+// o ensure arrumou o falha) e um novo via choose gold disparado pelo falha
+// Tb. acho que arrumei o bug com o -!
+// 
+/*
 +!ensure(pick,G) : G
   <- .print("Gold not picked gold!!!",G);
      -G;
      !!choose_gold.
 +!ensure(pick,G) : true
   <- !!choose_gold.
+*/
 
 +!ensure(drop, _) : pos(X,Y) & depot(_,X,Y) // & carryingGold
   <- do(drop). // we should have feedback for drop!
@@ -280,8 +278,6 @@ free.
      !clearGold;
      !clearPicked;
      !clearPos;
-//     !fixLastDir;
-     !clearMyInitPos;
      //-pos(_,_); we should not remove the pos perceived in the same cycle than endOfSim
      !reperceptGsize;
      !update(free);
@@ -289,9 +285,6 @@ free.
 
 +!clearMyQuad : myQuad(_,_,_,_) <- -myQuad(_,_,_,_).
 +!clearMyQuad : true <- true.
-
-+!clearMyInitPos : sentMyInitPos(_) <- -sentMyInitPos(_).
-+!clearMyInitPos : true <- true.
 
 +!clearGold : gold(_,_) <- -gold(_,_); !clearGold.
 +!clearGold : true <- true.
@@ -303,5 +296,6 @@ free.
 +!clearPos : goingTo(_,_) <- -goingTo(_,_); !clearPos.
 +!clearPos : true <- true.
 
-+!reperceptGsize : gsize(S,W,H) <- -gsize(S,W,H); +gsize(S,W,H).
++!reperceptGsize : gsize(S,W,H) <- -gsize(S,W,H); +gsize(S,W,H)[source(percept)].
++!reperceptGsize : true <- true.
 
