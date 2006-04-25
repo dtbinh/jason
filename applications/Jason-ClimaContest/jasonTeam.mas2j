@@ -9,16 +9,16 @@ MAS jasonTeam {
         leader; 
 	    // official host agentslave.in.tu-clausthal.de
 		miner1 leader.asl
-		        [host="localhost", port=12300, username=blumenau1, password=bu43] 
+		        [host="localhost", port=12300, username=brazil1, password="JoMirAf"] 
 		        agentArchClass jasonteam.ClimaArchitecture;
 		miner2 miner.asl
-		        [host="localhost", port=12300, username=blumenau2, password=bu43] 
+		        [host="localhost", port=12300, username=brazil2, password="JoMirAf"] 
 		        agentArchClass jasonteam.ClimaArchitecture;
 		miner3 miner.asl
-		        [host="localhost", port=12300, username=blumenau3, password=bu43] 
+		        [host="localhost", port=12300, username=brazil3, password="JoMirAf"] 
    		        agentArchClass jasonteam.ClimaArchitecture;
 		miner4 miner.asl
-		        [host="localhost", port=12300, username=blumenau4, password=bu43]
+		        [host="localhost", port=12300, username=brazil4, password="JoMirAf"]
 		        agentArchClass jasonteam.ClimaArchitecture;
 }
 

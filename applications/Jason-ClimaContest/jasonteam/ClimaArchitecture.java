@@ -34,11 +34,15 @@ public class ClimaArchitecture extends AgArch {
 	public void initAg(String agClass, String asSrc, Settings stts) throws JasonException {
 		super.initAg(agClass, asSrc, stts);
 		logger = Logger.getLogger(ClimaArchitecture.class.getName()+"."+getAgName());
+        String username = stts.getUserParameter("username");
+        if (username.startsWith("\"")) username = username.substring(1,username.length()-1);
+        String password = stts.getUserParameter("password");
+        if (password.startsWith("\"")) password = password.substring(1,password.length()-1);
 		clima = new ClimaProxy(this, 
 				stts.getUserParameter("host"), 
 				Integer.parseInt(stts.getUserParameter("port")),
-				stts.getUserParameter("username"),
-				stts.getUserParameter("password"));
+				username,
+				password);
 		//launch proxy agent
 		try {
 			// try to discover the ag id

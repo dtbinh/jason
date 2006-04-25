@@ -69,8 +69,8 @@
 @end[atomic]
 +endOfSimulation(S,_) : true 
   <- .print("-- END ",S," --");
-     .dropAllDesires; 
-     .dropAllIntentions;
+     //.dropAllDesires; 
+     //.dropAllIntentions;
      !clearInitPos.
 
 +!clearInitPos : myInitPos(S,_,_) <- -myInitPos(S,_,_); !clearInitPos.

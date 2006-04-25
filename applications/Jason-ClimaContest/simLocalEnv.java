@@ -19,7 +19,7 @@ public class simLocalEnv extends jason.environment.Environment {
     int simId = 1;
     int nbWorlds = 4;
     
-    public static final int SIM_TIME = 30; // in seconds
+    public static final int SIM_TIME = 40; // in seconds
     
     Term up    = Term.parse("do(up)");
     Term down  = Term.parse("do(down)");
@@ -68,10 +68,10 @@ public class simLocalEnv extends jason.environment.Environment {
     }
     
     private void endSimulation() {
-    	clearPercepts();
         for (int i=0; i<model.getNbOfAgs(); i++) {
             clearPercepts("miner"+(i+1));
         }
+    	clearPercepts();
 		addPercept(Literal.parseLiteral("endOfSimulation("+simId+",0)"));
 		simId++;
 		WorldView.destroy();

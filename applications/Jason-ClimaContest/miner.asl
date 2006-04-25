@@ -12,8 +12,8 @@ free.
 // antes de perceber pos. No simulador da competicao, com certeza 'e assim.
 // Passei a usar wait!
 // mesmo assim, parece que o evento +gsize nao 'e gerado no final de uma simulacao!
-+gsize(S,_,_) : pos(X,Y)     <- .send(leader,tell,myInitPos(S,X,Y)).
-+gsize(S,_,_) : not pos(_,_) <- .wait("+pos(X,Y)"); .send(leader,tell,myInitPos(S,X,Y)).
++gsize(S,_,_) : pos(X,Y)     <- .send(leader,tell,myInitPos(S,X,Y)); .print("sent1:",myInitPos(S,X,Y)).
++gsize(S,_,_) : not pos(_,_) <- .wait("+pos(X,Y)"); .send(leader,tell,myInitPos(S,X,Y)); .print("sent2:",myInitPos(S,X,Y)).
 
 // security plan: if something else stop working, start again!
 /* does not work! (problem with .desire?)
@@ -22,6 +22,8 @@ free.
 */
 
 /* plans for wandering in my quadrant when I'm free */
+
+//+!idle : true <- .print("I am in idle"); !update(free).
 
 +free : lastChecked(XC,YC) & goingTo(XG,YG) <- !around(XC,YC); !around(XG,YG).
 +free : myQuad(X1,Y1,X2,Y2) <- !around(X1,Y1).
@@ -281,6 +283,7 @@ free.
 //     !fixLastDir;
      !clearMyInitPos;
      //-pos(_,_); we should not remove the pos perceived in the same cycle than endOfSim
+     !reperceptGsize;
      !update(free);
      .print("-- END ",S," --").
 
@@ -299,4 +302,6 @@ free.
 +!clearPos : lastChecked(_,_) <- -lastChecked(_,_); !clearPos.
 +!clearPos : goingTo(_,_) <- -goingTo(_,_); !clearPos.
 +!clearPos : true <- true.
+
++!reperceptGsize : gsize(S,W,H) <- -gsize(S,W,H); +gsize(S,W,H).
 
