@@ -227,7 +227,7 @@ public abstract class ClimaAgent {
 	
 	public boolean processMessage(Element el_message) {
 		String type = el_message.getAttribute("type");
-		if (type.equals("requestaction") || type.equals("sim-start") || type.equals("sim-end")) {
+		if (type.equals("requestaction") || type.equals("request-action") || type.equals("sim-start") || type.equals("sim-end")) {
 			long deadline = 0;
 			long currenttime = 0;
 			try {
@@ -241,7 +241,7 @@ public abstract class ClimaAgent {
 			Element el_perception = null;
 			NodeList nl = el_message.getChildNodes();
 			String infoelementname ="perception";
-			if (type.equals("requestaction")) {
+			if (type.equals("requestaction") || type.equals("request-action")) {
 				infoelementname = "perception";
 			} else if (type.equals("sim-start")) {
 				infoelementname = "simulation";
@@ -259,7 +259,7 @@ public abstract class ClimaAgent {
 				}
 			}
 
-			if (type.equals("requestaction")) {
+			if (type.equals("requestaction") || type.equals("request-action")) {
 				try {
 					deadline = Long.parseLong(el_perception.getAttribute("deadline"));
 				} catch (NumberFormatException e) {

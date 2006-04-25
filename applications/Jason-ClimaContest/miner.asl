@@ -7,7 +7,7 @@ free.
 // does not work, bug in .wait?
 //+init : true <- .wait("+pos(X,Y)"); .send(leader,tell,myInitPos(X,Y)).
 
-+pos(X,Y) : gsize(S,_,_) & not sentMyInitPos(S)  
++pos(X,Y) : gsize(S,_,_) & not sentMyInitPos(S)
   <- +sentMyInitPos(S); .send(leader,tell,myInitPos(S,X,Y)).
 
 // Rafa, acho que esses planos abaixo nao funcionam. a percepcao de gzise pode ocorrer
@@ -33,7 +33,9 @@ free.
 +free : free <- !waitForQuad.
 @pwfq[atomic]
 +!waitForQuad : free & myQuad(_,_,_,_) <- -free; +free.
-+!waitForQuad : free <- .print("waiting myQuad"); !!waitForQuad.
++!waitForQuad : free 
+  <- .print("waiting myQuad"); .wait("+myQuad(_,_,_,_)"); .print("received my quad"); 
+     !!waitForQuad.
 +!waitForQuad : not free <- .print("No longer free while waiting for myQuad.").
 
 +around(X1,Y1) : myQuad(X1,Y1,X2,Y2) & free
@@ -76,7 +78,10 @@ free.
 
 // BCG!
 +!around(X,Y) : pos(AgX,AgY) & jia.neighbour(AgX,AgY,X,Y) <- +around(X,Y).
-+!around(X,Y) : lastDir(skip) <- +around(X,Y).
+// o plano abaixo (com skip)
+// causou varios problemas, principalmente qdo uma vez da skip, segue
+// ignorando tudo dai a frente
+// +!around(X,Y) : lastDir(skip) <- +around(X,Y).
 +!around(X,Y) : not around(X,Y)
   <- !next_step(X,Y);
      !!around(X,Y).
@@ -96,7 +101,7 @@ free.
      !next_step(X,Y).
 //-!next_step(X,Y) : true <- true. // WHAT TO DO HERE? Not sure what else to do. Can't keep trying blindly like a chicken
 +!fixLastDir : lastDir(_) <- -lastDir(_); +lastDir(null).
-+!fixLastDir : true <- .print("Should NOT be here!").
++!fixLastDir : true <- .print("Should NOT be here! Adding lastDir"); +lastDir(null).
 
 
 /* Gold-searching Plans */
@@ -120,7 +125,7 @@ free.
 +cell(X,Y,gold) 
   :  not gold(X,Y) 
   <- +gold(X,Y);
-     .print("Announcing gold ",gold(X,Y)," to others");
+     .print("Announcing ",gold(X,Y)," to others");
      .broadcast(tell,gold(X,Y)). 
 
      
@@ -203,8 +208,7 @@ free.
 // Finished one gold, but others left
 // TODO: only pursue this gold in case no other is doing it (committed to this gold)
 +!choose_gold 
-  :  gold(_,_) // todo: do not work with gold(_,_)!!!!!! see email that describe bug to find "maior" in a list
-               // todo: write an IA meanwhile....
+  :  gold(_,_)
   <- .findall(gold(X,Y),gold(X,Y),LG); 
      !calcGoldDistance(LG,LD); .print("Gold distances: ",LD );
      .sort(LD,[d(_,G)|_]);
@@ -223,11 +227,13 @@ free.
 // so this plans should not be used: +!pos(X,Y) : lastDir(skip) <- .print("It is not possible to go to ",X,"x",Y). // in future +lastDir(skip) <- .dropGoal(pos)
 +!pos(X,Y) : pos(X,Y) <- .print("I've reached ",X,"x",Y).
 // is this OK?????????? (for the environment with failure)
+/* idem o caso do around
 +!pos(X,Y) : lastDir(skip)
   <- .print("GIVING UP!");
      .dropDesire(pos(X,Y));
      .dropIntention(pos(X,Y));
      !update(free).
+     */
 +!pos(X,Y) : not pos(X,Y)
   <- !next_step(X,Y);
      !pos(X,Y).
@@ -235,13 +241,16 @@ free.
 
 // need to check if really carrying gold, otherwise drop goal, etc...
 // we should have environment feedback for pick!
-+!ensure(pick,gold(X,Y)) : pos(X,Y) & cell(X,Y,gold) //gold(X,Y) // & not carryingGold
-  <- do(pick).
++!ensure(pick,G) : pos(X,Y) & cell(X,Y,gold) //gold(X,Y) // & not carryingGold
+  <- .print("*****PICK",G); do(pick).
 // fail if no gold there! handle will "catch" this failure. //+!ensure(pick) : true <- true.
 // !!!
 // Jomi, parece que o stackable failure nao ta funcionando, por isto estes planos:
+// Rafa, parecia funcionar.... as msgs na tela continuam, mas o evento era sempre o
+// -!handle. Vc me manda o erro que estava ocorrendo?
 +!ensure(pick,G) : G
-  <- -G;
+  <- .print("Not picked gold!!!",G);
+     -G;
      !!choose_gold.
 +!ensure(pick,G) : true
   <- !!choose_gold.
