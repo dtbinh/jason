@@ -127,6 +127,9 @@ public class WorldModel {
 		if (x < (width-1) && y < (height-1))  { data[x+1][y+1] &= e1; }  // se
 	}
 	
+	public boolean isFree(Location l) {
+		return isFree(l.x, l.y);
+	}
 	public boolean isFree(int x, int y) {
 		return y >= 0 && y < height && x >= 0 && x < width 
 				&& (data[x][y] & OBSTACLE) == 0
@@ -134,12 +137,15 @@ public class WorldModel {
 				&& (data[x][y] & ENEMY) == 0;
 	}
 
+    public boolean isFreeOfObstacle(Location l) {
+    	return isFreeOfObstacle(l.x, l.y);
+    }
     public boolean isFreeOfObstacle(int x, int y) {
         return y >= 0 && y < height && x >= 0 && x < width 
                 && (data[x][y] & OBSTACLE) == 0;
     }
 	
-	public boolean isUnknown(int x, int y) {
-		return y >= 0 && y < height && x >= 0 && x < width && (data[x][y] == UNKNOWN);
+	public boolean isUnknown(Location l) {
+		return l.y >= 0 && l.y < height && l.x >= 0 && l.x < width && (data[l.x][l.y] == UNKNOWN);
 	}
 }

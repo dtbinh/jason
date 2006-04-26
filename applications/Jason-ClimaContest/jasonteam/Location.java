@@ -3,6 +3,7 @@ package jasonteam;
 public class Location {
     public int x = -1,
                y = -1;
+    
     public Location(int x, int y) {
         this.x = x;
         this.y = y;
@@ -26,5 +27,8 @@ public class Location {
         } catch (Exception e) {  }
         return false;
     }
-
+    
+    public String toString() {
+    	return (x + "," + y);
+    }
 }

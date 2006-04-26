@@ -5,6 +5,7 @@ import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.NumberTerm;
 import jason.asSyntax.Term;
+import jasonteam.Location;
 import jasonteam.WorldModel;
 
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ public class getDirection implements InternalAction {
     			searchAlg.setQuieto(true);
     			//searchAlg.setMaxF(20);
     			//System.out.println("-- from "+iagx+","+iagy+" to "+tox+","+toy);
-    			Nodo solution = searchAlg.busca(new MinerState(iagx, iagy, itox, itoy, model, "initial"));
+    			Nodo solution = searchAlg.busca(new MinerState(new Location(iagx, iagy), new Location(itox, itoy), model, "initial"));
     			//if (solution == null) {
     			//	solution = searchAlg.getTheBest();
     			//}
@@ -72,7 +73,7 @@ public class getDirection implements InternalAction {
 		model.add(WorldModel.EMPTY, 3,1);
 		model.add(WorldModel.EMPTY, 3,2);
 		
-		MinerState initial = new MinerState(19, 17, 5, 7, model, "initial");
+		MinerState initial = new MinerState(new Location(19, 17), new Location(5, 7), model, "initial");
 		AEstrela searchAlg = new AEstrela();
 		searchAlg.setQuieto(false);
 		Nodo solution = searchAlg.busca(initial);
@@ -94,21 +95,19 @@ public class getDirection implements InternalAction {
 class MinerState implements Estado, Heuristica {
 
 	// State information
-	int x,y;
+	Location l; // current location
+	Location to;
 	String op;
 	int cost;
-	int tox, toy;
 	WorldModel model;
 	
-	public MinerState(int x, int y, int tox, int toy, WorldModel model, String op) {
-		this.x = x;
-		this.y = y;
-		this.tox = tox;
-		this.toy = toy;
+	public MinerState(Location l, Location to, WorldModel model, String op) {
+		this.l = l;
+		this.to = to;
 		this.model = model;
 		this.op = op;
 		this.cost = 3;
-		if (model.isUnknown(x,y)) this.cost = 2; // unknown places are preferable
+		if (model.isUnknown(l)) this.cost = 2; // unknown places are preferable
 	}
 	
 	public int custo() {
@@ -116,7 +115,7 @@ class MinerState implements Estado, Heuristica {
 	}
 
 	public boolean ehMeta() {
-		return x == tox && y == toy;
+		return l.equals(to);
 	}
 
 	public String getDescricao() {
@@ -124,40 +123,38 @@ class MinerState implements Estado, Heuristica {
 	}
 
 	public int h() {
-		return (Math.abs(x - tox) + Math.abs(y - toy)) * 3;
+		return l.distance(to) * 3;
 	}
 
 	public List sucessores() {
 		List s = new ArrayList(4);
 		// four directions
-		if (model.isFreeOfObstacle(x,y-1)) {
-			s.add(new MinerState(x,y-1,tox,toy,model,"up"));
-		}
-		if (model.isFreeOfObstacle(x,y+1)) {
-			s.add(new MinerState(x,y+1,tox,toy,model,"down"));
-		}
-		if (model.isFreeOfObstacle(x-1,y)) {
-			s.add(new MinerState(x-1,y,tox,toy,model, "left"));
-		}
-		if (model.isFreeOfObstacle(x+1,y)) {
-			s.add(new MinerState(x+1,y,tox,toy,model, "right"));
-		}
+		suc(s,new Location(l.x,l.y-1),"up");
+		suc(s,new Location(l.x,l.y+1),"down");
+		suc(s,new Location(l.x-1,l.y),"left");
+		suc(s,new Location(l.x+1,l.y),"right");
 		return s;
+	}
+	
+	private void suc(List s, Location newl, String op) {
+		if (model.isFree(newl) || (newl.equals(to) && model.isFreeOfObstacle(newl))) {
+			s.add(new MinerState(newl,to,model,op));
+		}
 	}
 	
     public boolean equals(Object o) {
         try {
             MinerState m = (MinerState)o;
-            return x == m.x && y == m.y;
+            return l.equals(m);
         } catch (Exception e) {}
         return false;
     }
     
     public int hashCode() {
-        return (x + "," + y).hashCode();
+        return l.toString().hashCode();
     }
             
 	public String toString() {
-		return "(" + x + "," + y + "-" + op + "/" + cost + ")"; 
+		return "(" + l + "-" + op + "/" + cost + ")"; 
 	}
 }
