@@ -6,19 +6,51 @@
 MAS jasonTeam {
 	infrastructure: Centralised
 	agents:
-        leader; 
-	    // official host agentslave.in.tu-clausthal.de
-		miner1 leader.asl
-		        [host="localhost", port=12300, username=brazil1, password="JoMirAf"] 
+        leader;
+         
+	    /* // competition official host
+		miner1 miner.asl
+		        [host="agentmaster.in.tu-clausthal.de", port=12300, username=brazil1, password="JoMirAf"] 
 		        agentArchClass jasonteam.ClimaArchitecture;
 		miner2 miner.asl
-		        [host="localhost", port=12300, username=brazil2, password="JoMirAf"] 
+		        [host="agentmaster.in.tu-clausthal.de", port=12300, username=brazil2, password="JoMirAf"] 
 		        agentArchClass jasonteam.ClimaArchitecture;
 		miner3 miner.asl
-		        [host="localhost", port=12300, username=brazil3, password="JoMirAf"] 
+		        [host="agentmaster.in.tu-clausthal.de", port=12300, username=brazil3, password="JoMirAf"] 
    		        agentArchClass jasonteam.ClimaArchitecture;
 		miner4 miner.asl
-		        [host="localhost", port=12300, username=brazil4, password="JoMirAf"]
+		        [host="agentmaster.in.tu-clausthal.de", port=12300, username=brazil4, password="JoMirAf"]
 		        agentArchClass jasonteam.ClimaArchitecture;
+		*/
+		
+	    // competition test host
+		miner1 miner.asl
+		        [host="agentslave.in.tu-clausthal.de", port=12300, username=blumenau1, password="bu43"] 
+		        agentArchClass jasonteam.ClimaArchitecture;
+		miner2 miner.asl
+		        [host="agentslave.in.tu-clausthal.de", port=12300, username=blumenau2, password="bu43"] 
+		        agentArchClass jasonteam.ClimaArchitecture;
+		miner3 miner.asl
+		        [host="agentslave.in.tu-clausthal.de", port=12300, username=blumenau3, password="bu43"] 
+   		        agentArchClass jasonteam.ClimaArchitecture;
+		miner4 miner.asl
+		        [host="agentslave.in.tu-clausthal.de", port=12300, username=blumenau4, password="bu43"]
+		        agentArchClass jasonteam.ClimaArchitecture;
+	
+		
+		/* // local host
+		miner1 miner.asl
+		        [host="localhost", port=12300, username=blumenau1, password="bu43"] 
+		        agentArchClass jasonteam.ClimaArchitecture;
+		miner2 miner.asl
+		        [host="localhost", port=12300, username=blumenau2, password="bu43"] 
+		        agentArchClass jasonteam.ClimaArchitecture;
+		miner3 miner.asl
+		        [host="localhost", port=12300, username=blumenau3, password="bu43"] 
+   		        agentArchClass jasonteam.ClimaArchitecture;
+		miner4 miner.asl
+		        [host="localhost", port=12300, username=blumenau4, password="bu43"]
+		        agentArchClass jasonteam.ClimaArchitecture;     
+		*/
 }
 
