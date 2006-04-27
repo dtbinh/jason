@@ -152,8 +152,8 @@ free.
   <- !delGold(gold(X,Y)).
   
 @pdg1[atomic]
-+!delGold(G) : G & allocatedTo(G,_) <- -G; -allocatedTo(G,_).
-+!delGold(G) : G <- -G.
++!delGold(gold(X,Y)) : gold(X,Y) & allocatedTo(gold(X,Y),_) <- -gold(X,Y); -allocatedTo(gold(X,Y),_).
++!delGold(gold(X,Y)) : gold(X,Y) <- -gold(X,Y).
 +!delGold(_) : true <- true.
 
 +!init_handle(Gold) : true //free 

@@ -116,11 +116,14 @@ public class ClimaProxy extends ClimaAgent {
 	}
 
 	public void processRequestAction(Element perception, long currenttime, long deadline) {
+        if (agX >= 0) {
+            try {
+                model.clearAgView(agX, agY);
+            } catch (Exception e) {
+                logger.log(Level.WARNING, "error clearing ag view",e);                    
+            }
+        }
 		try {
-			if (agX >= 0) {
-				model.clearAgView(agX, agY);
-			}
-
 			List perceptions = new ArrayList();
 			
 			int step = Integer.parseInt(perception.getAttribute("step"));
@@ -207,7 +210,7 @@ public class ClimaProxy extends ClimaAgent {
 			arq.doPerception(perceptions);
 			if (gui) view.update();
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, "error processing start",e);
+			logger.log(Level.SEVERE, "error processing request",e);
 		}
 	}
 
