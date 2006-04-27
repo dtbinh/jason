@@ -23,7 +23,7 @@
 
 +!assignAllQuads(_,[],_) : true <- true.
 +!assignAllQuads(S,A,I) : not quad(S,4,_,_,_,_)
-  <- .wait("quad(S,4,_,_,_,_)", 500); // wait for quad calculation to finish
+  <- .wait("+quad(S,4,_,_,_,_)", 500); // wait for quad calculation to finish
      !!assignAllQuads(S,A,I). 
 // Give priority based on agent number, this is NOT the optimal allocation
 +!assignAllQuads(S,[A|T],[I|L]) : true
@@ -59,15 +59,17 @@
   <- .print("bid from ",M1," for ",Gold," is ",D);
      !allocateMinerFor(Gold);
      !clearBids(Gold).
-+bidFor(Gold,D)[source(A)] : true <- .print("bid from ",A," for ",Gold," is ",D).  
++bidFor(Gold,D)[source(A)] : true
+  <- .print("bid from ",A," for ",Gold," is ",D).  
  
 +!allocateMinerFor(Gold) : true
   <- .findall(op(Dist,A),bidFor(Gold,Dist)[source(A)],LD);
      .sort(LD,[op(DistCloser,Closer)|_]);
      DistCloser < 1000;
      .print("Gold ",Gold," was allocated to ",Closer, " options was ",LD);
-     .send(Closer,achieve,allocated(Gold)).
--!allocateMinerFor(Gold) : true <- .print("could not allocate gold ",Gold).
+     .broadcast(tell,allocatedTo(Gold,Closer)).
+-!allocateMinerFor(Gold) : true
+  <- .print("could not allocate gold ",Gold).
 
 
 /* end of simulation plans */     
