@@ -42,7 +42,8 @@ public class ClimaProxy extends ClimaAgent {
 	WorldView  view;
 	
 	
-	
+	private boolean gui = true;
+    
 	private Logger logger = Logger.getLogger(ClimaProxy.class.getName());
 	private Transformer transformer;
 	private DocumentBuilder documentbuilder;
@@ -51,7 +52,7 @@ public class ClimaProxy extends ClimaAgent {
 		agId = i;
 	}
 	
-	public ClimaProxy(ClimaArchitecture arq, String host, int port, String username, String password) {
+	public ClimaProxy(ClimaArchitecture arq, String host, int port, String username, String password, boolean gui) {
 		logger = Logger.getLogger(ClimaProxy.class.getName()+"."+arq.getAgName());
 		if (host.startsWith("\"")) {
 			host = host.substring(1,host.length()-1);
@@ -60,6 +61,7 @@ public class ClimaProxy extends ClimaAgent {
 		setHost(host);
 		setUsername(username);
 		setPassword(password);
+        this.gui = gui;
 		this.arq = arq;
 		try {
 			documentbuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -88,7 +90,7 @@ public class ClimaProxy extends ClimaAgent {
 
 			// create the model and the view
 			model = WorldModel.create(gsizex, gsizey, 4);
-			view  = WorldView.create(model);
+            if (gui) view  = WorldView.create(model);
 			
 			model.setDepot(depotx, depoty);
 			logger.fine("Start simulation processed ok!");
@@ -100,7 +102,7 @@ public class ClimaProxy extends ClimaAgent {
 	public void processSimulationEnd(Element result, long currenttime) {
 		try {
             WorldModel.destroy();
-            view.destroy();
+            if (gui) view.destroy();
 			arq.remBel(Literal.parseLiteral("opponent(X,Y)"));
 			arq.remBel(Literal.parseLiteral("steps(X,Y)"));
 			arq.remBel(Literal.parseLiteral("gsize(S,X,Y)"));
@@ -203,7 +205,7 @@ public class ClimaProxy extends ClimaAgent {
 			perceptions.add(lpos);
 			logger.fine("Request action for "+lpos+" / "+rid);
 			arq.doPerception(perceptions);
-			view.update();
+			if (gui) view.update();
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "error processing start",e);
 		}

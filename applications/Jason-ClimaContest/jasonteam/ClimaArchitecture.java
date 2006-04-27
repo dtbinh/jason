@@ -38,11 +38,16 @@ public class ClimaArchitecture extends AgArch {
         if (username.startsWith("\"")) username = username.substring(1,username.length()-1);
         String password = stts.getUserParameter("password");
         if (password.startsWith("\"")) password = password.substring(1,password.length()-1);
+        boolean gui = true;
+        if ("no".equals(stts.getUserParameter("gui"))) {
+            gui = false;
+        }
 		clima = new ClimaProxy(this, 
 				stts.getUserParameter("host"), 
 				Integer.parseInt(stts.getUserParameter("port")),
 				username,
-				password);
+				password,
+                gui);
 		//launch proxy agent
 		try {
 			// try to discover the ag id
