@@ -369,7 +369,7 @@ public class OrgManager extends AgArch {
     			updateMembersOE(currentOE.getAgents(),"group("+gr.getGrSpec().getId()+","+gr.getId()+")[owner("+gr.getOwner()+"),"+annot+"]",false, false);
 
     		} else {
-    			logger.log(Level.SEVERE, "Received an unknow message: "+m+"!");
+    			logger.fine("Received an unknown message: "+m+"!");
     		}
     		
     		updateGUI();
