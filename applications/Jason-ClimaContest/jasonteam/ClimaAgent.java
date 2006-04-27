@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -55,7 +56,7 @@ public abstract class ClimaAgent {
 		networkhost = "localhost";
 		networkport = 0;
 		
-		socket = new Socket();
+		//socket = new Socket();
 		documentbuilderfactory=DocumentBuilderFactory.newInstance();
 		transformerfactory = TransformerFactory.newInstance();
 	}
@@ -182,8 +183,8 @@ public abstract class ClimaAgent {
 
     private boolean connect() {
 		try {
-			socketaddress = new InetSocketAddress(networkhost,networkport);
-			socket.connect(socketaddress);
+			//socketaddress = new InetSocketAddress(networkhost,networkport);
+            socket = new Socket(networkhost,networkport);//socket.connect(socketaddress);
 			inputstream = socket.getInputStream();
 			outputstream = socket.getOutputStream();
 
@@ -219,6 +220,9 @@ public abstract class ClimaAgent {
                 } catch (SocketClosedException e) {
                         logger.log(Level.SEVERE, "Socket was closed:"+e);
                         if (!connect()) return;       
+                } catch (SocketException e) {
+                    logger.log(Level.SEVERE, "Socket exception:"+e);
+                    if (!connect()) return;       
                 } catch (Exception e) {
                         logger.log(Level.SEVERE, "Exception", e);
                 }

@@ -115,6 +115,12 @@ public class ClimaProxy extends ClimaAgent {
 		}
 	}
 
+    Location lo1 = new Location(-1,-1), 
+             lo2 = new Location(-1,-1), 
+             lo3 = new Location(-1,-1), 
+             lo4 = new Location(-1,-1),
+             lo5 = new Location(-1,-1);
+    
 	public void processRequestAction(Element perception, long currenttime, long deadline) {
         if (agX >= 0) {
             try {
@@ -129,6 +135,17 @@ public class ClimaProxy extends ClimaAgent {
 			int step = Integer.parseInt(perception.getAttribute("step"));
 			agX = Integer.parseInt(perception.getAttribute("posx"));
 			agY = Integer.parseInt(perception.getAttribute("posy"));
+            
+            lo5 = lo4;
+            lo4 = lo3;
+            lo3 = lo2;
+            lo2 = lo1;
+            lo1 = new Location(agX,agY);
+            
+            if (lo1.equals(lo2) && lo2.equals(lo3) && lo3.equals(lo4) && lo4.equals(lo5)) {
+                perceptions.add(Literal.parseLiteral("restart"));
+            }
+            
 			model.add(model.ALLY, agX, agY);
 			if (agId != -1) {
 				model.setAgPos(agId, agX, agY);

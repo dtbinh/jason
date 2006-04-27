@@ -3,7 +3,7 @@
 lastDir(null).
 free.
 
-+gsize(S,_,_) : true <- !sendInitPos(S).
++gsize(S,W,H) : true <- .send(leader,tell,gsize(S,W,H)); !sendInitPos(S).
 +!sendInitPos(S) : pos(X,Y)
   <- .send(leader,tell,myInitPos(S,X,Y)).
 +!sendInitPos(S) : not pos(_,_)
@@ -271,13 +271,26 @@ free.
 +!update(lastDir(D)) : true <- +lastDir(D).
 //-!update(lastDir(D)) : true <- +lastDir(D). // not sure why this is needed!!!
 
+/* restart */
+
+@restart[atomic]
++restart : true
+  <- .print("restarting!!");
+     do(drop);
+     .dropAllDesires; 
+     .dropAllIntentions;
+     !clearGold;
+     !delCarrying_gold;
+     !clearPicked;
+     !clearPos;
+     !update(free).
+
 
 /* end of a simulation */
 
 @end[atomic]
 +endOfSimulation(S,_) : true 
-  <- .dropAllDesires; 
-     .dropAllIntentions;
+  <- !sayEndToLeader(S);
      !clearMyQuad;
      !clearGold;
      !delCarrying_gold;
@@ -288,14 +301,17 @@ free.
      !update(free);
      .print("-- END ",S," --").
 
-     
++!sayEndToLeader(S) : .myName(miner1) <- .send(leader, tell, endOfSimulation(S,n)).
++!sayEndToLeader(S) : true <- true.
+
 // TODO: change semantic of "-" and create "--" to avoid these stupid plans :-)
      
 +!clearMyQuad : myQuad(_,_,_,_) <- -myQuad(_,_,_,_).
 +!clearMyQuad : true <- true.
 
-+!clearGold : gold(X,Y) <- !delGold(gold(X,Y)); !clearGold.
++!clearGold : gold(X,Y) <- -gold(X,Y); !clearGold.
 +!clearGold : true <- true.
+-!clearGold : true <- true.
 
 +!clearPicked : picked(_) <- -picked(_); !clearPicked.
 +!clearPicked : true <- true.
