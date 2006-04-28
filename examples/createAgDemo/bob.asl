@@ -3,5 +3,4 @@ init.
   <- .print("i am running").
   
 +!a : true 
-  <- .print("ok, I am here"); 
-     !a.
+  <- .print("ok, I am here").
