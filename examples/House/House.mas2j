@@ -1,0 +1,14 @@
+/* Jason Project 
+
+   See Prometheus specification in doc folder 
+
+*/
+
+MAS house {
+	infrastructure: Centralised
+	environment: houseEnv
+	agents: robot;
+		    owner;
+		    supermarket;
+}
+
