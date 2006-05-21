@@ -1,4 +1,17 @@
 -----------
+version 0.9
+-----------
+
+This version requires java 1.5.
+
+Changes in ASL syntax
+. the arithmetic operator % is changed to "mod"
+. or (represented by "|") is allowed in plans' context. e.g.:
+    +e : a | b <- ....
+    +e : a & not(b | c) <- ....
+    
+
+-----------
 version 0.8
 -----------
 

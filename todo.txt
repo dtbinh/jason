@@ -8,21 +8,17 @@ Plan for Jason 0.9
   	.send(jomi,ask,father(X,Y))
 . receiving messages are treated as  +!kqmlReceived (achieve goal, to have fail handling)
 
-. & and | in context (see bellow)
-
 . BelBase customisation (with SGBD) - and BUF/BRF (Dalt paper)
   (see bellow)
 
 . compilation directives
   . patterns
-  . include
 
 . Patterns - Dalt paper
   . stackable failure (see email)
   . dropGoal
 
 . add option relPlans=(singleUnif | multiUnif)
-
 
 
 -----------------------------------
@@ -39,8 +35,7 @@ Projects (!)
 jIDE 
 
    . debug:
-      . stop flicking, step one agent, sniffer, ...
-      . fold/unfold mind's itens (more/less details)
+      . step one agent, sniffer, ...
       . act on agent's mind (remove bel, intention, generate event,...)
       . control at semantic action level
 
