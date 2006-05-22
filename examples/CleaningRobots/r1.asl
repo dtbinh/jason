@@ -30,8 +30,7 @@ checking(slots).
 +!ensure_pick(S) : garbage(r1)
    <- pick(garb);
       !ensure_pick(S).
-
-+!ensure_pick(_) : true <- true.
++!ensure_pick(_).
 
 +!continue(check) : true
    <- !go(back);
@@ -39,10 +38,7 @@ checking(slots).
       +checking(slots);
       next(slot).
 
-+!go(L) : pos(L,X,Y) & pos(r1,X,Y)
-   <- true.
-
-+!go(L) : true
-   <- ?pos(L,X,Y);
-      moveTowards(X,Y);
-      !go(L).
++!go(L) : pos(L,X,Y) & pos(r1,X,Y).
++!go(L) <- ?pos(L,X,Y);
+           moveTowards(X,Y);
+           !go(L).

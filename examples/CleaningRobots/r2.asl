@@ -1,4 +1,3 @@
 // mars robot 2
 
-+garbage(r2) : true
-   <- burn(garb).
++garbage(r2) : true <- burn(garb).

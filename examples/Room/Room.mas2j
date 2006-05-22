@@ -8,7 +8,7 @@ The porter is the agent that is capable to (un)lock
 the door (i.e., to act in the environment). So other 
 agents should ask him such services.
 
-A Prometheus specification is available n the doc folder.
+A Prometheus specification is available in the doc folder.
 
 */
 

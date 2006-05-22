@@ -7,11 +7,10 @@ defaultBidValue(3).
 ally(ag2).
 threshold(3).
 
-+auction(N)[source(S)] : threshold(T) & N < T
-   <- !bid_normally(S,N).
-
 +auction(N)[source(S)] 
-   :  .myName(I) & winner(I) & ally(A) & not alliance(I,A)
+   :  (threshold(T) & N < T) 
+      |
+      (.myName(I) & winner(I) & ally(A) & not alliance(I,A))
    <- !bid_normally(S,N).
 
 +auction(N)[source(S)] 
@@ -31,4 +30,5 @@ threshold(3).
 
 @propAlliance[breakpoint]
 +!alliance(A) : true
-   <- .send(A,tell,alliance). 
+   <- .send(A,tell,alliance).
+   
