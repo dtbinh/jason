@@ -15,11 +15,9 @@ Plan for Jason 0.9
   . patterns
 
 . Patterns - Dalt paper
-  . stackable failure (see email)
   . dropGoal
 
 . add option relPlans=(singleUnif | multiUnif)
-
 
 -----------------------------------
 Projects (!)
