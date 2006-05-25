@@ -9,10 +9,10 @@ Changes in ASL syntax
 . or (represented by "|") is allowed in plans' context. e.g.:
     +e : a | b <- ....
     +e : a & not(b | c) <- ....
-. 'true' context or plans should omitted. e.g.:
-	+e : true <- true.
+. 'true' context or plans can be omitted. e.g.:
+        +e : true <- true.
   may be written as
-    +e.
+        +e.
     
 
 -----------
