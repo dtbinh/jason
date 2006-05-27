@@ -10,6 +10,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import moise.oe.GoalInstance;
 import moise.oe.GroupInstance;
@@ -20,8 +22,6 @@ import moise.oe.Player;
 import moise.oe.RolePlayer;
 import moise.oe.SchemeInstance;
 import moise.tools.SimOE;
-
-import java.util.logging.*;
 
 public class OrgManager extends AgArch {
 

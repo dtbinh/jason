@@ -10,6 +10,7 @@ import jason.asSyntax.BeliefBase;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Pred;
 import jason.asSyntax.Term;
+import jason.asSyntax.TermImpl;
 import jason.asSyntax.Trigger;
 import jason.asSyntax.VarTerm;
 import jason.runtime.Settings;
@@ -32,7 +33,7 @@ public class OrgAgent extends AgArch {
 	OE currentOE = null;
 	Set<GoalInstance> alreadyGeneratedEvents = new HashSet<GoalInstance>();
 	
-	Term managerSource = Term.parse("source(orgManager)");
+	Term managerSource = TermImpl.parse("source(orgManager)");
 	
 	Logger logger = Logger.getLogger(OrgAgent.class.getName());
 
@@ -202,7 +203,7 @@ public class OrgAgent extends AgArch {
             return;
         }
         if (gi.getScheme().getRoot() == gi) {
-            gap.addAnnot(new Term("root"));
+            gap.addAnnot(new TermImpl("root"));
         }
 		BeliefBase bb = fTS.getAg().getBS();
         String gState = "unsatisfied";
@@ -213,7 +214,7 @@ public class OrgAgent extends AgArch {
         }
 
         Literal gil = new Literal(Literal.LPos, new Pred("goalState"));
-        gil.addTerm(new Term(gi.getScheme().getId()));
+        gil.addTerm(new TermImpl(gi.getScheme().getId()));
         gil.addTerm(gap);
         gil.addTerm(new VarTerm("S"));
 		Unifier u = new Unifier();
@@ -229,9 +230,9 @@ public class OrgAgent extends AgArch {
 		}
 		
 		gil = new Literal(Literal.LPos, new Pred("goalState"));
-		gil.addTerm(new Term(gi.getScheme().getId()));
+		gil.addTerm(new TermImpl(gi.getScheme().getId()));
 		gil.addTerm(gap);
-		gil.addTerm(new Term(gState));
+		gil.addTerm(new TermImpl(gState));
 		gilInBB = fTS.getAg().believes(gil, u);
 		if (gilInBB == null) {
 			fTS.getAg().addBel(gil, managerSource, fTS.getC(), Intention.EmptyInt);

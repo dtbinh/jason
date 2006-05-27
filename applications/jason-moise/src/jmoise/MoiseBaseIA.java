@@ -5,8 +5,10 @@ import jason.asSemantics.Message;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.Term;
+import jason.asSyntax.TermImpl;
 
-import java.util.logging.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public abstract class MoiseBaseIA implements InternalAction {
 
@@ -15,7 +17,7 @@ public abstract class MoiseBaseIA implements InternalAction {
 
     public boolean execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
     	String acName = this.getClass().getName().substring(7); // remove the package name "jmoise"
-		Term acTerm = new Term(acName);
+		Term acTerm = new TermImpl(acName);
 		for (int i=0; i<args.length; i++) {
 			acTerm.addTerm(args[i]);
 		}
