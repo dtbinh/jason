@@ -2,12 +2,13 @@ package myPkg;
 
 import jason.asSyntax.Literal;
 import jason.asSyntax.Term;
+import jason.asSyntax.TermImpl;
 import jason.environment.Environment;
 
 public class testEnv extends Environment {
     
-    static Term a1 = Term.parse("a(b)");
-    static Term a2 = Term.parse("b(c)");
+    static Term a1 = TermImpl.parse("a(b)");
+    static Term a2 = TermImpl.parse("b(c)");
     static Literal p1 = Literal.parseLiteral("s(b)");
     
     public testEnv() {

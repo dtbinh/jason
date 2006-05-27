@@ -1,5 +1,6 @@
 import jason.asSyntax.Literal;
 import jason.asSyntax.Term;
+import jason.asSyntax.TermImpl;
 import jason.environment.Environment;
 
 import java.awt.Dimension;
@@ -21,10 +22,10 @@ public class marsEnv extends Environment {
 	public static final int Y = 1; 
 	public static final int MErr = 2;
 
-	public static final Term ns = Term.parse("next(slot)");
-	public static final Term pg = Term.parse("pick(garb)");
-	public static final Term dg = Term.parse("drop(garb)");
-	public static final Term bg = Term.parse("burn(garb)");
+	public static final Term ns = TermImpl.parse("next(slot)");
+	public static final Term pg = TermImpl.parse("pick(garb)");
+	public static final Term dg = TermImpl.parse("drop(garb)");
+	public static final Term bg = TermImpl.parse("burn(garb)");
 
 	public static final Literal g1 = Literal.parseLiteral("garbage(r1)");
 	public static final Literal g2 = Literal.parseLiteral("garbage(r2)");
