@@ -24,13 +24,13 @@
     </path>
 
     <path id="project.classpath">
-        <path refid="run.classpath" />
-        <pathelement location="${jasonJar}"/>
-        <pathelement location="${basedir}/lib/junit.jar"/>
-        <pathelement location="${basedir}/lib/ant-launcher.jar"/>
-        <pathelement location="${basedir}/lib/ant.jar"/>
-    	<pathelement location="${jedit.install.dir}/jars/ErrorList.jar"/>
-    	<pathelement location="${jedit.install.dir}/jars/SideKick.jar"/>
+      	<path refid="run.classpath" />
+     	<pathelement location="${jasonJar}"/>
+      	<pathelement location="${basedir}/lib/junit.jar"/>
+      	<pathelement location="${basedir}/lib/ant-launcher.jar"/>
+		<pathelement location="${basedir}/lib/ant.jar"/>
+  	  	<pathelement location="${jedit.install.dir}/jars/ErrorList.jar"/>
+    		<pathelement location="${jedit.install.dir}/jars/SideKick.jar"/>
     </path>
 
     <path id="test.classpath">
@@ -190,7 +190,9 @@
     </target>
 	
     <target name="apidoc" depends="compile" >
-        <javadoc author="true" destdir="${basedir}/doc/api" packagenames="jason.*" 
+        <javadoc author="true" destdir="${basedir}/doc/api" 
+        	      packagenames="jason.*" 
+        		  excludepackagenames="jason.asSyntax.parser,jason.mas2j.parser"
         	      sourcepath="${basedir}/src" use="true" version="true" 
         	      windowtitle="Jason - AgentSpeak Java Interpreter">
             <classpath refid="project.classpath"/>
