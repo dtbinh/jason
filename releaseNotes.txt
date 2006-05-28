@@ -14,6 +14,18 @@ Changes in ASL syntax
   may be written as
         +e.
     
+Changes in .mas2j file
+. the environment class can receive parameters from the .mas2j file. 
+  e.g. in a mas2j file:
+      ...
+      environment: myenv(1,"a b c",vl)
+      ...
+  the environment implementation will receive these parameters
+  in the init method:
+      public void init(String[] args) { ... } 
+  
+
+
 
 -----------
 version 0.8
