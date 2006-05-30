@@ -22,8 +22,9 @@
 
 +!assignAllQuads(S,Qs) : not quad(S,4,_,_,_,_)
   <- .wait("+quad(S,4,_,_,_,_)", 500); // wait for quad calculation to finish
+  // TODO: try to remove this wait when atomic bug is fixed!
      !!assignAllQuads(S,Qs). 
-+!assignAllQuads(_,[]) : true <- true.
++!assignAllQuads(_,[]).
 +!assignAllQuads(S,[Q|T]) : true
   <- !assignQuad(S,Q);
      !assignAllQuads(S,T).
@@ -60,7 +61,7 @@
  
 +!allocateMinerFor(Gold) : true
   <- .findall(op(Dist,A),bidFor(Gold,Dist)[source(A)],LD);
-     .sort(LD,[op(DistCloser,Closer)|_]);
+     .sort(LD,[op(DistCloser,Closer)|_]); // TOOD: use min
      DistCloser < 1000;
      .print("Gold ",Gold," was allocated to ",Closer, " options was ",LD);
      .broadcast(tell,allocatedTo(Gold,Closer)).
@@ -76,8 +77,8 @@
      !clearInitPos(S).
 
 +!clearInitPos(S) : myInitPos(S,_,_) <- -myInitPos(S,_,_); !clearInitPos(S).
-+!clearInitPos(_) : true <- true.
++!clearInitPos(_).
 
 +!clearBids(Gold) : bidFor(Gold,_) <- -bidFor(Gold,_); !clearBids(Gold).
-+!clearBids(Gold) : true <- true.
++!clearBids(Gold).
 

@@ -1,4 +1,4 @@
-package mining;
+package jia;
 
 public class Location {
     public int x = -1,

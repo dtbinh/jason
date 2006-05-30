@@ -99,9 +99,8 @@ free.
      .dropIntention(handle(gold(_,_)));
      .print("Giving up current gold ",gold(OldX,OldY)," to handle ",gold(X,Y)," which I am seeing!");
      .print("Announcing ",gold(OldX,OldY)," to others");
-     .broadcast(tell,gold(OldX,OldY)).
-     // the drop generate an -!handle event
-     // TODO: do not use this event! use init_handle
+     .broadcast(tell,gold(OldX,OldY));
+     !init_handle(gold(X,Y)).
      
 // I am not free, just add gold belief and announce to others
 +cell(X,Y,gold) 
@@ -136,11 +135,13 @@ free.
 // someone else picked up the gold I was going after
 // remove from bels and goals
 @ppgd[atomic]
-+picked(G)[source(A)] : .desire(handle(G)) // TODO or init_handle
++picked(G)[source(A)] 
+  :  .desire(handle(G)) | .desire(init_handle(G))
   <- .print(A," has taken ",G," that I am pursuing! Dropping my intention.");
      !delGold(gold(X,Y));
      .dropDesire(handle(G)); // Rafa, do we need to drop the desire?
-     .dropIntention(handle(G)). // TODO: choose again
+     .dropIntention(handle(G));
+     !!choose_gold.
 
 // someone else picked up a gold I know about, remove from my bels
 +picked(gold(X,Y)) : true 
@@ -165,7 +166,7 @@ free.
   <- !update(lastChecked(X,Y)).
 // do we need another alternative? I couldn't think of another. If free
 // but no desire, probably was still going home which works
-+!updatePos : true <- true.
++!updatePos.
 
 +!handle(gold(X,Y)) 
   :  not free & .myName(Me)
@@ -204,7 +205,7 @@ free.
   <- .findall(gold(X,Y),gold(X,Y),LG);
      !calcGoldDistance(LG,LD);
      .print("Uncommitted gold distances: ",LD);
-     .sort(LD,[d(D,NewG)|_]);
+     .sort(LD,[d(D,NewG)|_]);  // TOOD: use min
      .print("Next gold is ",NewG);
      !!handle(NewG).
 -!choose_gold : true <- !update(free).
@@ -269,19 +270,19 @@ free.
 // TODO: change semantic of "-" and create "--" to avoid these stupid plans :-)
      
 +!clearMyQuad : myQuad(_,_,_,_) <- -myQuad(_,_,_,_).
-+!clearMyQuad : true <- true.
++!clearMyQuad.
 
 +!clearGold : gold(X,Y) <- !delGold(gold(X,Y)); !clearGold.
-+!clearGold : true <- true.
++!clearGold.
 
 +!clearPicked : picked(_) <- -picked(_); !clearPicked.
-+!clearPicked : true <- true.
++!clearPicked.
 
 +!clearPos : lastChecked(_,_) <- -lastChecked(_,_); !clearPos.
-+!clearPos : true <- true.
++!clearPos.
 
 +!repostGsize : gsize(S,W,H) <- -gsize(S,W,H); +gsize(S,W,H)[source(percept)].
-+!repostGsize : true <- true.
++!repostGsize.
 
 
 @pdg1[atomic]
@@ -289,6 +290,6 @@ free.
   :  gold(X,Y) & committedTo(gold(X,Y))
   <- -gold(X,Y); -committedTo(gold(X,Y)).
 +!delGold(gold(X,Y)) : gold(X,Y) <- -gold(X,Y).
-+!delGold(_) : true <- true.
--!delGold(_) : true <- true.
++!delGold(_).
+-!delGold(_).
 
