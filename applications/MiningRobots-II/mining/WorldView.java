@@ -116,8 +116,10 @@ public class WorldView extends JFrame {
         }
 
         public void drawObstacle(Graphics g, int x, int y) {
+            g.setColor(Color.darkGray);
+            g.fillRect(x*cellSizeW,   y*cellSizeH, cellSizeW, cellSizeH);
             g.setColor(Color.black);
-            g.drawRect(x * cellSizeW, y * cellSizeH, cellSizeW, cellSizeH);
+            g.drawRect(x*cellSizeW, y*cellSizeH, cellSizeW, cellSizeH);
         }
 
         public void drawDepot(Graphics g, int x, int y) {
