@@ -26,7 +26,7 @@ MAS jasonTeam {
                  username=brazil4, password="JoMirAf", gui=no]
 		        agentArchClass jasonteam.ClimaArchitecture;
 		*/
-		
+		/*
 	    // competition test host
 		miner1 miner.asl
 		        [host="agentslave.in.tu-clausthal.de", port=12300, 
@@ -44,9 +44,9 @@ MAS jasonTeam {
 		        [host="agentslave.in.tu-clausthal.de", port=12300, 
                  username=blumenau4, password="bu43", gui=no]
 		        agentArchClass jasonteam.ClimaArchitecture;
-	
+		*/
 		
-		/* // local host
+		// local host
 		miner1 miner.asl
 		        [host="localhost", port=12300, username=blumenau1, password="bu43"] 
 		        agentArchClass jasonteam.ClimaArchitecture;
@@ -59,6 +59,6 @@ MAS jasonTeam {
 		miner4 miner.asl
 		        [host="localhost", port=12300, username=blumenau4, password="bu43"]
 		        agentArchClass jasonteam.ClimaArchitecture;     
-		*/
+
 }
 

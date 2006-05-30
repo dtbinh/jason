@@ -143,7 +143,7 @@ public class ClimaProxy extends ClimaAgent {
             lo1 = new Location(agX,agY);
             
             if (lo1.equals(lo2) && lo2.equals(lo3) && lo3.equals(lo4) && lo4.equals(lo5)) {
-                perceptions.add(Literal.parseLiteral("restart"));
+                perceptions.add(Literal.parseLiteral("frozen"));
             }
             
 			model.add(model.ALLY, agX, agY);

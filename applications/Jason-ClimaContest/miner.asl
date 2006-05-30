@@ -274,7 +274,7 @@ free.
 /* restart */
 
 @restart[atomic]
-+restart : true
++frozen : true
   <- .print("restarting!!");
      do(drop);
      .dropAllDesires; 
