@@ -5,5 +5,5 @@ MAS auction {
     infrastructure: Centralised
 
     agents: ag1; ag2; ag3; 
-            auctioneer agentArchClass AuctioneerGUI;
+            auctioneer [verbose=2] agentArchClass AuctioneerGUI;
 }

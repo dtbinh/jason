@@ -7,16 +7,16 @@ auction(1).
        .broadcast(tell, auction(N)).
 
 // receive bid and check for new winner
-@rb[atomic]
+@pb1[atomic]
 +place_bid(N,V)[source(S)] : auction(N) & winner(N,CurWin,CurVl) & V > CurVl
     <- -winner(N,CurWin,CurVl); 
-       +winner(N,S,V); 
+       +winner(N,S,V);
        !checkEnd(N).
 
+@pb2[atomic]
 +place_bid(N,V) : true
     <- !checkEnd(N).
 
-@ep[atomic]
 +!checkEnd(N) : auction(N) & N < 7 & 
                 place_bid(N,V1)[source(ag1)] & 
                 place_bid(N,V2)[source(ag2)] & 
@@ -27,5 +27,5 @@ auction(1).
        .broadcast(tell, winner(W));
        -auction(N);
        +auction(N+1).
++!checkEnd(N).
 
-+!checkEnd(N) : true <- true.
