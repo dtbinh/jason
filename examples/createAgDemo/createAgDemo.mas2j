@@ -3,6 +3,5 @@
 
 MAS createAgDemo {
 	infrastructure: Centralised
-  	environment: env
-	agents: ag1;
+  	agents: ag1;
 }
