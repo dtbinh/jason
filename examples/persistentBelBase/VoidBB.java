@@ -1,6 +1,5 @@
 import jason.asSemantics.*;
 import jason.asSyntax.*;
-import jason.bb.*;
 import java.util.*;
 import org.w3c.dom.*;
 
@@ -8,7 +7,7 @@ import org.w3c.dom.*;
 /**
   * Void Belief Base: store nothing!
   */
-public class VoidBB implements BeliefBase {
+public class VoidBB implements jason.bb.BeliefBase {
 
     public void init(Agent ag, String[] args) {
     }

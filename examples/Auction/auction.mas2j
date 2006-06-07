@@ -1,9 +1,9 @@
-// creates a MAS called auction 
+// creates an MAS called auction 
 
 MAS auction {
     
     infrastructure: Centralised
 
     agents: ag1; ag2; ag3; 
-            auctioneer [verbose=2] agentArchClass AuctioneerGUI;
+            auctioneer agentArchClass AuctioneerGUI;
 }
