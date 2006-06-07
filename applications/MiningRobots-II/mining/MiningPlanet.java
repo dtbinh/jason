@@ -303,7 +303,6 @@ public class MiningPlanet extends jason.environment.Environment {
         model.add(WorldModel.GOLD, 20, 20);
         model.add(WorldModel.GOLD, 20, 21);
         model.add(WorldModel.GOLD, 2, 22);
-        model.add(WorldModel.GOLD, 2, 23);
         model.add(WorldModel.GOLD, 2, 12);
         model.add(WorldModel.GOLD, 19, 2);
         model.add(WorldModel.GOLD, 14, 4);
