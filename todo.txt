@@ -45,7 +45,7 @@ MAS2J TODO
 
   Syntax:
   In mas2j:
-       agent ag1 BeliefBaseClass D3B 
+       agent ag1 beliefBaseClass D3B 
              [d3b=config(jdbc,mysql:bla,xx,yyy,
                          [bel(a,ta),bel(b,tb)]
                         )];

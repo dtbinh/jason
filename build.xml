@@ -2,284 +2,274 @@
 
 <project basedir="." default="run" name="Jason">
 
-    <property environment="env"/>
+	<property environment="env" />
 
-    <property name="saciJar" value="${basedir}/lib/saci.jar"/>
-    <property name="jasonJar" value="${basedir}/lib/jason.jar"/>
+	<property name="saciJar" value="${basedir}/lib/saci.jar" />
+	<property name="jasonJar" value="${basedir}/lib/jason.jar" />
 
-    <property name="build.dir" value="${basedir}/bin/classes"/>
+	<property name="build.dir" value="${basedir}/bin/classes" />
 
-    <property name="dist.properties" value="${basedir}/bin/dist.properties"/>
-    <property name="version" value="0"/>
-    <property name="release" value="8.2"/>
-    <property name="distDir" value="${env.HOME}/tmp/Jason-${version}.${release}"/>
-    <property name="distFile" value="${env.HOME}/Jason-${version}.${release}"/>
+	<property name="dist.properties" value="${basedir}/bin/dist.properties" />
+	<property name="version" value="0" />
+	<property name="release" value="8.2" />
+	<property name="distDir" value="${env.HOME}/tmp/Jason-${version}.${release}" />
+	<property name="distFile" value="${env.HOME}/Jason-${version}.${release}" />
 
-    <property name="jedit.install.dir" value="${basedir}/bin/jedit"/>
-    <property name="plugin.jar.name"   value="jason-jedit-plugin.jar"/>
+	<property name="jedit.install.dir" value="${basedir}/bin/jedit" />
+	<property name="plugin.jar.name" value="jason-jedit-plugin.jar" />
 
-    <path id="run.classpath">
-    	<pathelement location="${jedit.install.dir}/jedit.jar"/>
-        <pathelement location="${saciJar}"/>
-    </path>
+	<path id="run.classpath">
+		<pathelement location="${jedit.install.dir}/jedit.jar" />
+		<pathelement location="${saciJar}" />
+	</path>
 
-    <path id="project.classpath">
-      	<path refid="run.classpath" />
-     	<pathelement location="${jasonJar}"/>
-      	<pathelement location="${basedir}/lib/junit.jar"/>
-      	<pathelement location="${basedir}/lib/ant-launcher.jar"/>
-		<pathelement location="${basedir}/lib/ant.jar"/>
-  	  	<pathelement location="${jedit.install.dir}/jars/ErrorList.jar"/>
-    		<pathelement location="${jedit.install.dir}/jars/SideKick.jar"/>
-    </path>
+	<path id="project.classpath">
+		<path refid="run.classpath" />
+		<pathelement location="${basedir}/lib/junit.jar" />
+		<pathelement location="${basedir}/lib/ant-launcher.jar" />
+		<pathelement location="${basedir}/lib/ant.jar" />
+		<pathelement location="${jedit.install.dir}/jars/ErrorList.jar" />
+		<pathelement location="${jedit.install.dir}/jars/SideKick.jar" />
+		<pathelement location="${jasonJar}" />
+	</path>
 
-    <path id="test.classpath">
-        <path refid="project.classpath" />
-        <pathelement location="${build.dir}"/>
-    </path>
+	<path id="test.classpath">
+		<path refid="project.classpath" />
+		<pathelement location="${build.dir}" />
+	</path>
 
-    <condition property="jedit-ok" value="ok" >
+	<condition property="jedit-ok" value="ok">
 		<or>
-			<not><available file="${basedir}/bin/jedit.tgz" /></not>
-	    	<uptodate 
-	    		targetfile="${jedit.install.dir}" 
-	    		srcfile="${basedir}/bin/jedit.tgz" />
+			<not>
+				<available file="${basedir}/bin/jedit.tgz" />
+			</not>
+			<uptodate targetfile="${jedit.install.dir}" srcfile="${basedir}/bin/jedit.tgz" />
 		</or>
-    </condition>
+	</condition>
 
-    <target name="untar-jedit" unless="jedit-ok">
-        <echo message="Uncompressing jEdit" />
-        <delete dir="${jedit.install.dir}" />
-        <untar compression="gzip" dest="${basedir}/bin" src="${basedir}/bin/jedit.tgz" />
-    </target>
-
-
-    <target name="init" depends="untar-jedit">
-	    <mkdir dir="${build.dir}" />
-    </target>
+	<target name="untar-jedit" unless="jedit-ok">
+		<echo message="Uncompressing jEdit" />
+		<delete dir="${jedit.install.dir}" />
+		<untar compression="gzip" dest="${basedir}/bin" src="${basedir}/bin/jedit.tgz" />
+	</target>
 
 
-    <condition property="parsers-ok" value="ok" >
+	<target name="init" depends="untar-jedit">
+		<mkdir dir="${build.dir}" />
+	</target>
+
+
+	<condition property="parsers-ok" value="ok">
 		<and>
-	    	<uptodate property="parsers-ok"
-	    		targetfile="${basedir}/src/jason/mas2j/parser/mas2j.java" 
-	    		srcfile="${basedir}/src/jason/mas2j/parser/MAS2JavaParser.jcc" />
-	    	<uptodate property="parsers-ok"
-	    		targetfile="${basedir}/src/jason/asSyntax/parser/as2j.java" 
-	    		srcfile="${basedir}/src/jason/asSyntax/parser/AS2JavaParser.jcc" />
+			<uptodate property="parsers-ok" targetfile="${basedir}/src/jason/mas2j/parser/mas2j.java" srcfile="${basedir}/src/jason/mas2j/parser/MAS2JavaParser.jcc" />
+			<uptodate property="parsers-ok" targetfile="${basedir}/src/jason/asSyntax/parser/as2j.java" srcfile="${basedir}/src/jason/asSyntax/parser/AS2JavaParser.jcc" />
 		</and>
-    </condition>
+	</condition>
 
-    <target name="parsers" depends="init" unless="parsers-ok">
-        <delete failonerror="no" >
-            <fileset dir="${basedir}/src/jason/mas2j/parser" includes="*.java" />
-            <fileset dir="${basedir}/src/jason/asSyntax/parser" includes="*.java" />
-        </delete>
+	<target name="parsers" depends="init" unless="parsers-ok">
+		<delete failonerror="no">
+			<fileset dir="${basedir}/src/jason/mas2j/parser" includes="*.java" />
+			<fileset dir="${basedir}/src/jason/asSyntax/parser" includes="*.java" />
+		</delete>
 
-        <java dir="${basedir}/src/jason/mas2j/parser" classname="javacc" fork="yes">
-            <classpath location="${basedir}/lib/javacc.jar"/>
-            <arg line="MAS2JavaParser.jcc" />
-        </java>
+		<java dir="${basedir}/src/jason/mas2j/parser" classname="javacc" fork="yes">
+			<classpath location="${basedir}/lib/javacc.jar" />
+			<arg line="MAS2JavaParser.jcc" />
+		</java>
 
-        <java dir="${basedir}/src/jason/asSyntax/parser" classname="javacc" fork="yes">
-            <classpath location="${basedir}/lib/javacc.jar"/>
-            <arg line="AS2JavaParser.jcc" />
-        </java>
+		<java dir="${basedir}/src/jason/asSyntax/parser" classname="javacc" fork="yes">
+			<classpath location="${basedir}/lib/javacc.jar" />
+			<arg line="AS2JavaParser.jcc" />
+		</java>
 
-        <java dir="${basedir}/src/jason/mas2j/parser" classname="jjdoc" fork="yes">
-            <classpath location="${basedir}/lib/javacc.jar"/>
-            <arg line="MAS2JavaParser.jcc" />
-        </java>
-    	<move file="${basedir}/src/jason/mas2j/parser/MAS2JavaParser.html" todir="${basedir}/doc" />
+		<java dir="${basedir}/src/jason/mas2j/parser" classname="jjdoc" fork="yes">
+			<classpath location="${basedir}/lib/javacc.jar" />
+			<arg line="MAS2JavaParser.jcc" />
+		</java>
+		<move file="${basedir}/src/jason/mas2j/parser/MAS2JavaParser.html" todir="${basedir}/doc" />
 
-        <java dir="${basedir}/src/jason/asSyntax/parser" classname="jjdoc" fork="yes">
-            <classpath location="${basedir}/lib/javacc.jar"/>
-            <arg line="AS2JavaParser.jcc" />
-        </java>
-    	<move file="${basedir}/src/jason/asSyntax/parser/AS2JavaParser.html" todir="${basedir}/doc" />
-    
-    </target>
+		<java dir="${basedir}/src/jason/asSyntax/parser" classname="jjdoc" fork="yes">
+			<classpath location="${basedir}/lib/javacc.jar" />
+			<arg line="AS2JavaParser.jcc" />
+		</java>
+		<move file="${basedir}/src/jason/asSyntax/parser/AS2JavaParser.html" todir="${basedir}/doc" />
+
+	</target>
 
 
-    <target name="compile" depends="init,parsers" >
-        <javac srcdir="src" destdir="${build.dir}" 
-        	debug="true" deprecation="true" optimize="true" 
-        	nowarn="true"
-        	source="1.5" target="1.5">
-            <classpath refid="project.classpath"/>
-        </javac>
-    </target>
+	<target name="compile" depends="init,parsers">
+		<javac srcdir="src" destdir="${build.dir}" debug="true" deprecation="true" optimize="true" nowarn="true" source="1.5" target="1.5">
+			<classpath refid="project.classpath" />
+		</javac>
+	</target>
 
-        
-    <target name="jar" depends="compile">
-        <propertyfile file="${dist.properties}">
-            <entry key="version" value="${version}"/>
-            <entry key="release" value="${release}"/>
-            <entry default="0" key="build" operation="+" type="int"/>
-            <entry key="build.date" type="date" value="now"/>
-        </propertyfile>
-        <property file="${dist.properties}"/>
 
-    	<jar jarfile="${jasonJar}" >
-		      <fileset dir="${build.dir}">
-		           <include name="jason/**/*.class"/>
-		      </fileset>
-		      <fileset dir="${basedir}/src">
-		            <include name="images/**/*"/>
-		            <include name="asl/**/*"/>
-	    	        <include name="xml/**/*"/>
-	        	    <include name="logging.properties"/>
-		      </fileset>
-		      <fileset dir="${basedir}/bin">
-		            <include name="dist.properties"/>
-		      </fileset>
-        </jar>
-    	<!--signjar jar="${jasonJar}" alias="jomi" storepass="fred3271" keystore="${basedir}/src/jomiKeystore" /-->
-    </target>
-  
-    <target name="plugin" depends="compile, jar">
-        <jar jarfile="${jedit.install.dir}/jars/${plugin.jar.name}">
-            <fileset dir="${basedir}/src/jeditPlugin">
-                <include name="Jason.props"/>
-                <include name="index.html"/>
-                <include name="actions.xml"/>
-                <include name="dockables.xml"/>
-            </fileset>
-	        <fileset dir="${build.dir}">
-			    <include name="jason/**/*.class"/>
-	        </fileset>
-	        <fileset dir="${basedir}/src">
-                <include name="images/**/*"/>
-                <include name="xml/**/*"/>
-                <include name="logging.properties"/>
-	        </fileset>
-	        <fileset dir="${basedir}/bin">
-		        <include name="dist.properties"/>
-	        </fileset>
-        </jar>
-	    <copy todir="${jedit.install.dir}/modes">
-		      <fileset dir="${basedir}/src/jeditPlugin">
-		        	<include name="agentSpeak.xml"/>
-			        <include name="jasonProject.xml"/>
-			        <include name="catalog"/>
-		      </fileset>
-	    </copy>
-	    <copy todir="${jedit.install.dir}/properties">
-		      <fileset dir="${basedir}/src/jeditPlugin">
-		        	<include name="jedit-initial.props"/>
-		      </fileset>
-	    </copy>
-    </target>
-    
-	  
-    <target name="run" depends="jar,plugin" >
-        <java dir="bin" classname="org.gjt.sp.jedit.jEdit" fork="yes">
-            <classpath refid="run.classpath"/>
-        </java>
-    </target>
+	<target name="jar" depends="compile">
+		<propertyfile file="${dist.properties}">
+			<entry key="version" value="${version}" />
+			<entry key="release" value="${release}" />
+			<entry default="0" key="build" operation="+" type="int" />
+			<entry key="build.date" type="date" value="now" />
+		</propertyfile>
+		<property file="${dist.properties}" />
 
-    <target name="test" depends="jar">
-	    <junit printsummary="yes" failureProperty="test.failure">
-	        <classpath refid="test.classpath"/>
-            <formatter type="plain" usefile="false" />
-            <batchtest>
-	            <fileset dir="${basedir}/src" includes="**/test/*Test.java" />
-            </batchtest>
-        </junit>
-        <fail message="test failed" if="test.failure" />
-    </target>
-	
-    <target name="apidoc" depends="compile" >
-        <javadoc author="true" destdir="${basedir}/doc/api" 
-        	      packagenames="jason.*" 
-        		  excludepackagenames="jason.asSyntax.parser,jason.mas2j.parser"
-        	      sourcepath="${basedir}/src" use="true" version="true" 
-        	      windowtitle="Jason - AgentSpeak Java Interpreter">
-            <classpath refid="project.classpath"/>
-        </javadoc>
-    </target>
+		<jar jarfile="${jasonJar}">
+			<fileset dir="${build.dir}">
+				<include name="jason/**/*.class" />
+			</fileset>
+			<fileset dir="${basedir}/src">
+				<include name="images/**/*" />
+				<include name="asl/**/*" />
+				<include name="xml/**/*" />
+				<include name="logging.properties" />
+			</fileset>
+			<fileset dir="${basedir}/bin">
+				<include name="dist.properties" />
+			</fileset>
+		</jar>
+		<!--signjar jar="${jasonJar}" alias="jomi" storepass="fred3271" keystore="${basedir}/src/jomiKeystore" /-->
+	</target>
 
-    <target name="dist" depends="cleanExamples,plugin" description="Build distribution." >
-	
-        <echo message="Generating Jason ${version}.${release}"/>
+	<target name="plugin" depends="compile, jar">
+		<jar jarfile="${jedit.install.dir}/jars/${plugin.jar.name}">
+			<fileset dir="${basedir}/src/jeditPlugin">
+				<include name="Jason.props" />
+				<include name="index.html" />
+				<include name="actions.xml" />
+				<include name="dockables.xml" />
+			</fileset>
+			<fileset dir="${build.dir}">
+				<include name="jason/**/*.class" />
+			</fileset>
+			<fileset dir="${basedir}/src">
+				<include name="images/**/*" />
+				<include name="xml/**/*" />
+				<include name="logging.properties" />
+			</fileset>
+			<fileset dir="${basedir}/bin">
+				<include name="dist.properties" />
+			</fileset>
+		</jar>
+		<copy todir="${jedit.install.dir}/modes">
+			<fileset dir="${basedir}/src/jeditPlugin">
+				<include name="agentSpeak.xml" />
+				<include name="jasonProject.xml" />
+				<include name="catalog" />
+			</fileset>
+		</copy>
+		<copy todir="${jedit.install.dir}/properties">
+			<fileset dir="${basedir}/src/jeditPlugin">
+				<include name="jedit-initial.props" />
+			</fileset>
+		</copy>
+	</target>
 
-        <fixcrlf eol="crlf" includes="**/*.txt,**/*.bat" srcdir="${basedir}"/>
 
-        <delete failonerror="no" includeEmptyDirs="true">
-            <fileset dir="${distDir}"/>
-        </delete>
-     	<delete dir="${distDir}"/>
+	<target name="run" depends="jar,plugin">
+		<java dir="bin" classname="org.gjt.sp.jedit.jEdit" fork="yes">
+			<classpath refid="run.classpath" />
+		</java>
+	</target>
 
-        <mkdir dir="${distDir}"/>
+	<target name="test" depends="jar">
+		<junit printsummary="yes" failureProperty="test.failure">
+			<classpath refid="test.classpath" />
+			<formatter type="plain" usefile="false" />
+			<batchtest>
+				<fileset dir="${basedir}/src" includes="**/test/*Test.java" />
+			</batchtest>
+		</junit>
+		<fail message="test failed" if="test.failure" />
+	</target>
 
-        <copy todir="${distDir}">
-            <fileset dir="${basedir}" includes="*.*"/>
-            <fileset dir="${basedir}" includes="LICENSE"/>
-            <fileset dir="${basedir}" includes="README"/>
+	<target name="apidoc" depends="compile">
+		<javadoc author="true" destdir="${basedir}/doc/api" packagenames="jason.*" excludepackagenames="jason.asSyntax.parser,jason.mas2j.parser" sourcepath="${basedir}/src" use="true" version="true" windowtitle="Jason - AgentSpeak Java Interpreter">
+			<classpath refid="project.classpath" />
+		</javadoc>
+	</target>
 
-            <fileset dir="${basedir}" includes="bin/**/*" excludes="bin/classes/**/*, bin/jedit.tgz" />
-            <fileset dir="${basedir}" includes="doc/**/*"/>
-            <fileset dir="${basedir}" includes="examples/**/*"/>
-            <fileset dir="${basedir}" includes="lib/**/*" />
-            <fileset dir="${basedir}" includes="src/**/*"/>
-        </copy>
-	    <copy todir="${distDir}/doc">
-    	    <fileset dir="${basedir}/../../agents/Jason-doc" includes="*.*"/>
-        </copy>
+	<target name="dist" depends="cleanExamples,plugin" description="Build distribution.">
 
-        <!--copy todir="${distDir}/bin/jedit">
+		<echo message="Generating Jason ${version}.${release}" />
+
+		<fixcrlf eol="crlf" includes="**/*.txt,**/*.bat" srcdir="${basedir}" />
+
+		<delete failonerror="no" includeEmptyDirs="true">
+			<fileset dir="${distDir}" />
+		</delete>
+		<delete dir="${distDir}" />
+
+		<mkdir dir="${distDir}" />
+
+		<copy todir="${distDir}">
+			<fileset dir="${basedir}" includes="*.*" />
+			<fileset dir="${basedir}" includes="LICENSE" />
+			<fileset dir="${basedir}" includes="README" />
+
+			<fileset dir="${basedir}" includes="bin/**/*" excludes="bin/classes/**/*, bin/jedit.tgz" />
+			<fileset dir="${basedir}" includes="doc/**/*" />
+			<fileset dir="${basedir}" includes="examples/**/*" />
+			<fileset dir="${basedir}" includes="lib/**/*" />
+			<fileset dir="${basedir}" includes="src/**/*" />
+		</copy>
+		<copy todir="${distDir}/doc">
+			<fileset dir="${basedir}/../../agents/Jason-doc" includes="*.*" />
+		</copy>
+
+		<!--copy todir="${distDir}/bin/jedit">
             <fileset dir="${jedit.install.dir}" includes="**/*"/>
         </copy-->
-    	
-        <delete failonerror="no" includeEmptyDirs="true">
-              <fileset dir="${distDir}/.settings"/>
-              <fileset dir="${distDir}/bin/classes"/>
-              <fileset dir="${distDir}" includes=".project"/>
-              <fileset dir="${distDir}" includes=".classpath"/>
-        </delete>
 
-        <tar compression="gzip" tarfile="${distFile}.tgz">
-            <tarfileset dir="${distDir}/.." mode="755" >
-                <include name="${distDir}/**/*.sh"/>
-            </tarfileset>
-            <tarfileset dir="${distDir}/.."  >
-               <include name="${distDir}/**/*"/>
-               <exclude name="${distDir}/**/*.sh"/>
-            </tarfileset>
-        </tar>
-    </target>
+		<delete failonerror="no" includeEmptyDirs="true">
+			<fileset dir="${distDir}/.settings" />
+			<fileset dir="${distDir}/bin/classes" />
+			<fileset dir="${distDir}" includes=".project" />
+			<fileset dir="${distDir}" includes=".classpath" />
+		</delete>
 
-    <target name="all" depends="parsers,compile,apidoc" description="Build everything." >
-        <echo message="Application built."/>
-    </target>
+		<tar compression="gzip" tarfile="${distFile}.tgz">
+			<tarfileset dir="${distDir}/.." mode="755">
+				<include name="${distDir}/**/*.sh" />
+			</tarfileset>
+			<tarfileset dir="${distDir}/..">
+				<include name="${distDir}/**/*" />
+				<exclude name="${distDir}/**/*.sh" />
+			</tarfileset>
+		</tar>
+	</target>
 
-    <target name="cleanExamples">
-        <delete failonerror="no" includeEmptyDirs="true" verbose="true">
-            <fileset dir="${basedir}/examples" includes="**/classes/*"/>
-            <fileset dir="${basedir}/examples" includes="**/classes"/>
-            <fileset dir="${basedir}/examples" includes="**/*.class"/>
-            <fileset dir="${basedir}/examples" includes="**/*.sh"/>
-            <fileset dir="${basedir}/examples" includes="**/*.bat"/>
-            <fileset dir="${basedir}/examples" includes="**/*.xml"/>
-            <fileset dir="${basedir}/examples" includes="**/work"/>
-            <fileset dir="${basedir}/examples" includes="**/build.xml"/>
-        </delete>
-    </target>
+	<target name="all" depends="parsers,compile,apidoc" description="Build everything.">
+		<echo message="Application built." />
+	</target>
 
-    <target name="clean">
-        <delete failonerror="no" includeEmptyDirs="true" verbose="true">
-            <fileset defaultexcludes="no" dir="${basedir}" includes="**/*~"/>
-            <fileset dir="${basedir}" includes="**/*.class"/>
-            <fileset dir="${basedir}" includes="**/core"/>
-            <fileset dir="${basedir}/doc/api" includes="**/*"/>
-            <fileset dir="${basedir}" includes="**/.nbattrs"/>
-            <fileset dir="${basedir}" includes="**/*.backup"/>
-            <fileset dir="${basedir}" includes="**/*.*~"/>
-            <fileset dir="${basedir}" includes="bin/*.old"/>
-            <fileset dir="${basedir}" includes="**/.err"/>
-            <fileset dir="${basedir}/lib/saci/bin" includes="work"/>
-        </delete>
-    	<delete dir="${build.dir}"/>
-    </target>
+	<target name="cleanExamples">
+		<delete failonerror="no" includeEmptyDirs="true" verbose="true">
+			<fileset dir="${basedir}/examples" includes="**/classes/*" />
+			<fileset dir="${basedir}/examples" includes="**/classes" />
+			<fileset dir="${basedir}/examples" includes="**/*.class" />
+			<fileset dir="${basedir}/examples" includes="**/*.sh" />
+			<fileset dir="${basedir}/examples" includes="**/*.bat" />
+			<fileset dir="${basedir}/examples" includes="**/*.xml" />
+			<fileset dir="${basedir}/examples" includes="**/work" />
+			<fileset dir="${basedir}/examples" includes="**/build.xml" />
+		</delete>
+	</target>
+
+	<target name="clean">
+		<delete failonerror="no" includeEmptyDirs="true" verbose="true">
+			<fileset defaultexcludes="no" dir="${basedir}" includes="**/*~" />
+			<fileset dir="${basedir}" includes="**/*.class" />
+			<fileset dir="${basedir}" includes="**/core" />
+			<fileset dir="${basedir}/doc/api" includes="**/*" />
+			<fileset dir="${basedir}" includes="**/.nbattrs" />
+			<fileset dir="${basedir}" includes="**/*.backup" />
+			<fileset dir="${basedir}" includes="**/*.*~" />
+			<fileset dir="${basedir}" includes="bin/*.old" />
+			<fileset dir="${basedir}" includes="**/.err" />
+			<fileset file="${jasonJar}" />
+			<fileset dir="${basedir}/lib/saci/bin" includes="work" />
+		</delete>
+		<delete dir="${build.dir}" />
+	</target>
 
 </project>

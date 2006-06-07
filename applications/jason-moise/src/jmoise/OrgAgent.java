@@ -6,7 +6,6 @@ import jason.asSemantics.Event;
 import jason.asSemantics.Intention;
 import jason.asSemantics.Message;
 import jason.asSemantics.Unifier;
-import jason.asSyntax.BeliefBase;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Pred;
 import jason.asSyntax.PredicateIndicator;
@@ -14,6 +13,8 @@ import jason.asSyntax.Term;
 import jason.asSyntax.TermImpl;
 import jason.asSyntax.Trigger;
 import jason.asSyntax.VarTerm;
+import jason.bb.BeliefBase;
+import jason.mas2j.ClassParameters;
 import jason.runtime.Settings;
 
 import java.util.HashSet;
@@ -39,8 +40,9 @@ public class OrgAgent extends AgArch {
 
     Logger            logger                 = Logger.getLogger(OrgAgent.class.getName());
 
-    public void initAg(String agClass, String asSrc, Settings stts) throws JasonException {
-        super.initAg(agClass, asSrc, stts);
+    @Override
+    public void initAg(String agClass, ClassParameters bbPars, String asSrc, Settings stts) throws JasonException {
+        super.initAg(agClass, bbPars, asSrc, stts);
         logger = Logger.getLogger(OrgAgent.class.getName() + "." + getAgName());
         try {
             Message m = new Message("tell", null, "orgManager", "addAgent");
@@ -219,7 +221,7 @@ public class OrgAgent extends AgArch {
         if (gi.getScheme().getRoot() == gi) {
             gap.addAnnot(new TermImpl("root"));
         }
-        BeliefBase bb = fTS.getAg().getBS();
+        //BeliefBase bb = fTS.getAg().getBS();
         String gState = "unsatisfied";
         if (gi.isSatisfied()) {
             gState = "satisfied";
