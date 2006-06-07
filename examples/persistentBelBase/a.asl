@@ -1,4 +1,3 @@
-// a in project testBelBase.mas2j
 demo.
 +demo : not a(_) 
   <- .print("First run."); 
@@ -7,6 +6,6 @@ demo.
      
 +demo : a(X) 
   <- -a(_); +a(X+1); 
-     .print("not first run, a value is ",X);
+     .print("not first run, I already run ",X," times.");
      .stopMAS.
 

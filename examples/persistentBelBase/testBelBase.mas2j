@@ -1,15 +1,20 @@
-/* Jason Project 
+/* 
 
-Examplifies how to use persistent belief base.
+This project exemplifies how to customise the belief
+base (BB) to persist it.
 
-Agent "a" uses a customisation of BB that store its 
-beliefs in a file called "a.bb".
+Agent "a" uses a customised BB provided by Jason
+that store its beliefs in a file called "a.bb". 
 
+Agent "b" has a customised BB that does not 
+store the beliefs! The source of this customisation
+is in this project.
 
 */
 
-MAS perBB {
+MAS custBB {
 	agents:
 		a beliefBaseClass jason.bb.TextPersistentBB;
+		b beliefBaseClass VoidBB;
 }
 
