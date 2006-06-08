@@ -4,6 +4,15 @@ version 0.9
 
 This version requires java 1.5.
 
+New features:
+. Belief Base can be customised. There are two available
+  customisations: one that store the beliefs in a text file and 
+  another that store them in a relational DB. This latter
+  customisation can also be used the access any other
+  relational DB (via  JDBC). The AgentSpeak code remains the
+  same whatever is the BB customisation.
+  See persistentBelBase example for more information.
+  
 Changes in ASL syntax
 . the arithmetic operator % is changed to "mod"
 . or (represented by "|") is allowed in plans' context. e.g.:
@@ -24,7 +33,6 @@ Changes in .mas2j file
   in the init method:
       public void init(String[] args) { ... } 
   
-
 
 
 -----------

@@ -8,9 +8,6 @@ Plan for Jason 0.9
   	.send(jomi,ask,father(X,Y))
 . receiving messages are treated as  +!kqmlReceived (achieve goal, to have fail handling)
 
-. BelBase customisation (with SGBD) - and BUF/BRF (Dalt paper)
-  (see bellow)
-
 . compilation directives
   . patterns
 
@@ -40,23 +37,6 @@ jIDE
 
 -------------------------   
 MAS2J TODO
-
-. BB customisation 
-
-  Syntax:
-  In mas2j:
-       agent ag1 beliefBaseClass D3B 
-             [d3b=config(jdbc,mysql:bla,xx,yyy,
-                         [bel(a,ta),bel(b,tb)]
-                        )];
-
-  Code of D3B
-  examples of using DB BB
-     the predicate a is in DB
-        +a -> insert
-        -a -> delete
-        ?a -> select
-  BB interface: add, remove, logCons (to consult)  
 
 -------------------------   
 AS TODO
