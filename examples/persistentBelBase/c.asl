@@ -4,7 +4,7 @@ demo.
      +a(1).
      
 +demo : a(X) 
-  <- -a(_); +a(X+1); // a is stored in a DB
+  <- -+a(X+1); // a is stored in a DB
      .print("Not first run, I already run ",X," times.");
      !showBook(X).
 

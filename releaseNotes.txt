@@ -15,13 +15,19 @@ New features:
   
 Changes in ASL syntax
 . the arithmetic operator % is changed to "mod"
+
 . or (represented by "|") is allowed in plans' context. e.g.:
     +e : a | b <- ....
     +e : a & not(b | c) <- ....
+
 . 'true' context or plans can be omitted. e.g.:
         +e : true <- true.
   may be written as
         +e.
+. new operator "-+" that removes and add a belief. e.g.:
+    -+a(X+1)
+  removes a(_) and adds a(X+1).
+ 
     
 Changes in .mas2j file
 . the environment class can receive parameters from the .mas2j file. 

@@ -6,7 +6,7 @@ demo.
      .stopMAS.
      
 +demo : a(X) 
-  <- -a(_); +a(X+1); 
+  <- -+a(X+1); 
      .print("Not first run, I already run ",X," times.");
      .wait(1000);
      .stopMAS.

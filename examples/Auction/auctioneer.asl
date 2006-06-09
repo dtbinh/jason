@@ -25,7 +25,6 @@ auction(1).
     <- .print("Winner is ",W," with ", Vl);
        showWinner(N,W); // show it in the GUI
        .broadcast(tell, winner(W));
-       -auction(N);
-       +auction(N+1).
+       -+auction(N+1).
 +!checkEnd(N).
 
