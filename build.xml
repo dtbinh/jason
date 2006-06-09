@@ -181,6 +181,9 @@
 			</batchtest>
 		</junit>
 		<fail message="test failed" if="test.failure" />
+		<delete failonerror="no" verbose="false">
+			<fileset dir="${basedir}" includes="bookstore.*" />
+		</delete>
 	</target>
 
 	<target name="apidoc" depends="compile">
@@ -267,6 +270,7 @@
 			<fileset dir="${basedir}" includes="**/*.*~" />
 			<fileset dir="${basedir}" includes="bin/*.old" />
 			<fileset dir="${basedir}" includes="**/.err" />
+			<fileset dir="${basedir}" includes="bookstore.*" />
 			<fileset file="${jasonJar}" />
 			<fileset dir="${basedir}/lib/saci/bin" includes="work" />
 		</delete>
