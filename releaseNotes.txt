@@ -40,6 +40,12 @@ Changes in .mas2j file
       public void init(String[] args) { ... } 
   
 
+Changes in the API
+. the BRF method, in Agent class, was renamed to BUF (Belief Update
+  Function). Two new BRF methods ware added for belief revision.
+  While BUF is called to add perception in the BB, BRF is called
+  for + and - operators (those used inside AS plans).
+
 
 -----------
 version 0.8

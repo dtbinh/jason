@@ -124,7 +124,7 @@ public class OrgAgent extends AgArch {
                 Literal l = Literal.parseLiteral("obligation(" + p.getScheme().getId() + "," + p.getMission().getId() + ")[" + "role(" + p.getRolePlayer().getRole().getId()
                         + "),group(" + p.getRolePlayer().getGroup().getGrSpec().getId() + ")]");
                 l.addAnnot(managerSource);
-                fTS.getAg().addBel(l, Intention.EmptyInt);
+                fTS.getAg().addBel(l);
                 logger.fine("New obligation: " + l);
             }
         }
@@ -135,7 +135,7 @@ public class OrgAgent extends AgArch {
                 Literal l = Literal.parseLiteral("permission(" + p.getScheme().getId() + "," + p.getMission().getId() + ")[" + "role(" + p.getRolePlayer().getRole().getId()
                         + "),group(" + p.getRolePlayer().getGroup().getGrSpec().getId() + ")]");
                 l.addAnnot(managerSource);
-                fTS.getAg().addBel(l, Intention.EmptyInt);
+                fTS.getAg().addBel(l);
                 logger.fine("New permission: " + l);
             }
         }
@@ -242,9 +242,9 @@ public class OrgAgent extends AgArch {
         Unifier u = new Unifier();
         Literal gilInBB = fTS.getAg().believes(gil, u);
         if (gilInBB != null) {
-            // believe in the goal, remove if different
+            // the agent believes in the goal, remove if different
             if (!u.get("S").equals(gState)) {
-                fTS.getAg().delBel(gilInBB, new Unifier(), Intention.EmptyInt);
+                fTS.getAg().delBel(gilInBB);
                 if (logger.isLoggable(Level.FINE)) {
                     logger.fine("Remove goal belief: " + gilInBB);
                 }
@@ -258,7 +258,7 @@ public class OrgAgent extends AgArch {
         gilInBB = fTS.getAg().believes(gil, u);
         if (gilInBB == null) {
             gil.addAnnot(managerSource);
-            fTS.getAg().addBel(gil,Intention.EmptyInt);
+            fTS.getAg().addBel(gil);
             if (logger.isLoggable(Level.FINE)) {
                 logger.fine("New goal belief: " + gil);
             }
