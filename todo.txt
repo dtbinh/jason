@@ -1,3 +1,9 @@
+-------------------------   
+Plan for Jason 1.0
+
+. goal patterns
+. rules
+. capabilities
 
 -------------------------   
 Plan for Jason 0.9 
@@ -8,13 +14,10 @@ Plan for Jason 0.9
   	.send(jomi,ask,father(X,Y))
 . receiving messages are treated as  +!kqmlReceived (achieve goal, to have fail handling)
 
-. compilation directives
-  . patterns
+. add annotation multiUnif
 
-. Patterns - Dalt paper
-  . dropGoal
-
-. add option relPlans=(singleUnif | multiUnif)
+. initial goals like 
+	!g1.
 
 -----------------------------------
 Projects (!)
@@ -33,7 +36,7 @@ jIDE
       . step one agent, sniffer, ...
       . act on agent's mind (remove bel, intention, generate event,...)
       . control at semantic action level
-
+      . bi-directional debug
 
 -------------------------   
 MAS2J TODO
@@ -41,25 +44,12 @@ MAS2J TODO
 -------------------------   
 AS TODO
 
-. create <le> (logical expression) with & and | used in context
-  the |= evaluate the expression
-  the ? operator tries |=, if fails, generate the event +? 
-    (as occurs currently)
-
 . create <rule> ::= <literal> [ :- <le> ]. 
   the logical consequence will do inference
   used to built the BB
     e.g. 
        a. b. 
        c :- a & b.
-
-  TE can be +<rule> 
-  Operator +<rule>
-
-. compilation directives (? is it the right name)
-  e.g. 
-   { include("bla.asl"); pattern(a) }
-
 
 
 --------------------------------
@@ -90,23 +80,10 @@ Patterns
 -----------------------------------
 Semantics TODO
 
-. BRF is always called, even from operator +.
-  BRF return a pair <setOfAdds, setOfDels>
-  used to generate the events in the TS
-
-
-Rafael:
-. Check if it's not more efficient to "ground"
-  the TE of the finished plan and unify with
-  the goal-call rather than "filter and compose"
-  the unifiers (current version of the semantics)
-
 . applicable plans: consider possible different unifications 
   (the same plan will have one or more Options) and add a new 
   configuration option: add all instantiations in the set of appl. 
   plans instead or just one.
-
-. new BRF function (See DALT paper)
 
 -----------------------------------
 Communication
@@ -136,13 +113,6 @@ Documentation TODO
 
 
 -----------------------------------
-Tests TODO
-
-	+!int(A)[source(S)] : bel(A)
- 	+!int(A) : bel(A)
-
-
------------------------------------
 Internal actions
 
 . moveTo
@@ -166,9 +136,6 @@ Others TODOs
   RelPlans e Applans de tal forma que elas retornem pares
   $(p,\theta)$. Propagar essa mudanca para as duas regras abaixo de
   acordo (verificar se nao tem que mudar em outro lugar tambem):
-
-. Also in the future: use a profiling tool the detect critical performance
-  points in the system.
 
 . colocar no stdlib funcoes para uso de YP
 
