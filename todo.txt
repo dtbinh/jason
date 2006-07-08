@@ -14,8 +14,6 @@ Plan for Jason 0.9
   	.send(jomi,ask,father(X,Y))
 . receiving messages are treated as  +!kqmlReceived (achieve goal, to have fail handling)
 
-. add annotation multiUnif
-
 -----------------------------------
 Projects (!)
 . PDT plug-in to generate AS code from MAS spec.
@@ -77,10 +75,6 @@ Patterns
 -----------------------------------
 Semantics TODO
 
-. applicable plans: consider possible different unifications 
-  (the same plan will have one or more Options) and add a new 
-  configuration option: add all instantiations in the set of appl. 
-  plans instead or just one.
 
 -----------------------------------
 Communication
