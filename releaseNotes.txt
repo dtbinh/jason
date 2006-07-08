@@ -33,12 +33,12 @@ Changes in ASL syntax
     -+a(X+1)
   removes a(_) and adds a(X+1).
 
-. new plan annotation: "mutli_unif". When a plan's label has this
+. new plan annotation: "all_unifs". When a plan's label has this
   annotation the list of applicable plans consider possible different 
   unifications (the same plan will have one or more Options). E.g:
     a(10).
     a(20).
-    @l[multi_unif] +!g : a(X) <- print(X).
+    @l[all_unifs] +!g : a(X) <- print(X).
   g has two options, one where X=10 and other where X=20.
 
     
