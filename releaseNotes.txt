@@ -14,6 +14,11 @@ New features:
   See persistentBelBase example for more information.
   
 Changes in ASL syntax
+. initial goals in ASL files, e.g.:
+    bel(a).
+    !initgoal.
+    +!initgoal : .... <- ....
+    
 . the arithmetic operator % is changed to "mod"
 
 . or (represented by "|") is allowed in plans' context. e.g.:
@@ -46,6 +51,9 @@ Changes in the API
   While BUF is called to add perception in the BB, BRF is called
   for + and - operators (those used inside AS plans).
 
+Other changes
+. the src/templates folders contains all sources used to create 
+  new files in JasonIDE.
 
 -----------
 version 0.8

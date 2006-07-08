@@ -16,9 +16,6 @@ Plan for Jason 0.9
 
 . add annotation multiUnif
 
-. initial goals like 
-	!g1.
-
 -----------------------------------
 Projects (!)
 . PDT plug-in to generate AS code from MAS spec.
