@@ -1,9 +1,10 @@
-demo.
-+demo : not a(_) 
+!start. // initial goal.
+
++!start : not a(_) 
   <- .print("First run."); 
      +a(1).
      
-+demo : a(X) 
++!start : a(X) 
   <- -+a(X+1); // a is stored in a DB
      .print("Not first run, I already run ",X," times.");
      !showBook(X).

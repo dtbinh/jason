@@ -18,9 +18,13 @@ Changes in ASL syntax
     bel(a).
     !initgoal.
     +!initgoal : .... <- ....
-    
-. the arithmetic operator % is changed to "mod"
 
+. belief base can have implication rules (like prolog). e.g:
+    a(10).
+    a(20).
+    b(20).
+    c(X) :- a(X) & b(X).
+    
 . or (represented by "|") is allowed in plans' context. e.g.:
     +e : a | b <- ....
     +e : a & not(b | c) <- ....
@@ -40,6 +44,8 @@ Changes in ASL syntax
     a(20).
     @l[all_unifs] +!g : a(X) <- print(X).
   g has two options, one where X=10 and other where X=20.
+
+. the arithmetic operator % is changed to "mod"
 
     
 Changes in .mas2j file

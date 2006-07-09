@@ -2,7 +2,6 @@
 Plan for Jason 1.0
 
 . goal patterns
-. rules
 . capabilities
 
 -------------------------   
@@ -38,14 +37,6 @@ MAS2J TODO
 
 -------------------------   
 AS TODO
-
-. create <rule> ::= <literal> [ :- <le> ]. 
-  the logical consequence will do inference
-  used to built the BB
-    e.g. 
-       a. b. 
-       c :- a & b.
-
 
 --------------------------------
 Patterns

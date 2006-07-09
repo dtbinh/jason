@@ -176,7 +176,7 @@ public class OrgAgent extends AgArch {
 
     /** remove all bels related to a Scheme */
     void removeBeliefs(String schId) {
-        BeliefBase bb = fTS.getAg().getBS();
+        BeliefBase bb = fTS.getAg().getBB();
         bb.abolish(obligationLiteral);
         bb.abolish(permissionLiteral);
         bb.abolish(schemeGroupLiteral);

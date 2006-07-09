@@ -2,6 +2,11 @@
 
 auction(1).
 
+receiveAllBids(N) :- 
+   place_bid(N,V1)[source(ag1)] & 
+   place_bid(N,V2)[source(ag2)] & 
+   place_bid(N,V3)[source(ag3)]. 
+
 +auction(N) : true 
     <- +winner(N, noone, 0);
        .broadcast(tell, auction(N)).
@@ -18,9 +23,7 @@ auction(1).
     <- !checkEnd(N).
 
 +!checkEnd(N) : auction(N) & N < 7 & 
-                place_bid(N,V1)[source(ag1)] & 
-                place_bid(N,V2)[source(ag2)] & 
-                place_bid(N,V3)[source(ag3)] & 
+                receiveAllBids(N) & 
                 winner(N,W,Vl)
     <- .print("Winner is ",W," with ", Vl);
        showWinner(N,W); // show it in the GUI

@@ -1,5 +1,6 @@
-demo.
-+demo : true 
+!start. // initial goal
+
++!start : true 
    <- .print("Creating agent");
       .createAgent(bob, "bob.asl");
       .send(bob, achieve, a);
@@ -9,6 +10,6 @@ demo.
       !end(10000).
       
 +!end(T) : T <= 0 <- .stopMAS.
-+!end(T) : true   <- .print("The MAS will stop in ",T/1000," seconds!"); .wait(2000); !end(T-2000).
-      
-      
++!end(T) : true   
+   <- .print("The MAS will stop in ",T/1000," seconds!"); 
+      .wait(2000); !end(T-2000).
