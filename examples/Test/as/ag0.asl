@@ -18,16 +18,13 @@ c(0).
 +!g(Z) : not p(c) & not q(b,b) & r(X)
       <- .print("begining g, testing performatives ----");
       
-	 .send(agCount, askAll, value(A,vl(A)), ListVl); 
-	 .print("should be [10,a,test(1)] = ",ListVl);
+	     .send(agCount, askAll, value(A,vl(A)), ListVl); 
+	     .print("should be [10,a,test(1)] = ",ListVl);
          
          .send(agCount, achieve, sayHello);
 
-         .send(agCount, askOne, count(Count), Rc);
-         .print("---- Answer for askOne count(C) is ", Rc);
-
-         .send(agCount, askIf, ok, true); 
-	 .print("Answer for askIf is true");
+         .send(agCount, ask, count(Count), Rc);
+         .print("---- Answer for ask count(C) is ", Rc);
 
          .getRelevantPlans("+!te1(X)", L); .print("Relevant plans for +te1(X) ",L);
          .send(agCount, tellHow, L);

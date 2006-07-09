@@ -4,15 +4,6 @@ Plan for Jason 1.0
 . goal patterns
 . capabilities
 
--------------------------   
-Plan for Jason 0.9 
-
-. Jason is not an acronym anymore
-
-. send ask (not askIf nor One) with 3 args (remote unification)
-  	.send(jomi,ask,father(X,Y))
-. receiving messages are treated as  +!kqmlReceived (achieve goal, to have fail handling)
-
 -----------------------------------
 Projects (!)
 . PDT plug-in to generate AS code from MAS spec.
