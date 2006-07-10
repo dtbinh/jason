@@ -5,49 +5,57 @@ version 0.9
 This version requires java 1.5.
 
 New features:
-. Belief Base can be customised. There are two available
-  customisations: one that store the beliefs in a text file and 
-  another that store them in a relational DB. This latter
+. Belief Base (BB) can be customised. There are two available
+  customisations: one that stores the beliefs in a text file and 
+  another that stores them in a relational DB. This latter
   customisation can also be used the access any other
   relational DB (via  JDBC). The AgentSpeak code remains the
-  same whatever is the BB customisation.
-  See persistentBelBase example for more information.
-  
-Changes in ASL syntax
-. initial goals in ASL files, e.g.:
+  same regardless of the BB customisation.
+  See the "persistentBelBase" example for more information.
+
+Changes in the AgentSpeak syntax
+. there can be initial goals in the source code, e.g.:
     bel(a).
     !initgoal.
     +!initgoal : .... <- ....
 
-. belief base can have implication rules (like prolog). e.g:
+. belief base can have simple (prolog-like) inferences rules, e.g.:
     a(10).
     a(20).
     b(20).
     c(X) :- a(X) & b(X).
-    
-. or (represented by "|") is allowed in plans' context. e.g.:
+
+. or (represented by "|") is allowed in plans' context, e.g.:
     +e : a | b <- ....
     +e : a & not(b | c) <- ....
+  Disjunction is also possible in the inference rules in the belief base.
 
 . 'true' context or plans can be omitted. e.g.:
-        +e : true <- true.
-  may be written as
-        +e.
-. new operator "-+" that removes and add a belief. e.g.:
+        +e : c <- true.
+        +e : true <- !g.
+        +!e : true <- true.
+  can be written as
+        +e : c.
+	+e <- !g.
+	+!e.
+
+. new operator "-+", which can appear in a plan body, adds a belief
+  after removing (the first) existing occurrence of that belief in the
+  belief base, e.g.:
     -+a(X+1)
-  removes a(_) and adds a(X+1).
+  removes a(_) from and adds a(X+1) to the belief base.
 
 . new plan annotation: "all_unifs". When a plan's label has this
-  annotation the list of applicable plans consider possible different 
-  unifications (the same plan will have one or more Options). E.g:
+  annotation the list of applicable plans will include all possible
+  unifications (the same plan can lead to more than one Option), e.g.:
     a(10).
     a(20).
     @l[all_unifs] +!g : a(X) <- print(X).
-  g has two options, one where X=10 and other where X=20.
+  "+!g" has two options, one where X=10 and another where X=20.
 
-. the arithmetic operator % is changed to "mod"
+. the arithmetic operator % was renamed to "mod"
 
-    
+
 Changes in .mas2j file
 . the environment class can receive parameters from the .mas2j file. 
   e.g. in a mas2j file:
@@ -57,17 +65,22 @@ Changes in .mas2j file
   the environment implementation will receive these parameters
   in the init method:
       public void init(String[] args) { ... } 
-  
+
 
 Changes in the API
-. the BRF method, in Agent class, was renamed to BUF (Belief Update
-  Function). A new BRF method were added for belief revision.
-  While BUF is called to add perception in the BB, BRF is called
-  for + and - operators (those used inside AS plans).
+. the BRF method, in the "Agent" class, was renamed to BUF (Belief Update
+  Function). A new BRF method was added for belief *revision* rather
+  than update.
+  While BUF is called to update the BB when percepts are obtained, BRF
+  is called for `+', `-', and `-+' operators (those used in AS plans).
+  Note that certain custmosations of BRF may require that BUF is
+  customised to use BRF for the actual changes in the BB.
 
 Other changes
-. the src/templates folders contains all sources used to create 
-  new files in JasonIDE.
+. the "src/templates" folders contains all sources used by the JasonIDE
+  to create new files (e.g., when users request a new agent or a new
+  project to be created).
+
 
 -----------
 version 0.8

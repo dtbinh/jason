@@ -7,13 +7,13 @@
 -->
 
 <project name   ="writePaper"
-         basedir="/Users/jomi/programming/agents/jason-moise/example/writePaper"
+         basedir="/Users/jomi/programming/cvs/Jason/applications/jason-moise/example/writePaper"
          default="run">
 
     <property name="mas2j.project.file" value="writePaper.mas2j"/>
     <property name="debug" value=""/> <!-- use "-debug" to run in debug mode -->
 
-    <property name="jasonJar" value="/Users/jomi/tmp/Jason-0.8.1/bin/jason.jar"/>
+    <property name="jasonJar" value="/Users/jomi/programming/cvs/Jason/lib/jason.jar"/>
 
     <path id="project.classpath">
         <pathelement location="."/>
@@ -22,7 +22,7 @@
     </path>
 
     <target name="compile" >
-    	<javac srcdir="${basedir}" destdir="${basedir}">
+    	<javac srcdir="${basedir}" destdir="${basedir}" debug="true" optimize="true" >
             <classpath refid="project.classpath"/>
         </javac>
     </target>
@@ -41,5 +41,8 @@
 			<fileset dir="${basedir}" includes="**/*.class"/>
 		</delete>
     </target>
+
+
+    
 </project>
 
