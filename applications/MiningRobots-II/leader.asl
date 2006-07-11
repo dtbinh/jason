@@ -1,5 +1,13 @@
 // leader agent
 
+// min finds the min value of a list of op(tion)s(distance,agent)
+// used to identify the agent closer to a piece of gold
+min([],M,M) :- .print(fim,M).
+min([op(Dist,Closer)|T],op(MD,_),Min) 
+  :- Dist < MD & .print("new min=",op(Dist,Closer)) & min(T,op(Dist,Closer),Min).
+min([_|T],op(MD,MA),Min) 
+  :- min(T,op(MD,MA),Min).
+
 /* quadrant allocation */
 
 @quads[atomic]
@@ -20,10 +28,7 @@
 +myInitPos(S,X,Y)[source(A)] : true 
   <- .print("- InitPos ",A," is ",X,"x",Y).
 
-+!assignAllQuads(S,Qs) : not quad(S,4,_,_,_,_)
-  <- .wait("+quad(S,4,_,_,_,_)", 500); // wait for quad calculation to finish
-  // TODO: try to remove this wait when atomic bug is fixed!
-     !!assignAllQuads(S,Qs). 
+  
 +!assignAllQuads(_,[]).
 +!assignAllQuads(S,[Q|T]) : true
   <- !assignQuad(S,Q);
@@ -33,17 +38,15 @@
   :  quad(S,Q,X1,Y1,X2,Y2) & noquad(S,_)
   <- .findall(Ag, noquad(S,Ag), LAgs);
      !calcAgDist(S,Q,LAgs,LD);
-     .sort(LD,[d(Dist,Ag)|_]);
+     .sort(LD,[d(Dist,Ag)|_]); 
      .print(Ag, "'s Quadrant is: ",Q);
      -noquad(S,Ag);
      .send(Ag,tell,myQuad(X1,Y1,X2,Y2)).
 
-+!calcAgDist(S,Q,[],[]) : true <- true.
++!calcAgDist(S,Q,[],[]).
 +!calcAgDist(S,Q,[Ag|RAg],[d(Dist,Ag)|RDist]) 
   :  quad(S,Q,X1,Y1,X2,Y2) & myInitPos(S,AgX,AgY)[source(Ag)]
-  <- //MX = ((X2 - X1) div 2);
-     //MY = ((Y2 - Y1) div 2);
-     jia.dist(X1,Y1,AgX,AgY,Dist);
+  <- jia.dist(X1,Y1,AgX,AgY,Dist);
      !calcAgDist(S,Q,RAg,RDist).
 
 
@@ -61,7 +64,9 @@
  
 +!allocateMinerFor(Gold) : true
   <- .findall(op(Dist,A),bidFor(Gold,Dist)[source(A)],LD);
-     .sort(LD,[op(DistCloser,Closer)|_]); // TOOD: use min
+     //.sort(LD,[op(DistCloser,Closer)|_]);
+     ?min(LD,op(1000,nooption),op(DistCloser,Closer));
+     .print("Min=******", op(DistCloser,Closer));
      DistCloser < 1000;
      .print("Gold ",Gold," was allocated to ",Closer, " options was ",LD);
      .broadcast(tell,allocatedTo(Gold,Closer)).

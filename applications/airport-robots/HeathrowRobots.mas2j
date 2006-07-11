@@ -11,7 +11,7 @@ MAS heathrow {
 
          cph agentArchClass cph.CPHAgArch 
              agentClass cph.CPHAgent
-             #10; 
+             #2; 
 
          bd  #3;
 }

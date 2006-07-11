@@ -1,8 +1,10 @@
 free.   // I'm free, initially
 mds(5). // There are 5 MDS robots (including me)
 
-allBidsReceived(RN) :- bids(RN,N) & mds(M) & N >= M.
-iAmTheWinner(RN,MyBid) :- .myName(I) & winner(RN,I,MyBid).
+allBidsReceived(RN)    
+      :- .findall(b,bid(RN,_),L) & .length(L,N) & mds(M) & N >= (M-1).
+iAmTheWinner(RN,MyBid)  
+      :- .myName(I) & winner(RN,I,MyBid).
 
 // perception of an unattented luggage at Terminal/Gate,
 // with report number RN
@@ -13,7 +15,6 @@ iAmTheWinner(RN,MyBid) :- .myName(I) & winner(RN,I,MyBid).
 // unattended luggage report
 +!negotiate(RN) : free 
       <- .myName(I);                      // Jason internal action
-         +bids(RN,1);                     // number of bids I'm aware of
          mds.calculateMyBid(RN,MyBid);    // user internal action
          +winner(RN,I,MyBid);             // assume winner until someone else bids higher
          .broadcast(tell, bid(RN,MyBid)). // tell all others what my bid is
@@ -28,16 +29,14 @@ iAmTheWinner(RN,MyBid) :- .myName(I) & winner(RN,I,MyBid).
          .print("just lost to another MDS").
 
 @pb2[atomic] // for other bids when I'm still the winner
-             // and negotiation hasn't finished yet
-             // this plan needs to be atomic
 +bid(RN,B) 
-      :  iAmTheWinner(RN,MyBid) & not allBidsReceived(RN)
-      <- !incBidCounter(RN);
-         !check_negot_finished(RN).
+      :  iAmTheWinner(RN,MyBid)
+      <- !check_negot_finished(RN).
 
 // TODO: cope with two equal bids
 // just to remember who won anyway
-+bid(RN,B)[source(Sender)] : winner(RN,W,WB) & B > WB
++bid(RN,B)[source(Sender)] 
+      :  winner(RN,W,WB) & B > WB
       <- -+winner(RN,Sender,B).
 
 // ignore loosing bids, as I'm not the winner for this RN
@@ -51,9 +50,6 @@ iAmTheWinner(RN,MyBid) :- .myName(I) & winner(RN,I,MyBid).
          !finish_case(RN).
 
 +!check_negot_finished(RN).
-
-+!incBidCounter(RN) : true
-      <- ?bids(RN,N); -+bids(RN,N+1).
 
 +!check_luggage(RN) : true     // mybid was the best one
       <- ?unattended_luggage(T,G,RN);
