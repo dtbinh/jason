@@ -1,0 +1,12 @@
+/* 
+
+Jason Project 
+
+This example simply shows how failure handling works.
+
+*/
+
+MAS demoFail {
+	agents: a;
+}
+

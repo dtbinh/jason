@@ -59,6 +59,7 @@ public class SimpleJasonAgent extends AgArch {
     }
 
     // this method just add some perception for the agent
+    @Override
     public List<Literal> perceive() {
         List<Literal> l = new ArrayList<Literal>();
         l.add(Literal.parseLiteral("x(10)"));
@@ -66,32 +67,35 @@ public class SimpleJasonAgent extends AgArch {
     }
 
     // this method get the agent actions
-    public void act() {
-        ActionExec acExec = fTS.getC().getAction();
-        if (acExec != null) {
-            logger.info("Agent " + getAgName() + " is doing: " + acExec.getActionTerm());
-        }
+    @Override
+    public void act(ActionExec action, List<ActionExec> feedback) {
+        logger.info("Agent " + getAgName() + " is doing: " + action.getActionTerm());
+        // set that the execution was ok
+        action.setResult(true);
+        feedback.add(action);
     }
 
+    @Override
     public boolean canSleep() {
         return true;
     }
 
+    @Override
     public boolean isRunning() {
         return true;
     }
 
     // Not used methods
     // This simple agent does not need messages/control/...
+    @Override
     public void sendMsg(jason.asSemantics.Message m) throws Exception {
     }
 
+    @Override
     public void broadcast(jason.asSemantics.Message m) throws Exception {
     }
 
+    @Override
     public void checkMail() {
-    }
-
-    public void informCycleFinished(boolean breakpoint) {
     }
 }
