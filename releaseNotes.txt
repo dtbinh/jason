@@ -81,6 +81,15 @@ Other changes
   to create new files (e.g., when users request a new agent or a new
   project to be created).
 
+. new internal action ".length(<string>|<list>, <size>)": gets the size
+  of a list or string
+. new internal action ".abolish(<literal>)": remove all ocurrences of a
+  literal from BB
+
+. Performatives "askOne" and "askIf" are new "ask".
+. Events generated from received KQML messages are not "+received(....)", but
+  "+!received(...)".
+  
 
 -----------
 version 0.8
