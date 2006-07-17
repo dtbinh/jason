@@ -1,0 +1,128 @@
+package jia;
+
+import jason.asSemantics.InternalAction;
+import jason.asSemantics.TransitionSystem;
+import jason.asSemantics.Unifier;
+import jason.asSyntax.NumberTerm;
+import jason.asSyntax.Term;
+import jason.asSyntax.TermImpl;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import busca.AEstrela;
+import busca.Busca;
+import busca.Estado;
+import busca.Heuristica;
+import busca.Nodo;
+
+public class getDirection implements InternalAction {
+    
+    public boolean execute(TransitionSystem ts, Unifier un, Term[] terms) throws Exception {
+        try {
+            String sAction = "skip";
+
+            GridWorldModel model = GridWorldModel.get();
+    
+            NumberTerm agx = (NumberTerm)terms[0].clone(); un.apply((Term)agx);
+            NumberTerm agy = (NumberTerm)terms[1].clone(); un.apply((Term)agy);
+            NumberTerm tox = (NumberTerm)terms[2].clone(); un.apply((Term)tox);
+            NumberTerm toy = (NumberTerm)terms[3].clone(); un.apply((Term)toy);
+            int iagx = (int)agx.solve();
+            int iagy = (int)agy.solve();
+            int itox = (int)tox.solve();
+            int itoy = (int)toy.solve();
+            if (model.inGrid(itox,itoy)) {
+                Busca searchAlg = new AEstrela();
+                //searchAlg.setMaxAbertos(1000);
+                Location lini = new Location(iagx, iagy);
+                Nodo solution = searchAlg.busca(new GridState(lini, lini,new Location(itox, itoy), model, "initial"));
+                if (solution != null) {
+                    //System.out.println(iagx+"-"+iagy+"/"+itox+"-"+itoy+" = "+solution.montaCaminho());
+                    Nodo root = solution;
+                    Estado prev1 = null;
+                    Estado prev2 = null;
+                    while (root != null) {
+                        prev2 = prev1;
+                        prev1 = root.getEstado();
+                        root = root.getPai();
+                    }
+                    if (prev2 != null) {
+                        sAction =  ((GridState)prev2).op;
+                    }
+                } else {
+                    //System.out.println("No route from "+iagx+"x"+iagy+" to "+itox+"x"+itoy+"!");
+                }
+            }
+            return un.unifies(terms[4], new TermImpl(sAction));
+        } catch (Throwable e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+}
+
+class GridState implements Estado, Heuristica {
+
+    // State information
+    Location pos; // current location
+    Location from,to;
+    String op;
+    GridWorldModel model;
+    
+    public GridState(Location l, Location from, Location to, GridWorldModel model, String op) {
+        this.pos = l;
+        this.from = from;
+        this.to = to;
+        this.model = model;
+        this.op = op;
+    }
+    
+    public int custo() {
+        return 1;
+    }
+
+    public boolean ehMeta() {
+        return pos.equals(to);
+    }
+
+    public String getDescricao() {
+        return "Grid search";
+    }
+
+    public int h() {
+        return pos.distance(to);
+    }
+
+    public List<Estado> sucessores() {
+        List<Estado> s = new ArrayList<Estado>(4);
+        // four directions
+        suc(s,new Location(pos.x,pos.y-1),"up");
+        suc(s,new Location(pos.x,pos.y+1),"down");
+        suc(s,new Location(pos.x-1,pos.y),"left");
+        suc(s,new Location(pos.x+1,pos.y),"right");
+        return s;
+    }
+    
+    private void suc(List<Estado> s, Location newl, String op) {
+        if (model.isFree(newl) || (from.distance(newl) > 3 && model.isFreeOfObstacle(newl))) {
+            s.add(new GridState(newl,from,to,model,op));
+        }
+    }
+    
+    public boolean equals(Object o) {
+        try {
+            GridState m = (GridState)o;
+            return pos.equals(m.pos);
+        } catch (Exception e) {}
+        return false;
+    }
+    
+    public int hashCode() {
+        return pos.toString().hashCode();
+    }
+            
+    public String toString() {
+        return "(" + pos + "-" + op + ")"; 
+    }
+}

@@ -1,0 +1,3213 @@
+<?xml version="1.0"?>
+
+<jacob version="3.0">
+
+<object type="PrometheusProject" id="0">
+    <field name="projectData">
+	<object type="ProjectData" id="1">
+	    <field name="name">Miners</field>
+	    <field name="description">Jason Robots for CLIMA Contest 2006</field>
+	    <field name="fileNameLastSavedAs">Miners.pd</field>
+	    <field name="filePathLastSavedIn">/Users/jomi/academia/publicacoes/2006/CLIMA-Contest</field>
+	    <field name="openedAs">/Users/jomi/academia/publicacoes/2006/CLIMA-Contest/Miners.pd</field>
+	    <field name="author">Rafael, Jomi, and Daniel</field>
+	    <field name="applicationVersion">2.3b</field>
+	</object>
+    </field>
+    <field name="diagramSettings"><list>
+	<object type="DiagramSettings" id="2">
+	    <field name="diagramId">
+		<object type="DiagramId" id="3">
+		    <field name="stringId">au.edu.rmit.cs.prometheus.gui.diagram.capabilityoverview.CapabilityOverviewDiagramModel#164</field>
+		</object>
+	    </field>
+	    <field name="entitySettings"><list>
+		<object type="DiagramEntitySetting" id="4">
+		    <field name="entity">
+			<object type="Action" id="5">
+			    <base type="Entity">
+				<field name="name">move</field>
+				<field name="description">The agent movement</field>
+				<field name="uniqueId">111</field>
+			    </base>
+
+			    <field name="parameters">direction (E,N,S,W)</field>
+			    <field name="durationDescription"></field>
+			    <field name="failureNotificationDescription"></field>
+			    <field name="partialChange"></field>
+			    <field name="sideEffects"></field>
+			</object>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="6">
+			    <field name="x">452</field>
+			    <field name="y">94</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="7">
+		    <field name="entity">
+			<object type="Plan" id="8">
+			    <base type="Entity">
+				<field name="name">find new location to explore</field>
+				<field name="description"></field>
+				<field name="uniqueId">193</field>
+			    </base>
+
+			    <field name="goals"><list>
+				<object type="Goal" id="9">
+				    <base type="Entity">
+					<field name="name">exploring area</field>
+					<field name="uniqueId">198</field>
+				    </base>
+
+				</object>
+				</list>
+			    </field>
+			    <field name="actions"><list>
+				<object ref="5"/>
+				</list>
+			    </field>
+			    <field name="context"></field>
+			    <field name="failure"></field>
+			    <field name="failureRecovery"></field>
+			    <field name="procedure"></field>
+			</object>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="10">
+			    <field name="x">155</field>
+			    <field name="y">92</field>
+			</object>
+		    </field>
+		</object>
+		</list>
+	    </field>
+	</object>
+
+	<object type="DiagramSettings" id="11">
+	    <field name="diagramId">
+		<object type="DiagramId" id="12">
+		    <field name="stringId">au.edu.rmit.cs.prometheus.gui.diagram.capabilityoverview.CapabilityOverviewDiagramModel#163</field>
+		</object>
+	    </field>
+	    <field name="entitySettings"><list>
+		<object type="DiagramEntitySetting" id="13">
+		    <field name="entity">
+			<object ref="5"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="14">
+			    <field name="x">421</field>
+			    <field name="y">384</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="15">
+		    <field name="entity">
+			<object type="DataConnection" id="16">
+			    <base type="Entity">
+				<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.DataConnection ID=195&gt;</field>
+				<field name="uniqueId">195</field>
+			    </base>
+
+			    <field name="type">
+				<object type="Data" id="17">
+				    <base type="Entity">
+					<field name="name">depot</field>
+					<field name="description">The cell location where gold items are to be delivered in order to earn a point in a simulation</field>
+					<field name="uniqueId">146</field>
+				    </base>
+
+				    <field name="dataType"></field>
+				    <field name="includedFields"></field>
+				    <field name="initialisation"></field>
+				    <field name="writtenWhen"></field>
+				    <field name="connections"><list>
+					<object type="DataConnection" id="18">
+					    <base type="Entity">
+						<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.DataConnection ID=194&gt;</field>
+						<field name="uniqueId">194</field>
+					    </base>
+
+					    <field name="type">
+						<object ref="17"/>
+					    </field>
+					    <field name="readingEntities"><list>
+						<object type="Plan" id="19">
+						    <base type="Entity">
+							<field name="name">get gold at meetpoint and carry to depot</field>
+							<field name="description"></field>
+							<field name="uniqueId">192</field>
+						    </base>
+
+						    <field name="triggers"><list>
+							<object type="Percept" id="20">
+							    <base type="Entity">
+								<field name="name">p-position</field>
+								<field name="description">the positoion of the miner in the environment</field>
+								<field name="uniqueId">109</field>
+							    </base>
+
+							    <field name="source"></field>
+							    <field name="informationCarried">(x,y)</field>
+							    <field name="knowledgeUpdated"></field>
+							    <field name="processing"></field>
+							    <field name="agentsResponding"><list>
+								<object type="Agent" id="21">
+								    <base type="Entity">
+									<field name="name">miner</field>
+									<field name="description">These agents look for gold in the environment and then carry it to a meeting point where the courier get the gold.
+Eventually, the courier will not accept to carry the gold, in this case the agent should carry it to the depot.</field>
+									<field name="uniqueId">127</field>
+								    </base>
+
+								    <field name="cardinalityMinimum">3</field>
+								    <field name="cardinalityMaximum">3</field>
+								    <field name="lifetime"></field>
+								    <field name="initialisation"></field>
+								    <field name="demise"></field>
+								    <field name="includedCapabilities"><list>
+									<object type="Capability" id="22">
+									    <base type="Entity">
+										<field name="name">handle gold</field>
+										<field name="description"></field>
+										<field name="uniqueId">163</field>
+									    </base>
+
+									    <field name="processes"></field>
+									    <field name="notes"></field>
+									    <field name="actions"><list>
+										<object type="Action" id="23">
+										    <base type="Entity">
+											<field name="name">pick</field>
+											<field name="description"></field>
+											<field name="uniqueId">115</field>
+										    </base>
+
+										    <field name="parameters"></field>
+										    <field name="durationDescription"></field>
+										    <field name="failureNotificationDescription"></field>
+										    <field name="partialChange"></field>
+										    <field name="sideEffects"></field>
+										</object>
+
+										<object type="Action" id="24">
+										    <base type="Entity">
+											<field name="name">drop</field>
+											<field name="uniqueId">116</field>
+										    </base>
+
+										</object>
+										</list>
+									    </field>
+									    <field name="percepts"><list>
+										<object type="Percept" id="25">
+										    <base type="Entity">
+											<field name="name">p-gold</field>
+											<field name="description">An item which can be picked from a cell</field>
+											<field name="uniqueId">120</field>
+										    </base>
+
+										    <field name="source"></field>
+										    <field name="informationCarried"></field>
+										    <field name="knowledgeUpdated"></field>
+										    <field name="processing"></field>
+										    <field name="agentsResponding"><list>
+											<object ref="21"/>
+
+											<object type="Agent" id="26">
+											    <base type="Entity">
+												<field name="name">courier</field>
+												<field name="description">This agent will get gold from its team-mates and carry it to the depot</field>
+												<field name="uniqueId">126</field>
+											    </base>
+
+											    <field name="cardinalityMinimum">1</field>
+											    <field name="cardinalityMaximum">1</field>
+											    <field name="lifetime"></field>
+											    <field name="initialisation"></field>
+											    <field name="demise"></field>
+											    <field name="includedPlans"><list>
+												<object type="Plan" id="27">
+												    <base type="Entity">
+													<field name="name">evaluate meeting point</field>
+													<field name="description"></field>
+													<field name="uniqueId">148</field>
+												    </base>
+
+												    <field name="triggers"><list>
+													<object type="MessageDistributionPair" id="28">
+													    <base type="Entity">
+														<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.MessageDistributionPair ID=140&gt;</field>
+														<field name="uniqueId">140</field>
+													    </base>
+
+													    <field name="type">
+														<object type="Message" id="29">
+														    <base type="Entity">
+															<field name="name">need meetpoint</field>
+															<field name="description">A miner that get a piece of gold try to find a meeting pint with courier</field>
+															<field name="uniqueId">138</field>
+														    </base>
+
+														    <field name="distribution"><list>
+															<object type="MessageDistributionPair" id="30">
+															    <base type="Entity">
+																<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.MessageDistributionPair ID=139&gt;</field>
+																<field name="uniqueId">139</field>
+															    </base>
+
+															    <field name="type">
+																<object ref="29"/>
+															    </field>
+															    <field name="toEntities"><list>
+																<object ref="26"/>
+																</list>
+															    </field>
+															    <field name="fromEntities"><list>
+																<object ref="21"/>
+																</list>
+															    </field>
+															    <field name="childDistributionPairs"><list>
+																<object type="MessageDistributionPair" id="31">
+																    <base type="Entity">
+																	<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.MessageDistributionPair ID=141&gt;</field>
+																	<field name="uniqueId">141</field>
+																    </base>
+
+																    <field name="type">
+																	<object ref="29"/>
+																    </field>
+																    <field name="fromEntities"><list>
+																	<object type="Plan" id="32">
+																	    <base type="Entity">
+																		<field name="name">carry gold to depot</field>
+																		<field name="description"></field>
+																		<field name="uniqueId">150</field>
+																	    </base>
+
+																	    <field name="triggers"><list>
+																		<object type="MessageDistributionPair" id="33">
+																		    <base type="Entity">
+																			<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.MessageDistributionPair ID=189&gt;</field>
+																			<field name="uniqueId">189</field>
+																		    </base>
+
+																		    <field name="type">
+																			<object type="Message" id="34">
+																			    <base type="Entity">
+																				<field name="name">meetpoint refused</field>
+																				<field name="description"></field>
+																				<field name="uniqueId">174</field>
+																			    </base>
+
+																			    <field name="distribution"><list>
+																				<object type="MessageDistributionPair" id="35">
+																				    <base type="Entity">
+																					<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.MessageDistributionPair ID=176&gt;</field>
+																					<field name="uniqueId">176</field>
+																				    </base>
+
+																				    <field name="type">
+																					<object ref="34"/>
+																				    </field>
+																				    <field name="toEntities"><list>
+																					<object ref="21"/>
+																					</list>
+																				    </field>
+																				    <field name="fromEntities"><list>
+																					<object ref="26"/>
+																					</list>
+																				    </field>
+																				    <field name="childDistributionPairs"><list>
+																					<object type="MessageDistributionPair" id="36">
+																					    <base type="Entity">
+																						<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.MessageDistributionPair ID=178&gt;</field>
+																						<field name="uniqueId">178</field>
+																					    </base>
+
+																					    <field name="type">
+																						<object ref="34"/>
+																					    </field>
+																					    <field name="fromEntities"><list>
+																						<object ref="27"/>
+																						</list>
+																					    </field>
+																					    <field name="parentDistributionPair">
+																						<object ref="35"/>
+																					    </field>
+																					</object>
+
+																					<object type="MessageDistributionPair" id="37">
+																					    <base type="Entity">
+																						<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.MessageDistributionPair ID=177&gt;</field>
+																						<field name="uniqueId">177</field>
+																					    </base>
+
+																					    <field name="type">
+																						<object ref="34"/>
+																					    </field>
+																					    <field name="toEntities"><list>
+																						<object ref="22"/>
+																						</list>
+																					    </field>
+																					    <field name="parentDistributionPair">
+																						<object ref="35"/>
+																					    </field>
+																					    <field name="childDistributionPairs"><list>
+																						<object ref="33"/>
+																						</list>
+																					    </field>
+																					</object>
+																					</list>
+																				    </field>
+																				</object>
+
+																				<object ref="37"/>
+
+																				<object ref="36"/>
+
+																				<object ref="33"/>
+																				</list>
+																			    </field>
+																			    <field name="purpose"></field>
+																			    <field name="informationCarried"></field>
+																			</object>
+																		    </field>
+																		    <field name="toEntities"><list>
+																			<object ref="32"/>
+																			</list>
+																		    </field>
+																		    <field name="parentDistributionPair">
+																			<object ref="37"/>
+																		    </field>
+																		</object>
+																		</list>
+																	    </field>
+																	    <field name="goals"><list>
+																		<object type="Goal" id="38">
+																		    <base type="Entity">
+																			<field name="name">gold in depot</field>
+																			<field name="description"></field>
+																			<field name="uniqueId">197</field>
+																		    </base>
+
+																		    <field name="subGoals"><list>
+																			<object type="Goal" id="39">
+																			    <base type="Entity">
+																				<field name="name">carried by miner</field>
+																				<field name="description"></field>
+																				<field name="uniqueId">200</field>
+																			    </base>
+
+																			</object>
+
+																			<object type="Goal" id="40">
+																			    <base type="Entity">
+																				<field name="name">carried by courier</field>
+																				<field name="description"></field>
+																				<field name="uniqueId">201</field>
+																			    </base>
+
+																			</object>
+																			</list>
+																		    </field>
+																		</object>
+																		</list>
+																	    </field>
+																	    <field name="actions"><list>
+																		<object ref="24"/>
+																		</list>
+																	    </field>
+																	    <field name="incomingMessages"><list>
+																		<object type="MessageDistributionPair" id="41">
+																		    <base type="Entity">
+																			<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.MessageDistributionPair ID=144&gt;</field>
+																			<field name="uniqueId">144</field>
+																		    </base>
+
+																		    <field name="type">
+																			<object type="Message" id="42">
+																			    <base type="Entity">
+																				<field name="name">meetpoint ok</field>
+																				<field name="description">the courier accept to get the gold and carry it to the depot.</field>
+																				<field name="uniqueId">142</field>
+																			    </base>
+
+																			    <field name="distribution"><list>
+																				<object type="MessageDistributionPair" id="43">
+																				    <base type="Entity">
+																					<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.MessageDistributionPair ID=143&gt;</field>
+																					<field name="uniqueId">143</field>
+																				    </base>
+
+																				    <field name="type">
+																					<object ref="42"/>
+																				    </field>
+																				    <field name="toEntities"><list>
+																					<object ref="21"/>
+																					</list>
+																				    </field>
+																				    <field name="fromEntities"><list>
+																					<object ref="26"/>
+																					</list>
+																				    </field>
+																				    <field name="childDistributionPairs"><list>
+																					<object type="MessageDistributionPair" id="44">
+																					    <base type="Entity">
+																						<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.MessageDistributionPair ID=145&gt;</field>
+																						<field name="uniqueId">145</field>
+																					    </base>
+
+																					    <field name="type">
+																						<object ref="42"/>
+																					    </field>
+																					    <field name="fromEntities"><list>
+																						<object ref="27"/>
+																						</list>
+																					    </field>
+																					    <field name="parentDistributionPair">
+																						<object ref="43"/>
+																					    </field>
+																					</object>
+
+																					<object ref="41"/>
+																					</list>
+																				    </field>
+																				</object>
+
+																				<object ref="41"/>
+
+																				<object ref="44"/>
+
+																				<object type="MessageDistributionPair" id="45">
+																				    <base type="Entity">
+																					<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.MessageDistributionPair ID=188&gt;</field>
+																					<field name="uniqueId">188</field>
+																				    </base>
+
+																				    <field name="type">
+																					<object ref="42"/>
+																				    </field>
+																				    <field name="toEntities"><list>
+																					<object type="Plan" id="46">
+																					    <base type="Entity">
+																						<field name="name">carry gold to meetpoint</field>
+																						<field name="description"></field>
+																						<field name="uniqueId">172</field>
+																					    </base>
+
+																					    <field name="triggers"><list>
+																						<object ref="45"/>
+																						</list>
+																					    </field>
+																					    <field name="goals"><list>
+																						<object ref="39"/>
+
+																						<object ref="38"/>
+																						</list>
+																					    </field>
+																					    <field name="actions"><list>
+																						<object ref="24"/>
+																						</list>
+																					    </field>
+																					    <field name="data"><list>
+																						<object type="DataConnection" id="47">
+																						    <base type="Entity">
+																							<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.DataConnection ID=196&gt;</field>
+																							<field name="uniqueId">196</field>
+																						    </base>
+
+																						    <field name="type">
+																							<object type="Data" id="48">
+																							    <base type="Entity">
+																								<field name="name">meeting point</field>
+																								<field name="description"></field>
+																								<field name="uniqueId">190</field>
+																							    </base>
+
+																							    <field name="dataType"></field>
+																							    <field name="includedFields"></field>
+																							    <field name="initialisation"></field>
+																							    <field name="writtenWhen"></field>
+																							    <field name="connections"><list>
+																								<object type="DataConnection" id="49">
+																								    <base type="Entity">
+																									<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.DataConnection ID=191&gt;</field>
+																									<field name="uniqueId">191</field>
+																								    </base>
+
+																								    <field name="type">
+																									<object ref="48"/>
+																								    </field>
+																								    <field name="readingEntities"><list>
+																									<object ref="19"/>
+																									</list>
+																								    </field>
+																								    <field name="writingEntities"><list>
+																									<object ref="27"/>
+																									</list>
+																								    </field>
+																								</object>
+
+																								<object ref="47"/>
+																								</list>
+																							    </field>
+																							</object>
+																						    </field>
+																						    <field name="readingEntities"><list>
+																							<object ref="46"/>
+																							</list>
+																						    </field>
+																						</object>
+																						</list>
+																					    </field>
+																					    <field name="context"></field>
+																					    <field name="failure"></field>
+																					    <field name="failureRecovery"></field>
+																					    <field name="procedure"></field>
+																					</object>
+																					</list>
+																				    </field>
+																				    <field name="parentDistributionPair">
+																					<object ref="41"/>
+																				    </field>
+																				</object>
+																				</list>
+																			    </field>
+																			    <field name="purpose"></field>
+																			    <field name="informationCarried">the location of the meeting point</field>
+																			</object>
+																		    </field>
+																		    <field name="toEntities"><list>
+																			<object ref="32"/>
+
+																			<object ref="22"/>
+																			</list>
+																		    </field>
+																		    <field name="parentDistributionPair">
+																			<object ref="43"/>
+																		    </field>
+																		    <field name="childDistributionPairs"><list>
+																			<object ref="45"/>
+																			</list>
+																		    </field>
+																		</object>
+																		</list>
+																	    </field>
+																	    <field name="outgoingMessages"><list>
+																		<object ref="31"/>
+																		</list>
+																	    </field>
+																	    <field name="data"><list>
+																		<object ref="16"/>
+																		</list>
+																	    </field>
+																	    <field name="context">free</field>
+																	    <field name="failure"></field>
+																	    <field name="failureRecovery"></field>
+																	    <field name="procedure"></field>
+																	</object>
+
+																	<object ref="22"/>
+																	</list>
+																    </field>
+																    <field name="parentDistributionPair">
+																	<object ref="30"/>
+																    </field>
+																    <field name="childDistributionPairs"><list>
+																	<object type="MessageDistributionPair" id="50">
+																	    <base type="Entity">
+																		<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.MessageDistributionPair ID=167&gt;</field>
+																		<field name="uniqueId">167</field>
+																	    </base>
+
+																	    <field name="type">
+																		<object ref="29"/>
+																	    </field>
+																	    <field name="fromEntities"><list>
+																		<object type="Plan" id="51">
+																		    <base type="Entity">
+																			<field name="name">propose meetpoint</field>
+																			<field name="description"></field>
+																			<field name="uniqueId">171</field>
+																		    </base>
+
+																		    <field name="triggers"><list>
+																			<object ref="25"/>
+																			</list>
+																		    </field>
+																		    <field name="goals"><list>
+																			<object ref="40"/>
+																			</list>
+																		    </field>
+																		    <field name="actions"><list>
+																			<object ref="23"/>
+																			</list>
+																		    </field>
+																		    <field name="incomingMessages"><list>
+																			<object type="MessageDistributionPair" id="52">
+																			    <base type="Entity">
+																				<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.MessageDistributionPair ID=187&gt;</field>
+																				<field name="uniqueId">187</field>
+																			    </base>
+
+																			    <field name="type">
+																				<object type="Message" id="53">
+																				    <base type="Entity">
+																					<field name="name">winner</field>
+																					<field name="description"></field>
+																					<field name="uniqueId">181</field>
+																				    </base>
+
+																				    <field name="distribution"><list>
+																					<object type="MessageDistributionPair" id="54">
+																					    <base type="Entity">
+																						<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.MessageDistributionPair ID=182&gt;</field>
+																						<field name="uniqueId">182</field>
+																					    </base>
+
+																					    <field name="type">
+																						<object ref="53"/>
+																					    </field>
+																					    <field name="toEntities"><list>
+																						<object ref="21"/>
+																						</list>
+																					    </field>
+																					    <field name="fromEntities"><list>
+																						<object ref="21"/>
+																						</list>
+																					    </field>
+																					    <field name="childDistributionPairs"><list>
+																						<object type="MessageDistributionPair" id="55">
+																						</object>
+
+																						<object type="MessageDistributionPair" id="56">
+																						    <base type="Entity">
+																							<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.MessageDistributionPair ID=183&gt;</field>
+																							<field name="uniqueId">183</field>
+																						    </base>
+
+																						    <field name="type">
+																							<object ref="53"/>
+																						    </field>
+																						    <field name="toEntities"><list>
+																							<object ref="22"/>
+																							</list>
+																						    </field>
+																						    <field name="parentDistributionPair">
+																							<object ref="54"/>
+																						    </field>
+																						    <field name="childDistributionPairs"><list>
+																							<object ref="52"/>
+																							</list>
+																						    </field>
+																						</object>
+																						</list>
+																					    </field>
+																					</object>
+
+																					<object ref="56"/>
+
+																					<object ref="52"/>
+																					</list>
+																				    </field>
+																				    <field name="purpose"></field>
+																				    <field name="informationCarried"></field>
+																				</object>
+																			    </field>
+																			    <field name="toEntities"><list>
+																				<object ref="51"/>
+																				</list>
+																			    </field>
+																			    <field name="parentDistributionPair">
+																				<object ref="56"/>
+																			    </field>
+																			</object>
+																			</list>
+																		    </field>
+																		    <field name="outgoingMessages"><list>
+																			<object ref="50"/>
+																			</list>
+																		    </field>
+																		    <field name="data"><list>
+																			<object type="DataConnection" id="57">
+																			    <base type="Entity">
+																				<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.DataConnection ID=169&gt;</field>
+																				<field name="uniqueId">169</field>
+																			    </base>
+
+																			    <field name="type">
+																				<object type="Data" id="58">
+																				    <base type="Entity">
+																					<field name="name">free</field>
+																					<field name="description"></field>
+																					<field name="uniqueId">157</field>
+																				    </base>
+
+																				    <field name="dataType"></field>
+																				    <field name="includedFields"></field>
+																				    <field name="initialisation"></field>
+																				    <field name="writtenWhen"></field>
+																				    <field name="connections"><list>
+																					<object ref="57"/>
+																					</list>
+																				    </field>
+																				</object>
+																			    </field>
+																			    <field name="readingEntities"><list>
+																				<object ref="51"/>
+
+																				<object type="Plan" id="59">
+																				    <base type="Entity">
+																					<field name="name">announce gold</field>
+																					<field name="description"></field>
+																					<field name="uniqueId">166</field>
+																				    </base>
+
+																				    <field name="triggers"><list>
+																					<object ref="25"/>
+																					</list>
+																				    </field>
+																				    <field name="goals"><list>
+																					<object type="Goal" id="60">
+																					    <base type="Entity">
+																						<field name="name">announced gold</field>
+																						<field name="uniqueId">199</field>
+																					    </base>
+
+																					</object>
+																					</list>
+																				    </field>
+																				    <field name="outgoingMessages"><list>
+																					<object type="MessageDistributionPair" id="61">
+																					    <base type="Entity">
+																						<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.MessageDistributionPair ID=185&gt;</field>
+																						<field name="uniqueId">185</field>
+																					    </base>
+
+																					    <field name="type">
+																						<object type="Message" id="62">
+																						    <base type="Entity">
+																							<field name="name">gold found</field>
+																							<field name="description">send by a miner that finds gold but can not carry it</field>
+																							<field name="uniqueId">132</field>
+																						    </base>
+
+																						    <field name="distribution"><list>
+																							<object type="MessageDistributionPair" id="63">
+																							    <base type="Entity">
+																								<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.MessageDistributionPair ID=133&gt;</field>
+																								<field name="uniqueId">133</field>
+																							    </base>
+
+																							    <field name="type">
+																								<object ref="62"/>
+																							    </field>
+																							    <field name="toEntities"><list>
+																								<object ref="21"/>
+																								</list>
+																							    </field>
+																							    <field name="fromEntities"><list>
+																								<object ref="21"/>
+																								</list>
+																							    </field>
+																							    <field name="childDistributionPairs"><list>
+																								<object type="MessageDistributionPair" id="64">
+																								</object>
+
+																								<object type="MessageDistributionPair" id="65">
+																								    <base type="Entity">
+																									<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.MessageDistributionPair ID=134&gt;</field>
+																									<field name="uniqueId">134</field>
+																								    </base>
+
+																								    <field name="type">
+																									<object ref="62"/>
+																								    </field>
+																								    <field name="toEntities"><list>
+																									<object type="Plan" id="66">
+																									    <base type="Entity">
+																										<field name="name">calculate bid</field>
+																										<field name="description"></field>
+																										<field name="uniqueId">151</field>
+																									    </base>
+
+																									    <field name="triggers"><list>
+																										<object ref="61"/>
+																										</list>
+																									    </field>
+																									    <field name="goals"><list>
+																										<object ref="60"/>
+																										</list>
+																									    </field>
+																									    <field name="incomingMessages"><list>
+																										<object ref="65"/>
+																										</list>
+																									    </field>
+																									    <field name="outgoingMessages"><list>
+																										<object type="MessageDistributionPair" id="67">
+																										    <base type="Entity">
+																											<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.MessageDistributionPair ID=137&gt;</field>
+																											<field name="uniqueId">137</field>
+																										    </base>
+
+																										    <field name="type">
+																											<object type="Message" id="68">
+																											    <base type="Entity">
+																												<field name="name">bid</field>
+																												<field name="description">a free miner evaluate its cost to brinf the found gold and announce it. This cost is based on the distance from the agent to the gold.</field>
+																												<field name="uniqueId">135</field>
+																											    </base>
+
+																											    <field name="distribution"><list>
+																												<object type="MessageDistributionPair" id="69">
+																												    <base type="Entity">
+																													<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.MessageDistributionPair ID=136&gt;</field>
+																													<field name="uniqueId">136</field>
+																												    </base>
+
+																												    <field name="type">
+																													<object ref="68"/>
+																												    </field>
+																												    <field name="toEntities"><list>
+																													<object ref="21"/>
+																													</list>
+																												    </field>
+																												    <field name="fromEntities"><list>
+																													<object ref="21"/>
+																													</list>
+																												    </field>
+																												    <field name="childDistributionPairs"><list>
+																													<object type="MessageDistributionPair" id="70">
+																													</object>
+
+																													<object ref="67"/>
+																													</list>
+																												    </field>
+																												</object>
+
+																												<object ref="67"/>
+
+																												<object type="MessageDistributionPair" id="71">
+																												    <base type="Entity">
+																													<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.MessageDistributionPair ID=186&gt;</field>
+																													<field name="uniqueId">186</field>
+																												    </base>
+
+																												    <field name="type">
+																													<object ref="68"/>
+																												    </field>
+																												    <field name="fromEntities"><list>
+																													<object ref="66"/>
+																													</list>
+																												    </field>
+																												    <field name="parentDistributionPair">
+																													<object ref="67"/>
+																												    </field>
+																												</object>
+																												</list>
+																											    </field>
+																											    <field name="purpose"></field>
+																											    <field name="informationCarried">the bid value</field>
+																											</object>
+																										    </field>
+																										    <field name="fromEntities"><list>
+																											<object ref="66"/>
+
+																											<object ref="22"/>
+																											</list>
+																										    </field>
+																										    <field name="parentDistributionPair">
+																											<object ref="69"/>
+																										    </field>
+																										    <field name="childDistributionPairs"><list>
+																											<object ref="71"/>
+																											</list>
+																										    </field>
+																										</object>
+
+																										<object ref="71"/>
+																										</list>
+																									    </field>
+																									    <field name="context"></field>
+																									    <field name="failure"></field>
+																									    <field name="failureRecovery"></field>
+																									    <field name="procedure"></field>
+																									</object>
+
+																									<object ref="22"/>
+																									</list>
+																								    </field>
+																								    <field name="fromEntities"><list>
+																									<object ref="22"/>
+																									</list>
+																								    </field>
+																								    <field name="parentDistributionPair">
+																									<object ref="63"/>
+																								    </field>
+																								    <field name="childDistributionPairs"><list>
+																									<object ref="61"/>
+																									</list>
+																								    </field>
+																								</object>
+																								</list>
+																							    </field>
+																							</object>
+
+																							<object ref="65"/>
+
+																							<object ref="61"/>
+																							</list>
+																						    </field>
+																						    <field name="purpose"></field>
+																						    <field name="informationCarried">the location of the gold</field>
+																						</object>
+																					    </field>
+																					    <field name="toEntities"><list>
+																						<object ref="66"/>
+																						</list>
+																					    </field>
+																					    <field name="fromEntities"><list>
+																						<object ref="59"/>
+																						</list>
+																					    </field>
+																					    <field name="parentDistributionPair">
+																						<object ref="65"/>
+																					    </field>
+																					</object>
+																					</list>
+																				    </field>
+																				    <field name="data"><list>
+																					<object ref="57"/>
+																					</list>
+																				    </field>
+																				    <field name="context">not free</field>
+																				    <field name="failure"></field>
+																				    <field name="failureRecovery"></field>
+																				    <field name="procedure"></field>
+																				</object>
+																				</list>
+																			    </field>
+																			</object>
+																			</list>
+																		    </field>
+																		    <field name="context">free</field>
+																		    <field name="failure"></field>
+																		    <field name="failureRecovery"></field>
+																		    <field name="procedure"></field>
+																		</object>
+																		</list>
+																	    </field>
+																	    <field name="parentDistributionPair">
+																		<object ref="31"/>
+																	    </field>
+																	</object>
+																	</list>
+																    </field>
+																</object>
+
+																<object ref="28"/>
+																</list>
+															    </field>
+															</object>
+
+															<object ref="28"/>
+
+															<object ref="31"/>
+
+															<object ref="50"/>
+															</list>
+														    </field>
+														    <field name="purpose"></field>
+														    <field name="informationCarried">the position of the miner</field>
+														</object>
+													    </field>
+													    <field name="toEntities"><list>
+														<object ref="27"/>
+														</list>
+													    </field>
+													    <field name="parentDistributionPair">
+														<object ref="30"/>
+													    </field>
+													</object>
+													</list>
+												    </field>
+												    <field name="goals"><list>
+													<object ref="60"/>
+													</list>
+												    </field>
+												    <field name="outgoingMessages"><list>
+													<object ref="44"/>
+
+													<object ref="36"/>
+													</list>
+												    </field>
+												    <field name="data"><list>
+													<object ref="49"/>
+													</list>
+												    </field>
+												    <field name="context"></field>
+												    <field name="failure">the courier is busy</field>
+												    <field name="failureRecovery">the miner will carry the gold to the depot itself</field>
+												    <field name="procedure"></field>
+												</object>
+
+												<object ref="19"/>
+												</list>
+											    </field>
+											    <field name="protocols"><list>
+												<object type="Protocol" id="72">
+												    <base type="Entity">
+													<field name="name">negotiate meeting point</field>
+													<field name="description"></field>
+													<field name="uniqueId">128</field>
+												    </base>
+
+												    <field name="includedMessages"><list>
+													<object ref="30"/>
+
+													<object ref="43"/>
+
+													<object ref="35"/>
+													</list>
+												    </field>
+												    <field name="protocolDistributionPairs"><list>
+													<object type="ProtocolDistributionPair" id="73">
+													    <base type="Entity">
+														<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.ProtocolDistributionPair ID=129&gt;</field>
+														<field name="uniqueId">129</field>
+													    </base>
+
+													    <field name="type">
+														<object ref="72"/>
+													    </field>
+													    <field name="agent1">
+														<object ref="26"/>
+													    </field>
+													    <field name="agent2">
+														<object ref="21"/>
+													    </field>
+													</object>
+													</list>
+												    </field>
+												    <field name="agents"><list>
+													<object ref="26"/>
+
+													<object ref="21"/>
+													</list>
+												    </field>
+												    <field name="notes"></field>
+												</object>
+												</list>
+											    </field>
+											    <field name="percepts"><list>
+												<object ref="20"/>
+
+												<object ref="25"/>
+
+												<object type="Percept" id="74">
+												    <base type="Entity">
+													<field name="name">p-agent</field>
+													<field name="description"></field>
+													<field name="uniqueId">121</field>
+												    </base>
+
+												    <field name="source"></field>
+												    <field name="informationCarried">whether the agent is an enemy</field>
+												    <field name="knowledgeUpdated"></field>
+												    <field name="processing"></field>
+												    <field name="agentsResponding"><list>
+													<object ref="21"/>
+
+													<object ref="26"/>
+													</list>
+												    </field>
+												    <field name="frequency"></field>
+												</object>
+												</list>
+											    </field>
+											    <field name="actions"><list>
+												<object ref="23"/>
+
+												<object ref="5"/>
+
+												<object ref="24"/>
+												</list>
+											    </field>
+											    <field name="messages"><list>
+												<object ref="28"/>
+
+												<object ref="44"/>
+
+												<object ref="36"/>
+												</list>
+											    </field>
+											    <field name="data"><list>
+												<object ref="49"/>
+
+												<object ref="18"/>
+												</list>
+											    </field>
+											</object>
+											</list>
+										    </field>
+										    <field name="frequency"></field>
+										</object>
+										</list>
+									    </field>
+									    <field name="includedPlans"><list>
+										<object ref="32"/>
+
+										<object ref="59"/>
+
+										<object ref="51"/>
+
+										<object ref="46"/>
+
+										<object ref="66"/>
+										</list>
+									    </field>
+									    <field name="messages"><list>
+										<object ref="50"/>
+
+										<object ref="61"/>
+
+										<object ref="71"/>
+
+										<object ref="52"/>
+
+										<object ref="45"/>
+
+										<object ref="33"/>
+										</list>
+									    </field>
+									    <field name="data"><list>
+										<object ref="57"/>
+
+										<object ref="16"/>
+
+										<object ref="47"/>
+										</list>
+									    </field>
+									</object>
+
+									<object type="Capability" id="75">
+									    <base type="Entity">
+										<field name="name">explorer</field>
+										<field name="description"></field>
+										<field name="uniqueId">164</field>
+									    </base>
+
+									    <field name="processes"></field>
+									    <field name="notes"></field>
+									    <field name="actions"><list>
+										<object ref="5"/>
+										</list>
+									    </field>
+									    <field name="includedPlans"><list>
+										<object ref="8"/>
+										</list>
+									    </field>
+									</object>
+
+									<object type="Capability" id="76">
+									    <base type="Entity">
+										<field name="name">goto</field>
+										<field name="description"></field>
+										<field name="uniqueId">159</field>
+									    </base>
+
+									    <field name="processes"></field>
+									    <field name="notes"></field>
+									    <field name="actions"><list>
+										<object ref="5"/>
+										</list>
+									    </field>
+									    <field name="percepts"><list>
+										<object ref="74"/>
+
+										<object ref="20"/>
+										</list>
+									    </field>
+									    <field name="includedPlans"><list>
+										<object type="Plan" id="77">
+										    <base type="Entity">
+											<field name="name">find route</field>
+											<field name="description"></field>
+											<field name="uniqueId">162</field>
+										    </base>
+
+										    <field name="actions"><list>
+											<object ref="5"/>
+											</list>
+										    </field>
+										    <field name="percepts"><list>
+											<object ref="74"/>
+
+											<object ref="20"/>
+											</list>
+										    </field>
+										    <field name="data"><list>
+											<object type="DataConnection" id="78">
+											    <base type="Entity">
+												<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.DataConnection ID=170&gt;</field>
+												<field name="uniqueId">170</field>
+											    </base>
+
+											    <field name="type">
+												<object type="Data" id="79">
+												    <base type="Entity">
+													<field name="name">obstacle</field>
+													<field name="description">the location of obstacles already identified</field>
+													<field name="uniqueId">147</field>
+												    </base>
+
+												    <field name="dataType"></field>
+												    <field name="includedFields"></field>
+												    <field name="initialisation"></field>
+												    <field name="writtenWhen"></field>
+												    <field name="connections"><list>
+													<object ref="78"/>
+													</list>
+												    </field>
+												</object>
+											    </field>
+											    <field name="readingEntities"><list>
+												<object ref="77"/>
+												</list>
+											    </field>
+											</object>
+											</list>
+										    </field>
+										    <field name="context"></field>
+										    <field name="failure"></field>
+										    <field name="failureRecovery"></field>
+										    <field name="procedure"></field>
+										</object>
+										</list>
+									    </field>
+									    <field name="data"><list>
+										<object ref="78"/>
+										</list>
+									    </field>
+									</object>
+									</list>
+								    </field>
+								    <field name="includedPlans"><list>
+									<object type="Plan" id="80">
+									    <base type="Entity">
+										<field name="name">disturb reactive agents</field>
+										<field name="description"></field>
+										<field name="uniqueId">155</field>
+									    </base>
+
+									    <field name="actions"><list>
+										<object type="Action" id="81">
+										    <base type="Entity">
+											<field name="name">unmark</field>
+											<field name="description"></field>
+											<field name="uniqueId">154</field>
+										    </base>
+
+										    <field name="parameters"></field>
+										    <field name="durationDescription"></field>
+										    <field name="failureNotificationDescription"></field>
+										    <field name="partialChange"></field>
+										    <field name="sideEffects"></field>
+										</object>
+										</list>
+									    </field>
+									    <field name="percepts"><list>
+										<object type="Percept" id="82">
+										    <base type="Entity">
+											<field name="name">p-mark</field>
+											<field name="description"></field>
+											<field name="uniqueId">153</field>
+										    </base>
+
+										    <field name="source"></field>
+										    <field name="informationCarried"></field>
+										    <field name="knowledgeUpdated"></field>
+										    <field name="processing"></field>
+										    <field name="frequency"></field>
+										</object>
+										</list>
+									    </field>
+									    <field name="context"></field>
+									    <field name="failure"></field>
+									    <field name="failureRecovery"></field>
+									    <field name="procedure"></field>
+									</object>
+									</list>
+								    </field>
+								    <field name="protocols"><list>
+									<object type="Protocol" id="83">
+									    <base type="Entity">
+										<field name="name">negotiate who fetches the gold</field>
+										<field name="description">when a miner finds gold but is already carryng gold, it announce to others that then will negociate who will bring this gold.</field>
+										<field name="uniqueId">130</field>
+									    </base>
+
+									    <field name="includedMessages"><list>
+										<object ref="63"/>
+
+										<object ref="69"/>
+
+										<object ref="54"/>
+										</list>
+									    </field>
+									    <field name="protocolDistributionPairs"><list>
+										<object type="ProtocolDistributionPair" id="84">
+										    <base type="Entity">
+											<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.ProtocolDistributionPair ID=131&gt;</field>
+											<field name="uniqueId">131</field>
+										    </base>
+
+										    <field name="type">
+											<object ref="83"/>
+										    </field>
+										    <field name="agent1">
+											<object ref="21"/>
+										    </field>
+										    <field name="agent2">
+											<object ref="21"/>
+										    </field>
+										</object>
+										</list>
+									    </field>
+									    <field name="agents"><list>
+										<object ref="21"/>
+										</list>
+									    </field>
+									    <field name="notes"></field>
+									</object>
+
+									<object ref="72"/>
+									</list>
+								    </field>
+								    <field name="percepts"><list>
+									<object ref="20"/>
+
+									<object ref="25"/>
+
+									<object ref="74"/>
+
+									<object ref="82"/>
+									</list>
+								    </field>
+								    <field name="actions"><list>
+									<object ref="23"/>
+
+									<object ref="5"/>
+
+									<object ref="24"/>
+
+									<object ref="81"/>
+									</list>
+								    </field>
+								    <field name="messages"><list>
+									<object ref="65"/>
+
+									<object ref="67"/>
+
+									<object ref="31"/>
+
+									<object ref="41"/>
+
+									<object ref="37"/>
+
+									<object ref="56"/>
+									</list>
+								    </field>
+								</object>
+
+								<object ref="26"/>
+								</list>
+							    </field>
+							    <field name="frequency"></field>
+							</object>
+							</list>
+						    </field>
+						    <field name="goals"><list>
+							<object ref="60"/>
+
+							<object ref="40"/>
+							</list>
+						    </field>
+						    <field name="actions"><list>
+							<object ref="23"/>
+
+							<object ref="24"/>
+
+							<object ref="5"/>
+							</list>
+						    </field>
+						    <field name="percepts"><list>
+							<object ref="25"/>
+
+							<object ref="74"/>
+							</list>
+						    </field>
+						    <field name="data"><list>
+							<object ref="49"/>
+
+							<object ref="18"/>
+							</list>
+						    </field>
+						    <field name="context">at meetpoint</field>
+						    <field name="failure"></field>
+						    <field name="failureRecovery"></field>
+						    <field name="procedure"></field>
+						</object>
+						</list>
+					    </field>
+					</object>
+
+					<object ref="16"/>
+					</list>
+				    </field>
+				</object>
+			    </field>
+			    <field name="readingEntities"><list>
+				<object ref="32"/>
+				</list>
+			    </field>
+			</object>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="85">
+			    <field name="x">200</field>
+			    <field name="y">245</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="86">
+		    <field name="entity">
+			<object ref="66"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="87">
+			    <field name="x">266</field>
+			    <field name="y">215</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="88">
+		    <field name="entity">
+			<object ref="71"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="89">
+			    <field name="x">458</field>
+			    <field name="y">237</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="90">
+		    <field name="entity">
+			<object ref="51"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="91">
+			    <field name="x">171</field>
+			    <field name="y">24</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="92">
+		    <field name="entity">
+			<object ref="32"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="93">
+			    <field name="x">191</field>
+			    <field name="y">308</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="94">
+		    <field name="entity">
+			<object ref="77"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="95">
+			    <field name="x">379</field>
+			    <field name="y">302</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="96">
+		    <field name="entity">
+			<object ref="50"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="97">
+			    <field name="x">450</field>
+			    <field name="y">24</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="98">
+		    <field name="entity">
+			<object ref="52"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="99">
+			    <field name="x">432</field>
+			    <field name="y">88</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="100">
+		    <field name="entity">
+			<object ref="46"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="101">
+			    <field name="x">181</field>
+			    <field name="y">382</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="102">
+		    <field name="entity">
+			<object ref="76"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="103">
+			    <field name="x">389</field>
+			    <field name="y">375</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="104">
+		    <field name="entity">
+			<object ref="59"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="105">
+			    <field name="x">186</field>
+			    <field name="y">150</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="106">
+		    <field name="entity">
+			<object ref="65"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="107">
+			    <field name="x">37</field>
+			    <field name="y">25</field>
+			</object>
+		    </field>
+		    <field name="userApproved">:false</field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="108">
+		    <field name="entity">
+			<object ref="45"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="109">
+			    <field name="x">42</field>
+			    <field name="y">386</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="110">
+		    <field name="entity">
+			<object ref="57"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="111">
+			    <field name="x">212</field>
+			    <field name="y">85</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="112">
+		    <field name="entity">
+			<object ref="24"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="113">
+			    <field name="x">427</field>
+			    <field name="y">352</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="114">
+		    <field name="entity">
+			<object ref="33"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="115">
+			    <field name="x">37</field>
+			    <field name="y">295</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="116">
+		    <field name="entity">
+			<object ref="47"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="117">
+			    <field name="x">214</field>
+			    <field name="y">429</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="118">
+		    <field name="entity">
+			<object ref="61"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="119">
+			    <field name="x">429</field>
+			    <field name="y">177</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="120">
+		    <field name="entity">
+			<object ref="23"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="121">
+			    <field name="x">300</field>
+			    <field name="y">91</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="122">
+		    <field name="entity">
+			<object ref="25"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="123">
+			    <field name="x">19</field>
+			    <field name="y">118</field>
+			</object>
+		    </field>
+		</object>
+		</list>
+	    </field>
+	</object>
+
+	<object type="DiagramSettings" id="124">
+	    <field name="diagramId">
+		<object type="DiagramId" id="125">
+		    <field name="stringId">au.edu.rmit.cs.prometheus.gui.diagram.agentoverview.AgentOverviewDiagramModel(id#126)</field>
+		</object>
+	    </field>
+	    <field name="entitySettings"><list>
+		<object type="DiagramEntitySetting" id="126">
+		    <field name="entity">
+			<object ref="5"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="127">
+			    <field name="x">440</field>
+			    <field name="y">406</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="128">
+		    <field name="entity">
+			<object ref="36"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="129">
+			    <field name="x">494</field>
+			    <field name="y">149</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="130">
+		    <field name="entity">
+			<object ref="81"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="131">
+			    <field name="x">447</field>
+			    <field name="y">22</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="132">
+		    <field name="entity">
+			<object ref="18"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="133">
+			    <field name="x">449</field>
+			    <field name="y">237</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="134">
+		    <field name="entity">
+			<object ref="44"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="135">
+			    <field name="x">439</field>
+			    <field name="y">68</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="136">
+		    <field name="entity">
+			<object ref="28"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="137">
+			    <field name="x">61</field>
+			    <field name="y">168</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="138">
+		    <field name="entity">
+			<object ref="49"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="139">
+			    <field name="x">312</field>
+			    <field name="y">243</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="140">
+		    <field name="entity">
+			<object ref="27"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="141">
+			    <field name="x">265</field>
+			    <field name="y">172</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="142">
+		    <field name="entity">
+			<object ref="20"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="143">
+			    <field name="x">60</field>
+			    <field name="y">267</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="144">
+		    <field name="entity">
+			<object ref="19"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="145">
+			    <field name="x">236</field>
+			    <field name="y">319</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="146">
+		    <field name="entity">
+			<object ref="24"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="147">
+			    <field name="x">339</field>
+			    <field name="y">417</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="148">
+		    <field name="entity">
+			<object ref="74"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="149">
+			    <field name="x">66</field>
+			    <field name="y">398</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="150">
+		    <field name="entity">
+			<object ref="82"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="151">
+			    <field name="x">540</field>
+			    <field name="y">88</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="152">
+		    <field name="entity">
+			<object ref="23"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="153">
+			    <field name="x">252</field>
+			    <field name="y">413</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="154">
+		    <field name="entity">
+			<object ref="25"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="155">
+			    <field name="x">63</field>
+			    <field name="y">323</field>
+			</object>
+		    </field>
+		</object>
+		</list>
+	    </field>
+	</object>
+
+	<object type="DiagramSettings" id="156">
+	    <field name="diagramId">
+		<object type="DiagramId" id="157">
+		    <field name="stringId">Data Coupling</field>
+		</object>
+	    </field>
+	    <field name="entitySettings"><list>
+		<object type="DiagramEntitySetting" id="158">
+		    <field name="entity">
+			<object ref="48"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="159">
+			    <field name="x">278</field>
+			    <field name="y">23</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="160">
+		    <field name="entity">
+			<object ref="17"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="161">
+			    <field name="x">37</field>
+			    <field name="y">25</field>
+			</object>
+		    </field>
+		    <field name="userApproved">:false</field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="162">
+		    <field name="entity">
+			<object ref="79"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="163">
+			    <field name="x">117</field>
+			    <field name="y">25</field>
+			</object>
+		    </field>
+		    <field name="userApproved">:false</field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="164">
+		    <field name="entity">
+			<object ref="58"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="165">
+			    <field name="x">211</field>
+			    <field name="y">22</field>
+			</object>
+		    </field>
+		</object>
+		</list>
+	    </field>
+	</object>
+
+	<object type="DiagramSettings" id="166">
+	    <field name="diagramId">
+		<object type="DiagramId" id="167">
+		    <field name="stringId">System Overview</field>
+		</object>
+	    </field>
+	    <field name="entitySettings"><list>
+		<object type="DiagramEntitySetting" id="168">
+		    <field name="entity">
+			<object ref="5"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="169">
+			    <field name="x">623</field>
+			    <field name="y">113</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="170">
+		    <field name="entity">
+			<object ref="84"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="171">
+			    <field name="x">254</field>
+			    <field name="y">6</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="172">
+		    <field name="entity">
+			<object ref="26"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="173">
+			    <field name="x">322</field>
+			    <field name="y">348</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="174">
+		    <field name="entity">
+			<object ref="81"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="175">
+			    <field name="x">623</field>
+			    <field name="y">166</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="176">
+		    <field name="entity">
+			<object ref="21"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="177">
+			    <field name="x">325</field>
+			    <field name="y">103</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="178">
+		    <field name="entity">
+			<object ref="73"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="179">
+			    <field name="x">274</field>
+			    <field name="y">207</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="180">
+		    <field name="entity">
+			<object ref="20"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="181">
+			    <field name="x">15</field>
+			    <field name="y">147</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="182">
+		    <field name="entity">
+			<object ref="24"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="183">
+			    <field name="x">590</field>
+			    <field name="y">249</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="184">
+		    <field name="entity">
+			<object ref="74"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="185">
+			    <field name="x">84</field>
+			    <field name="y">303</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="186">
+		    <field name="entity">
+			<object ref="82"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="187">
+			    <field name="x">35</field>
+			    <field name="y">77</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="188">
+		    <field name="entity">
+			<object ref="23"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="189">
+			    <field name="x">583</field>
+			    <field name="y">46</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="190">
+		    <field name="entity">
+			<object ref="25"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="191">
+			    <field name="x">43</field>
+			    <field name="y">239</field>
+			</object>
+		    </field>
+		</object>
+		</list>
+	    </field>
+	</object>
+
+	<object type="DiagramSettings" id="192">
+	    <field name="diagramId">
+		<object type="DiagramId" id="193">
+		    <field name="stringId">Agent-Role Coupling</field>
+		</object>
+	    </field>
+	    <field name="entitySettings"><list>
+		<object type="DiagramEntitySetting" id="194">
+		    <field name="entity">
+			<object type="Agent" id="195">
+			    <base type="Entity">
+				<field name="uniqueId">128</field>
+			    </base>
+
+			</object>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="196">
+			    <field name="x">276</field>
+			    <field name="y">98</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="197">
+		    <field name="entity">
+			<object type="Agent" id="198">
+			    <base type="Entity">
+				<field name="uniqueId">129</field>
+			    </base>
+
+			</object>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="199">
+			    <field name="x">280</field>
+			    <field name="y">41</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="200">
+		    <field name="entity">
+			<object ref="26"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="201">
+			    <field name="x">30</field>
+			    <field name="y">142</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="202">
+		    <field name="entity">
+			<object ref="21"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="203">
+			    <field name="x">158</field>
+			    <field name="y">143</field>
+			</object>
+		    </field>
+		</object>
+		</list>
+	    </field>
+	</object>
+
+	<object type="DiagramSettings" id="204">
+	    <field name="diagramId">
+		<object type="DiagramId" id="205">
+		    <field name="stringId">Goal Overview</field>
+		</object>
+	    </field>
+	    <field name="entitySettings"><list>
+		<object type="DiagramEntitySetting" id="206">
+		    <field name="entity">
+			<object ref="39"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="207">
+			    <field name="x">297</field>
+			    <field name="y">260</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="208">
+		    <field name="entity">
+			<object type="Goal" id="209">
+			    <base type="Entity">
+				<field name="name">find gold</field>
+				<field name="uniqueId">107</field>
+			    </base>
+
+			    <field name="subGoals"><list>
+				<object ref="9"/>
+
+				<object ref="60"/>
+				</list>
+			    </field>
+			</object>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="210">
+			    <field name="x">174</field>
+			    <field name="y">137</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="211">
+		    <field name="entity">
+			<object ref="38"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="212">
+			    <field name="x">314</field>
+			    <field name="y">139</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="213">
+		    <field name="entity">
+			<object ref="40"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="214">
+			    <field name="x">400</field>
+			    <field name="y">213</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="215">
+		    <field name="entity">
+			<object ref="60"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="216">
+			    <field name="x">156</field>
+			    <field name="y">241</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="217">
+		    <field name="entity">
+			<object type="Goal" id="218">
+			    <base type="Entity">
+				<field name="name">collect gold</field>
+				<field name="description"></field>
+				<field name="uniqueId">106</field>
+			    </base>
+
+			    <field name="subGoals"><list>
+				<object ref="209"/>
+
+				<object ref="38"/>
+				</list>
+			    </field>
+			</object>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="219">
+			    <field name="x">255</field>
+			    <field name="y">63</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="220">
+		    <field name="entity">
+			<object ref="9"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="221">
+			    <field name="x">72</field>
+			    <field name="y">189</field>
+			</object>
+		    </field>
+		</object>
+		</list>
+	    </field>
+	</object>
+
+	<object type="DiagramSettings" id="222">
+	    <field name="diagramId">
+		<object type="DiagramId" id="223">
+		    <field name="stringId">au.edu.rmit.cs.prometheus.gui.diagram.agentoverview.AgentOverviewDiagramModel(id#127)</field>
+		</object>
+	    </field>
+	    <field name="entitySettings"><list>
+		<object type="DiagramEntitySetting" id="224">
+		    <field name="entity">
+			<object ref="5"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="225">
+			    <field name="x">435</field>
+			    <field name="y">62</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="226">
+		    <field name="entity">
+			<object ref="22"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="227">
+			    <field name="x">289</field>
+			    <field name="y">221</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="228">
+		    <field name="entity">
+			<object ref="56"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="229">
+			    <field name="x">280</field>
+			    <field name="y">333</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="230">
+		    <field name="entity">
+			<object ref="66"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="231">
+			    <field name="x">316</field>
+			    <field name="y">507</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="232">
+		    <field name="entity">
+			<object ref="81"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="233">
+			    <field name="x">517</field>
+			    <field name="y">432</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="234">
+		    <field name="entity">
+			<object ref="37"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="235">
+			    <field name="x">487</field>
+			    <field name="y">320</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="236">
+		    <field name="entity">
+			<object ref="32"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="237">
+			    <field name="x">293</field>
+			    <field name="y">308</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="238">
+		    <field name="entity">
+			<object ref="80"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="239">
+			    <field name="x">255</field>
+			    <field name="y">438</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="240">
+		    <field name="entity">
+			<object ref="76"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="241">
+			    <field name="x">300</field>
+			    <field name="y">80</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="242">
+		    <field name="entity">
+			<object ref="41"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="243">
+			    <field name="x">504</field>
+			    <field name="y">268</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="244">
+		    <field name="entity">
+			<object ref="65"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="245">
+			    <field name="x">135</field>
+			    <field name="y">334</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="246">
+		    <field name="entity">
+			<object ref="20"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="247">
+			    <field name="x">37</field>
+			    <field name="y">49</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="248">
+		    <field name="entity">
+			<object ref="31"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="249">
+			    <field name="x">504</field>
+			    <field name="y">215</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="250">
+		    <field name="entity">
+			<object ref="67"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="251">
+			    <field name="x">229</field>
+			    <field name="y">332</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="252">
+		    <field name="entity">
+			<object ref="24"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="253">
+			    <field name="x">298</field>
+			    <field name="y">134</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="254">
+		    <field name="entity">
+			<object ref="74"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="255">
+			    <field name="x">35</field>
+			    <field name="y">130</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="256">
+		    <field name="entity">
+			<object ref="75"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="257">
+			    <field name="x">282</field>
+			    <field name="y">20</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="258">
+		    <field name="entity">
+			<object ref="82"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="259">
+			    <field name="x">54</field>
+			    <field name="y">430</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="260">
+		    <field name="entity">
+			<object ref="25"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="261">
+			    <field name="x">58</field>
+			    <field name="y">231</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="262">
+		    <field name="entity">
+			<object ref="23"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="263">
+			    <field name="x">204</field>
+			    <field name="y">151</field>
+			</object>
+		    </field>
+		</object>
+		</list>
+	    </field>
+	</object>
+
+	<object type="DiagramSettings" id="264">
+	    <field name="diagramId">
+		<object type="DiagramId" id="265">
+		    <field name="stringId">au.edu.rmit.cs.prometheus.gui.diagram.capabilityoverview.CapabilityOverviewDiagramModel#159</field>
+		</object>
+	    </field>
+	    <field name="entitySettings"><list>
+		<object type="DiagramEntitySetting" id="266">
+		    <field name="entity">
+			<object ref="5"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="267">
+			    <field name="x">455</field>
+			    <field name="y">93</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="268">
+		    <field name="entity">
+			<object ref="20"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="269">
+			    <field name="x">52</field>
+			    <field name="y">134</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="270">
+		    <field name="entity">
+			<object ref="74"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="271">
+			    <field name="x">63</field>
+			    <field name="y">61</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="272">
+		    <field name="entity">
+			<object ref="77"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="273">
+			    <field name="x">249</field>
+			    <field name="y">99</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="274">
+		    <field name="entity">
+			<object ref="78"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="275">
+			    <field name="x">291</field>
+			    <field name="y">184</field>
+			</object>
+		    </field>
+		</object>
+		</list>
+	    </field>
+	</object>
+
+	<object type="DiagramSettings" id="276">
+	    <field name="diagramId">
+		<object type="DiagramId" id="277">
+		    <field name="stringId">Agent Acquaintance</field>
+		</object>
+	    </field>
+	    <field name="entitySettings"><list>
+		<object type="DiagramEntitySetting" id="278">
+		    <field name="entity">
+			<object ref="195"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="279">
+			    <field name="x">197</field>
+			    <field name="y">25</field>
+			</object>
+		    </field>
+		    <field name="userApproved">:false</field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="280">
+		    <field name="entity">
+			<object ref="198"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="281">
+			    <field name="x">277</field>
+			    <field name="y">25</field>
+			</object>
+		    </field>
+		    <field name="userApproved">:false</field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="282">
+		    <field name="entity">
+			<object ref="26"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="283">
+			    <field name="x">37</field>
+			    <field name="y">25</field>
+			</object>
+		    </field>
+		    <field name="userApproved">:false</field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="284">
+		    <field name="entity">
+			<object ref="21"/>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="285">
+			    <field name="x">180</field>
+			    <field name="y">26</field>
+			</object>
+		    </field>
+		</object>
+		</list>
+	    </field>
+	</object>
+
+	<object type="DiagramSettings" id="286">
+	    <field name="diagramId">
+		<object type="DiagramId" id="287">
+		    <field name="stringId">Roles</field>
+		</object>
+	    </field>
+	    <field name="entitySettings"><list>
+		<object type="DiagramEntitySetting" id="288">
+		    <field name="entity">
+			<object type="Role" id="289">
+			    <base type="Entity">
+				<field name="uniqueId">154</field>
+			    </base>
+
+			</object>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="290">
+			    <field name="x">280</field>
+			    <field name="y">169</field>
+			</object>
+		    </field>
+		</object>
+
+		<object type="DiagramEntitySetting" id="291">
+		    <field name="entity">
+			<object type="Role" id="292">
+			    <base type="Entity">
+				<field name="uniqueId">153</field>
+			    </base>
+
+			</object>
+		    </field>
+		    <field name="location">
+			<object type="Coordinate" id="293">
+			    <field name="x">110</field>
+			    <field name="y">115</field>
+			</object>
+		    </field>
+		</object>
+		</list>
+	    </field>
+	</object>
+	</list>
+    </field>
+    <field name="model">
+	<object type="PrometheusModelData" id="294">
+	    <field name="projectData">
+		<object ref="1"/>
+	    </field>
+	    <field name="actions"><list>
+		<object ref="5"/>
+
+		<object ref="23"/>
+
+		<object ref="24"/>
+
+		<object ref="81"/>
+		</list>
+	    </field>
+	    <field name="agents"><list>
+		<object ref="26"/>
+
+		<object ref="21"/>
+		</list>
+	    </field>
+	    <field name="data"><list>
+		<object ref="17"/>
+
+		<object ref="79"/>
+
+		<object ref="58"/>
+
+		<object ref="48"/>
+		</list>
+	    </field>
+	    <field name="goals"><list>
+		<object ref="218"/>
+
+		<object ref="209"/>
+
+		<object ref="38"/>
+
+		<object ref="9"/>
+
+		<object ref="60"/>
+
+		<object ref="39"/>
+
+		<object ref="40"/>
+		</list>
+	    </field>
+	    <field name="messages"><list>
+		<object ref="62"/>
+
+		<object ref="68"/>
+
+		<object ref="29"/>
+
+		<object ref="42"/>
+
+		<object ref="34"/>
+
+		<object ref="53"/>
+		</list>
+	    </field>
+	    <field name="percepts"><list>
+		<object ref="20"/>
+
+		<object ref="25"/>
+
+		<object ref="74"/>
+
+		<object ref="82"/>
+		</list>
+	    </field>
+	    <field name="plans"><list>
+		<object ref="27"/>
+
+		<object ref="32"/>
+
+		<object ref="66"/>
+
+		<object ref="80"/>
+
+		<object ref="77"/>
+
+		<object ref="59"/>
+
+		<object ref="51"/>
+
+		<object ref="46"/>
+
+		<object ref="19"/>
+
+		<object ref="8"/>
+		</list>
+	    </field>
+	    <field name="capabilities"><list>
+		<object ref="76"/>
+
+		<object ref="22"/>
+
+		<object ref="75"/>
+		</list>
+	    </field>
+	    <field name="protocols"><list>
+		<object ref="72"/>
+
+		<object ref="83"/>
+		</list>
+	    </field>
+	    <field name="messageDistributionPairs"><list>
+		<object ref="63"/>
+
+		<object ref="65"/>
+
+		<object ref="69"/>
+
+		<object ref="67"/>
+
+		<object ref="30"/>
+
+		<object ref="28"/>
+
+		<object ref="31"/>
+
+		<object ref="43"/>
+
+		<object ref="41"/>
+
+		<object ref="44"/>
+
+		<object ref="50"/>
+
+		<object ref="35"/>
+
+		<object ref="37"/>
+
+		<object ref="36"/>
+
+		<object ref="54"/>
+
+		<object ref="56"/>
+
+		<object ref="61"/>
+
+		<object ref="71"/>
+
+		<object ref="52"/>
+
+		<object ref="45"/>
+
+		<object ref="33"/>
+		</list>
+	    </field>
+	    <field name="protocolDistributionPairs"><list>
+		<object ref="73"/>
+
+		<object ref="84"/>
+		</list>
+	    </field>
+	    <field name="dataConnections"><list>
+		<object type="DataConnection" id="295">
+		    <base type="Entity">
+			<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.DataConnection ID=76&gt;</field>
+			<field name="uniqueId">76</field>
+		    </base>
+
+		    <field name="type">
+			<object type="Data" id="296">
+			    <base type="Entity">
+				<field name="uniqueId">75</field>
+			    </base>
+
+			    <field name="persistent">:false</field>
+			    <field name="connections"><list>
+				<object ref="295"/>
+
+				<object type="DataConnection" id="297">
+				    <base type="Entity">
+					<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.DataConnection ID=95&gt;</field>
+					<field name="uniqueId">95</field>
+				    </base>
+
+				    <field name="type">
+					<object ref="296"/>
+				    </field>
+				    <field name="readingEntities"><list>
+					<object type="Plan" id="298">
+					    <base type="Entity">
+						<field name="uniqueId">74</field>
+					    </base>
+
+					</object>
+					</list>
+				    </field>
+				</object>
+
+				<object type="DataConnection" id="299">
+				    <base type="Entity">
+					<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.DataConnection ID=104&gt;</field>
+					<field name="uniqueId">104</field>
+				    </base>
+
+				    <field name="type">
+					<object ref="296"/>
+				    </field>
+				    <field name="readingEntities"><list>
+					<object ref="298"/>
+					</list>
+				    </field>
+				</object>
+				</list>
+			    </field>
+			</object>
+		    </field>
+		    <field name="readingEntities"><list>
+			<object ref="298"/>
+			</list>
+		    </field>
+		</object>
+
+		<object type="DataConnection" id="300">
+		    <base type="Entity">
+			<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.DataConnection ID=87&gt;</field>
+			<field name="uniqueId">87</field>
+		    </base>
+
+		    <field name="type">
+			<object type="Data" id="301">
+			    <base type="Entity">
+				<field name="uniqueId">86</field>
+			    </base>
+
+			    <field name="connections"><list>
+				<object ref="300"/>
+
+				<object type="DataConnection" id="302">
+				    <base type="Entity">
+					<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.DataConnection ID=101&gt;</field>
+					<field name="uniqueId">101</field>
+				    </base>
+
+				    <field name="type">
+					<object ref="301"/>
+				    </field>
+				    <field name="writingEntities"><list>
+					<object type="Plan" id="303">
+					    <base type="Entity">
+						<field name="uniqueId">88</field>
+					    </base>
+
+					</object>
+					</list>
+				    </field>
+				</object>
+
+				<object type="DataConnection" id="304">
+				    <base type="Entity">
+					<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.DataConnection ID=102&gt;</field>
+					<field name="uniqueId">102</field>
+				    </base>
+
+				    <field name="type">
+					<object ref="301"/>
+				    </field>
+				    <field name="readingEntities"><list>
+					<object ref="298"/>
+					</list>
+				    </field>
+				    <field name="writingEntities"><list>
+					<object ref="303"/>
+					</list>
+				    </field>
+				</object>
+				</list>
+			    </field>
+			</object>
+		    </field>
+		    <field name="writingEntities"><list>
+			<object ref="303"/>
+			</list>
+		    </field>
+		</object>
+
+		<object type="DataConnection" id="305">
+		    <base type="Entity">
+			<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.DataConnection ID=90&gt;</field>
+			<field name="uniqueId">90</field>
+		    </base>
+
+		    <field name="type">
+			<object type="Data" id="306">
+			    <base type="Entity">
+				<field name="uniqueId">89</field>
+			    </base>
+
+			    <field name="connections"><list>
+				<object ref="305"/>
+				</list>
+			    </field>
+			</object>
+		    </field>
+		    <field name="readingEntities"><list>
+			<object type="Plan" id="307">
+			    <base type="Entity">
+				<field name="uniqueId">91</field>
+			    </base>
+
+			</object>
+			</list>
+		    </field>
+		    <field name="writingEntities"><list>
+			<object ref="307"/>
+			</list>
+		    </field>
+		</object>
+
+		<object ref="297"/>
+
+		<object type="DataConnection" id="308">
+		    <base type="Entity">
+			<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.DataConnection ID=98&gt;</field>
+			<field name="uniqueId">98</field>
+		    </base>
+
+		    <field name="type">
+			<object type="Data" id="309">
+			    <base type="Entity">
+				<field name="uniqueId">97</field>
+			    </base>
+
+			    <field name="connections"><list>
+				<object ref="308"/>
+
+				<object type="DataConnection" id="310">
+				    <base type="Entity">
+					<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.DataConnection ID=105&gt;</field>
+					<field name="uniqueId">105</field>
+				    </base>
+
+				    <field name="type">
+					<object ref="309"/>
+				    </field>
+				    <field name="readingEntities"><list>
+					<object ref="298"/>
+					</list>
+				    </field>
+				</object>
+				</list>
+			    </field>
+			</object>
+		    </field>
+		    <field name="readingEntities"><list>
+			<object type="Plan" id="311">
+			    <base type="Entity">
+				<field name="uniqueId">96</field>
+			    </base>
+
+			</object>
+			</list>
+		    </field>
+		</object>
+
+		<object type="DataConnection" id="312">
+		    <base type="Entity">
+			<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.DataConnection ID=100&gt;</field>
+			<field name="uniqueId">100</field>
+		    </base>
+
+		    <field name="type">
+			<object type="Data" id="313">
+			    <base type="Entity">
+				<field name="uniqueId">99</field>
+			    </base>
+
+			    <field name="connections"><list>
+				<object ref="312"/>
+
+				<object type="DataConnection" id="314">
+				    <base type="Entity">
+					<field name="name">&lt;Prometheus unique entity name au.edu.rmit.cs.prometheus.datamodel.jacob.DataConnection ID=103&gt;</field>
+					<field name="uniqueId">103</field>
+				    </base>
+
+				    <field name="type">
+					<object ref="313"/>
+				    </field>
+				    <field name="readingEntities"><list>
+					<object ref="298"/>
+					</list>
+				    </field>
+				    <field name="writingEntities"><list>
+					<object ref="303"/>
+					</list>
+				    </field>
+				</object>
+				</list>
+			    </field>
+			</object>
+		    </field>
+		    <field name="readingEntities"><list>
+			<object ref="298"/>
+			</list>
+		    </field>
+		</object>
+
+		<object ref="302"/>
+
+		<object ref="304"/>
+
+		<object ref="314"/>
+
+		<object ref="299"/>
+
+		<object ref="310"/>
+
+		<object ref="57"/>
+
+		<object ref="78"/>
+
+		<object ref="49"/>
+
+		<object ref="18"/>
+
+		<object ref="16"/>
+
+		<object ref="47"/>
+		</list>
+	    </field>
+	    <field name="systemOverviewDiagramData">
+		<object type="SystemOverviewDiagramData" id="315">
+		    <field name="agents"><list>
+			<object ref="26"/>
+
+			<object ref="21"/>
+			</list>
+		    </field>
+		    <field name="percepts"><list>
+			<object ref="20"/>
+
+			<object ref="25"/>
+
+			<object ref="74"/>
+
+			<object ref="82"/>
+			</list>
+		    </field>
+		    <field name="actions"><list>
+			<object ref="5"/>
+
+			<object ref="23"/>
+
+			<object ref="24"/>
+
+			<object ref="81"/>
+			</list>
+		    </field>
+		    <field name="protocolsDistributionPairs"><list>
+			<object ref="73"/>
+
+			<object ref="84"/>
+			</list>
+		    </field>
+		</object>
+	    </field>
+	    <field name="rolesDiagramData">
+		<object type="RolesDiagramData" id="316">
+		</object>
+	    </field>
+	    <field name="stakeholdersDiagramData">
+		<object type="StakeholdersDiagramData" id="317">
+		</object>
+	    </field>
+	    <field name="includeCrossCheckInformationInReport">:false</field>
+	</object>
+    </field>
+</object>
+
+</jacob>

@@ -1,0 +1,13 @@
+/* Minig Robots based on Jason Team for Clima Contest VII
+ * (http://cig.in.tu-clausthal.de/CLIMAContest)
+ *
+ */
+
+MAS miners {
+	infrastructure: Centralised
+    environment: mining.MiningPlanet
+	agents:
+        leader;
+ 		miner #4;     
+}
+
