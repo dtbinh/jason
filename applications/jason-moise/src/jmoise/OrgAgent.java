@@ -232,7 +232,7 @@ public class OrgAgent extends AgArch {
         }
 
         // create the literal to be added
-        Literal gil = new Literal(Literal.LPos, new Pred("goalState"));
+        Literal gil = new Literal(Literal.LPos, "goalState");
         gil.addTerm(new TermImpl(gi.getScheme().getId()));
         gil.addTerm(gap);
         gil.addTerm(new VarTerm("S"));
@@ -251,7 +251,7 @@ public class OrgAgent extends AgArch {
             }
         }
 
-        gil = new Literal(Literal.LPos, new Pred("goalState"));
+        gil = new Literal(Literal.LPos, "goalState");
         gil.addTerm(new TermImpl(gi.getScheme().getId()));
         gil.addTerm(gap);
         gil.addTerm(new TermImpl(gState));
