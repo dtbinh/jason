@@ -10,7 +10,9 @@ import java.text.SimpleDateFormat;
 public class check implements InternalAction {
 
     public boolean execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
-	String time = (new SimpleDateFormat("HH:mm")).format(new Date());
-	return un.unifies((Term)args[0], new StringTermImpl("\""+time+"\""));
+        String time = (new SimpleDateFormat("HH:mm:ss")).format(new Date());
+        ts.getLogger().info("Check Time="+time);
+        return un.unifies(args[0], new StringTermImpl(time));
     }
 }
+
