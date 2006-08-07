@@ -1,24 +1,21 @@
+/* 
+   Beliefs
+*/
 
-// Organisational Events
-// ------------------------
+// I want to play "writer" in "wpgroups"
+desiredRole(wpgroup,writer).
 
-// when a wpgroup is created, adopts the role writer 
-+group(wpgroup,Id) : true 
-   <- jmoise.adoptRole(writer,Id).
+// I want to commit to "mColaborator" mission in "writePaperSch" schemes
+desiredMission(writePaperSch,mColaborator).
 
-// when I have an obligation to be a colaborator, 
-// commit to it
-+obligation(Sch, mColaborator) : true 
-   <- jmoise.commitToMission(mColaborator, Sch).
-
-// when the root goal of the scheme is satisfied, 
-// remove my missions
-+goalState(Sch, wpGoal, satisfied) : true
-   <- jmoise.removeMission(Sch).
+// include common plans for MOISE+ agents
+{ include("moise-common.asl") }
 
 
-// Organisational Goals' plans
-// ------------------------------
+/*   
+   Organisational Goals' plans
+   ---------------------------
+*/
 
 +!wsecs[scheme(Sch)] 
    :   commitment(Ag, mBib, Sch) 

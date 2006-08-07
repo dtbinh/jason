@@ -294,19 +294,7 @@ public class OrgManager extends AgArch {
 
                 updateMembersOE(sch.getPlayers(), "goalState(" + gi.getScheme().getId() + "," + gi.getSpec().getId() + ")", true, true);
 
-                // if all args has value
-                /*
-                 * if (gi.getSpec().getArguments().size() ==
-                 * gi.getArgumentValues().size()) { String before =
-                 * "goalState("+gi.getScheme().getId()+","+gi.getSpec().getId()+","+gState+")";
-                 * String after =
-                 * "goalState("+gi.getScheme().getId()+","+gi.getSpec().getId()+","+gState+")"; //
-                 * untell old value updateMembersOE(sch.getPlayers(), before,
-                 * false, false); // tell new updateMembersOE(sch.getPlayers(),
-                 * after, true, true); System.out.println("*** b="+before+ "
-                 * a="+after); }
-                 */
-
+               
             } else if (m.getFunctor().equals("finishScheme")) {
                 String schId = m.getTerm(0).toString();
                 SchemeInstance sch = currentOE.findScheme(schId);

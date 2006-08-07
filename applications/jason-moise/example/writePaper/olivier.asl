@@ -1,35 +1,35 @@
-refs([boissier04,sichman03]).
+/* 
+   Beliefs
+*/
 
-// Organisational Events
-// ------------------------
+refs([boissier04,sichman03]). // refs used in the paper
 
-// when a wpgroup is created, adopts the role writer 
-+group(wpgroup,Id) : true
-   <- jmoise.adoptRole(writer,Id).
+// I want to play "writer" in "wpgroups"
+desiredRole(wpgroup,writer).
 
-// when I have an obligation or permission to a mission,
-// commit to it
-+obligation( Sch, Mission) : true 
-   <- jmoise.commitToMission(Mission,Sch).
-+permission( Sch, Mission) : true 
-   <- jmoise.commitToMission(Mission,Sch).
-
-// when the root goal of the scheme is satisfied, 
-// remove my missions
-+goalState(Sch, wpGoal, satisfied) : true
-   <- jmoise.removeMission(Sch).
+// I want to commit to "mColaborator" and "mBib" missions
+// in "writePaperSch" schemes
+desiredMission(writePaperSch,mColaborator).
+desiredMission(writePaperSch,mBib).
 
 
-// Organisational Goals' plans
-// ------------------------------
+// include common plans for MOISE+ agents
+{ include("moise-common.asl") }
+
+
+/*   
+   Organisational Goals' plans
+   ---------------------------
+*/
 
 // a generic plan for organisational goals (they have scheme(_) annotation)
 +!X[scheme(Sch)] : true 
    <- .print("doing organisational goal ",X);
       jmoise.setGoalState(Sch,X,satisfied).
 
-// Other events
-
+// when I receive a tell message from S and
+// S plays writer in a scheme, change the belief of
+// used refs
 +useRef(NewRef)[source(S)] 
    :  play(S, writer,Gr) & refs(R)
    <- .print("adding ref ",NewRef, " to ", R);

@@ -33,11 +33,8 @@ import moise.oe.SchemeInstance;
 public class OrgAgent extends AgArch {
 
     OE                currentOE              = null;
-
     Set<GoalInstance> alreadyGeneratedEvents = new HashSet<GoalInstance>();
-
     Term              managerSource          = TermImpl.parse("source(orgManager)");
-
     Logger            logger                 = Logger.getLogger(OrgAgent.class.getName());
 
     @Override
@@ -66,36 +63,20 @@ public class OrgAgent extends AgArch {
                 } catch (Exception e) {
                     // the content is a normal predicate
                     String content = m.getPropCont().toString();
-                    if (content.startsWith("schemeGroup")) { // this message
-                                                                // is generated
-                                                                // when my group
-                                                                // becames
-                                                                // responsible
-                                                                // for a scheme
+                    if (content.startsWith("schemeGroup")) { 
+                        // this message is generated when my group becomes
+                        // responsible for a scheme
                         generateObligationPermissionEvents(Pred.parsePred(content));
-                    } else if (content.startsWith("updateGoals")) { // I need to
-                                                                    // generate
-                                                                    // AS
-                                                                    // Trigger
-                                                                    // like
-                                                                    // !<orggoal>
+                    } else if (content.startsWith("updateGoals")) { 
+                        // I need to generate AS Trigger like !<orggoal>
                         i.remove();
                         generateOrgGoalEvents();
                         updateGoalBels();
-                    } else if (content.startsWith("goalState")) { // the state
-                                                                    // of a
-                                                                    // scheme i
-                                                                    // belong to
-                                                                    // has
-                                                                    // changed
+                    } else if (content.startsWith("goalState")) { 
+                        // the state of a scheme i belong to has changed
                         i.remove();
                         generateOrgGoalEvents();
                         updateGoalBels(Pred.parsePred(content));
-
-                        // } else if (m.getIlForce().equals("untell")) { // &&
-                        // content.startsWith("schP")) {
-                        // logger.fine("** "+content + " from " +
-                        // m.getSender());
 
                     } else if (m.getIlForce().equals("untell") && content.startsWith("scheme")) {
                         String schId = Pred.parsePred(content).getTerm(1).toString();
@@ -115,28 +96,31 @@ public class OrgAgent extends AgArch {
         String grId = m.getTerm(1).toString();
         Set<Permission> obligations = new HashSet<Permission>();
         if (logger.isLoggable(Level.FINE)) {
-            logger.fine("Computing obl/per for " + m + " in obl=" + getMyOEAgent().getObligations() + " and per=" + getMyOEAgent().getPermissions());
+            logger.fine("Computing obl/per for " + m + " in obl=" + getMyOEAgent().getObligations() 
+                    + " and per=" + getMyOEAgent().getPermissions());
         }
         // obligations
         for (Permission p : getMyOEAgent().getObligations()) {
             if (p.getRolePlayer().getGroup().getId().equals(grId) && p.getScheme().getId().equals(schId)) {
                 obligations.add(p);
-                Literal l = Literal.parseLiteral("obligation(" + p.getScheme().getId() + "," + p.getMission().getId() + ")[" + "role(" + p.getRolePlayer().getRole().getId()
+                Literal l = Literal.parseLiteral("obligation(" + p.getScheme().getId() + "," 
+                        + p.getMission().getId() + ")[" + "role(" + p.getRolePlayer().getRole().getId()
                         + "),group(" + p.getRolePlayer().getGroup().getGrSpec().getId() + ")]");
                 l.addAnnot(managerSource);
                 fTS.getAg().addBel(l);
-                logger.fine("New obligation: " + l);
+                if (logger.isLoggable(Level.FINE)) logger.fine("New obligation: " + l);
             }
         }
 
         // permissions
         for (Permission p : getMyOEAgent().getPermissions()) {
             if (p.getRolePlayer().getGroup().getId().equals(grId) && p.getScheme().getId().equals(schId) && !obligations.contains(p)) {
-                Literal l = Literal.parseLiteral("permission(" + p.getScheme().getId() + "," + p.getMission().getId() + ")[" + "role(" + p.getRolePlayer().getRole().getId()
+                Literal l = Literal.parseLiteral("permission(" + p.getScheme().getId() + "," 
+                        + p.getMission().getId() + ")[" + "role(" + p.getRolePlayer().getRole().getId()
                         + "),group(" + p.getRolePlayer().getGroup().getGrSpec().getId() + ")]");
                 l.addAnnot(managerSource);
                 fTS.getAg().addBel(l);
-                logger.fine("New permission: " + l);
+                if (logger.isLoggable(Level.FINE)) logger.fine("New permission: " + l);
             }
         }
     }
@@ -146,13 +130,15 @@ public class OrgAgent extends AgArch {
             if (!alreadyGeneratedEvents.contains(gi)) {
                 alreadyGeneratedEvents.add(gi);
 
-                Literal l = Literal.parseLiteral(gi.getAsProlog() + "[" + "scheme(" + gi.getScheme().getId() + ")" +
+                Literal l = Literal.parseLiteral(gi.getAsProlog());
+                Term giID = new Literal(true,"scheme");
+                giID.addTerm(new Literal(true,gi.getScheme().getId()));
+                l.addAnnot(giID);
                 // "role(notimplemented),group(notimplemented)"+
-                        "]");
                 // TODO: add annots: role, group (percorrer as missoes do ag que
                 // em GI, procurar os papel com obrigacao para essa missao)
                 fTS.updateEvents(new Event(new Trigger(Trigger.TEAdd, Trigger.TEAchvG, l), Intention.EmptyInt));
-                logger.fine("New goal: " + l);
+                if (logger.isLoggable(Level.FINE)) logger.fine("New goal: " + l);
             }
         }
     }
@@ -264,11 +250,4 @@ public class OrgAgent extends AgArch {
             }
         }
     }
-
-    /*
-     * void askUpdateOE() { try { Message m = new Message("askx", null,
-     * "orgManager", "getOE"); super.sendMsg(m); } catch (Exception e) {
-     * logger.error("Error sending getOE to OrgManager!",e); } }
-     */
-
 }

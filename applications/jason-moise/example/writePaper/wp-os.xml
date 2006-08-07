@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <organisational-specification 
+
     id="wp"
     os-version="0.3"
   
     xmlns='http://moise.sourceforge.net/os'
     xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
-    xsi:schemaLocation='http://moise.sourceforge.net/os http://moise.sourceforge.net/xml/os.xsd' >
+    xsi:schemaLocation='http://moise.sourceforge.net/os
+                        http://moise.sourceforge.net/xml/os.xsd' >
     
     <structural-specification>
 
         <role-definitions>
             <role id="author" />
-            <role id="writer">
-                <extends role="author"/>
-            </role>
-            <role id="editor">
-                <extends role="author"/>
-            </role>
+            <role id="writer"> <extends role="author"/> </role>
+            <role id="editor"> <extends role="author"/> </role>
         </role-definitions>
 
         <link-types>
@@ -30,15 +29,20 @@
                 <role id="editor"/>
             </roles>
             <links>
-                <link from="writer" to="editor" type="acquaintance" scope="intra-group" extends-sub-groups="true" symmetric="false"/>
-                <link from="editor" to="writer" type="authority" scope="intra-group" extends-sub-groups="true" symmetric="false"/>
-                <link from="author" to="author" type="communication" scope="intra-group" extends-sub-groups="true" symmetric="false"/>
+                <link from="writer" to="editor" type="acquaintance"
+                      scope="intra-group" extends-sub-groups="true" bi-dir="false"/>
+                <link from="editor" to="writer" type="authority"
+                      scope="intra-group" extends-sub-groups="true" bi-dir="false"/>
+                <link from="author" to="author" type="communication"
+                      scope="intra-group" extends-sub-groups="true" bi-dir="false"/>
             </links>
 
             <formation-constraints>
                 <cardinality min="1" max="5" object="role" id="writer"/>
                 <cardinality min="1" max="1" object="role" id="editor"/>
-                <compatibility from="editor" to="writer" type="compatibility" scope="intra-group" extends-sub-groups="false" symmetric="true"/>
+                <compatibility from="editor" to="writer" type="compatibility"
+                               scope="intra-group" extends-sub-groups="false" 
+                               bi-dir="true"/>
             </formation-constraints>
         </group-specification>
     </structural-specification>
@@ -46,23 +50,25 @@
 
 
     <functional-specification>
-        <scheme id="writePaperSch" root-goal="wpGoal">
-            <plan operator="sequence" >
-                <goal id="fdv" ds="First Draft Version">
-                    <plan operator="sequence">
-                        <goal id="wtitle" ds="Write a title"/>
-                        <goal id="wabs"   ds="Write an abstract"/>
-                        <goal id="wsectitles" ds="Write the sections' title" />
-                    </plan>
-                </goal>
-                <goal id="sv" ds="Submission Version">
-                    <plan operator="sequence">
-                        <goal id="wsecs" ds="Write sections"/>
-                        <goal id="wconc" ds="Write a conclusion"/>
-                        <goal id="wrefs" ds="Complete references and link them to text"/>
-                    </plan>
-                </goal>
-            </plan>
+        <scheme id="writePaperSch" >
+            <goal id="wpGoal" >
+                <plan operator="sequence" >
+                    <goal id="fdv" ds="First Draft Version">
+                        <plan operator="sequence">
+                            <goal id="wtitle" ds="Write a title"/>
+                            <goal id="wabs"   ds="Write an abstract"/>
+                            <goal id="wsectitles" ds="Write the sections' title" />
+                        </plan>
+                    </goal>
+                    <goal id="sv" ds="Submission Version">
+                        <plan operator="sequence">
+                            <goal id="wsecs" ds="Write sections"/>
+                            <goal id="wconc" ds="Write a conclusion"/>
+                            <goal id="wrefs" ds="Complete references and link them to text"/>
+                        </plan>
+                    </goal>
+                </plan>
+            </goal>
 
             <mission id="mColaborator" min="1" max="5">
                 <goal id="wsecs"/>
@@ -80,8 +86,8 @@
             <mission id="mBib" min="1" max="1">
                 <goal id="sv"/>
                 <goal id="wrefs"/>
-                <prefered mission="mColaborator"/>
-                <prefered mission="mManager"/>
+                <preferred mission="mColaborator"/>
+                <preferred mission="mManager"/>
             </mission>
         </scheme>
     </functional-specification>

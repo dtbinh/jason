@@ -1,4 +1,10 @@
 -------------------------   
+Plan for Jason 1.1
+
+. program counter for intended means instead of a clone of plan
+. if <test> then <c> [else <c>]; in plan body
+
+-------------------------   
 Plan for Jason 1.0
 
 . goal patterns
