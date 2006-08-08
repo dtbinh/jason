@@ -106,7 +106,7 @@ public class houseEnv extends Environment {
 		} else if (action.equals(sb)) {
 			beer--;
 		} else if (action.getFunctor().equals("deliver")) {
-			avBeer = Integer.parseInt(action.getTerm(1).toString());
+			avBeer = avBeer + Integer.parseInt(action.getTerm(1).toString());
 		} else {
 		    logger.info("Failed to execute action "+action);
             return false;
@@ -179,7 +179,7 @@ public class houseEnv extends Environment {
 			}
 			
 			try {
-				Thread.sleep(250);
+				Thread.sleep(150);
 			} catch (Exception e) {}
 		}
 	}
