@@ -29,7 +29,7 @@ public class houseEnv extends Environment {
 	public static final Literal af = Literal.parseLiteral("at(robot,fridge)");
 	public static final Literal ao = Literal.parseLiteral("at(robot,owner)");
 	
-	int beer = NSips;
+	int beer   = 0;
 	int avBeer = 2;
 	boolean fridgeOpen   = false;
 	boolean carryingBeer = false;
