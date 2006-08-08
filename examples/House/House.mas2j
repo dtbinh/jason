@@ -4,11 +4,11 @@
 
 */
 
-MAS house {
+MAS domestic_robot {
 	infrastructure: Centralised
 	environment: houseEnv
 	agents: robot;
-		    owner;
-		    supermarket;
+                owner;
+                supermarket;
 }
 
