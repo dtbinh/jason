@@ -67,12 +67,12 @@ too_much(B) :-
    :  N > 0 & not available(beer,fridge)
    <- -+available(beer,fridge).
 
-//+?time(T) : true
-//  <-  time.check(T).
++?time(T) : true
+  <-  time.check(T).
 
 // changing KQML default plan
 +!received(S, ask, time(Now), M) : true
-  <- //?time(Now);
-     time.check(Now);
+  <- ?time(Now);
+     //time.check(Now);
      .send(S, tell, time(Now), M).
 
