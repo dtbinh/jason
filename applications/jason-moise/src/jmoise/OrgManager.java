@@ -24,6 +24,10 @@ import moise.oe.RolePlayer;
 import moise.oe.SchemeInstance;
 import moise.tools.SimOE;
 
+/**
+  * Organisational Manager, special agent that maintains the
+  * organisation entity state.
+  */
 public class OrgManager extends AgArch {
 
     OE     currentOE = null;                                        

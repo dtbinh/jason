@@ -30,6 +30,10 @@ import moise.oe.OEAgent;
 import moise.oe.Permission;
 import moise.oe.SchemeInstance;
 
+/**
+  * Organisational Architecture, binds Jason agent to
+  * the Moise+ infrastructure
+  */
 public class OrgAgent extends AgArch {
 
     OE                currentOE              = null;
