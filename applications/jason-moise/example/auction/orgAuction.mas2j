@@ -1,0 +1,9 @@
+MAS auction {
+   infrastructure: Centralised
+   agents:
+       orgManager  [osfile="auction-os.xml",gui=yes] 
+                   agentArchClass jmoise.OrgManager;
+
+       bob auctionner  agentArchClass jmoise.OrgAgent;
+       participant agentArchClass jmoise.OrgAgent;
+}
