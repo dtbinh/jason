@@ -10,5 +10,7 @@ vl(test(1)).
    <- -count(X);
       .print("hello for ",S,": ", X);
       +count(X+1).
-      
-      
+
+-!received(Ag,Per,Content,ReplyWith)
+   <- .print("Error processing message ",Content," from ", Ag).
+   

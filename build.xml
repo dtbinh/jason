@@ -256,6 +256,7 @@
 			<fileset dir="${basedir}/examples" includes="**/*.xml" />
 			<fileset dir="${basedir}/examples" includes="**/work" />
 			<fileset dir="${basedir}/examples" includes="**/build.xml" />
+			<fileset dir="${basedir}/examples" includes="**/.stop___MAS" />
 		</delete>
 	</target>
 
