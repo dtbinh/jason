@@ -1,3 +1,14 @@
+-------------
+version 0.9.1
+-------------
+
+New internal actions:
+. random(X): unifies X with a random value from 0 to 1.
+. date(YY,MM,DD): gets the current date
+. time(HH,MM,SS): gets the current time
+. var(X), string(X), number(X), ground(X), list(X): 
+  verify whether X is a var, string, number, ground, or list.
+
 -----------
 version 0.9
 -----------

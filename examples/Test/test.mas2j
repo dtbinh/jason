@@ -18,7 +18,7 @@ MAS test {
     agents:
     
         // runs two instances of the agent ag0
-        ag0 ./as/ag0.asl [verbose=1] #1;
+        ag0 ./as/ag0.asl [verbose=1] #2;
 
         ag1 ./as/ag1 [verbose=0] // the .asl is the default extension for AgentSpeak files
            agentArchClass myPkg.MyAgArch

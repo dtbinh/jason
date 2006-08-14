@@ -11,7 +11,7 @@
 
 	<property name="dist.properties" value="${basedir}/bin/dist.properties" />
 	<property name="version" value="0" />
-	<property name="release" value="9" />
+	<property name="release" value="9.1" />
 	<property name="distDir" value="${env.HOME}/tmp/x/Jason-${version}.${release}" />
 	<property name="distFile" value="${env.HOME}/Jason-${version}.${release}" />
 
@@ -211,7 +211,8 @@
 			<fileset dir="${basedir}" includes="LICENSE" />
 			<fileset dir="${basedir}" includes="README" />
 
-			<fileset dir="${basedir}" includes="bin/**/*" excludes="bin/classes/**/*, bin/jedit.tgz" />
+			<fileset dir="${basedir}" includes="bin/*.*" excludes="bin/jedit.tgz" />
+			<fileset dir="${basedir}" includes="bin/jedit/**/*" />
 			<fileset dir="${basedir}" includes="doc/**/*" />
 			<fileset dir="${basedir}" includes="examples/**/*" />
 			<fileset dir="${basedir}" includes="lib/**/*" />
@@ -222,8 +223,8 @@
 		</copy>
 
 		<!--copy todir="${distDir}/bin/jedit">
-            <fileset dir="${jedit.install.dir}" includes="**/*"/>
-        </copy-->
+                     <fileset dir="${jedit.install.dir}" includes="**/*"/>
+                </copy-->
 
 		<delete failonerror="no" includeEmptyDirs="true">
 			<fileset dir="${distDir}/.settings" />
