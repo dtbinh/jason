@@ -1,4 +1,13 @@
 -------------
+version 0.9.2
+-------------
+
+New internal actions:
+. count(<bel>,<var>): count the number of beliefs that match
+  <bel>.
+  
+
+-------------
 version 0.9.1
 -------------
 

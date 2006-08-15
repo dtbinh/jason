@@ -9,11 +9,10 @@ available(beer,fridge).
 limit(beer,10). 
 
 too_much(B) :- 
-    .date(YY,MM,DD) &
-    .findall(B,consumed(YY,MM,DD,_,_,_,B),LB) &
-    .length(LB,SizeLB) &
-    limit(B,Limit) &
-    SizeLB > Limit.
+   .date(YY,MM,DD) &
+   .count(consumed(YY,MM,DD,_,_,_,B),QtdB) &
+   limit(B,Limit) &
+   QtdB > Limit.
 
     
 /* Plans */
