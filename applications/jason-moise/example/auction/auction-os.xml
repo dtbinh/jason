@@ -43,12 +43,14 @@
  <scheme id="doAuction">
    <goal id="auction(N)">
      <plan operator="sequence">
+       <goal id="start" />
        <goal id="bid" />
-       <goal id="winner" />
+       <goal id="winner(W)" />
      </plan>
    </goal>
    <mission id="mAuctionner" min="1" max="1">
      <goal id="auction"/>
+     <goal id="start" />
      <goal id="winner" />
    </mission>
    <mission id="mParticipant" min="1" >

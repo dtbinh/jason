@@ -12,6 +12,7 @@ import jason.asSyntax.PredicateIndicator;
 import jason.asSyntax.Term;
 import jason.asSyntax.TermImpl;
 import jason.asSyntax.Trigger;
+import jason.asSyntax.UnnamedVar;
 import jason.asSyntax.VarTerm;
 import jason.bb.BeliefBase;
 import jason.mas2j.ClassParameters;
@@ -74,13 +75,13 @@ public class OrgAgent extends AgArch {
                     } else if (content.startsWith("updateGoals")) { 
                         // I need to generate AS Trigger like !<orggoal>
                         i.remove();
-                        generateOrgGoalEvents();
                         updateGoalBels();
+                        generateOrgGoalEvents();
                     } else if (content.startsWith("goalState")) { 
                         // the state of a scheme i belong to has changed
                         i.remove();
-                        generateOrgGoalEvents();
                         updateGoalBels(Pred.parsePred(content));
+                        generateOrgGoalEvents();
 
                     } else if (m.getIlForce().equals("untell") && content.startsWith("scheme")) {
                         String schId = Pred.parsePred(content).getTerm(1).toString();
@@ -166,15 +167,28 @@ public class OrgAgent extends AgArch {
 
     /** remove all bels related to a Scheme */
     void removeBeliefs(String schId) {
-        BeliefBase bb = fTS.getAg().getBB();
-        bb.abolish(obligationLiteral);
-        bb.abolish(permissionLiteral);
-        bb.abolish(schemeGroupLiteral);
-        bb.abolish(goalStateLiteral);
-        bb.abolish(schPlayersLiteral);
-        bb.abolish(commitmentLiteral);
+        fTS.getAg().abolish(buildLiteralToCleanBB(schId, obligationLiteral, false), new Unifier());
+        fTS.getAg().abolish(buildLiteralToCleanBB(schId, permissionLiteral, false), new Unifier());
+        fTS.getAg().abolish(buildLiteralToCleanBB(schId, schemeGroupLiteral, false), new Unifier());
+        fTS.getAg().abolish(buildLiteralToCleanBB(schId, goalStateLiteral, false), new Unifier());
+        fTS.getAg().abolish(buildLiteralToCleanBB(schId, schPlayersLiteral, false), new Unifier());
+        fTS.getAg().abolish(buildLiteralToCleanBB(schId, commitmentLiteral, true), new Unifier());
     }
 
+    private Literal buildLiteralToCleanBB(String schId, PredicateIndicator pred, boolean schInEnd) {
+        Literal l = new Literal(Literal.LPos, pred.getFunctor());
+        if (!schInEnd) {
+            l.addTerm(new TermImpl(schId));
+        }
+        for (int i=1;i<pred.getArity();i++) {
+            l.addTerm(new UnnamedVar());
+        }
+        if (schInEnd) {
+            l.addTerm(new TermImpl(schId));            
+        }
+        return l;
+    }
+    
     OEAgent getMyOEAgent() {
         return currentOE.getAgent(getAgName());
     }
@@ -207,9 +221,9 @@ public class OrgAgent extends AgArch {
 
     void updateGoalBels(GoalInstance gi) {
         Pred gap = Pred.parsePred(gi.getAsProlog());
-        if (!gap.isGround()) {
-            return;
-        }
+        //if (!gap.isGround()) {
+        //    return;
+        //}
         if (gi.getScheme().getRoot() == gi) {
             gap.addAnnot(new TermImpl("root"));
         }

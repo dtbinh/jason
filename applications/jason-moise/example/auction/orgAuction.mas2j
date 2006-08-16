@@ -1,9 +1,19 @@
+/*
+
+The Jason auction example implemented with Moise+ organisation.
+
+See readme.txt for more information.
+
+*/
+
 MAS auction {
    infrastructure: Centralised
    agents:
-       orgManager  [osfile="auction-os.xml",gui=yes] 
-                   agentArchClass jmoise.OrgManager;
+       orgManager     [osfile="auction-os.xml",gui=no] 
+                       agentArchClass jmoise.OrgManager;
 
        bob auctionner  agentArchClass jmoise.OrgAgent;
-       participant agentArchClass jmoise.OrgAgent;
+       ag1             agentArchClass jmoise.OrgAgent;
+	   ag2             agentArchClass jmoise.OrgAgent;
+       ag3             agentArchClass jmoise.OrgAgent;
 }
