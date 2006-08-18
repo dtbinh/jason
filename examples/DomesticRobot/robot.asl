@@ -1,5 +1,3 @@
-// robot in project House.mas2j
-
 /* Initial beliefs and rules */
 
 // initially, I believe that there are some beer in the fridge
@@ -32,7 +30,8 @@ too_much(B) :-
 
 +!has(owner,beer)
    :  not available(beer,fridge)
-   <- .send(supermarket, achieve, order(beer,5)).
+   <- .send(supermarket, achieve, order(beer,5));
+      !at(robot,fridge). // go to fridge and wait there.
 
 +!has(owner,beer)
    :  too_much(beer) & limit(beer,L)    
@@ -40,12 +39,6 @@ too_much(B) :-
       .concat(M1," beers a day! I am very sorry about that!",M);
       .send(owner,tell,msg(M)).    
 
-// when the supermarket finished the order, try the 'has' goal again   
-+delivered(beer,Qtd,OrderId)[source(supermarket)]
-  :  true
-  <- +available(beer,fridge);
-     !has(owner,beer). 
-   
    
 -!has(_,_)
    :  true
@@ -57,6 +50,12 @@ too_much(B) :-
   <- move_towards(P);
      !at(robot,P).
 
+// when the supermarket finished the order, try the 'has' goal again   
++delivered(beer,Qtd,OrderId)[source(supermarket)]
+  :  true
+  <- +available(beer,fridge);
+     !has(owner,beer). 
+   
 // when the fridge is openned, the beer stock is perceived
 // and thus the available belief is updated
 +stock(beer,0) 

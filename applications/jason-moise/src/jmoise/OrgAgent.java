@@ -14,7 +14,6 @@ import jason.asSyntax.TermImpl;
 import jason.asSyntax.Trigger;
 import jason.asSyntax.UnnamedVar;
 import jason.asSyntax.VarTerm;
-import jason.bb.BeliefBase;
 import jason.mas2j.ClassParameters;
 import jason.runtime.Settings;
 

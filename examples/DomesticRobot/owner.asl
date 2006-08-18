@@ -1,5 +1,3 @@
-// owner in project House.mas2j
-
 /* Initial goals */
 
 !get(beer).   // initial goal: get a beer 
@@ -20,8 +18,7 @@
 +!drink(beer) : not has(owner,beer)
    <- true.
  
-+!check_bored 
-   :  true
++!check_bored : true
    <- .random(X); .wait(X*5000+2000);  // i get bored at random times
       .send(robot, ask, time(Now), R); // when bored, I ask the robot about the time
       .print(R);
