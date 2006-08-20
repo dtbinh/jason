@@ -15,6 +15,10 @@
       
       .print("Sending askAll values");
       .send(maria, askAll, value(Y,vl(Y)), List);
-      .print("Answer from askAll is ", List).
+      .print("Answer from askAll is ", List);
+
+      .print("Sending ask full name");
+      .send(maria, ask, fullname, FN);
+      .print("Full name is ",FN).
       
 
