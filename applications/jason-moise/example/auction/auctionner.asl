@@ -42,6 +42,8 @@ auctionId(0).
 -scheme(doAuction,SId) 
    :  auctionId(N) & N < 7
    <- jmoise.startScheme(doAuction).
+-scheme(doAuction,SId) : true
+   <- .stopMAS.
 
 // include common plans for MOISE+ agents
 { include("moise-common.asl") }

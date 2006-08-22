@@ -2,10 +2,18 @@
 version 0.9.2
 -------------
 
-New internal actions:
+New internal action:
 . count(<bel>,<var>): count the number of beliefs that match
   <bel>.
-  
+
+New examples:
+. SimpleCommunication: briefly shows how to send and receive
+  messages.
+. DomesticRobot: is is an improved version of the House robot.
+
+Bugs fixes:
+. performative ask does not work properly. 
+
 
 -------------
 version 0.9.1
@@ -17,6 +25,10 @@ New internal actions:
 . time(HH,MM,SS): gets the current time
 . var(X), string(X), number(X), ground(X), list(X): 
   verify whether X is a var, string, number, ground, or list.
+
+Bugs fixed:
+. Jason 0.9.1 correctly stops the running project (in windows). 
+  In Jason 0.9 some java.exe processes do not finish properly. 
 
 -----------
 version 0.9

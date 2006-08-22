@@ -10,7 +10,7 @@
     <property name="version"         value="0"/>
     <property name="release"         value="9"/>
     <property name="distDir"         value="${env.HOME}/tmp/jmoise-${version}.${release}" />
-    <property name="distFile"        value="${env.HOME}/jmoise-${version}.${release}" />
+    <property name="distFile"        value="${env.HOME}/jason-moise-${version}.${release}" />
     <property name="doc-src-dir"     value="${env.HOME}/programming/agents/Moise-doc" />
 
     <path id="project.classpath">
@@ -41,7 +41,7 @@
         </jar>
     </target>
 
-    <target name="apidoc" depends="compile" >
+    <target name="javadoc" depends="compile" >
         <javadoc 
            packagenames="jmoise.*"
            sourcepath="src"
