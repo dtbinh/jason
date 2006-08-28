@@ -43,3 +43,5 @@
    :  true
    <- jmoise.removeMission(Sch).
    
++error(M)[source(orgManager)] <- .print("Error in organisational action: ",M); -error(M).
+   

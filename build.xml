@@ -237,10 +237,12 @@
 		<tar compression="gzip" tarfile="${distFile}.tgz">
 			<tarfileset dir="${distDir}/.." mode="755">
 				<include name="Jason-${version}.${release}/**/*.sh" />
+				<include name="Jason-${version}.${release}/**/asl2*" />
 			</tarfileset>
 			<tarfileset dir="${distDir}/..">
 				<include name="Jason-${version}.${release}/**/*" />
 				<exclude name="Jason-${version}.${release}/**/*.sh" />
+				<exclude name="Jason-${version}.${release}/**/asl2*" />
 			</tarfileset>
 		</tar>
 	</target>
