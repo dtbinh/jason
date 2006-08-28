@@ -146,6 +146,7 @@
 			<fileset dir="${basedir}/src">
 				<include name="images/**/*" />
 				<include name="xml/**/*" />
+				<include name="templates/**/*" />
 				<include name="logging.properties" />
 			</fileset>
 			<fileset dir="${basedir}/bin">
