@@ -5,7 +5,8 @@ version 0.9.3
 New features
 . and event +!idle is generated when the agent has nothing to do
   (no other event, no intention, no message, ....)
-
+. Mind inspector can show the agent state in LaTeX
+. New commands: asl2html and asl2tex
 
 -------------
 version 0.9.2
