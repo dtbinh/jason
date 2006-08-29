@@ -92,7 +92,7 @@ public class OrgManager extends AgArch {
     public void checkMail() {
         super.checkMail(); // get the messages
         // check the MailBox (at TS) for org messages
-        Iterator i = fTS.getC().getMB().iterator();
+        Iterator i = fTS.getC().getMailBox().iterator();
         while (i.hasNext()) {
             Message m = (Message) i.next();
             String content = m.getPropCont().toString();
