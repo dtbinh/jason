@@ -24,6 +24,10 @@ public class VoidBB implements jason.bb.BeliefBase {
     public boolean add(Literal l) {
         return true;
     }
+    
+    public Literal contains(Literal l) {
+        return l;
+    }
 
     public Iterator<Literal> getAll() {
         return new ArrayList<Literal>().iterator();
