@@ -9,6 +9,8 @@ import jason.asSyntax.TermImpl;
 
 import java.util.Random;
 
+import mining.WorldModel;
+
 
 public class randomDirection implements InternalAction {
     Random rnd = new Random();
@@ -17,7 +19,7 @@ public class randomDirection implements InternalAction {
         try {
             String sAction = null;
 
-            GridWorldModel model = GridWorldModel.get();
+            WorldModel model = WorldModel.get();
 
             NumberTerm agx = (NumberTerm) terms[0].clone();
             un.apply((Term) agx);

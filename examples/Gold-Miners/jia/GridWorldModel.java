@@ -1,39 +1,22 @@
 package jia;
 
-import mining.WorldModel;
 
 
 /**
- * Model for a grid world
+ * Simple model for a grid world (with Agents and obstacles)
  * 
- * @author jomi
+ * @author Jomi
  */
 public class GridWorldModel {
 
     public static final int       CLEAN    = 0;
-    public static final int       ROBOT    = 2;
+    public static final int       AGENT    = 2;
     public static final int       OBSTACLE = 4;
 
     int                           width, height;
-    public int[][]                data     = null; // !!
+    public int[][]                data = null; 
     protected Location[]          agPos;
-
-    // singleton pattern
-    protected static GridWorldModel model = null;
-    synchronized public static GridWorldModel create(int w, int h, int nbAgs) {
-        if (model == null) {
-            model = new GridWorldModel(w, h, nbAgs);
-        }
-        return (WorldModel)model;
-    }
-
-    public static GridWorldModel get() {
-        return model;
-    }
-
-    public static void destroy() {
-        model = null;
-    }
+    protected GridWorldView       view;
 
     protected GridWorldModel(int w, int h, int nbAgs) {
         width = w;
@@ -54,6 +37,10 @@ public class GridWorldModel {
 
     }
 
+    public void setView(GridWorldView v) {
+        view = v;
+    }
+    
     public int getWidth() {
         return width;
     }
@@ -83,6 +70,7 @@ public class GridWorldModel {
 
     public void add(int value, int x, int y) {
         data[x][y] |= value;
+        if (view != null) view.update(x,y);
     }
 
     public void addWall(int x1, int y1, int x2, int y2) {
@@ -99,6 +87,7 @@ public class GridWorldModel {
 
     public void remove(int value, int x, int y) {
         data[x][y] &= ~value;
+        if (view != null) view.update(x,y);
     }
 
     public void setAgPos(int ag, Location l) {
@@ -108,10 +97,10 @@ public class GridWorldModel {
     public void setAgPos(int ag, int x, int y) {
         Location oldLoc = getAgPos(ag);
         if (oldLoc != null) {
-            remove(ROBOT, oldLoc.x, oldLoc.y);
+            remove(AGENT, oldLoc.x, oldLoc.y);
         }
         agPos[ag] = new Location(x, y);
-        add(ROBOT, x, y);
+        add(AGENT, x, y);
     }
 
     public Location getAgPos(int ag) {
@@ -125,12 +114,22 @@ public class GridWorldModel {
         }
     }
 
+    /** return the agent at x,y */
+    public int getAgAtPos(int x, int y) {
+        for (int i=0; i<agPos.length; i++) {
+            if (agPos[i].x == x && agPos[i].y == y) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     public boolean isFree(Location l) {
         return isFree(l.x, l.y);
     }
 
     public boolean isFree(int x, int y) {
-        return inGrid(x, y) && (data[x][y] & OBSTACLE) == 0 && (data[x][y] & ROBOT) == 0;
+        return inGrid(x, y) && (data[x][y] & OBSTACLE) == 0 && (data[x][y] & AGENT) == 0;
     }
 
     public boolean isFreeOfObstacle(Location l) {

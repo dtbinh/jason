@@ -10,6 +10,7 @@ import jason.asSyntax.TermImpl;
 import java.util.ArrayList;
 import java.util.List;
 
+import mining.WorldModel;
 import busca.AEstrela;
 import busca.Busca;
 import busca.Estado;
@@ -22,7 +23,7 @@ public class getDirection implements InternalAction {
         try {
             String sAction = "skip";
 
-            GridWorldModel model = GridWorldModel.get();
+            WorldModel model = WorldModel.get();
     
             NumberTerm agx = (NumberTerm)terms[0].clone(); un.apply((Term)agx);
             NumberTerm agy = (NumberTerm)terms[1].clone(); un.apply((Term)agy);

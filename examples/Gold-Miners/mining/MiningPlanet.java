@@ -15,7 +15,6 @@ public class MiningPlanet extends jason.environment.Environment {
 
     private Logger          logger   = Logger.getLogger("jasonTeamSimLocal.mas2j." + MiningPlanet.class.getName());
     WorldModel              model;
-    WorldView               view;
 
     int                     simId    = 5;
     int                     nbWorlds = 5;
@@ -72,7 +71,7 @@ public class MiningPlanet extends jason.environment.Environment {
             logger.info("Invalid index!");
             return;
         }
-        view = WorldView.create(model);
+        WorldView.create(model);
 
         addPercept(Literal.parseLiteral("gsize(" + simId + "," + model.getWidth() + "," + model.getHeight() + ")"));
         addPercept(Literal.parseLiteral("depot(" + simId + "," + model.getDepot().x + "," + model.getDepot().y + ")"));
@@ -135,7 +134,7 @@ public class MiningPlanet extends jason.environment.Environment {
             if (model.hasObject(WorldModel.ENEMY, x, y)) {
                 addPercept(agName, Literal.parseLiteral("cell(" + x + "," + y + ",enemy)"));
             }
-            if (model.hasObject(WorldModel.ROBOT, x, y)) {
+            if (model.hasObject(WorldModel.AGENT, x, y)) {
                 addPercept(agName, Literal.parseLiteral("cell(" + x + "," + y + ",ally)"));
             }
         }
@@ -168,7 +167,6 @@ public class MiningPlanet extends jason.environment.Environment {
             break;
         }
         updateAgPercept(ag);
-        view.update();
         return true;
     }
 

@@ -15,11 +15,22 @@ public class WorldModel extends GridWorldModel {
     Location                  depot;
     Set<Integer>              agWithGold;  // which agent is carrying gold
 
+    // singleton pattern
+    protected static WorldModel model = null;
+    
     synchronized public static WorldModel create(int w, int h, int nbAgs) {
         if (model == null) {
             model = new WorldModel(w, h, nbAgs);
         }
-        return (WorldModel)model;
+        return model;
+    }
+    
+    public static WorldModel get() {
+        return model;
+    }
+    
+    public static void destroy() {
+        model = null;
     }
 
     private WorldModel(int w, int h, int nbAgs) {
