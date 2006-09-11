@@ -95,10 +95,17 @@
 
 
     <target name="clean" >
-		<delete failonerror="no" includeEmptyDirs="true" verbose="true">
-			<fileset dir="${basedir}" includes="**/*.class"/>
-		</delete>
     	<delete dir="${basedir}/bin/classes"/>
+	<delete failonerror="no" includeEmptyDirs="true" verbose="true">
+		<fileset dir="${basedir}" includes="**/*.class"/>
+	</delete>
+	<delete failonerror="no" includeEmptyDirs="true" verbose="true">
+		<fileset dir="${basedir}/examples" includes="**/classes/*" />
+		<fileset dir="${basedir}/examples" includes="**/classes" />
+		<fileset dir="${basedir}/examples" includes="**/*.class" />
+		<fileset dir="${basedir}/examples" includes="**/build.xml" />
+		<fileset dir="${basedir}/examples" includes="**/.stop___MAS" />
+	</delete>
     </target>
 </project>
 
