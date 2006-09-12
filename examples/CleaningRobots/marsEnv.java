@@ -15,7 +15,6 @@ import java.util.logging.Logger;
 public class marsEnv extends Environment {
 
 	public static final int GSize = 7; // grid size
-    public static final int NGarb = 3; // number of garbages
     public static final int GARB  = 16; // garbage code in grid model
 
 	public static final Term ns = TermImpl.parse("next(slot)");
@@ -34,10 +33,11 @@ public class marsEnv extends Environment {
         model = new MarsModel();
         view = new MarsView(model);
         model.setView(view);
-        createPercepts();
+        updatePercepts();
 	}
-        
-    void createPercepts() {
+    
+    /** creates the agents perception based on the MarsModel */
+    void updatePercepts() {
         clearPercepts();
         
         Location r1Loc = model.getAgPos(0);
@@ -74,10 +74,10 @@ public class marsEnv extends Environment {
 		    return false;
         }
         
-        createPercepts();
+        updatePercepts();
 
         try {
-            Thread.sleep(300);
+            Thread.sleep(200);
         } catch (Exception e) {}
 		return true;
 	}
@@ -101,18 +101,11 @@ public class marsEnv extends Environment {
             setAgPos(1, r2Loc);
             
             // initial location of garbage
-            for (int i = 0; i < NGarb; i++) {
-                Location gLoc = new Location(random.nextInt(GSize),random.nextInt(GSize));
-                if (gLoc.equals(r2Loc)) {
-                    switch (random.nextInt(4)) {
-                    case 0: gLoc.x++; break;
-                    case 1: gLoc.x--; break;
-                    case 2: gLoc.y++; break;
-                    case 3: gLoc.y--; break;
-                    }
-                }
-                add(GARB, gLoc);
-            }
+            add(GARB, 3, 0);
+            add(GARB, GSize-1, 0);
+            add(GARB, 1, 2);
+            add(GARB, 0, GSize-2);
+            add(GARB, GSize-1, GSize-1);
         }
         
         void nextSlot() {
@@ -182,22 +175,30 @@ public class marsEnv extends Environment {
         }
 
         /** draw application objects */
+        @Override
         public void draw(Graphics g, int x, int y, int object) {
             switch (object) {
                 case marsEnv.GARB: drawGarb(g, x, y);  break;
             }
         }
 
-        public void drawAgent(Graphics g, int x, int y, Color c, String name) {
-            String id = "R"+name;
+        @Override
+        public void drawAgent(Graphics g, int x, int y, Color c, int id) {
+            String label = "R"+(id+1);
             c = Color.blue;
-            if (name.equals("1")) {
+            if (id == 0) {
                 c = Color.yellow;
                 if (((MarsModel)model).r1HasGarb) {
-                    id += " - G";
+                    label += " - G";
                 }
             }
-            super.drawAgent(g, x, y, c, id);
+            super.drawAgent(g, x, y, c, -1);
+            if (id == 0) {
+                g.setColor(Color.black);
+            } else {
+                g.setColor(Color.white);                
+            }
+            super.drawString(g, x, y, defaultFont, label);
         }
 
         public void drawGarb(Graphics g, int x, int y) {

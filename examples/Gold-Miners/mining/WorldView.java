@@ -31,6 +31,7 @@ public class WorldView extends GridWorldView {
         repaint();
     }
 
+    @Override
     public void draw(Graphics g, int x, int y, int object) {
         switch (object) {
         case WorldModel.DEPOT:   drawDepot(g, x, y);  break;
@@ -39,12 +40,17 @@ public class WorldView extends GridWorldView {
         }
     }
 
+    @Override
     public void drawAgent(Graphics g, int x, int y, Color c, int id) {
-        if (((WorldModel)model).isCarryingGold(id-1)) {
-            super.drawAgent(g, x, y, Color.yellow, String.valueOf(id));
+        Color idColor = Color.black;
+        if (((WorldModel)model).isCarryingGold(id)) {
+            super.drawAgent(g, x, y, Color.yellow, -1);
         } else {
-            super.drawAgent(g, x, y, c, String.valueOf(id));
+            super.drawAgent(g, x, y, c, -1);
+            idColor = Color.white;
         }
+        g.setColor(idColor);
+        drawString(g, x, y, defaultFont, String.valueOf(id+1));
     }
 
     public void drawDepot(Graphics g, int x, int y) {
