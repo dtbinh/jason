@@ -3,7 +3,6 @@
 // Beliefs
 // --------------
 
-pos(r2,4,4).
 checking(slots).
 
 // Plans

@@ -4,6 +4,7 @@ import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.NumberTerm;
 import jason.asSyntax.Term;
+import jason.environment.grid.Location;
 
 public class neighbour implements jason.asSemantics.InternalAction {
 

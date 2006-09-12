@@ -1,10 +1,10 @@
 package mining;
 
+import jason.environment.grid.GridWorldModel;
+import jason.environment.grid.Location;
+
 import java.util.HashSet;
 import java.util.Set;
-
-import jia.GridWorldModel;
-import jia.Location;
 
 public class WorldModel extends GridWorldModel {
 

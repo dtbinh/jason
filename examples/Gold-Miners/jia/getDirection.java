@@ -6,6 +6,8 @@ import jason.asSemantics.Unifier;
 import jason.asSyntax.NumberTerm;
 import jason.asSyntax.Term;
 import jason.asSyntax.TermImpl;
+import jason.environment.grid.GridWorldModel;
+import jason.environment.grid.Location;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -8,8 +8,7 @@ import jason.asSyntax.TermImpl;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import jia.Location;
+import jason.environment.grid.Location;
 
 public class MiningPlanet extends jason.environment.Environment {
 

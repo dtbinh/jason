@@ -5,6 +5,7 @@ import jason.asSemantics.Unifier;
 import jason.asSyntax.NumberTerm;
 import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Term;
+import jason.environment.grid.Location;
 
 public class dist implements jason.asSemantics.InternalAction {
 

@@ -1,9 +1,10 @@
 package mining;
 
+import jason.environment.grid.GridWorldView;
+
 import java.awt.Color;
 import java.awt.Graphics;
 
-import jia.GridWorldView;
 
 public class WorldView extends GridWorldView {
 
@@ -40,9 +41,9 @@ public class WorldView extends GridWorldView {
 
     public void drawAgent(Graphics g, int x, int y, Color c, int id) {
         if (((WorldModel)model).isCarryingGold(id-1)) {
-            super.drawAgent(g, x, y, Color.yellow, id);
+            super.drawAgent(g, x, y, Color.yellow, String.valueOf(id));
         } else {
-            super.drawAgent(g, x, y, c, id);
+            super.drawAgent(g, x, y, c, String.valueOf(id));
         }
     }
 
