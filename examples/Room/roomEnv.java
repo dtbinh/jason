@@ -9,7 +9,8 @@ public class roomEnv extends Environment {
     Literal nld = Literal.parseLiteral("~locked(door)");
     boolean doorLocked = true;
     
-    public roomEnv() {
+    @Override
+	public void init(String[] args) {
         // initial percepts
         addPercept(ld);
     }
@@ -17,6 +18,7 @@ public class roomEnv extends Environment {
     /**
      * Implementation of the agent's basic actions
      */
+    @Override
     public boolean executeAction(String ag, Term act) {
 	
 	    clearPercepts();
@@ -34,7 +36,6 @@ public class roomEnv extends Environment {
 	    else {
 		    addPercept(nld);
 	    }
-//	    informAgsEnvironmentChanged();
 	    return true;
     }
 }

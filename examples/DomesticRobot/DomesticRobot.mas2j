@@ -6,7 +6,7 @@
 
 MAS domestic_robot {
 	infrastructure: Centralised
-	environment: houseEnv
+	environment: houseEnv(gui) // use "nogui" as parameter to not show the GUI
 	agents: robot;
             owner;
             supermarket;

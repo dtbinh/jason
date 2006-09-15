@@ -33,7 +33,8 @@ public class MiningPlanet extends jason.environment.Environment {
         UP, DOWN, RIGHT, LEFT
     };
 
-    public MiningPlanet() {
+    @Override
+	public void init(String[] args) {
         initWorld(simId);
         new Thread() {
             public void run() {
@@ -201,6 +202,7 @@ public class MiningPlanet extends jason.environment.Environment {
         return false;
     }
 
+    @Override
     public boolean executeAction(String ag, Term action) {
 
         try {

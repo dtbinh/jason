@@ -14,7 +14,8 @@ public class HeathrowEnv extends Environment {
                                    
 	Map agsLocation = new HashMap();
 	
-    public HeathrowEnv() {
+    @Override
+    public void init(String[] args) {
         clearPercepts();
         
         // Add initial percepts below, for example:
@@ -25,6 +26,7 @@ public class HeathrowEnv extends Environment {
     /**
      * Implementation of the agents' basic actions
      */
+    @Override
     public boolean executeAction(String ag, Term action) {
         if (action.getFunctor().equals("place_bid")) {
             Integer x = new Integer(action.getTerm(2).toString());

@@ -29,34 +29,15 @@ public class marsEnv extends Environment {
     MarsModel model;
     MarsView  view;
 	
-	public marsEnv() {
+    @Override
+	public void init(String[] args) {
         model = new MarsModel();
         view = new MarsView(model);
         model.setView(view);
         updatePercepts();
 	}
     
-    /** creates the agents perception based on the MarsModel */
-    void updatePercepts() {
-        clearPercepts();
-        
-        Location r1Loc = model.getAgPos(0);
-        Location r2Loc = model.getAgPos(1);
-        
-        Literal pos1 = Literal.parseLiteral("pos(r1," + r1Loc.x + "," + r1Loc.y + ")");
-        Literal pos2 = Literal.parseLiteral("pos(r2," + r2Loc.x + "," + r2Loc.y + ")");
-
-        addPercept(pos1);
-        addPercept(pos2);
-        
-        if (model.hasObject(GARB, r1Loc)) {
-            addPercept(g1);
-        }
-        if (model.hasObject(GARB, r2Loc)) {
-            addPercept(g2);
-        }
-    }
-	
+    @Override
 	public boolean executeAction(String ag, Term action) {
 		if (action.equals(ns)) {
 			model.nextSlot();
@@ -82,6 +63,26 @@ public class marsEnv extends Environment {
 		return true;
 	}
 	
+    /** creates the agents perception based on the MarsModel */
+    void updatePercepts() {
+        clearPercepts();
+        
+        Location r1Loc = model.getAgPos(0);
+        Location r2Loc = model.getAgPos(1);
+        
+        Literal pos1 = Literal.parseLiteral("pos(r1," + r1Loc.x + "," + r1Loc.y + ")");
+        Literal pos2 = Literal.parseLiteral("pos(r2," + r2Loc.x + "," + r2Loc.y + ")");
+
+        addPercept(pos1);
+        addPercept(pos2);
+        
+        if (model.hasObject(GARB, r1Loc)) {
+            addPercept(g1);
+        }
+        if (model.hasObject(GARB, r2Loc)) {
+            addPercept(g2);
+        }
+    }
 
     class MarsModel extends GridWorldModel {
         
