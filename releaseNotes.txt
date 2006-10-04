@@ -5,8 +5,18 @@ version 0.9.3
 New features
 . an event +!idle is generated when the agent has nothing to do
   (no other event, no intention, no message, ....)
+
 . Mind inspector can show the agent state in LaTeX
+
 . New commands: asl2html and asl2tex
+
+. We add some useful classes to develop grid based environments. 
+  There is a class to model (maintain the data) of the scenario and
+  another class to draw it in the screen. The examples CleaningRobots,
+  DomesticRobot, and Gold-Miners use these classes. More information
+  in these examples or in the API of package 
+  import jason.environment.grid
+
 
 New internal action:
 . dropGoal(<goal>,[true|false]): the implementation of the
@@ -15,6 +25,27 @@ New internal action:
   If the second parameter is true, the IM is considered successfully
   finished. Otherwise, the IM fails.
 
+. member(<element>, <list>), verify whether <element> belong to the 
+  <list>. this internal action backtracks when there are more than 
+  one answer, as in 
+       .member(X, [4,1,6])
+  which has 3 results. 
+
+
+Changes in the API
+
+. The interface of internal actions chanced. The execute method returns 
+  an Object, and not a boolean anymore, and the class may extends 
+  DefaultInternalAction (see the API for more information). 
+  For example:
+
+    public class myIA extends DefaultInternalAction {
+       public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
+	     ....
+         return true;
+    }  }
+      
+  
 -------------
 version 0.9.2
 -------------
