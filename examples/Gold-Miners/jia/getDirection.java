@@ -1,6 +1,6 @@
 package jia;
 
-import jason.asSemantics.InternalAction;
+import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.NumberTerm;
@@ -19,9 +19,10 @@ import busca.Estado;
 import busca.Heuristica;
 import busca.Nodo;
 
-public class getDirection implements InternalAction {
+public class getDirection extends DefaultInternalAction {
     
-    public boolean execute(TransitionSystem ts, Unifier un, Term[] terms) throws Exception {
+    @Override
+    public Object execute(TransitionSystem ts, Unifier un, Term[] terms) throws Exception {
         try {
             String sAction = "skip";
 

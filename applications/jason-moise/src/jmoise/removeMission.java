@@ -6,7 +6,8 @@ import jason.asSyntax.Term;
 
 public class removeMission extends MoiseBaseIA {
 
-    public boolean execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
+    @Override
+    public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
     	return super.execute(ts,un,args);
     }
 }

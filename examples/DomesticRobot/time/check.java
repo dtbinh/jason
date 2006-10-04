@@ -1,15 +1,18 @@
 package time;
 
-import jason.JasonException;
-import jason.asSemantics.*;
-import jason.asSyntax.*;
+import jason.asSemantics.DefaultInternalAction;
+import jason.asSemantics.TransitionSystem;
+import jason.asSemantics.Unifier;
+import jason.asSyntax.StringTermImpl;
+import jason.asSyntax.Term;
 
-import java.util.Date;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
-public class check implements InternalAction {
+public class check extends DefaultInternalAction {
 
-    public boolean execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
+    @Override
+    public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
         String time = (new SimpleDateFormat("HH:mm:ss")).format(new Date());
         ts.getLogger().info("Check Time="+time);
         return un.unifies(args[0], new StringTermImpl(time));

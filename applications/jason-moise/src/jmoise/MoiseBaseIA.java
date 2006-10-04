@@ -1,6 +1,6 @@
 package jmoise;
 
-import jason.asSemantics.InternalAction;
+import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.Message;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
@@ -10,12 +10,12 @@ import jason.asSyntax.TermImpl;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public abstract class MoiseBaseIA implements InternalAction {
+public abstract class MoiseBaseIA extends DefaultInternalAction  {
 
 	Logger logger = Logger.getLogger(MoiseBaseIA.class.getName());
 
-
-    public boolean execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
+	@Override
+    public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
     	String acName = this.getClass().getName().substring(7); // remove the package name "jmoise"
 		Term acTerm = new TermImpl(acName);
 		for (int i=0; i<args.length; i++) {

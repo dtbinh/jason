@@ -1,6 +1,6 @@
 package jia;
 
-import jason.asSemantics.InternalAction;
+import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.NumberTerm;
@@ -12,10 +12,11 @@ import java.util.Random;
 import mining.WorldModel;
 
 
-public class randomDirection implements InternalAction {
+public class randomDirection extends DefaultInternalAction {
     Random rnd = new Random();
 
-    public boolean execute(TransitionSystem ts, Unifier un, Term[] terms) throws Exception {
+    @Override
+    public Object execute(TransitionSystem ts, Unifier un, Term[] terms) throws Exception {
         try {
             String sAction = null;
 
