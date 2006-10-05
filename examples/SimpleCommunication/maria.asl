@@ -17,7 +17,7 @@ vl(2).
    It is like a new goal, but with a different source.
 */
 +!goto(X,Y)[source(Ag)] : true
-   <- .print("Received achieve ",goto(X,Y)," from ", Ag).
+   <- .println("Received achieve ",goto(X,Y)," from ", Ag).
 
 /* When Bob asked me about t2(X), I do not have it in my 
    belief base. So the event "+?t2(X)" is created and
@@ -37,4 +37,4 @@ vl(2).
    
 // A plan to achieve the hello goal
 
-+!hello(Who) <- .print("Hello ",Who); .wait(100); !!hello(Who).
++!hello(Who) <- .println("Hello ",Who); .wait(100); !hello(Who).

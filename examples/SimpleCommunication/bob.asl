@@ -3,36 +3,36 @@
 !start.
 
 +!start : true 
-   <- .print("Sending tell vl(10)");
+   <- .println("Sending tell vl(10)");
       .send(maria, tell, vl(10));
       
-      .print("Sending achieve goto(10,2)");
+      .println("Sending achieve goto(10,2)");
       .send(maria, achieve, goto(10,2));
       
-      .print("Sending ask ");
+      .println("Sending ask ");
       .send(maria, askOne, vl(X), vl(X));
-      .print("Answer from ask is ", X);
+      .println("Answer from ask is ", X);
 
-      .print("Sending ask for something Maria does not know ");
+      .println("Sending ask for something Maria does not know ");
       .send(maria, askOne, t1(X2), Ans);
-      .print("Answer from ask is ", Ans);
+      .println("Answer from ask is ", Ans);
       
-      .print("Sending ask for something Maria does not know, but can handle by +? ");
+      .println("Sending ask for something Maria does not know, but can handle by +? ");
       .send(maria, askOne, t2(X3), Ans);
-      .print("Answer from ask is ", Ans);
+      .println("Answer from ask is ", Ans);
       
-      .print("Sending askAll values");
+      .println("Sending askAll values");
       .send(maria, askAll, value(Y,vl(Y)), List);
-      .print("Answer from askAll is ", List);
+      .println("Answer from askAll is ", List);
 
-      .print("Sending ask full name");
+      .println("Sending ask full name");
       .send(maria, askOne, fullname, FN);
-      .print("Full name is ",FN);
+      .println("Full name is ",FN);
       
-      .print("Asking Maria to achieve 'hello'");
+      .println("Asking Maria to achieve 'hello'");
       .send(maria,achieve, hello(bob));
       .wait(2000);
       
-      .print("Asking Maria to unachieve 'hello'");
+      .println("Asking Maria to unachieve 'hello'");
       .send(maria,unachieve, hello(bob)).
 
