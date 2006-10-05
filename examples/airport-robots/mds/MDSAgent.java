@@ -8,8 +8,9 @@ import java.util.*;
 public class MDSAgent extends Agent {
 
 	/** unattendedLuggage event has priority */
-	public Event selectEvent(List<Event> evList) {
-		Iterator<Event> i = evList.iterator();
+    @Override
+	public Event selectEvent(Queue<Event> events) {
+		Iterator<Event> i = events.iterator();
 		while (i.hasNext()) {
 			Event e = i.next();
 			if (e.getTrigger().getLiteral().getFunctor().equals("unattended_luggage")) {
@@ -30,6 +31,6 @@ public class MDSAgent extends Agent {
 				}
 			}
 		}
-		return super.selectEvent(evList);
+		return super.selectEvent(events);
 	}
 }

@@ -11,7 +11,7 @@ public class CPHAgArch extends AgArch {
 	/** overridden to ignore bid messages */
 	public void checkMail() {
 		super.checkMail(); // read mail into C.MB
-		List<Message> mbox = getTS().getC().getMB();
+        Queue<Message> mbox = getTS().getC().getMailBox();
 		Iterator<Message> i = mbox.iterator();
 		while (i.hasNext()) {
 			Message im = i.next();

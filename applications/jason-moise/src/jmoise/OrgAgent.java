@@ -56,7 +56,7 @@ public class OrgAgent extends AgArch {
     public void checkMail() {
         super.checkMail(); // get the messages
         // check the MailBox (at TS) for org messages
-        Iterator i = fTS.getC().getMailBox().iterator();
+        Iterator i = getTS().getC().getMailBox().iterator();
         while (i.hasNext()) {
             try {
                 Message m = (Message) i.next();
@@ -111,7 +111,7 @@ public class OrgAgent extends AgArch {
                         + p.getMission().getId() + ")[" + "role(" + p.getRolePlayer().getRole().getId()
                         + "),group(" + p.getRolePlayer().getGroup().getGrSpec().getId() + ")]");
                 l.addAnnot(managerSource);
-                fTS.getAg().addBel(l);
+                getTS().getAg().addBel(l);
                 if (logger.isLoggable(Level.FINE)) logger.fine("New obligation: " + l);
             }
         }
@@ -123,7 +123,7 @@ public class OrgAgent extends AgArch {
                         + p.getMission().getId() + ")[" + "role(" + p.getRolePlayer().getRole().getId()
                         + "),group(" + p.getRolePlayer().getGroup().getGrSpec().getId() + ")]");
                 l.addAnnot(managerSource);
-                fTS.getAg().addBel(l);
+                getTS().getAg().addBel(l);
                 if (logger.isLoggable(Level.FINE)) logger.fine("New permission: " + l);
             }
         }
@@ -141,7 +141,7 @@ public class OrgAgent extends AgArch {
                 // "role(notimplemented),group(notimplemented)"+
                 // TODO: add annots: role, group (percorrer as missoes do ag que
                 // em GI, procurar os papel com obrigacao para essa missao)
-                fTS.updateEvents(new Event(new Trigger(Trigger.TEAdd, Trigger.TEAchvG, l), Intention.EmptyInt));
+                getTS().updateEvents(new Event(new Trigger(Trigger.TEAdd, Trigger.TEAchvG, l), Intention.EmptyInt));
                 if (logger.isLoggable(Level.FINE)) logger.fine("New goal: " + l);
             }
         }
@@ -166,12 +166,12 @@ public class OrgAgent extends AgArch {
 
     /** remove all bels related to a Scheme */
     void removeBeliefs(String schId) {
-        fTS.getAg().abolish(buildLiteralToCleanBB(schId, obligationLiteral, false), new Unifier());
-        fTS.getAg().abolish(buildLiteralToCleanBB(schId, permissionLiteral, false), new Unifier());
-        fTS.getAg().abolish(buildLiteralToCleanBB(schId, schemeGroupLiteral, false), new Unifier());
-        fTS.getAg().abolish(buildLiteralToCleanBB(schId, goalStateLiteral, false), new Unifier());
-        fTS.getAg().abolish(buildLiteralToCleanBB(schId, schPlayersLiteral, false), new Unifier());
-        fTS.getAg().abolish(buildLiteralToCleanBB(schId, commitmentLiteral, true), new Unifier());
+        getTS().getAg().abolish(buildLiteralToCleanBB(schId, obligationLiteral, false), new Unifier());
+        getTS().getAg().abolish(buildLiteralToCleanBB(schId, permissionLiteral, false), new Unifier());
+        getTS().getAg().abolish(buildLiteralToCleanBB(schId, schemeGroupLiteral, false), new Unifier());
+        getTS().getAg().abolish(buildLiteralToCleanBB(schId, goalStateLiteral, false), new Unifier());
+        getTS().getAg().abolish(buildLiteralToCleanBB(schId, schPlayersLiteral, false), new Unifier());
+        getTS().getAg().abolish(buildLiteralToCleanBB(schId, commitmentLiteral, true), new Unifier());
     }
 
     private Literal buildLiteralToCleanBB(String schId, PredicateIndicator pred, boolean schInEnd) {
@@ -243,11 +243,11 @@ public class OrgAgent extends AgArch {
         
         // remove it from BB
         Unifier u = new Unifier();
-        Literal gilInBB = fTS.getAg().believes(gil, u);
+        Literal gilInBB = getTS().getAg().believes(gil, u);
         if (gilInBB != null) {
             // the agent believes in the goal, remove if different
             if (!u.get("S").equals(gState)) {
-                fTS.getAg().delBel(gilInBB);
+                getTS().getAg().delBel(gilInBB);
                 if (logger.isLoggable(Level.FINE)) {
                     logger.fine("Remove goal belief: " + gilInBB);
                 }
@@ -258,10 +258,10 @@ public class OrgAgent extends AgArch {
         gil.addTerm(new TermImpl(gi.getScheme().getId()));
         gil.addTerm(gap);
         gil.addTerm(new TermImpl(gState));
-        gilInBB = fTS.getAg().believes(gil, u);
+        gilInBB = getTS().getAg().believes(gil, u);
         if (gilInBB == null) {
             gil.addAnnot(managerSource);
-            fTS.getAg().addBel(gil);
+            getTS().getAg().addBel(gil);
             if (logger.isLoggable(Level.FINE)) {
                 logger.fine("New goal belief: " + gil);
             }

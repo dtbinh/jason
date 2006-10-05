@@ -38,7 +38,7 @@ public class OrgManager extends AgArch {
     @Override
     public void initAg(String agClass, ClassParameters bbPars, String asSrc, Settings stts) throws JasonException {
         super.initAg(agClass, bbPars, asSrc, stts);
-        String osFile = fTS.getSettings().getUserParameter("osfile");
+        String osFile = getTS().getSettings().getUserParameter("osfile");
         if (osFile.startsWith("\"")) {
             osFile = osFile.substring(1, osFile.length() - 1);
         }
@@ -55,7 +55,7 @@ public class OrgManager extends AgArch {
         }
 
         // starts GUI
-        if (fTS.getSettings().getUserParameter("gui") != null && fTS.getSettings().getUserParameter("gui").equals("yes")) {
+        if (getTS().getSettings().getUserParameter("gui") != null && getTS().getSettings().getUserParameter("gui").equals("yes")) {
             try {
                 simOE = new SimOE(currentOE);
                 simOE.setName("OrgManager");
@@ -92,7 +92,7 @@ public class OrgManager extends AgArch {
     public void checkMail() {
         super.checkMail(); // get the messages
         // check the MailBox (at TS) for org messages
-        Iterator i = fTS.getC().getMailBox().iterator();
+        Iterator i = getTS().getC().getMailBox().iterator();
         while (i.hasNext()) {
             Message m = (Message) i.next();
             String content = m.getPropCont().toString();
