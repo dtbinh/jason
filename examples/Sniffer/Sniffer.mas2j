@@ -12,8 +12,8 @@ MAS communication {
 	infrastructure: Saci    
 
 	agents:
-		bob;
+		monitor agentArchClass comm.Sniffer;
+        bob;
 		maria;
-        monitor agentArchClass comm.Sniffer;
 }
 
