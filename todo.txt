@@ -1,14 +1,14 @@
 -------------------------   
 Plan for Jason 1.1
 
-. program counter for intended means instead of a clone of plan
+. capabilities
 . if <test> then <c> [else <c>]; in plan body
 
 -------------------------   
 Plan for Jason 1.0
 
 . goal patterns
-. capabilities
+
 
 -----------------------------------
 Projects (!)
@@ -18,6 +18,9 @@ Projects (!)
   to simplify new infrastructure for Jason.
 . Jason for large scale
 . AS to Java for running in the Lego JVM
+. AS to programm robocode
+. Mobility for jason agents
+. Multi-environments (and agent entering/leaving them)
 
 
 -------------------------   
@@ -73,20 +76,12 @@ Communication
   -!fb(C) <- send(Sender, tell, noOk(C).
   
 
-dropDesire
-do UNACHIEVE nos planos KQML tem que ser um "dropAllDesireFocuses"
-ou algo assim que procure todas as pilhas cujo plano
-bem de baixo tem um achieve goal que casa com o parametro.
-E' que um .dropDesire numa pilha nova (que imagino e' o
-que acontece com a msg tratada) nao vai ter efeito nenhum.
-Tem que ver isto em mais detalhes...
-
-
 
 -----------------------------------
 Documentation TODO
 
-. to manual: examples of communication (ask, tellHow, ...; annots, semantic in KQMLPlans.asl)
+. to manual: examples of communication (ask, tellHow, ...; annots, 
+  semantic in KQMLPlans.asl)
 	
 . Getting start 
 
@@ -100,26 +95,13 @@ Internal actions
   the agent which call the .clone.
 
   
------------------------------------
-Questions?
-
-. kqmlPlans/unachieve
-   TODO: what about many CCC desires? drop only the one from achieve!
-   annot (rename var) [IMPORTANT!!!!]
-
------------------------------------
-Others TODOs
- 
-. SUGESTAO DO ALVARO:
-  Para o problema de propagacao de substituicao: mudar a definicao de
-  RelPlans e Applans de tal forma que elas retornem pares
-  $(p,\theta)$. Propagar essa mudanca para as duas regras abaixo de
-  acordo (verificar se nao tem que mudar em outro lugar tambem):
-
 . colocar no stdlib funcoes para uso de YP
 
 . Another controller demo for:
-  Outras sugestoes foram um synchronous mode based on action, not on reasoning cycle... (quer dizer, so quando todos decidiram uma acao vai em frente um passo de simulacao: tipica simulacao reativa mas...)
+  Outras sugestoes foram um synchronous mode based on action, not on 
+  reasoning cycle... (quer dizer, so quando todos decidiram uma acao vai
+  em frente um passo de simulacao: tipica simulacao reativa mas...)
+
 
 -------------------------   
 
