@@ -32,6 +32,11 @@ New internal action:
   which has 3 results. 
 
 
+Changes in the communication
+. performative ask is changed to askOne
+. the event for messages is now +!kqmlReceived (and not +!received)
+
+
 Changes in the API
 
 . The interface of internal actions chanced. The execute method returns 

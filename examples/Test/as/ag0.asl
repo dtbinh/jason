@@ -23,7 +23,7 @@ c(0).
          
          .send(agCount, achieve, sayHello);
 
-         .send(agCount, ask, count(Count), Rc);
+         .send(agCount, askOne, count(Count), Rc);
          .print("---- Answer for ask count(C) is ", Rc);
 
          .getRelevantPlans("+!te1(X)", L); .print("Relevant plans for +te1(X) ",L);
