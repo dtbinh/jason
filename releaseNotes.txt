@@ -11,10 +11,10 @@ New features
 . New commands: asl2html and asl2tex
 
 . We add some useful classes to develop grid based environments. 
-  There is a class to model (maintain the data) of the scenario and
+  There is a class to model (maintain the data) the scenario and
   another class to draw it in the screen. The examples CleaningRobots,
   DomesticRobot, and Gold-Miners use these classes. More information
-  in these examples or in the API of package 
+  is available in these examples and in the API of package 
   import jason.environment.grid
 
 
