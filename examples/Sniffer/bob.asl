@@ -1,5 +1,3 @@
-// Agent bob in project Communication.mas2j
-
 !start.
 
 +!start : true 
