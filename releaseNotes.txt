@@ -17,6 +17,9 @@ New features
   is available in these examples and in the API of package 
   import jason.environment.grid
 
+New examples
+. Sniffer: shows how to get all messages sent by the agents.
+
 
 New internal action:
 . dropGoal(<goal>,[true|false]): the implementation of the
@@ -31,11 +34,22 @@ New internal action:
        .member(X, [4,1,6])
   which has 3 results. 
 
+. planLabel(<plan>, <label>), gets the string of a plan based on its
+  label (useful for tellHow). E.g.:
+    @test +!g : true <- act.
+    ....
+      <- planLabel(P, test); 
+         .send(ag,tellHow,P).
+
 
 Changes in the communication
 . performative ask is changed to askOne
 . the event for messages is now +!kqmlReceived (and not +!received)
-
+. send ask can have an 5th parameter: timeout. 
+  E.g. .send(ag,askOne,vl(X),Answer,3000)
+  will wait the answer for 3 seconds. If ag will not respond,
+  Answer will unify with "timeout".
+         
 
 Changes in the API
 
