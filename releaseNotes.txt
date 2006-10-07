@@ -17,6 +17,15 @@ New features
   is available in these examples and in the API of package 
   import jason.environment.grid
 
+. goal patterns as proposed in DALT 2006 paper:
+  . Backtracking Declarative Goal
+  . Blind Commitment Goal
+  . Open-Minded Commitment
+  . Maintenance Goal
+  . Relativised Commitment Goal
+  . and others
+
+
 New examples
 . Sniffer: shows how to get all messages sent by the agents.
 
