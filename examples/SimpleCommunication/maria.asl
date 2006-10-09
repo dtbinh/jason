@@ -30,7 +30,10 @@ vl(2).
    with this customisation, the answer can be something
    not in belief base (e.g., the result of some operations) and
    not handled by +? events. This customisation is applied only 
-   when the content of the askOne message is "fullname"
+   when the content of the askOne message is "fullname".
+   Note that in order to get the full name the best solution it to use
+   +? events, the fullname is used here just to illustrate the 
+   kqmlReceived customisation.
 */
 +!kqmlReceived(Sender, askOne, fullname, ReplyWith) : true
    <- .send(Sender,tell,"Maria dos Santos", ReplyWith). // send the answer

@@ -50,6 +50,10 @@ New internal action:
       <- planLabel(P, test); 
          .send(ag,tellHow,P).
 
+. structure(X): verify whether X is a structure (see API doc)
+
+. atom(X): verify whether X is an atom (see API doc)
+
 
 Changes in the communication
 . performative ask is changed to askOne

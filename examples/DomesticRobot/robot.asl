@@ -35,8 +35,8 @@ too_much(B) :-
 
 +!has(owner,beer)
    :  too_much(beer) & limit(beer,L)    
-   <- .concat("The Department of Health does not allow me to give you more than ", L, M1);
-      .concat(M1," beers a day! I am very sorry about that!",M);
+   <- .concat("The Department of Health does not allow me to give you more than ", L, 
+              " beers a day! I am very sorry about that!",M);
       .send(owner,tell,msg(M)).    
 
    
