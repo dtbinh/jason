@@ -28,7 +28,7 @@ New features
 
 New examples
 . Sniffer: shows how to get all messages sent by the agents.
-
+. ContractNetProtocol: shot how the CNP may be implemented with Jason
 
 New internal action:
 . dropGoal(<goal>,[true|false]): the implementation of the
