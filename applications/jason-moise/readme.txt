@@ -9,4 +9,4 @@ this example.
 Another example is the Auction available and described in
     example/auction
 
-Note: Jason 0.9.2 is required.
+Note: Jason 0.9.3 is required.

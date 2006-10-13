@@ -28,7 +28,7 @@ New features
 
 New examples
 . Sniffer: shows how to get all messages sent by the agents.
-. ContractNetProtocol: shot how the CNP may be implemented with Jason
+. ContractNetProtocol: shows how the CNP may be implemented with Jason
 
 New internal action:
 . dropGoal(<goal>,[true|false]): the implementation of the
@@ -66,7 +66,7 @@ Changes in the communication
 
 Changes in the API
 
-. The interface of internal actions chanced. The execute method returns 
+. The interface of internal actions changed. The execute method returns 
   an Object, and not a boolean anymore, and the class may extends 
   DefaultInternalAction (see the API for more information). 
   For example:

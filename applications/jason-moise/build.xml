@@ -8,7 +8,7 @@
     <property environment="env"/>
 
     <property name="version"         value="0"/>
-    <property name="release"         value="9.1"/>
+    <property name="release"         value="9.3"/>
     <property name="distDir"         value="${env.HOME}/tmp/jmoise-${version}.${release}" />
     <property name="distFile"        value="${env.HOME}/jason-moise-${version}.${release}" />
     <property name="doc-src-dir"     value="${env.HOME}/programming/agents/Moise-doc" />
@@ -41,20 +41,24 @@
         </jar>
     </target>
 
-    <target name="javadoc" depends="compile" >
+    <target name="apidoc" depends="compile" >
         <javadoc 
            packagenames="jmoise.*"
-           sourcepath="src"
            destdir="${basedir}/doc/api"
            author="true"
            version="true"
            use="true"
            windowtitle="Jason-Moise+ Organisational Model">
             <classpath refid="project.classpath" />
+            <sourcepath>
+		<pathelement path="${basedir}/src"/>
+		<pathelement path="${basedir}/../../src"/>
+            </sourcepath>
+
         </javadoc>    
     </target>
 
-    <target name="dist" description="Build distribution.">
+    <target name="dist" description="Build distribution." depends="jar" >
           <!-- depends="clean, jar, compileExamples, apidoc" -->
 
           <echo message="Generating J-Moise+ ${version}.${release}" />
