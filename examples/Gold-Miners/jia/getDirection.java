@@ -40,6 +40,11 @@ public class getDirection extends DefaultInternalAction {
                 Busca searchAlg = new AEstrela();
                 //searchAlg.setMaxAbertos(1000);
                 Location lini = new Location(iagx, iagy);
+                
+                // destination should be a free place
+                while (!model.isFreeOfObstacle(itox,itoy) && itox > 0) itox--;
+                while (!model.isFreeOfObstacle(itox,itoy) && itox < model.getWidth()) itox++;
+                
                 Nodo solution = searchAlg.busca(new GridState(lini, lini,new Location(itox, itoy), model, "initial"));
                 if (solution != null) {
                     //System.out.println(iagx+"-"+iagy+"/"+itox+"-"+itoy+" = "+solution.montaCaminho());
@@ -101,10 +106,10 @@ class GridState implements Estado, Heuristica {
     public List<Estado> sucessores() {
         List<Estado> s = new ArrayList<Estado>(4);
         // four directions
-        suc(s,new Location(pos.x,pos.y-1),"up");
-        suc(s,new Location(pos.x,pos.y+1),"down");
         suc(s,new Location(pos.x-1,pos.y),"left");
         suc(s,new Location(pos.x+1,pos.y),"right");
+        suc(s,new Location(pos.x,pos.y-1),"up");
+        suc(s,new Location(pos.x,pos.y+1),"down");
         return s;
     }
     

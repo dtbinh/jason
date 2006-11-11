@@ -50,8 +50,8 @@ free.
   <- .print("It should never happen!!!!!! - go home");
      -around(X,Y); -+lastDir(null); !around(X1,Y1).
 
-+!calcNewY(Y,Y2,Y2) : Y+2 > Y2 <- true.
-+!calcNewY(Y,Y2,YF) : true <- YF = Y+2.
++!calcNewY(Y,Y2,Y2) : Y+2 > Y2.
++!calcNewY(Y,Y2,YF) <- YF = Y+2.
 
 
 // BCG!
@@ -71,7 +71,7 @@ free.
      do(D).
 +!next_step(X,Y) : not pos(_,_) // i still do not know my position
   <- !next_step(X,Y).
--!next_step(X,Y) : true // not lastDir(fail)
+-!next_step(X,Y) : true 
   <- .print("Failed next_step to ", X,"x",Y," fixing and trying again!");
      -+lastDir(null);
      !next_step(X,Y).
@@ -113,7 +113,7 @@ free.
      
 // someone else sent me gold location
 +gold(X1,Y1)[source(A)]
-  :  A \== self & not allocatedTo(gold(X1,Y1),_) & free & pos(X2,Y2)
+  :  not gold(X1,Y1) & A \== self & not allocatedTo(gold(X1,Y1),_) & not carrying_gold & free & pos(X2,Y2)
   <- jia.dist(X1,Y1,X2,Y2,D);
      .send(leader,tell,bidFor(gold(X1,Y1),D)).
 // bid high as I'm not free
@@ -131,9 +131,11 @@ free.
 @palloc2[atomic]
 +allocatedTo(Gold,Ag)[source(leader)] 
   :  .myName(Ag) & not free // I am  no longer free
-  <- .print("I can not handle ",Gold," anymore!").
-     // TODO: another negotiation
-
+  <- .print("I can not handle ",Gold," anymore!");
+     .print("(Re)announcing ",gold(X,Y)," to others");
+     .broadcast(tell,gold(X,Y)). 
+     
+     
 // someone else picked up the gold I was going after
 // remove from bels and goals
 @ppgd[atomic]
