@@ -1,4 +1,14 @@
 -------------
+version 0.9.4
+-------------
+
+Examples:
+. Add support form message sniffing in centralised infrastructure
+  and improve the Sniffer example to use it (and also store all 
+  messages in a data base)
+
+
+-------------
 version 0.9.3
 -------------
 
