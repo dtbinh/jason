@@ -9,11 +9,12 @@ import jason.runtime.Settings;
 import java.rmi.RemoteException;
 
 /** 
- * Customisation of an agent architecture to sniff the MAS with SACI infrastructure 
+ * Customisation of an agent architecture to sniff the MAS with 
+ * SACI infrastructure. 
  * 
  * @author Jomi
  */
-public class Sniffer extends AgArch {
+public class SnifferSaci extends AgArch {
 
     SaciAgArch arch = null;
     
@@ -33,10 +34,10 @@ public class Sniffer extends AgArch {
             } catch (Exception e) {
                 getTS().getLogger().warning("Error starting monitor! "+e);
             } 
-        }
+	}
     }
     
-	public void checkMail() {
+    public void checkMail() {
         if (arch != null) {
             // remove all messages from saci's mail box
             try {
@@ -52,5 +53,6 @@ public class Sniffer extends AgArch {
                 getTS().getLogger().warning("Error reading messages! "+e);
             }
         }
-	}
+    }
+    
 }
