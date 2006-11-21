@@ -12,12 +12,12 @@ MAS communication {
     infrastructure: Centralised
 
     agents:
-	// Monitor for Centralised infrastructure,
-	//
-	// the architecture gets all exchanged messages and add them as beliefs
-	// the customised belief base store these beliefs (i.e., the messages) in a data base
-        monitor 
-	   agentArchClass comm.SnifferCentralised
+       // Monitor for Centralised infrastructure,
+       //
+       // the architecture gets all exchanged messages and add them as beliefs
+       // the customised belief base store these beliefs (i.e., the messages) in a data base
+       monitor 
+           agentArchClass comm.SnifferCentralised
            beliefBaseClass jason.bb.JDBCPersistentBB(
             "org.hsqldb.jdbcDriver", // driver for HSQLDB
             "jdbc:hsqldb:log", // URL connection
@@ -25,7 +25,7 @@ MAS communication {
             "", // password
             "[msgSent(7,log)]");
 
-	// Monitor for SACI
+        // Monitor for SACI
         //monitor agentArchClass comm.SnifferSaci;
 
         // Ordinary agents

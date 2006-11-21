@@ -20,7 +20,7 @@
  
 +!check_bored : true
    <- .random(X); .wait(X*5000+2000);  // i get bored at random times
-      .send(robot, ask, time(Now), R); // when bored, I ask the robot about the time
+      .send(robot, askOne, time(Now), R); // when bored, I ask the robot about the time
       .print(R);
       !!check_bored.
 

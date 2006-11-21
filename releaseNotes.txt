@@ -57,7 +57,7 @@ New internal action:
   label (useful for tellHow). E.g.:
     @test +!g : true <- act.
     ....
-      <- planLabel(P, test); 
+      <- .planLabel(P, test); 
          .send(ag,tellHow,P).
 
 . structure(X): verify whether X is a structure (see API doc)

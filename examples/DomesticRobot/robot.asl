@@ -69,7 +69,7 @@ too_much(B) :-
   <-  time.check(T).
 
 // changing KQML default plan
-+!received(S, ask, time(Now), M) : true
++!received(S, askOne, time(Now), M) : true
   <- ?time(Now);
      //time.check(Now);
      .send(S, tell, time(Now), M).
