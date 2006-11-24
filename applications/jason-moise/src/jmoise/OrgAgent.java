@@ -9,8 +9,9 @@ import jason.asSemantics.Unifier;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Pred;
 import jason.asSyntax.PredicateIndicator;
+import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
-import jason.asSyntax.TermImpl;
+import jason.asSyntax.DefaultTerm;
 import jason.asSyntax.Trigger;
 import jason.asSyntax.UnnamedVar;
 import jason.asSyntax.VarTerm;
@@ -38,7 +39,7 @@ public class OrgAgent extends AgArch {
 
     OE                currentOE              = null;
     Set<GoalInstance> alreadyGeneratedEvents = new HashSet<GoalInstance>();
-    Term              managerSource          = TermImpl.parse("source(orgManager)");
+    Term              managerSource          = DefaultTerm.parse("source(orgManager)");
     Logger            logger                 = Logger.getLogger(OrgAgent.class.getName());
 
     @Override
@@ -135,7 +136,7 @@ public class OrgAgent extends AgArch {
                 alreadyGeneratedEvents.add(gi);
 
                 Literal l = Literal.parseLiteral(gi.getAsProlog());
-                Term giID = new Literal(true,"scheme");
+                Literal giID = new Literal(true,"scheme");
                 giID.addTerm(new Literal(true,gi.getScheme().getId()));
                 l.addAnnot(giID);
                 // "role(notimplemented),group(notimplemented)"+
@@ -177,13 +178,13 @@ public class OrgAgent extends AgArch {
     private Literal buildLiteralToCleanBB(String schId, PredicateIndicator pred, boolean schInEnd) {
         Literal l = new Literal(Literal.LPos, pred.getFunctor());
         if (!schInEnd) {
-            l.addTerm(new TermImpl(schId));
+            l.addTerm(new Structure(schId));
         }
         for (int i=1;i<pred.getArity();i++) {
             l.addTerm(new UnnamedVar());
         }
         if (schInEnd) {
-            l.addTerm(new TermImpl(schId));            
+            l.addTerm(new Structure(schId));            
         }
         return l;
     }
@@ -224,7 +225,7 @@ public class OrgAgent extends AgArch {
         //    return;
         //}
         if (gi.getScheme().getRoot() == gi) {
-            gap.addAnnot(new TermImpl("root"));
+            gap.addAnnot(new Structure("root"));
         }
         //BeliefBase bb = fTS.getAg().getBS();
         String gState = "unsatisfied";
@@ -236,7 +237,7 @@ public class OrgAgent extends AgArch {
 
         // create the literal to be added
         Literal gil = new Literal(Literal.LPos, "goalState");
-        gil.addTerm(new TermImpl(gi.getScheme().getId()));
+        gil.addTerm(new Structure(gi.getScheme().getId()));
         gil.addTerm(gap);
         gil.addTerm(new VarTerm("S"));
         
@@ -255,9 +256,9 @@ public class OrgAgent extends AgArch {
         }
 
         gil = new Literal(Literal.LPos, "goalState");
-        gil.addTerm(new TermImpl(gi.getScheme().getId()));
+        gil.addTerm(new Structure(gi.getScheme().getId()));
         gil.addTerm(gap);
-        gil.addTerm(new TermImpl(gState));
+        gil.addTerm(new Structure(gState));
         gilInBB = getTS().getAg().believes(gil, u);
         if (gilInBB == null) {
             gil.addAnnot(managerSource);

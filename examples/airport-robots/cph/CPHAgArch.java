@@ -26,7 +26,7 @@ public class CPHAgArch extends AgArch {
 
 	public void act(ActionExec action, List<ActionExec> feedback) {
 		// get the action to be performed
-		Term taction = action.getActionTerm();
+        Structure taction = action.getActionTerm();
 		if (!taction.getFunctor().equals("disarm")) {
             super.act(action,feedback);
 		} else {

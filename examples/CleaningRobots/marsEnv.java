@@ -1,6 +1,7 @@
 import jason.asSyntax.Literal;
+import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
-import jason.asSyntax.TermImpl;
+import jason.asSyntax.DefaultTerm;
 import jason.environment.Environment;
 import jason.environment.grid.GridWorldModel;
 import jason.environment.grid.GridWorldView;
@@ -17,10 +18,10 @@ public class marsEnv extends Environment {
 	public static final int GSize = 7; // grid size
     public static final int GARB  = 16; // garbage code in grid model
 
-	public static final Term ns = TermImpl.parse("next(slot)");
-	public static final Term pg = TermImpl.parse("pick(garb)");
-	public static final Term dg = TermImpl.parse("drop(garb)");
-	public static final Term bg = TermImpl.parse("burn(garb)");
+	public static final Term ns = DefaultTerm.parse("next(slot)");
+	public static final Term pg = DefaultTerm.parse("pick(garb)");
+	public static final Term dg = DefaultTerm.parse("drop(garb)");
+	public static final Term bg = DefaultTerm.parse("burn(garb)");
 	public static final Literal g1 = Literal.parseLiteral("garbage(r1)");
 	public static final Literal g2 = Literal.parseLiteral("garbage(r2)");
 
@@ -38,7 +39,7 @@ public class marsEnv extends Environment {
 	}
     
     @Override
-	public boolean executeAction(String ag, Term action) {
+	public boolean executeAction(String ag, Structure action) {
 		if (action.equals(ns)) {
 			model.nextSlot();
 		} else if (action.getFunctor().equals("moveTowards")) {

@@ -3,12 +3,13 @@ package mining;
 // Environment code for project jasonTeamSimLocal.mas2j
 
 import jason.asSyntax.Literal;
+import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
-import jason.asSyntax.TermImpl;
+import jason.asSyntax.DefaultTerm;
+import jason.environment.grid.Location;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import jason.environment.grid.Location;
 
 public class MiningPlanet extends jason.environment.Environment {
 
@@ -23,13 +24,13 @@ public class MiningPlanet extends jason.environment.Environment {
     public static final int SIM_TIME = 60;                                                                         // in
                                                                                                                     // seconds
 
-    Term                    up       = TermImpl.parse("do(up)");
-    Term                    down     = TermImpl.parse("do(down)");
-    Term                    right    = TermImpl.parse("do(right)");
-    Term                    left     = TermImpl.parse("do(left)");
-    Term                    skip     = TermImpl.parse("do(skip)");
-    Term                    pick     = TermImpl.parse("do(pick)");
-    Term                    drop     = TermImpl.parse("do(drop)");
+    Term                    up       = DefaultTerm.parse("do(up)");
+    Term                    down     = DefaultTerm.parse("do(down)");
+    Term                    right    = DefaultTerm.parse("do(right)");
+    Term                    left     = DefaultTerm.parse("do(left)");
+    Term                    skip     = DefaultTerm.parse("do(skip)");
+    Term                    pick     = DefaultTerm.parse("do(pick)");
+    Term                    drop     = DefaultTerm.parse("do(drop)");
 
     enum Move {
         UP, DOWN, RIGHT, LEFT
@@ -63,7 +64,7 @@ public class MiningPlanet extends jason.environment.Environment {
     }
 
     @Override
-    public boolean executeAction(String ag, Term action) {
+    public boolean executeAction(String ag, Structure action) {
         boolean result = false;
         try {
             if (sleep > 0) {

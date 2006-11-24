@@ -4,8 +4,8 @@ import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.NumberTerm;
+import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
-import jason.asSyntax.TermImpl;
 
 import java.util.Random;
 
@@ -50,7 +50,7 @@ public class randomDirection extends DefaultInternalAction {
                     break;
                 }
             }
-            return un.unifies(terms[2], new TermImpl(sAction));
+            return un.unifies(terms[2], new Structure(sAction));
         } catch (Throwable e) {
             e.printStackTrace();
             return false;

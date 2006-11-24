@@ -19,7 +19,7 @@ public class roomEnv extends Environment {
      * Implementation of the agent's basic actions
      */
     @Override
-    public boolean executeAction(String ag, Term act) {
+    public boolean executeAction(String ag, Structure act) {
 	
 	    clearPercepts();
         

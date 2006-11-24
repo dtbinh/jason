@@ -4,8 +4,8 @@ import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.NumberTerm;
+import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
-import jason.asSyntax.TermImpl;
 import jason.environment.grid.GridWorldModel;
 import jason.environment.grid.Location;
 
@@ -63,7 +63,7 @@ public class getDirection extends DefaultInternalAction {
                     //System.out.println("No route from "+iagx+"x"+iagy+" to "+itox+"x"+itoy+"!");
                 }
             }
-            return un.unifies(terms[4], new TermImpl(sAction));
+            return un.unifies(terms[4], new Structure(sAction));
         } catch (Throwable e) {
             e.printStackTrace();
             return false;

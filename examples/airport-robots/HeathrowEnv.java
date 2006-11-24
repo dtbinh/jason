@@ -1,6 +1,6 @@
 
 import jason.asSyntax.Literal;
-import jason.asSyntax.Term;
+import jason.asSyntax.Structure;
 import jason.environment.Environment;
 
 import java.util.HashMap;
@@ -27,7 +27,7 @@ public class HeathrowEnv extends Environment {
      * Implementation of the agents' basic actions
      */
     @Override
-    public boolean executeAction(String ag, Term action) {
+    public boolean executeAction(String ag, Structure action) {
         if (action.getFunctor().equals("place_bid")) {
             Integer x = new Integer(action.getTerm(2).toString());
             // TODO: implement it!

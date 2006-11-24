@@ -7,6 +7,15 @@ Examples:
   and improve the Sniffer example to use it (and also store all 
   messages in a data base)
 
+Changes in the API
+. The TermImpl was renamed to Structure
+. The method that execute actions in the environment is not
+	executeAction(String agName, Term act) 
+  anymore, but was changed to
+        executeAction(String agName, Structure act)
+  So you should change your environment method parameter to 
+  work with this version.
+
 
 -------------
 version 0.9.3

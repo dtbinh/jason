@@ -5,7 +5,6 @@
 auction(1).
 all_bids_received(N) :- .count(place_bid(N,V1),3). 
 
-
 /* plans */
 
 +auction(N) : true 
