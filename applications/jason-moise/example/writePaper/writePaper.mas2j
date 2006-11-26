@@ -7,4 +7,6 @@ MAS writePaper {
        jaime      agentArchClass jmoise.OrgAgent;
        olivier    agentArchClass jmoise.OrgAgent;
        jomi       agentArchClass jmoise.OrgAgent;
+
+   classpath: "../../lib/moise.jar";"../../lib/jmoise.jar";
 }

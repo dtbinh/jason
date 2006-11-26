@@ -4,4 +4,6 @@ MAS jasonteam {
        orgManager [osfile="jason-team-OS.xml",gui=no] agentArchClass jmoise.OrgManager;
 
        miner      [verbose=1] agentArchClass jmoise.OrgAgent #4;
+
+   classpath: "../../lib/moise.jar";"../../lib/jmoise.jar";
 }

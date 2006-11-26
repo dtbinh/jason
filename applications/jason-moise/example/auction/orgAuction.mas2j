@@ -16,4 +16,6 @@ MAS auction {
        ag1             agentArchClass jmoise.OrgAgent;
 	   ag2             agentArchClass jmoise.OrgAgent;
        ag3             agentArchClass jmoise.OrgAgent;
+
+   classpath: "../../lib/moise.jar";"../../lib/jmoise.jar";
 }
