@@ -31,5 +31,7 @@ MAS communication {
         // Ordinary agents
         bob;
         maria;
+
+    classpath: "../../lib/saci.jar"; "../persistentBelBase/lib/hsqldb.jar";
 }
 
