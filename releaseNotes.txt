@@ -13,12 +13,15 @@ Examples:
 
 Changes in the API
 . The TermImpl was renamed to Structure
-. The method that execute actions in the environment is not
+. The method that executes actions in the environment is not
 	executeAction(String agName, Term act) 
   anymore, but was changed to
         executeAction(String agName, Structure act)
-  So you should change your environment method parameter to 
+  So you should change your environment method parameters to 
   work with this version.
+
+Bugs fixed:
+. unification of variable annotations
 
 
 -------------
