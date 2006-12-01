@@ -10,6 +10,7 @@ Examples:
 . Add support form message sniffing in centralised infrastructure
   and improve the Sniffer example to use it (and also store all 
   messages in a data base)
+. Improve the wandering capabilities in the Gold-Miners example.
 
 Changes in the API
 . The TermImpl was renamed to Structure
@@ -21,7 +22,7 @@ Changes in the API
   work with this version.
 
 Bugs fixed:
-. unification of variable annotations
+. unification of variable in annotations
 
 
 -------------

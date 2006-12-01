@@ -8,7 +8,7 @@
     <property environment="env"/>
 
     <property name="version"         value="0"/>
-    <property name="release"         value="9.3"/>
+    <property name="release"         value="9.4"/>
     <property name="distDir"         value="${env.HOME}/tmp/jmoise-${version}.${release}" />
     <property name="distFile"        value="${env.HOME}/jason-moise-${version}.${release}" />
     <property name="doc-src-dir"     value="${env.HOME}/programming/agents/Moise-doc" />
@@ -51,8 +51,8 @@
            windowtitle="Jason-Moise+ Organisational Model">
             <classpath refid="project.classpath" />
             <sourcepath>
-		<pathelement path="${basedir}/src"/>
-		<pathelement path="${basedir}/../../src"/>
+				<pathelement path="${basedir}/src"/>
+				<pathelement path="${basedir}/../../src"/>
             </sourcepath>
 
         </javadoc>    
@@ -100,16 +100,16 @@
 
     <target name="clean" >
     	<delete dir="${basedir}/bin/classes"/>
-	<delete failonerror="no" includeEmptyDirs="true" verbose="true">
-		<fileset dir="${basedir}" includes="**/*.class"/>
-	</delete>
-	<delete failonerror="no" includeEmptyDirs="true" verbose="true">
-		<fileset dir="${basedir}/examples" includes="**/classes/*" />
-		<fileset dir="${basedir}/examples" includes="**/classes" />
-		<fileset dir="${basedir}/examples" includes="**/*.class" />
-		<fileset dir="${basedir}/examples" includes="**/build.xml" />
-		<fileset dir="${basedir}/examples" includes="**/.stop___MAS" />
-	</delete>
+		<delete failonerror="no" includeEmptyDirs="true" verbose="true">
+			<fileset dir="${basedir}" includes="**/*.class"/>
+		</delete>
+		<delete failonerror="no" includeEmptyDirs="true" verbose="true">
+			<fileset dir="${basedir}/examples" includes="**/classes/*" />
+			<fileset dir="${basedir}/examples" includes="**/classes" />
+			<fileset dir="${basedir}/examples" includes="**/*.class" />
+			<fileset dir="${basedir}/examples" includes="**/build.xml" />
+			<fileset dir="${basedir}/examples" includes="**/.stop___MAS" />
+		</delete>
     </target>
 </project>
 

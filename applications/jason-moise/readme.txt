@@ -6,7 +6,7 @@ To run the application using JasonIDE, open the project
 and start it. The chapter 4 of doc/tutorial.pdf explains in details 
 this example.
 
-Another example is the Auction available and described in
+Another example is the Auction, available and described in
     example/auction
 
-Note: Jason 0.9.3 is required.
+Note: Jason 0.9.4 is required.
