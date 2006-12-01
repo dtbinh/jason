@@ -2,6 +2,10 @@
 version 0.9.4
 -------------
 
+New features
+. The user can define class paths for Jason projects, see the Sniffer
+  project file (Sniffer.mas2j) for an example.
+
 Examples:
 . Add support form message sniffing in centralised infrastructure
   and improve the Sniffer example to use it (and also store all 
