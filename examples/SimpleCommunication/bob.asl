@@ -14,12 +14,12 @@
       .println("Answer from ask is ", X);
 
       .println("Sending ask for something Maria does not know ");
-      .send(maria, askOne, t1(X2), Ans);
-      .println("Answer from ask is ", Ans);
+      .send(maria, askOne, t1(X2), Ans1);
+      .println("Answer from ask is ", Ans1);
       
       .println("Sending ask for something Maria does not know, but can handle by +? ");
-      .send(maria, askOne, t2(X3), Ans);
-      .println("Answer from ask is ", Ans);
+      .send(maria, askOne, t2(X3), Ans2);
+      .println("Answer from ask is ", Ans2);
       
       .println("Sending askAll values");
       .send(maria, askAll, value(Y,vl(Y)), List);

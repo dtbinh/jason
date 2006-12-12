@@ -4,7 +4,7 @@ Jason Project to demostrate how to use compiler directives.
 Agent a uses a pre-defined directive known as declarative
 goal (DG) and is implemented by means of goal patterns that 
 are proposed in the paper: 
-  Jomi Fred Hübner, Rafael H. Bordini, and Michael Wooldridge. 
+  Jomi Fred Hubner, Rafael H. Bordini, and Michael Wooldridge. 
   Programming declarative goals using plan patterns. 
   In Matteo Baldoni and Ulle Endriss, editors, Proceedings of the 
   Fourth International Workshop on Declarative Agent Languages and 
