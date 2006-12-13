@@ -9,7 +9,7 @@
 allProposalsReceived(CNPId) 
   :- .count(introduction(participant,_),NP) & // number of participants
      .count(propose(CNPId,_), NO) &           // number of proposes received
-     .count(refuse(CNPId), NR) &              // number of resusals received
+     .count(refuse(CNPId), NR) &              // number of refusals received
      NP = NO + NR.
 
 /* Initial goals */
@@ -31,41 +31,43 @@ allProposalsReceived(CNPId)
       .at("now +4 seconds", Event).
 
 
-// receive proposal (if all proposal are received, do not wait deadline)
-+propose(CNPId,Offer)
+// receive proposal 
+// if all proposal are already received, do not wait fot the deadline
+@r1 +propose(CNPId,Offer)
    :  cnpState(CNPId,propose) & allProposalsReceived(CNPId)
    <- !contract(CNPId).
 
 // receive refusals   
-+refuse(CNPId) 
+@r2 +refuse(CNPId) 
    :  cnpState(CNPId,propose) & allProposalsReceived(CNPId)
    <- !contract(CNPId).
 
-@lc[atomic] // need to be atomic to not accept propose/refuse while contracting
+// this plan needs to be atomic to not accept 
+// proposals or refusals while contracting
+@lc1[atomic]
 +!contract(CNPId)
-   :  cnpState(Id,propose)
+   :  cnpState(CNPId,propose)
    <- -+cnpState(Id,contract);
       .findall(offer(O,A),propose(CNPId,O)[source(A)],L);
       .print("Offers are ",L);
-      L \== [];
-      .sort(L,[offer(WO,WA)|_]); // sort offers, the first is the best offer
-      .print("Winner is ",WA," with ",WO);
-      -+cnpState(Id,result);
-      !announceResult(CNPId,L,WA);
+      L \== []; // constraint the plan execution to one offer at least
+      .sort(L,[offer(WOf,WAg)|_]); // sort offers, the first is the best
+      .print("Winner is ",WAg," with ",WOf);
+      !announceResult(CNPId,L,WAg);
       -+cnpState(Id,finished).
 
-+!contract(CNPId). // nothing todo, the last phase was not 'propose'
+@lc2 +!contract(CNPId). // nothing todo, the last phase was not 'propose'
+
 -!contract(CNPId)
    <- .print("CNP ",CNPId," has failed!").
 
 +!announceResult(_,[],_).
 // announce to the winner
-+!announceResult(CNPId,[offer(O,A)|T],A) 
-   <- .send(A,tell,acceptProposal(CNPId));
-      !announceResult(CNPId,T,A).
++!announceResult(CNPId,[offer(O,WAg)|T],WAg) 
+   <- .send(WAg,tell,acceptProposal(CNPId));
+      !announceResult(CNPId,T,WAg).
 // announce to others
-+!announceResult(CNPId,[offer(O,A)|T],WA) 
-   <- .send(A,tell,rejectProposal(CNPId));
-      !announceResult(CNPId,T,WA).
-       
-      
++!announceResult(CNPId,[offer(O,LAg)|T],WAg) 
+   <- .send(LAg,tell,rejectProposal(CNPId));
+      !announceResult(CNPId,T,WAg).
+

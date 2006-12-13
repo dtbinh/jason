@@ -19,16 +19,18 @@ price(Service,X) :- .random(R) & X = (10*R)+100.
    <- .send(I,tell,introduction(participant,Me)).
 
 // answer to Call For Proposal   
-+cfp(CNPId,Object)[source(A)]
-   :  price(Object,Offer)
+@c1 +cfp(CNPId,Object)[source(A)]
+   :  plays(initiator,A) & price(Object,Offer)
    <- +proposal(CNPId,Object,Offer); // remember my proposal
       .send(A,tell,propose(CNPId,Offer)).
 
-+acceptProposal(CNPId)
+@r1 +acceptProposal(CNPId)
    :  proposal(CNPId,Object,Offer)
-   <- .print("My proposal '",Offer,"' won CNP ",CNPId, " for ",Object,"!").
-   
-+rejectProposal(CNPId)
+   <- .print("My proposal '",Offer,"' won CNP ",CNPId,
+             " for ",Object,"!").
+      // build and deliver the product!
+	  
+@r2 +rejectProposal(CNPId)
    <- .print("I loosed CNP ",CNPId, ".");
       -proposal(CNPId,_,_). // clean memory
-   
+

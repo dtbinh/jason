@@ -9,9 +9,13 @@
       .println("Sending achieve goto(10,2)");
       .send(maria, achieve, goto(10,2));
       
-      .println("Sending ask ");
+      .println("Sending synchronous ask ");
       .send(maria, askOne, vl(X), vl(X));
       .println("Answer from ask is ", X);
+
+      .println("Sending assynchronous ask ");
+      .send(maria, askOne, vl(X4)); // assync ask has no fourth argument
+	  // the answer is received as an event +vl(X)
 
       .println("Sending ask for something Maria does not know ");
       .send(maria, askOne, t1(X2), Ans1);
@@ -36,3 +40,6 @@
       .println("Asking Maria to unachieve 'hello'");
       .send(maria,unachieve, hello(bob)).
 
++vl(X)[source(A)]
+   <- .print("Received value ",X," from ",A).
+   
