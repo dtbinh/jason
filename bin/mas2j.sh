@@ -1,7 +1,8 @@
 #!/bin/sh
-
+#
 # this script creates the Ant script (build.xml) 
 # to run a Jason project  
+#
 
 if [ ! -f $1 ]
 then
