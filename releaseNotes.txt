@@ -8,6 +8,10 @@ New features
   intance, change a set of plans to add a command in the end of all
   plans. See the new example "directives" for more information.
 
+. Assynchronous ask in communication. When the internal action .send ask 
+  has not the fourth argument, it does not suspend the intention. The 
+  answer is added in the sender belief based as usual.
+
 
 -------------
 version 0.9.4

@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# this scripts create the Ant script (build.xml) 
+# to run a Jason project  
+
 if [ ! -f $1 ]
 then
     echo File $1 not found
