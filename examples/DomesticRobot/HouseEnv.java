@@ -1,8 +1,6 @@
-import jason.asSyntax.Literal;
-import jason.asSyntax.Structure;
+import jason.asSyntax.*;
 import jason.environment.Environment;
 import jason.environment.grid.Location;
-
 import java.util.logging.Logger;
 
 public class HouseEnv extends Environment {
@@ -20,16 +18,14 @@ public class HouseEnv extends Environment {
 	
 	static Logger logger = Logger.getLogger(HouseEnv.class.getName());
 
-    // model and view of the grid
-    HouseModel model;
-    HouseView  view;
+    HouseModel model; // the model of the grid
     
     @Override
     public void init(String[] args) {
-	    model = new HouseModel();
+        model = new HouseModel();
         
         if (args.length == 1 && args[0].equals("gui")) { 
-            view  = new HouseView(model);
+            HouseView view  = new HouseView(model);
             model.setView(view);
         }
         
@@ -42,20 +38,22 @@ public class HouseEnv extends Environment {
         clearPercepts("robot");
         clearPercepts("owner");
         
+        // get the robot location
         Location lRobot = model.getAgPos(0);
-        // add their locations
-        if(lRobot.equals(model.lFridge)) {
+
+        // add agents' locations in perceptions
+        if (lRobot.equals(model.lFridge)) {
             addPercept("robot", af);
         }
-        if(lRobot.equals(model.lOwner)) {
+        if (lRobot.equals(model.lOwner)) {
             addPercept("robot", ao);
         }
         
-        // add beer "status"
+        // add beer "status" in perception
         if (model.fridgeOpen) {
-            addPercept("robot", Literal.parseLiteral("stock(beer,"+model.avBeer+")"));
+            addPercept("robot", Literal.parseLiteral("stock(beer,"+model.availableBeers+")"));
         }
-        if (model.beer > 0) {
+        if (model.sipCount > 0) {
             addPercept("robot", hob);
             addPercept("owner", hob);
         }
@@ -65,11 +63,12 @@ public class HouseEnv extends Environment {
     @Override
 	public boolean executeAction(String ag, Structure action) {
 		logger.fine("Agent "+ag+" doing "+action+" in the environment");
-		if (action.equals(of)) {
-            model.openFridge();
+        boolean result = false;
+		if (action.equals(of)) { // of = open(fridge)
+            result = model.openFridge();
             
-        } else if (action.equals(clf)) {
-            model.closeFridge();
+        } else if (action.equals(clf)) { // clf = close(fridge)
+            result = model.closeFridge();
             
 		} else if (action.getFunctor().equals("move_towards")) {
 			String l = action.getTerm(0).toString();
@@ -79,30 +78,30 @@ public class HouseEnv extends Environment {
 			} else if (l.equals("owner")) {
                 dest = model.lOwner;
 			}
-			model.moveTowards(dest);
+			result = model.moveTowards(dest);
 			
 		} else if (action.equals(gb)) {
-            model.getBeer();
+            result = model.getBeer();
             
 		} else if (action.equals(hb)) {
-            model.handInBeer();
+            result = model.handInBeer();
             
 		} else if (action.equals(sb)) {
-            model.sipBeer();
+            result = model.sipBeer();
             
 		} else if (action.getFunctor().equals("deliver")) {
-			model.addBeer(Integer.parseInt(action.getTerm(1).toString()));
+			result = model.addBeer(Integer.parseInt(action.getTerm(1).toString()));
             
 		} else {
 		    logger.info("Failed to execute action "+action);
-            return false;
         }
 
-		updatePercepts();
-        try {
-            Thread.sleep(150);
-        } catch (Exception e) {}
-		return true;
+        if (result) {
+            updatePercepts();
+            try {
+                Thread.sleep(100);
+            } catch (Exception e) {}
+        }
+		return result;
 	}
-
 }

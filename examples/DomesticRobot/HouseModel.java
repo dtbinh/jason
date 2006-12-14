@@ -3,25 +3,28 @@ import jason.environment.grid.Location;
 
 /** class that implements the Model of Domestic Robot application */
 public class HouseModel extends GridWorldModel {
-        
-    public static final int GSize = 7;
-    public static final int NSips = 10;
-
+    
+    // constants for the grid objects
     public static final int FRIDGE = 16;
     public static final int OWNER  = 32;
 
+    // the grid size
+    public static final int GSize = 7;
+    
     boolean fridgeOpen   = false; // whether the fridge is open
-    boolean carryingBeer = false; // whether the robot is carrying berr
-    int beer   = 0; // how many sip the owner did
-    int avBeer = 2; // how many beers are available
+    boolean carryingBeer = false; // whether the robot is carrying beer
+    int sipCount       = 0; // how many sip the owner did
+    int availableBeers = 2; // how many beers are available
 
     Location lFridge = new Location(0,0);
     Location lOwner  = new Location(GSize-1,GSize-1);
 
     public HouseModel() {
-        super(GSize, GSize, 1); // only one agent moves
+        // create a 7x7 grid with one mobile agent
+        super(GSize, GSize, 1);
 
-        // initial location of robot
+        // initial location of robot (column 3, line 3)
+        // ag code 0 means the robot
         setAgPos(0, GSize/2, GSize/2);
         
         // initial location of fridge and owner
@@ -29,48 +32,65 @@ public class HouseModel extends GridWorldModel {
         add(OWNER, lOwner);
     }
 
-    void openFridge() {
+    boolean openFridge() {
         if (!fridgeOpen) {
-            fridgeOpen = true;                 
+            fridgeOpen = true;
+            return true;
+        } else {
+            return false;
         }
     }
 
-    void closeFridge() {
+    boolean closeFridge() {
         if (fridgeOpen) {
-            fridgeOpen = false;                 
-        }
+            fridgeOpen = false; 
+            return true;
+        } else {
+            return false;
+        }                
     }  
 
-    void moveTowards(Location dest) {
+    boolean moveTowards(Location dest) {
         Location r1 = getAgPos(0);
-        if (r1.x < dest.x)
-            r1.x++;
-        else if (r1.x > dest.x)
-            r1.x--;
-        if (r1.y < dest.y)
-            r1.y++;
-        else if (r1.y > dest.y)
-            r1.y--;
-        setAgPos(0, r1);
+        if (r1.x < dest.x)        r1.x++;
+        else if (r1.x > dest.x)   r1.x--;
+        if (r1.y < dest.y)        r1.y++;
+        else if (r1.y > dest.y)   r1.y--;
+        setAgPos(0, r1); // move the robot in the grid
+        return true;
     }
     
-    void getBeer() {
-        if (fridgeOpen && avBeer > 0 && !carryingBeer) {
-            avBeer--;
+    boolean getBeer() {
+        if (fridgeOpen && availableBeers > 0 && !carryingBeer) {
+            availableBeers--;
             carryingBeer = true;
+            return true;
+        } else {
+            return false;
         }
     }
     
-    void handInBeer() {
-        beer = NSips;
-        carryingBeer = false;
+    boolean addBeer(int n) {
+        availableBeers += n;
+        return true;
     }
     
-    void sipBeer() {
-        beer--;
+    boolean handInBeer() {
+        if (carryingBeer) {
+            sipCount = 10;
+            carryingBeer = false;
+            return true;
+        } else {
+            return false;
+        }
     }
- 
-    void addBeer(int n) {
-        avBeer = avBeer + n;
+    
+    boolean sipBeer() {
+        if (sipCount > 0) {
+            sipCount--;
+            return true;
+        } else {
+            return false;
+        }
     }
 }

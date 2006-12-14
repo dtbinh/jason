@@ -1,10 +1,6 @@
-/* Initial beliefs and rules */
+last_order_id(1). // initial belief
 
-last_order_id(1).
-
-
-/* Plans */
-
+// plan to achieve the the goal "order" for agent Ag
 +!order(Product,Qtd)[source(Ag)] : true
   <- ?last_order_id(N);
      OrderId = N + 1;
