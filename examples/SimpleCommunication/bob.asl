@@ -26,7 +26,7 @@
       .println("Answer from ask is ", Ans2);
       
       .println("Sending askAll values");
-      .send(maria, askAll, value(Y,vl(Y)), List);
+      .send(maria, askAll, vl(Y), List);
       .println("Answer from askAll is ", List);
 
       .println("Sending ask full name");
