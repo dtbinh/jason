@@ -2,7 +2,6 @@
 import jason.architecture.AgArch;
 import jason.asSemantics.ActionExec;
 import jason.asSemantics.Agent;
-import jason.asSemantics.TransitionSystem;
 import jason.asSyntax.Literal;
 import jason.bb.DefaultBeliefBase;
 import jason.infra.centralised.RunCentralisedMAS;
@@ -24,19 +23,16 @@ public class SimpleJasonAgent extends AgArch {
     private static Logger logger = Logger.getLogger(SimpleJasonAgent.class.getName());
 
     public static void main(String[] a) {
-        RunCentralisedMAS.setupLogger();
+    	RunCentralisedMAS.setupLogger();
         SimpleJasonAgent ag = new SimpleJasonAgent();
         ag.run();
     }
-
-    // The BDI Engine (where the AS Semantics is implemented)
-    protected TransitionSystem fTS = null;
 
     public SimpleJasonAgent() {
         // set up the Jason agent
         try {
             Agent ag = new Agent();
-            fTS = ag.initAg(this, new DefaultBeliefBase(), "demo.asl", new Settings());
+            setTS(ag.initAg(this, new DefaultBeliefBase(), "demo.asl", new Settings()));
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Init error", e);
         }
@@ -47,7 +43,7 @@ public class SimpleJasonAgent extends AgArch {
             while (isRunning()) {
                 // calls the Jason engine to perform one reasoning cycle
                 logger.fine("Reasoning....");
-                fTS.reasoningCycle();
+                getTS().reasoningCycle();
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Run error", e);
@@ -69,7 +65,7 @@ public class SimpleJasonAgent extends AgArch {
     // this method get the agent actions
     @Override
     public void act(ActionExec action, List<ActionExec> feedback) {
-        logger.info("Agent " + getAgName() + " is doing: " + action.getActionTerm());
+        getTS().getLogger().info("Agent " + getAgName() + " is doing: " + action.getActionTerm());
         // set that the execution was ok
         action.setResult(true);
         feedback.add(action);
