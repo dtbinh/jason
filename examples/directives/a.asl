@@ -1,15 +1,16 @@
+
 bel.
 
 !start.
-+!start 
++!start
    <- myp.listPlans; // just list the agent's plans 
       !g.
 
 /*
-This agent uses a declarative goal identified by 
-EBDG (Exclusive Backtracking Declarative Goal).
-This DG tries to achieve the goal g by many 
-alternatives. 
+    This agent uses a declarative goal identified by 
+    EBDG (Exclusive Backtracking Declarative Goal).  
+    This DG tries to achieve the goal g by many 
+    alternatives.
 */
       
 { begin ebdg(g) }
@@ -17,12 +18,15 @@ alternatives.
 +!g       <- action2. // action2 achieves
 { end }
 
+
 /*
-The above plans will be changed by the directive to:
-     +!g : g.
-     +!g : not (p__1(g)) & bel <- +p__1(g); action1; ?g. 
-     +!g : not (p__2(g))       <- +p__2(g); action2; ?g. 
-     -!g <- !g. 
-     +g  <- -p__1(g); -p__2(g); .dropGoal(g,true). 
+    The above plans will be changed by the directive to:
+      +!g : g.
+      +!g : not (p__f(1,g)) & bel <- +p__f(1,g); action1; ?g.
+      +!g : not (p__f(2,g))       <- +p__f(2,g); action2; ?g.
+      -!g : p__f(2,g) <- .abolish(p__f(_,g)); !g.
+      -!g <- !g.
+      +g  <- .abolish(p__f(_,g)); .dropGoal(g,true).
+
 */
 
