@@ -2,11 +2,11 @@
 
 +!start : true 
    <- .print("Creating agent");
-      .createAgent(bob, "bob.asl");
+      .create_agent(bob, "bob.asl");
       .send(bob, achieve, a);
       .wait(100);
       .print("Killing agent bob!");
-      .killAgent(bob);
+      .kill_agent(bob);
       !end(10000).
       
 +!end(T) : T <= 0 <- .stopMAS.
