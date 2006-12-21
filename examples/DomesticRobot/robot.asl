@@ -42,7 +42,7 @@ too_much(B) :-
    
 -!has(_,_)
    :  true
-   <- .currentIntention(I); 
+   <- .current_intention(I); 
       .print("Failed to achieve goal '!has(_,_)'. Current intention is: ",I).
    
 +!at(robot,P) : at(robot,P) <- true.

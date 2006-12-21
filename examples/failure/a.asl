@@ -7,6 +7,6 @@
 +!g4(X) : true <- .print(inig4); !g5(X); .print(endg4).
 +!g5(X) : true <- .fail.
 -!g3(failure) : true 
-  <- .currentIntention(I);
+  <- .current_intention(I);
      .print("In failure handling plan, current intention is: ",I).
 

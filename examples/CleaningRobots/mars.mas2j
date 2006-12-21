@@ -5,7 +5,7 @@ MAS mars {
 
     infrastructure: Centralised
 
-    environment: marsEnv
+    environment: MarsEnv
     
     agents: r1; r2;
 }
