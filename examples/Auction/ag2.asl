@@ -1,11 +1,11 @@
 // This agent usually bids 4, 
 // when it has an alliance with ag3, it bids 0
 
-defaultBidValue(4).
+default_bid_value(4).
 ally(ag3).
 
 +auction(N)[source(S)] : not alliance
-   <- ?defaultBidValue(B);
+   <- ?default_bid_value(B);
       .send(S, tell, place_bid(N,B)).
 
 +auction(N)[source(S)] : alliance
@@ -15,7 +15,7 @@ ally(ag3).
 +alliance[source(A)] 
    :  .myName(I) & ally(A)
    <- .print("Alliance proposed by ", A);
-      ?defaultBidValue(B);
+      ?default_bid_value(B);
       .send(A,tell,bid(I,B));
       .send(A,tell,alliance(A,I)).
       

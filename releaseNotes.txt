@@ -12,7 +12,11 @@ New features
   has not the fourth argument, it does not suspend the intention. The 
   answer is added in the sender belief based as usual.
 
-
+Changes in the API
+. Many internal actions was renamed to follow a Prolog pattern. E.g.
+  addPlan -> add_plan, createAgent -> create_agent.
+  
+  
 -------------
 version 0.9.4
 -------------
