@@ -3,7 +3,7 @@ bel.
 
 !start.
 +!start
-   <- myp.listPlans; // just list the agent's plans 
+   <- myp.list_plans; // just list the agent's plans 
       !g.
 
 /*

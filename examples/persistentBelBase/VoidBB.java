@@ -29,7 +29,7 @@ public class VoidBB implements jason.bb.BeliefBase {
         return l;
     }
 
-    public Iterator<Literal> getAll() {
+    public Iterator<Literal> iterator() {
         return new ArrayList<Literal>().iterator();
     }
 

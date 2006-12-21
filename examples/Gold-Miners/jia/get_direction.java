@@ -19,7 +19,7 @@ import busca.Estado;
 import busca.Heuristica;
 import busca.Nodo;
 
-public class getDirection extends DefaultInternalAction {
+public class get_direction extends DefaultInternalAction {
     
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] terms) throws Exception {

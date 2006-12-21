@@ -1,9 +1,8 @@
-import java.util.*;
-import jason.*;
-import jason.asSyntax.*;
-import jason.environment.*;
+import jason.asSyntax.Literal;
+import jason.asSyntax.Structure;
+import jason.environment.Environment;
 
-public class roomEnv extends Environment {
+public class RoomEnv extends Environment {
     
     Literal ld  = Literal.parseLiteral("locked(door)");
     Literal nld = Literal.parseLiteral("~locked(door)");
@@ -39,4 +38,3 @@ public class roomEnv extends Environment {
 	    return true;
     }
 }
-

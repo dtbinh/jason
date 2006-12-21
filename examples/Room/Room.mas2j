@@ -14,7 +14,7 @@ A Prometheus specification is available in the doc folder.
 
 MAS room {
 	infrastructure: Centralised
-	environment: roomEnv
+	environment: RoomEnv
 	agents: porter; claustrophobe; paranoid;
 }
 

@@ -12,7 +12,7 @@ import java.util.Random;
 import mining.WorldModel;
 
 
-public class randomDirection extends DefaultInternalAction {
+public class random_direction extends DefaultInternalAction {
     Random rnd = new Random();
 
     @Override

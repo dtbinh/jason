@@ -65,7 +65,7 @@ free.
 
 +!next_step(X,Y)
   :  pos(AgX,AgY)
-  <- jia.getDirection(AgX, AgY, X, Y, D);
+  <- jia.get_direction(AgX, AgY, X, Y, D);
      //.print("from ",AgX,"x",AgY," to ", X,"x",Y," -> ",D);
      -+lastDir(D);
      do(D).
