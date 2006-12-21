@@ -1,12 +1,6 @@
-// Agent c in project ContractNetProtocol.mas2j
-//
-// This agent starts the protocol and plays the
-// initiator role in it.
-//
-
 /* Initial beliefs and rules */
 
-allProposalsReceived(CNPId) 
+all_proposals_received(CNPId) 
   :- .count(introduction(participant,_),NP) & // number of participants
      .count(propose(CNPId,_), NO) &           // number of proposes received
      .count(refuse(CNPId), NR) &              // number of refusals received
@@ -21,7 +15,7 @@ allProposalsReceived(CNPId)
 // start the CNP
 +!startCNP(Id) 
    <- .wait(2000);  // wait participants presentation
-      +cnpState(Id,propose);   // remember the state of the CNP
+      +cnp_state(Id,propose);   // remember the state of the CNP
       .findall(VendorName,introduction(participant,VendorName),LV);
       .print("Sending CFP to ",LV);
       .send(LV,tell,cfp(Id,pc(3,[dual,ram(5,gb),hd(1,tb)])));
@@ -34,40 +28,40 @@ allProposalsReceived(CNPId)
 // receive proposal 
 // if all proposal are already received, do not wait fot the deadline
 @r1 +propose(CNPId,Offer)
-   :  cnpState(CNPId,propose) & allProposalsReceived(CNPId)
+   :  cnp_state(CNPId,propose) & all_proposals_received(CNPId)
    <- !contract(CNPId).
 
 // receive refusals   
 @r2 +refuse(CNPId) 
-   :  cnpState(CNPId,propose) & allProposalsReceived(CNPId)
+   :  cnp_state(CNPId,propose) & all_proposals_received(CNPId)
    <- !contract(CNPId).
 
 // this plan needs to be atomic to not accept 
 // proposals or refusals while contracting
 @lc1[atomic]
 +!contract(CNPId)
-   :  cnpState(CNPId,propose)
-   <- -+cnpState(Id,contract);
+   :  cnp_state(CNPId,propose)
+   <- -+cnp_state(Id,contract);
       .findall(offer(O,A),propose(CNPId,O)[source(A)],L);
       .print("Offers are ",L);
       L \== []; // constraint the plan execution to one offer at least
       .sort(L,[offer(WOf,WAg)|_]); // sort offers, the first is the best
       .print("Winner is ",WAg," with ",WOf);
-      !announceResult(CNPId,L,WAg);
-      -+cnpState(Id,finished).
+      !announce_result(CNPId,L,WAg);
+      -+cnp_state(Id,finished).
 
 @lc2 +!contract(CNPId). // nothing todo, the last phase was not 'propose'
 
 -!contract(CNPId)
    <- .print("CNP ",CNPId," has failed!").
 
-+!announceResult(_,[],_).
++!announce_result(_,[],_).
 // announce to the winner
-+!announceResult(CNPId,[offer(O,WAg)|T],WAg) 
-   <- .send(WAg,tell,acceptProposal(CNPId));
-      !announceResult(CNPId,T,WAg).
++!announce_result(CNPId,[offer(O,WAg)|T],WAg) 
+   <- .send(WAg,tell,accept_proposal(CNPId));
+      !announce_result(CNPId,T,WAg).
 // announce to others
-+!announceResult(CNPId,[offer(O,LAg)|T],WAg) 
-   <- .send(LAg,tell,rejectProposal(CNPId));
-      !announceResult(CNPId,T,WAg).
++!announce_result(CNPId,[offer(O,LAg)|T],WAg) 
+   <- .send(LAg,tell,reject_proposal(CNPId));
+      !announce_result(CNPId,T,WAg).
 

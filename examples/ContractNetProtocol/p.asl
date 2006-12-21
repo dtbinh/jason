@@ -1,15 +1,8 @@
-// Agent p in project ContractNetProtocol.mas2j
-//
-// This agent offers the service/product with 
-// a random price.
-
-/* Initial beliefs and rules */
-
-// the name of the agent playing initiator in the CNP
-plays(initiator,c). 
-
-// a rule to compute the price for any service
+// gets the price for the product,
+// a random value between 100 and 101.
 price(Service,X) :- .random(R) & X = (10*R)+100.
+
+plays(initiator,c). 
 
 /* Plans */
 
@@ -24,13 +17,13 @@ price(Service,X) :- .random(R) & X = (10*R)+100.
    <- +proposal(CNPId,Object,Offer); // remember my proposal
       .send(A,tell,propose(CNPId,Offer)).
 
-@r1 +acceptProposal(CNPId)
+@r1 +accept_proposal(CNPId)
    :  proposal(CNPId,Object,Offer)
    <- .print("My proposal '",Offer,"' won CNP ",CNPId,
              " for ",Object,"!").
       // build and deliver the product!
 	  
-@r2 +rejectProposal(CNPId)
+@r2 +reject_proposal(CNPId)
    <- .print("I loosed CNP ",CNPId, ".");
       -proposal(CNPId,_,_). // clean memory
 
