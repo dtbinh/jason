@@ -169,12 +169,12 @@ MAS test {
 
 \subsection{Is it possible to add/remove an agent into a running MAS?}
 
-The internal action \code{.createAgent} can be used to dynamically
+The internal action \code{.create_agent} can be used to dynamically
 add a new agent into the running MAS. For example, when the plan:
 \begin{verbatim}
 +a : true 
    <- ... ; 
-      .createAgent(bob, "myAgent.asl");
+      .create_agent(bob, "myAgent.asl");
       ... .
 \end{verbatim}
 is executed, it will create a new agent called "bob" based on the
