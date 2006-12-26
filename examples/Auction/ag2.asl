@@ -13,7 +13,7 @@ ally(ag3).
 
 // alliance proposal from another agent
 +alliance[source(A)] 
-   :  .myName(I) & ally(A)
+   :  .my_name(I) & ally(A)
    <- .print("Alliance proposed by ", A);
       ?default_bid_value(B);
       .send(A,tell,bid(I,B));

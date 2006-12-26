@@ -39,5 +39,5 @@ checking(slots).
 
 +!go(L) : pos(L,X,Y) & pos(r1,X,Y).
 +!go(L) <- ?pos(L,X,Y);
-           moveTowards(X,Y);
+           move_towards(X,Y);
            !go(L).

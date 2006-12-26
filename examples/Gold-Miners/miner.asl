@@ -1,62 +1,69 @@
 // miner agent
 
-lastDir(null).
+/* beliefs */
+
+last_dir(null).
 free.
 
-+gsize(S,_,_) : true <- !sendInitPos(S).
-+!sendInitPos(S) : pos(X,Y)
-  <- .send(leader,tell,myInitPos(S,X,Y)).
-+!sendInitPos(S) : not pos(_,_)
+/* rules */
+
+calc_new_y(Y,Y2,Y2) :- Y+2 > Y2.
+calc_new_y(Y,Y2,YF) :- YF = Y+2.
+
+
+/* plans */
+
++gsize(S,_,_) : true <- !send_init_pos(S).
++!send_init_pos(S) : pos(X,Y)
+  <- .send(leader,tell,my_init_pos(S,X,Y)).
++!send_init_pos(S) : not pos(_,_)
   <- .wait("+pos(X,Y)", 500);
-     !!sendInitPos(S).
+     !!send_init_pos(S).
 
 /* plans for wandering in my quadrant when I'm free */
 
-+free : lastChecked(XC,YC)  <- !around(XC,YC).
-+free : myQuad(X1,Y1,X2,Y2) <- !around(X1,Y1).
-+free : free <- !waitForQuad.
++free : last_checked(XC,YC)  <- !around(XC,YC).
++free : my_quad(X1,Y1,X2,Y2) <- !around(X1,Y1).
++free : free <- !wait_for_quad.
 @pwfq[atomic]
-+!waitForQuad : free & myQuad(_,_,_,_) <- -+free.
-+!waitForQuad : free     <- .wait("+myQuad(X1,Y1,X2,Y2)", 500); !!waitForQuad.
-+!waitForQuad : not free <- .print("No longer free while waiting for myQuad.").
++!wait_for_quad : free & my_quad(_,_,_,_) <- -+free.
++!wait_for_quad : free     <- .wait("+my_quad(X1,Y1,X2,Y2)", 500); !!wait_for_quad.
++!wait_for_quad : not free <- .print("No longer free while waiting for my_quad.").
 
-+around(X1,Y1) : myQuad(X1,Y1,X2,Y2) & free
++around(X1,Y1) : my_quad(X1,Y1,X2,Y2) & free
   <- .print("in Q1 to ",X2,"x",Y1); 
-     -around(X1,Y1); -+lastDir(null); !around(X2,Y1).
+     -around(X1,Y1); -+last_dir(null); !around(X2,Y1).
 
-+around(X2,Y2) : myQuad(X1,Y1,X2,Y2) & free 
++around(X2,Y2) : my_quad(X1,Y1,X2,Y2) & free 
   <- .print("in Q4 to ",X1,"x",Y1); 
-     -around(X2,Y2); -+lastDir(null); !around(X1,Y1).
+     -around(X2,Y2); -+last_dir(null); !around(X1,Y1).
 
-+around(X2,Y) : myQuad(X1,Y1,X2,Y2) & free  
-  <- !calcNewY(Y,Y2,YF);
++around(X2,Y) : my_quad(X1,Y1,X2,Y2) & free  
+  <- ?calc_new_y(Y,Y2,YF);
      .print("in Q2 to ",X1,"x",YF);
-     -around(X2,Y); -+lastDir(null); !around(X1,YF).
+     -around(X2,Y); -+last_dir(null); !around(X1,YF).
 
-+around(X1,Y) : myQuad(X1,Y1,X2,Y2) & free  
-  <- !calcNewY(Y,Y2,YF);
++around(X1,Y) : my_quad(X1,Y1,X2,Y2) & free  
+  <- ?calc_new_y(Y,Y2,YF);
      .print("in Q3 to ", X2, "x", YF); 
-     -around(X1,Y); -+lastDir(null); !around(X2,YF).
+     -around(X1,Y); -+last_dir(null); !around(X2,YF).
 
 // the last "around" was not any Q above
-+around(X,Y) : myQuad(X1,Y1,X2,Y2) & free & Y <= Y2 & Y >= Y1  
++around(X,Y) : my_quad(X1,Y1,X2,Y2) & free & Y <= Y2 & Y >= Y1  
   <- .print("in no Q, going to X1");
-     -around(X,Y); -+lastDir(null); !around(X1,Y).
-+around(X,Y) : myQuad(X1,Y1,X2,Y2) & free & X <= X2 & X >= X1  
+     -around(X,Y); -+last_dir(null); !around(X1,Y).
++around(X,Y) : my_quad(X1,Y1,X2,Y2) & free & X <= X2 & X >= X1  
   <- .print("in no Q, going to Y1");
-     -around(X,Y); -+lastDir(null); !around(X,Y1).
+     -around(X,Y); -+last_dir(null); !around(X,Y1).
 
-+around(X,Y) : myQuad(X1,Y1,X2,Y2)
++around(X,Y) : my_quad(X1,Y1,X2,Y2)
   <- .print("It should never happen!!!!!! - go home");
-     -around(X,Y); -+lastDir(null); !around(X1,Y1).
-
-+!calcNewY(Y,Y2,Y2) : Y+2 > Y2.
-+!calcNewY(Y,Y2,YF) <- YF = Y+2.
+     -around(X,Y); -+last_dir(null); !around(X1,Y1).
 
 
 // BCG!
 +!around(X,Y) 
-  :  (pos(AgX,AgY) & jia.neighbour(AgX,AgY,X,Y)) | lastDir(skip) 
+  :  (pos(AgX,AgY) & jia.neighbour(AgX,AgY,X,Y)) | last_dir(skip) 
   <- +around(X,Y).
 +!around(X,Y) : not around(X,Y)
   <- !next_step(X,Y);
@@ -67,13 +74,13 @@ free.
   :  pos(AgX,AgY)
   <- jia.get_direction(AgX, AgY, X, Y, D);
      //.print("from ",AgX,"x",AgY," to ", X,"x",Y," -> ",D);
-     -+lastDir(D);
+     -+last_dir(D);
      do(D).
 +!next_step(X,Y) : not pos(_,_) // i still do not know my position
   <- !next_step(X,Y).
 -!next_step(X,Y) : true 
   <- .print("Failed next_step to ", X,"x",Y," fixing and trying again!");
-     -+lastDir(null);
+     -+last_dir(null);
      !next_step(X,Y).
 
 
@@ -97,8 +104,8 @@ free.
      .desire(handle(gold(OldX,OldY))) & // I desire to handle another gold
      pos(AgX,AgY) & not gold(AgX, AgY) // I am not just above the gold 
   <- +gold(X,Y);
-     .dropDesire(handle(gold(OldX,OldY)));
-     .dropIntention(handle(gold(_,_)));
+     .drop_desire(handle(gold(OldX,OldY)));
+     .drop_intention(handle(gold(_,_)));
      .print("Giving up current gold ",gold(OldX,OldY)," to handle ",gold(X,Y)," which I am seeing!");
      .print("Announcing ",gold(OldX,OldY)," to others");
      .broadcast(tell,gold(OldX,OldY));
@@ -113,24 +120,24 @@ free.
      
 // someone else sent me gold location
 +gold(X1,Y1)[source(A)]
-  :  not gold(X1,Y1) & A \== self & not allocatedTo(gold(X1,Y1),_) & not carrying_gold & free & pos(X2,Y2)
+  :  not gold(X1,Y1) & A \== self & not allocated_to(gold(X1,Y1),_) & not carrying_gold & free & pos(X2,Y2)
   <- jia.dist(X1,Y1,X2,Y2,D);
-     .send(leader,tell,bidFor(gold(X1,Y1),D)).
+     .send(leader,tell,bid_for(gold(X1,Y1),D)).
 // bid high as I'm not free
 +gold(X1,Y1)[source(A)]
   :  A \== self
-  <- .send(leader,tell,bidFor(gold(X1,Y1),1000)).
+  <- .send(leader,tell,bid_for(gold(X1,Y1),1000)).
 
 @palloc1[atomic]
-+allocatedTo(Gold,Ag)[source(leader)] 
-  :  .myName(Ag) & free // I am still free
++allocated_to(Gold,Ag)[source(leader)] 
+  :  .my_name(Ag) & free // I am still free
   <- -free;
      .print("Gold ",Gold," allocated to ",Ag);
      !init_handle(Gold).
 
 @palloc2[atomic]
-+allocatedTo(Gold,Ag)[source(leader)] 
-  :  .myName(Ag) & not free // I am  no longer free
++allocated_to(Gold,Ag)[source(leader)] 
+  :  .my_name(Ag) & not free // I am  no longer free
   <- .print("I can not handle ",Gold," anymore!");
      .print("(Re)announcing ",gold(X,Y)," to others");
      .broadcast(tell,gold(X,Y)). 
@@ -143,8 +150,8 @@ free.
   :  .desire(handle(G)) | .desire(init_handle(G))
   <- .print(A," has taken ",G," that I am pursuing! Dropping my intention.");
      -gold(X,Y);
-     .dropDesire(handle(G)); // Rafa, do we need to drop the desire?
-     .dropIntention(handle(G));
+     .drop_desire(handle(G)); // Rafa, do we need to drop the desire?
+     .drop_intention(handle(G));
      !!choose_gold.
 
 // someone else picked up a gold I know about, remove from my bels
@@ -155,27 +162,27 @@ free.
 @pih1[atomic]
 +!init_handle(Gold) : .desire(around(_,_)) 
   <- .print("Dropping around(_,_) desires and intentions to handle ",Gold);
-     .dropDesire(around(_,_));
-     .dropIntention(around(_,_));
+     .drop_desire(around(_,_));
+     .drop_intention(around(_,_));
      .print("Going for ",Gold);
-     !updatePos;
+     !update_pos;
      !!handle(Gold). // must use !! to process handle as not atomic
 @pih2[atomic]
 +!init_handle(Gold) : true 
   <- .print("Going for ",Gold);
-     !updatePos;
+     !update_pos;
      !!handle(Gold). // must use !! to process handle as not atomic
 
-+!updatePos : free & pos(X,Y)
-  <- -+lastChecked(X,Y).
++!update_pos : free & pos(X,Y)
+  <- -+last_checked(X,Y).
 // do we need another alternative? I couldn't think of another. If free
 // but no desire, probably was still going home which works
-+!updatePos.
++!update_pos.
 
 +!handle(gold(X,Y)) 
-  :  not free & .myName(Me)
+  :  not free & .my_name(Me)
   <- .print("Handling ",gold(X,Y)," now.");
-     .broadcast(tell, committedTo(gold(X,Y)));
+     .broadcast(tell, committed_to(gold(X,Y)));
      !pos(X,Y);
      !ensure(pick,gold(X,Y));
      // broadcast that I got the gold(X,Y), to avoid someone else to pursue this gold
@@ -207,7 +214,7 @@ free.
 +!choose_gold 
   :  gold(_,_)
   <- .findall(gold(X,Y),gold(X,Y),LG);
-     !calcGoldDistance(LG,LD);
+     !calc_gold_distance(LG,LD);
      .length(LD,LLD); LLD > 0;
      .print("Uncommitted gold distances: ",LD,LLD);
      .sort(LD,[d(D,NewG)|_]);
@@ -215,22 +222,22 @@ free.
      !!handle(NewG).
 -!choose_gold : true <- -+free.
 
-+!calcGoldDistance([],[]).
-+!calcGoldDistance([gold(GX,GY)|R],[d(D,gold(GX,GY))|RD]) 
-  :  pos(IX,IY) & not committedTo(gold(GX,GY))
++!calc_gold_distance([],[]).
++!calc_gold_distance([gold(GX,GY)|R],[d(D,gold(GX,GY))|RD]) 
+  :  pos(IX,IY) & not committed_to(gold(GX,GY))
   <- jia.dist(IX,IY,GX,GY,D);
-     !calcGoldDistance(R,RD).
-+!calcGoldDistance([_|R],RD) 
+     !calc_gold_distance(R,RD).
++!calc_gold_distance([_|R],RD) 
   :  true
-  <- !calcGoldDistance(R,RD).
+  <- !calc_gold_distance(R,RD).
 
 
 // BCG!
 // !pos is used when it is algways possible to go 
-// so this plans should not be used: +!pos(X,Y) : lastDir(skip) <-
+// so this plans should not be used: +!pos(X,Y) : last_dir(skip) <-
 // .print("It is not possible to go to ",X,"x",Y).
 // in the future
-//+lastDir(skip) <- .dropGoal(pos) 
+//+last_dir(skip) <- .drop_goal(pos) 
 +!pos(X,Y) : pos(X,Y) <- .print("I've reached ",X,"x",Y).
 +!pos(X,Y) : not pos(X,Y)
   <- !next_step(X,Y);
@@ -249,18 +256,18 @@ free.
 /* end of a simulation */
 
 @end[atomic]
-+endOfSimulation(S,_) : true 
-  <- .dropAllDesires; 
-     .dropAllIntentions;
-     -myQuad(_,_,_,_);
++end_of_simulation(S,_) : true 
+  <- .drop_all_desires; 
+     .drop_all_intentions;
+     -my_quad(_,_,_,_);
      .abolish(gold(_,_));
-     .abolish(committedTo(_));
+     .abolish(committed_to(_));
      .abolish(picked(_));
-     .abolish(lastChecked(_,_));
-     !repostGsize;
+     .abolish(last_checked(_,_));
+     !repost_gsize;
      -+free;
      .print("-- END ",S," --").
 
-+!repostGsize : gsize(S,W,H) <- -+gsize(S,W,H)[source(percept)].
-+!repostGsize.
++!repost_gsize : gsize(S,W,H) <- -+gsize(S,W,H)[source(percept)].
++!repost_gsize.
 

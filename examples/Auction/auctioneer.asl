@@ -17,21 +17,21 @@ all_bids_received(N) :- .count(place_bid(N,V1),3).
    :  auction(N) & winner(N,CurWin,CurVl) & V > CurVl
    <- -winner(N,CurWin,CurVl); 
       +winner(N,S,V);
-      !checkEnd(N).
+      !check_end(N).
 
 @pb2[atomic]
 +place_bid(N,V) : true
-   <- !checkEnd(N).
+   <- !check_end(N).
 
-+!checkEnd(N) 
++!check_end(N) 
    :  auction(N) & N < 7 & 
       all_bids_received(N) & 
       winner(N,W,Vl)
    <- .print("Winner is ",W," with ", Vl);
-      showWinner(N,W); // show it in the GUI
+      show_winner(N,W); // show it in the GUI
       .broadcast(tell, winner(W));
       .abolish(place_bid(N,_));
       -winner(N,_,_);
       -+auction(N+1).
-+!checkEnd(N).
++!check_end(N).
 

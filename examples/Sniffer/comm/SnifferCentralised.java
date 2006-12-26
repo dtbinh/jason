@@ -38,7 +38,7 @@ public class SnifferCentralised extends AgArch implements MsgListener {
 	
 		// add a belief in the agent mind 
 		// format: msgSent(time(YY,MM,DD,HH,MM,SS),id,irt,ilf,sender,receiver,content)
-		Literal e = new Literal(Literal.LPos, "msgSent");
+		Literal e = new Literal(Literal.LPos, "msg_sent");
 
         Calendar now = new GregorianCalendar();
 		Pred p = new Pred("time");

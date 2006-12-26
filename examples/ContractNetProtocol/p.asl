@@ -8,7 +8,7 @@ plays(initiator,c).
 
 // send a message to initiator introducing myself as a participant
 +plays(initiator,I)
-   :  .myName(Me)
+   :  .my_name(Me)
    <- .send(I,tell,introduction(participant,Me)).
 
 // answer to Call For Proposal   

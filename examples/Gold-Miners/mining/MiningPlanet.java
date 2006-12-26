@@ -124,7 +124,7 @@ public class MiningPlanet extends jason.environment.Environment {
             clearPercepts("miner" + (i + 1));
         }
         clearPercepts();
-        addPercept(Literal.parseLiteral("endOfSimulation(" + simId + ",0)"));
+        addPercept(Literal.parseLiteral("end_of_simulation(" + simId + ",0)"));
         simId++;
         WorldView.destroy();
         WorldModel.destroy();

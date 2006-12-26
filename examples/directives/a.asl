@@ -24,9 +24,9 @@ bel.
       +!g : g.
       +!g : not (p__f(1,g)) & bel <- +p__f(1,g); action1; ?g.
       +!g : not (p__f(2,g))       <- +p__f(2,g); action2; ?g.
-      -!g : p__f(2,g) <- .abolish(p__f(_,g)); !g.
-      -!g <- !g.
-      +g  <- .abolish(p__f(_,g)); .dropGoal(g,true).
+      -!g <- !!g.
+      +g  <- .abolish(p__f(_,g)); .drop_goal(g,true).
+      -g  <- .abolish(p__f(_,g)).
 
 */
 

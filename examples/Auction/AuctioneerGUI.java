@@ -21,7 +21,7 @@ public class AuctioneerGUI extends AgArch {
     }
 
     public void act(ActionExec action, List<ActionExec> feedback) {
-        if (action.getActionTerm().getFunctor().startsWith("showWinner")) {
+        if (action.getActionTerm().getFunctor().startsWith("show_winner")) {
             jt.append("Winner of auction  " + action.getActionTerm().getTerm(0));
             jt.append(" is " + action.getActionTerm().getTerm(1) + "\n");
         }

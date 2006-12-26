@@ -9,11 +9,11 @@ threshold(3).
 +auction(N)[source(S)] 
    :  (threshold(T) & N < T) 
       |
-      (.myName(I) & winner(I) & ally(A) & not alliance(I,A))
+      (.my_name(I) & winner(I) & ally(A) & not alliance(I,A))
    <- !bid_normally(S,N).
 
 +auction(N)[source(S)] 
-   :  .myName(I) & not winner(I) & ally(A) & not alliance(I,A)
+   :  .my_name(I) & not winner(I) & ally(A) & not alliance(I,A)
    <- !alliance(A);
       !bid_normally(S,N).
 

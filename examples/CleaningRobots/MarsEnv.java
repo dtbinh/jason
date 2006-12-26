@@ -42,7 +42,7 @@ public class MarsEnv extends Environment {
 	public boolean executeAction(String ag, Structure action) {
 		if (action.equals(ns)) {
 			model.nextSlot();
-		} else if (action.getFunctor().equals("moveTowards")) {
+		} else if (action.getFunctor().equals("move_towards")) {
 			int x = Integer.parseInt(action.getTerm(0).toString());
 			int y = Integer.parseInt(action.getTerm(1).toString());
             model.moveTowards(x,y);
