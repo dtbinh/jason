@@ -5,7 +5,7 @@ version 0.9.5
 New features
 
 . Users can define their own compiler directives. A directive can, for
-  intance, change a set of plans to add a command in the end of all
+  instance, change a set of plans to add a command in the end of all
   plans. See the new example "directives" for more information.
 
 . Assynchronous ask in communication. When the internal action .send ask 
@@ -16,6 +16,9 @@ Changes in the API
 . Many internal actions was renamed to follow a Prolog pattern. E.g.
   addPlan -> add_plan, createAgent -> create_agent.
   
+Documentation
+. all internal actions was documented using javadoc (see doc/api).
+
   
 -------------
 version 0.9.4
