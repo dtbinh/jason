@@ -3,8 +3,8 @@ package jia;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
+import jason.asSyntax.Atom;
 import jason.asSyntax.NumberTerm;
-import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 
 import java.util.Random;
@@ -50,7 +50,7 @@ public class random_direction extends DefaultInternalAction {
                     break;
                 }
             }
-            return un.unifies(terms[2], new Structure(sAction));
+            return un.unifies(terms[2], new Atom(sAction));
         } catch (Throwable e) {
             e.printStackTrace();
             return false;

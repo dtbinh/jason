@@ -3,9 +3,9 @@ package comm;
 import jason.JasonException;
 import jason.architecture.AgArch;
 import jason.asSemantics.Message;
+import jason.asSyntax.Atom;
 import jason.asSyntax.Literal;
 import jason.asSyntax.NumberTermImpl;
-import jason.asSyntax.Pred;
 import jason.asSyntax.StringTermImpl;
 import jason.asSyntax.Structure;
 import jason.infra.centralised.CentralisedAgArch;
@@ -38,10 +38,10 @@ public class SnifferCentralised extends AgArch implements MsgListener {
 	
 		// add a belief in the agent mind 
 		// format: msgSent(time(YY,MM,DD,HH,MM,SS),id,irt,ilf,sender,receiver,content)
-		Literal e = new Literal(Literal.LPos, "msg_sent");
+		Literal e = new Literal("msg_sent");
 
         Calendar now = new GregorianCalendar();
-		Pred p = new Pred("time");
+		Structure p = new Structure("time");
 		p.addTerm(new NumberTermImpl(now.get(Calendar.YEAR)));
 		p.addTerm(new NumberTermImpl(now.get(Calendar.MONTH)));
 		p.addTerm(new NumberTermImpl(now.get(Calendar.DAY_OF_MONTH)));
@@ -53,13 +53,13 @@ public class SnifferCentralised extends AgArch implements MsgListener {
 	
 		e.addTerm(new StringTermImpl(m.getMsgId()));
 		if (m.getInReplyTo() == null) {
-			e.addTerm(new Structure("nirt"));
+			e.addTerm(new Atom("nirt"));
 		} else {
 			e.addTerm(new StringTermImpl(m.getInReplyTo()));
 		}
-		e.addTerm(new Structure(m.getIlForce()));
-		e.addTerm(new Structure(m.getSender()));
-		e.addTerm(new Structure(m.getReceiver()));
+		e.addTerm(new Atom(m.getIlForce()));
+		e.addTerm(new Atom(m.getSender()));
+		e.addTerm(new Atom(m.getReceiver()));
 		e.addTerm(new StringTermImpl(m.getPropCont().toString()));
 		getTS().getAg().addBel(e);
     }    

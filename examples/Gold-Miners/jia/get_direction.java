@@ -3,8 +3,8 @@ package jia;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
+import jason.asSyntax.Atom;
 import jason.asSyntax.NumberTerm;
-import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 import jason.environment.grid.GridWorldModel;
 import jason.environment.grid.Location;
@@ -63,7 +63,7 @@ public class get_direction extends DefaultInternalAction {
                     //System.out.println("No route from "+iagx+"x"+iagy+" to "+itox+"x"+itoy+"!");
                 }
             }
-            return un.unifies(terms[4], new Structure(sAction));
+            return un.unifies(terms[4], new Atom(sAction));
         } catch (Throwable e) {
             e.printStackTrace();
             return false;
