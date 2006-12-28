@@ -11,77 +11,83 @@ calc_new_y(Y,Y2,Y2) :- Y+2 > Y2.
 calc_new_y(Y,Y2,YF) :- YF = Y+2.
 
 
-/* plans */
+/* plans for sending the initial position to leader */
 
-+gsize(S,_,_) : true <- !send_init_pos(S).
++gsize(S,_,_) : true // S is the simulation Id 
+  <- !send_init_pos(S).
 +!send_init_pos(S) : pos(X,Y)
-  <- .send(leader,tell,my_init_pos(S,X,Y)).
-+!send_init_pos(S) : not pos(_,_)
-  <- .wait("+pos(X,Y)", 500);
+  <- .send(leader,tell,init_pos(S,X,Y)).
++!send_init_pos(S) : not pos(_,_) // if I do not know my position
+  <- .wait("+pos(X,Y)", 500);     // wait for it and try again
      !!send_init_pos(S).
 
 /* plans for wandering in my quadrant when I'm free */
 
-+free : last_checked(XC,YC)  <- !around(XC,YC).
-+free : my_quad(X1,Y1,X2,Y2) <- !around(X1,Y1).
-+free : free <- !wait_for_quad.
-@pwfq[atomic]
-+!wait_for_quad : free & my_quad(_,_,_,_) <- -+free.
-+!wait_for_quad : free     <- .wait("+my_quad(X1,Y1,X2,Y2)", 500); !!wait_for_quad.
-+!wait_for_quad : not free <- .print("No longer free while waiting for my_quad.").
++free : last_checked(XC,YC)   <- !around(XC,YC).
++free : quadrant(X1,Y1,X2,Y2) <- !around(X1,Y1).
++free : true                  <- !wait_for_quad.
 
-+around(X1,Y1) : my_quad(X1,Y1,X2,Y2) & free
+@pwfq[atomic]
++!wait_for_quad : free & quadrant(_,_,_,_) 
+   <- -+free.
++!wait_for_quad : free     
+   <- .wait("+quadrant(X1,Y1,X2,Y2)", 500); !!wait_for_quad.
++!wait_for_quad : not free 
+   <- .print("No longer free while waiting for quadrant.").
+
++around(X1,Y1) : quadrant(X1,Y1,X2,Y2) & free
   <- .print("in Q1 to ",X2,"x",Y1); 
      -around(X1,Y1); -+last_dir(null); !around(X2,Y1).
 
-+around(X2,Y2) : my_quad(X1,Y1,X2,Y2) & free 
++around(X2,Y2) : quadrant(X1,Y1,X2,Y2) & free 
   <- .print("in Q4 to ",X1,"x",Y1); 
      -around(X2,Y2); -+last_dir(null); !around(X1,Y1).
 
-+around(X2,Y) : my_quad(X1,Y1,X2,Y2) & free  
++around(X2,Y) : quadrant(X1,Y1,X2,Y2) & free  
   <- ?calc_new_y(Y,Y2,YF);
      .print("in Q2 to ",X1,"x",YF);
      -around(X2,Y); -+last_dir(null); !around(X1,YF).
 
-+around(X1,Y) : my_quad(X1,Y1,X2,Y2) & free  
++around(X1,Y) : quadrant(X1,Y1,X2,Y2) & free  
   <- ?calc_new_y(Y,Y2,YF);
      .print("in Q3 to ", X2, "x", YF); 
      -around(X1,Y); -+last_dir(null); !around(X2,YF).
 
-// the last "around" was not any Q above
-+around(X,Y) : my_quad(X1,Y1,X2,Y2) & free & Y <= Y2 & Y >= Y1  
+// the last "around" was not any Q above, go back to my quadrant
++around(X,Y) : quadrant(X1,Y1,X2,Y2) & free & Y <= Y2 & Y >= Y1  
   <- .print("in no Q, going to X1");
      -around(X,Y); -+last_dir(null); !around(X1,Y).
-+around(X,Y) : my_quad(X1,Y1,X2,Y2) & free & X <= X2 & X >= X1  
++around(X,Y) : quadrant(X1,Y1,X2,Y2) & free & X <= X2 & X >= X1  
   <- .print("in no Q, going to Y1");
      -around(X,Y); -+last_dir(null); !around(X,Y1).
 
-+around(X,Y) : my_quad(X1,Y1,X2,Y2)
++around(X,Y) : quadrant(X1,Y1,X2,Y2)
   <- .print("It should never happen!!!!!! - go home");
      -around(X,Y); -+last_dir(null); !around(X1,Y1).
 
-
-// BCG!
 +!around(X,Y) 
-  :  (pos(AgX,AgY) & jia.neighbour(AgX,AgY,X,Y)) | last_dir(skip) 
-  <- +around(X,Y).
+   :  // I am around to some location if I am near it or
+      // the last action was skip (meaning that there is no path to there)
+      (pos(AgX,AgY) & jia.neighbour(AgX,AgY,X,Y)) | last_dir(skip) 
+   <- +around(X,Y).
 +!around(X,Y) : not around(X,Y)
-  <- !next_step(X,Y);
-     !!around(X,Y).
-+!around(X,Y) : true <- !!around(X,Y).
+   <- !next_step(X,Y);
+      !!around(X,Y).
++!around(X,Y) : true 
+   <- !!around(X,Y).
 
 +!next_step(X,Y)
-  :  pos(AgX,AgY)
-  <- jia.get_direction(AgX, AgY, X, Y, D);
-     //.print("from ",AgX,"x",AgY," to ", X,"x",Y," -> ",D);
-     -+last_dir(D);
-     do(D).
-+!next_step(X,Y) : not pos(_,_) // i still do not know my position
-  <- !next_step(X,Y).
--!next_step(X,Y) : true 
-  <- .print("Failed next_step to ", X,"x",Y," fixing and trying again!");
-     -+last_dir(null);
-     !next_step(X,Y).
+   :  pos(AgX,AgY)
+   <- jia.get_direction(AgX, AgY, X, Y, D);
+      //.print("from ",AgX,"x",AgY," to ", X,"x",Y," -> ",D);
+      -+last_dir(D);
+      do(D).
++!next_step(X,Y) : not pos(_,_) // I still do not know my position
+   <- !next_step(X,Y).
+-!next_step(X,Y) : true  // failure handling -> start again!
+   <- .print("Failed next_step to ", X,"x",Y," fixing and trying again!");
+      -+last_dir(null);
+      !next_step(X,Y).
 
 
 /* Gold-searching Plans */
@@ -120,23 +126,23 @@ calc_new_y(Y,Y2,YF) :- YF = Y+2.
      
 // someone else sent me gold location
 +gold(X1,Y1)[source(A)]
-  :  not gold(X1,Y1) & A \== self & not allocated_to(gold(X1,Y1),_) & not carrying_gold & free & pos(X2,Y2)
+  :  not gold(X1,Y1) & A \== self & not allocated(gold(X1,Y1),_) & not carrying_gold & free & pos(X2,Y2)
   <- jia.dist(X1,Y1,X2,Y2,D);
-     .send(leader,tell,bid_for(gold(X1,Y1),D)).
+     .send(leader,tell,bid(gold(X1,Y1),D)).
 // bid high as I'm not free
 +gold(X1,Y1)[source(A)]
   :  A \== self
-  <- .send(leader,tell,bid_for(gold(X1,Y1),1000)).
+  <- .send(leader,tell,bid(gold(X1,Y1),1000)).
 
 @palloc1[atomic]
-+allocated_to(Gold,Ag)[source(leader)] 
++allocated(Gold,Ag)[source(leader)] 
   :  .my_name(Ag) & free // I am still free
   <- -free;
      .print("Gold ",Gold," allocated to ",Ag);
      !init_handle(Gold).
 
 @palloc2[atomic]
-+allocated_to(Gold,Ag)[source(leader)] 
++allocated(Gold,Ag)[source(leader)] 
   :  .my_name(Ag) & not free // I am  no longer free
   <- .print("I can not handle ",Gold," anymore!");
      .print("(Re)announcing ",gold(X,Y)," to others");
@@ -259,7 +265,7 @@ calc_new_y(Y,Y2,YF) :- YF = Y+2.
 +end_of_simulation(S,_) : true 
   <- .drop_all_desires; 
      .drop_all_intentions;
-     -my_quad(_,_,_,_);
+     -quadrant(_,_,_,_);
      .abolish(gold(_,_));
      .abolish(committed_to(_));
      .abolish(picked(_));
