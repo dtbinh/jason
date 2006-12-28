@@ -22,7 +22,7 @@
     <target name="init">
 	<mkdir dir="${basedir}/bin/classes" />
         <copy toDir="${basedir}/lib" >
-            <fileset dir="../../../Moise/lib" includes="moise.jar" />
+            <fileset dir="${env.HOME}/moise/lib" includes="moise.jar" />
         </copy>
     </target>
 	

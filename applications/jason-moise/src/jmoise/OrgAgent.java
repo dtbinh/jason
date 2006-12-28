@@ -47,7 +47,7 @@ public class OrgAgent extends AgArch {
         super.initAg(agClass, bbPars, asSrc, stts);
         logger = Logger.getLogger(OrgAgent.class.getName() + "." + getAgName());
         try {
-            Message m = new Message("tell", null, "orgManager", "addAgent");
+            Message m = new Message("tell", null, "orgManager", "add_agent");
             super.sendMsg(m);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error sending addAgent to OrgManager!", e);
@@ -68,16 +68,16 @@ public class OrgAgent extends AgArch {
                 } catch (Exception e) {
                     // the content is a normal predicate
                     String content = m.getPropCont().toString();
-                    if (content.startsWith("schemeGroup")) { 
+                    if (content.startsWith("scheme_group")) { 
                         // this message is generated when my group becomes
                         // responsible for a scheme
                         generateObligationPermissionEvents(Pred.parsePred(content));
-                    } else if (content.startsWith("updateGoals")) { 
+                    } else if (content.startsWith("update_goals")) { 
                         // I need to generate AS Trigger like !<orggoal>
                         i.remove();
                         updateGoalBels();
                         generateOrgGoalEvents();
-                    } else if (content.startsWith("goalState")) { 
+                    } else if (content.startsWith("goal_state")) { 
                         // the state of a scheme i belong to has changed
                         i.remove();
                         updateGoalBels(Pred.parsePred(content));
@@ -137,7 +137,7 @@ public class OrgAgent extends AgArch {
 
                 Literal l = Literal.parseLiteral(gi.getAsProlog());
                 Literal giID = new Literal("scheme");
-                giID.addTerm(new Literal(gi.getScheme().getId()));
+                giID.addTerm(new Atom(gi.getScheme().getId()));
                 l.addAnnot(giID);
                 // "role(notimplemented),group(notimplemented)"+
                 // TODO: add annots: role, group (percorrer as missoes do ag que
@@ -160,9 +160,9 @@ public class OrgAgent extends AgArch {
 
     private static PredicateIndicator obligationLiteral  = new PredicateIndicator("obligation", 2);
     private static PredicateIndicator permissionLiteral  = new PredicateIndicator("permission", 2);
-    private static PredicateIndicator schemeGroupLiteral = new PredicateIndicator("schemeGroup", 2);
-    private static PredicateIndicator goalStateLiteral   = new PredicateIndicator("goalState", 3);
-    private static PredicateIndicator schPlayersLiteral  = new PredicateIndicator("schPlayers", 2);
+    private static PredicateIndicator schemeGroupLiteral = new PredicateIndicator("scheme_group", 2);
+    private static PredicateIndicator goalStateLiteral   = new PredicateIndicator("goal_state", 3);
+    private static PredicateIndicator schPlayersLiteral  = new PredicateIndicator("sch_players", 2);
     private static PredicateIndicator commitmentLiteral  = new PredicateIndicator("commitment", 3);
 
     /** remove all bels related to a Scheme */
@@ -236,7 +236,7 @@ public class OrgAgent extends AgArch {
         }
 
         // create the literal to be added
-        Literal gil = new Literal("goalState");
+        Literal gil = new Literal("goal_state");
         gil.addTerm(new Atom(gi.getScheme().getId()));
         gil.addTerm(gap);
         gil.addTerm(new VarTerm("S"));
@@ -247,6 +247,7 @@ public class OrgAgent extends AgArch {
         Literal gilInBB = getTS().getAg().believes(gil, u);
         if (gilInBB != null) {
             // the agent believes in the goal, remove if different
+        	// so that an event is produced
             if (!u.get("S").equals(gState)) {
                 getTS().getAg().delBel(gilInBB);
                 if (logger.isLoggable(Level.FINE)) {
@@ -255,7 +256,7 @@ public class OrgAgent extends AgArch {
             }
         }
 
-        gil = new Literal("goalState");
+        gil = new Literal("goal_state");
         gil.addTerm(new Atom(gi.getScheme().getId()));
         gil.addTerm(gap);
         gil.addTerm(new Atom(gState));
@@ -267,5 +268,5 @@ public class OrgAgent extends AgArch {
                 logger.fine("New goal belief: " + gil);
             }
         }
-    }
+    }    
 }

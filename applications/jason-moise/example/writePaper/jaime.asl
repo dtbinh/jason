@@ -4,21 +4,21 @@
 
 // I want to play "editor" in "wpgroups"
 // (this belief is used by the moise common plans included below) 
-desiredRole(wpgroup,editor).
+desired_role(wpgroup,editor).
 
 // I want to commit to "mManager" mission in "writePaperSch" schemes
-desiredMission(writePaperSch,mManager).
+desired_mission(writePaperSch,mManager).
 
 
 /*
    Initial goals
 */
 
-!createGroup. // initial goal
+!create_group. // initial goal
 
 // create a group to write a paper
-+!createGroup : true 
-   <- .send(orgManager, ask, createGroup(wpgroup), GId);
++!create_group : true 
+   <- .send(orgManager, ask, create_group(wpgroup), GId);
       .print("Created group: ",GId).
 
 
@@ -32,8 +32,8 @@ desiredMission(writePaperSch,mManager).
 // when I start playing the role "editor",
 // create a writePaper scheme
 +play(Me,editor,GId) 
-   :  .myName(Me) 
-   <- jmoise.startScheme(writePaperSch).
+   :  .my_name(Me) 
+   <- jmoise.start_scheme(writePaperSch).
 
       
 /* Functional events */
@@ -42,11 +42,11 @@ desiredMission(writePaperSch,mManager).
 // add a responsible group for it
 +scheme(writePaperSch,SId) 
    : group(wpgroup,GId)
-   <- jmoise.addResponsibleGroup(SId, GId).
+   <- jmoise.add_responsible_group(SId, GId).
 
 // when a scheme has finished, start another
 -scheme(writePaperSch,SId) : true
-   <- .send(orgManager, ask, startScheme(writePaperSch), SchId);
+   <- .send(orgManager, ask, start_scheme(writePaperSch), SchId);
       .print("The new scheme id is ",SchId).
 
 // include common plans for MOISE+ agents
@@ -60,24 +60,24 @@ desiredMission(writePaperSch,mManager).
 
 +!wtitle[scheme(Sch)] : true 
    <- .print("Writing title!");
-      jmoise.setGoalState(Sch,wtitle,satisfied).
+      jmoise.set_goal_state(Sch,wtitle,satisfied).
 
 +!wabs[scheme(Sch)] : true 
    <- .print("Writing abstract!");
-      jmoise.setGoalState(Sch,wabs,satisfied).
+      jmoise.set_goal_state(Sch,wabs,satisfied).
 
 +!wsectitles[scheme(Sch)] : true 
    <- .print("Writing section titles!");
-      jmoise.setGoalState(Sch,wsectitles,satisfied).
+      jmoise.set_goal_state(Sch,wsectitles,satisfied).
 
 +!fdv[scheme(Sch)] : true 
    <- .print("Writing the first draft version!");
-      jmoise.setGoalState(Sch,fdv,satisfied).
+      jmoise.set_goal_state(Sch,fdv,satisfied).
 
 +!wconc[scheme(Sch)] : true 
    <- .print("Writing conclusion!");
-      jmoise.setGoalState(Sch,wconc,satisfied).
+      jmoise.set_goal_state(Sch,wconc,satisfied).
 
 +!wpGoal[scheme(Sch)] : true 
    <- .print("***** FINISH! *****");
-      jmoise.setGoalState(Sch,wpGoal,satisfied).
+      jmoise.set_goal_state(Sch,wpGoal,satisfied).

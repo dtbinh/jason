@@ -4,7 +4,7 @@ import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.Term;
 
-public class finishScheme extends MoiseBaseIA {
+public class set_goal_arg extends MoiseBaseIA {
 
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {

@@ -4,7 +4,7 @@ import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.Term;
 
-public class adoptRole extends MoiseBaseIA {
+public class add_responsible_group extends MoiseBaseIA {
 
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {

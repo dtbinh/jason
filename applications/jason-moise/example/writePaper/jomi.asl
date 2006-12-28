@@ -3,10 +3,10 @@
 */
 
 // I want to play "writer" in "wpgroups"
-desiredRole(wpgroup,writer).
+desired_role(wpgroup,writer).
 
 // I want to commit to "mColaborator" mission in "writePaperSch" schemes
-desiredMission(writePaperSch,mColaborator).
+desired_mission(writePaperSch,mColaborator).
 
 // include common plans for MOISE+ agents
 { include("moise-common.asl") }
@@ -22,9 +22,9 @@ desiredMission(writePaperSch,mColaborator).
    <- // send a message to the agent committed to mission mBib
       .send(Ag, tell, useRef(bordini05));
       .print("Writing sections!");
-      jmoise.setGoalState(Sch, wsecs, satisfied).
+      jmoise.set_goal_state(Sch, wsecs, satisfied).
 
 // the plan to achieve the goal failed
 -!wsecs[scheme(Sch)] : true 
-   <- jmoise.setGoalState(Sch, wsecs, impossible).
+   <- jmoise.set_goal_state(Sch, wsecs, impossible).
       
