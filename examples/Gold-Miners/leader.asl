@@ -4,7 +4,8 @@
 
 @quads[atomic]
 +gsize(S,W,H) : true
-  <- .print("Defining quadrants for ",W,"x",H," simulation ",S);
+  <- // calculates the area of each quadrant and remember them
+     .print("Defining quadrants for ",W,"x",H," simulation ",S);
      +quad(S,1, 0, 0, W div 2 - 1, H div 2 - 1);
      +quad(S,2, W div 2, 0, W-1, H div 2 - 1);
      +quad(S,3, 0, H div 2, W div 2 - 1, H - 1);
@@ -12,13 +13,13 @@
      .print("Finished all quadrs for ",S).
 
 +init_pos(S,X,Y)[source(A)]
-  :  // if all miner sent their position
+  :  // if all miner have sent their position
      init_pos(S,X1,Y1)[source(miner1)] & 
      init_pos(S,X2,Y2)[source(miner2)] &
      init_pos(S,X3,Y3)[source(miner3)] & 
      init_pos(S,X4,Y4)[source(miner4)]
   <- .print("* InitPos ",A," is ",X,"x",Y);
-     // remember who doesn't have quadrant allocated
+     // remember who doesn't have a quadrant allocated
      // (initially all miners)
      +~quad(S,miner1); +~quad(S,miner2);
      +~quad(S,miner3); +~quad(S,miner4);

@@ -2,13 +2,17 @@
 
 /* beliefs */
 
-last_dir(null).
+last_dir(null). // the last movement
 free.
 
 /* rules */
 
-calc_new_y(Y,Y2,Y2) :- Y+2 > Y2.
-calc_new_y(Y,Y2,YF) :- YF = Y+2.
+// next line is the bottom line of the quadrant
+// if 2 lines bellow is too far
+calc_new_y(AgY,QuadY2,QuadY2) :- AgY+2 > QuadY2.
+
+// otherwise, the next line is 2 lines bellow
+calc_new_y(AgY,_,Y) :- Y = AgY+2.
 
 
 /* plans for sending the initial position to leader */
@@ -23,7 +27,7 @@ calc_new_y(Y,Y2,YF) :- YF = Y+2.
 
 /* plans for wandering in my quadrant when I'm free */
 
-+free : last_checked(XC,YC)   <- !around(XC,YC).
++free : last_checked(X,Y)     <- !around(X,Y).
 +free : quadrant(X1,Y1,X2,Y2) <- !around(X1,Y1).
 +free : true                  <- !wait_for_quad.
 
@@ -31,29 +35,34 @@ calc_new_y(Y,Y2,YF) :- YF = Y+2.
 +!wait_for_quad : free & quadrant(_,_,_,_) 
    <- -+free.
 +!wait_for_quad : free     
-   <- .wait("+quadrant(X1,Y1,X2,Y2)", 500); !!wait_for_quad.
+   <- .wait("+quadrant(X1,Y1,X2,Y2)", 500); 
+      !!wait_for_quad.
 +!wait_for_quad : not free 
    <- .print("No longer free while waiting for quadrant.").
 
+// if I am around upper-left corner, move to upper-right corner
 +around(X1,Y1) : quadrant(X1,Y1,X2,Y2) & free
   <- .print("in Q1 to ",X2,"x",Y1); 
      -around(X1,Y1); -+last_dir(null); !around(X2,Y1).
 
+// if I am around the bottom-right corner, move to upper-left corner
 +around(X2,Y2) : quadrant(X1,Y1,X2,Y2) & free 
   <- .print("in Q4 to ",X1,"x",Y1); 
      -around(X2,Y2); -+last_dir(null); !around(X1,Y1).
 
+// if I am around the right side, move to left side two lines bellow
 +around(X2,Y) : quadrant(X1,Y1,X2,Y2) & free  
   <- ?calc_new_y(Y,Y2,YF);
      .print("in Q2 to ",X1,"x",YF);
      -around(X2,Y); -+last_dir(null); !around(X1,YF).
 
+// if I am around the left side, move to right side two lines bellow
 +around(X1,Y) : quadrant(X1,Y1,X2,Y2) & free  
   <- ?calc_new_y(Y,Y2,YF);
      .print("in Q3 to ", X2, "x", YF); 
      -around(X1,Y); -+last_dir(null); !around(X2,YF).
 
-// the last "around" was not any Q above, go back to my quadrant
+// the last "around" was not any of above, go back to my quadrant
 +around(X,Y) : quadrant(X1,Y1,X2,Y2) & free & Y <= Y2 & Y >= Y1  
   <- .print("in no Q, going to X1");
      -around(X,Y); -+last_dir(null); !around(X1,Y).
@@ -93,7 +102,8 @@ calc_new_y(Y,Y2,YF) :- YF = Y+2.
 /* Gold-searching Plans */
 
 // I perceived unknown gold and I am free, handle it
-@pcell[atomic] // atomic: so as not to handle another event until handle gold is carrying on
+@pcell[atomic]           // atomic: so as not to handle another 
+                         // event until handle gold is carrying on
 +cell(X,Y,gold) 
   :  not carrying_gold & free
   <- -free;
@@ -108,11 +118,12 @@ calc_new_y(Y,Y2,YF) :- YF = Y+2.
 +cell(X,Y,gold)
   :  not gold(X,Y) & not carrying_gold & not free & 
      .desire(handle(gold(OldX,OldY))) & // I desire to handle another gold
-     pos(AgX,AgY) & not gold(AgX, AgY) // I am not just above the gold 
+     pos(AgX,AgY) & not gold(AgX, AgY)  // I am not just above the gold 
   <- +gold(X,Y);
      .drop_desire(handle(gold(OldX,OldY)));
      .drop_intention(handle(gold(_,_)));
-     .print("Giving up current gold ",gold(OldX,OldY)," to handle ",gold(X,Y)," which I am seeing!");
+     .print("Giving up current gold ",gold(OldX,OldY),
+            " to handle ",gold(X,Y)," which I am seeing!");
      .print("Announcing ",gold(OldX,OldY)," to others");
      .broadcast(tell,gold(OldX,OldY));
      !init_handle(gold(X,Y)).
@@ -124,16 +135,23 @@ calc_new_y(Y,Y2,YF) :- YF = Y+2.
      .print("Announcing ",gold(X,Y)," to others");
      .broadcast(tell,gold(X,Y)). 
      
-// someone else sent me gold location
+// someone else sent me a gold location
 +gold(X1,Y1)[source(A)]
-  :  not gold(X1,Y1) & A \== self & not allocated(gold(X1,Y1),_) & not carrying_gold & free & pos(X2,Y2)
-  <- jia.dist(X1,Y1,X2,Y2,D);
+  :  A \== self &
+     not gold(X1,Y1) &              // I don't know this gold
+     not allocated(gold(X1,Y1),_) & // It was not allocated yet
+     not carrying_gold &            // I am not carrying gold
+     free &                         // and am free
+     pos(X2,Y2)
+  <- jia.dist(X1,Y1,X2,Y2,D);       // bid
      .send(leader,tell,bid(gold(X1,Y1),D)).
+
 // bid high as I'm not free
 +gold(X1,Y1)[source(A)]
   :  A \== self
   <- .send(leader,tell,bid(gold(X1,Y1),1000)).
 
+// gold allocated to me
 @palloc1[atomic]
 +allocated(Gold,Ag)[source(leader)] 
   :  .my_name(Ag) & free // I am still free
@@ -141,16 +159,18 @@ calc_new_y(Y,Y2,YF) :- YF = Y+2.
      .print("Gold ",Gold," allocated to ",Ag);
      !init_handle(Gold).
 
+// some gold was allocated to me, but I can not
+// handle it anymore, re-announce
 @palloc2[atomic]
 +allocated(Gold,Ag)[source(leader)] 
-  :  .my_name(Ag) & not free // I am  no longer free
+  :  .my_name(Ag) & not free // I am no longer free
   <- .print("I can not handle ",Gold," anymore!");
      .print("(Re)announcing ",gold(X,Y)," to others");
      .broadcast(tell,gold(X,Y)). 
      
      
-// someone else picked up the gold I was going after
-// remove from bels and goals
+// someone else picked up the gold I am going to go,
+// so drops the intention and chose another gold
 @ppgd[atomic]
 +picked(G)[source(A)] 
   :  .desire(handle(G)) | .desire(init_handle(G))
@@ -160,30 +180,25 @@ calc_new_y(Y,Y2,YF) :- YF = Y+2.
      .drop_intention(handle(G));
      !!choose_gold.
 
-// someone else picked up a gold I know about, remove from my bels
-+picked(gold(X,Y)) : true 
+// someone else picked up a gold I know about, 
+// remove from my belief base
++picked(gold(X,Y))
   <- -gold(X,Y).
 
 
 @pih1[atomic]
-+!init_handle(Gold) : .desire(around(_,_)) 
++!init_handle(Gold) 
+  :  .desire(around(_,_)) 
   <- .print("Dropping around(_,_) desires and intentions to handle ",Gold);
      .drop_desire(around(_,_));
      .drop_intention(around(_,_));
-     .print("Going for ",Gold);
-     !update_pos;
-     !!handle(Gold). // must use !! to process handle as not atomic
+     !init_handle(Gold).
 @pih2[atomic]
-+!init_handle(Gold) : true 
++!init_handle(Gold)
+  :  pos(X,Y)
   <- .print("Going for ",Gold);
-     !update_pos;
-     !!handle(Gold). // must use !! to process handle as not atomic
-
-+!update_pos : free & pos(X,Y)
-  <- -+last_checked(X,Y).
-// do we need another alternative? I couldn't think of another. If free
-// but no desire, probably was still going home which works
-+!update_pos.
+     -+last_checked(X,Y);
+     !!handle(Gold). // must use !! to perform "handle" as not atomic
 
 +!handle(gold(X,Y)) 
   :  not free & .my_name(Me)
@@ -191,7 +206,8 @@ calc_new_y(Y,Y2,YF) :- YF = Y+2.
      .broadcast(tell, committed_to(gold(X,Y)));
      !pos(X,Y);
      !ensure(pick,gold(X,Y));
-     // broadcast that I got the gold(X,Y), to avoid someone else to pursue this gold
+     // broadcast that I got the gold(X,Y), to avoid someone 
+     // else to pursue this gold
      .broadcast(tell,picked(gold(X,Y)));
      ?depot(_,DX,DY);
      !pos(DX,DY);
@@ -209,7 +225,8 @@ calc_new_y(Y,Y2,YF) :- YF = Y+2.
   <- .print("failed to handle ",G,", it isn't in the BB anyway");
      !!choose_gold.
 
-// Hopefully going first to home if never got there because some gold was found
+// Hopefully going first to home if never got there 
+// because some gold was found
 +!choose_gold 
   :  not gold(_,_)
   <- -+free.
