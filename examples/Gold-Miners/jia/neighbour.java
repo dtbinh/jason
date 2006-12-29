@@ -12,14 +12,16 @@ public class neighbour extends DefaultInternalAction {
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] terms) throws Exception {
         try {
-            NumberTerm agx = (NumberTerm) terms[0].clone();
-            un.apply((Term) agx);
-            NumberTerm agy = (NumberTerm) terms[1].clone();
-            un.apply((Term) agy);
-            NumberTerm tox = (NumberTerm) terms[2].clone();
-            un.apply((Term) tox);
-            NumberTerm toy = (NumberTerm) terms[3].clone();
-            un.apply((Term) toy);
+            NumberTerm agx = (NumberTerm) terms[0];
+            NumberTerm agy = (NumberTerm) terms[1];
+            NumberTerm tox = (NumberTerm) terms[2];
+            NumberTerm toy = (NumberTerm) terms[3];
+
+            un.apply(agx);
+            un.apply(agy);
+            un.apply(tox);
+            un.apply(toy);
+
             int iagx = (int) agx.solve();
             int iagy = (int) agy.solve();
             int itox = (int) tox.solve();

@@ -22,10 +22,12 @@ public class random_direction extends DefaultInternalAction {
 
             WorldModel model = WorldModel.get();
 
-            NumberTerm agx = (NumberTerm) terms[0].clone();
-            un.apply((Term) agx);
-            NumberTerm agy = (NumberTerm) terms[1].clone();
-            un.apply((Term) agy);
+            NumberTerm agx = (NumberTerm) terms[0];
+            NumberTerm agy = (NumberTerm) terms[1];
+
+            un.apply(agx);
+            un.apply(agy);
+
             int iagx = (int) agx.solve();
             int iagy = (int) agy.solve();
             int itox = -1;
