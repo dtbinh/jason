@@ -21,7 +21,7 @@ public abstract class MoiseBaseIA extends DefaultInternalAction  {
 		for (int i=0; i<args.length; i++) {
 			acTerm.addTerm(args[i]);
 		}
-		un.apply(acTerm);
+		acTerm.apply(un);
 		if (logger.isLoggable(Level.FINE)) logger.fine("sending:"+acTerm);
 		
 		// send acTerm as message to OrgManager

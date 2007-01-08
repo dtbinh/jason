@@ -25,8 +25,8 @@ public class random_direction extends DefaultInternalAction {
             NumberTerm agx = (NumberTerm) terms[0];
             NumberTerm agy = (NumberTerm) terms[1];
 
-            un.apply(agx);
-            un.apply(agy);
+            agx.apply(un);
+            agy.apply(un);
 
             int iagx = (int) agx.solve();
             int iagy = (int) agy.solve();

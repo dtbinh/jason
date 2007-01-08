@@ -33,10 +33,10 @@ public class get_direction extends DefaultInternalAction {
             NumberTerm tox = (NumberTerm)terms[2];
             NumberTerm toy = (NumberTerm)terms[3]; 
 
-            un.apply(agx);
-            un.apply(agy);
-            un.apply(tox);
-            un.apply(toy);
+            agx.apply(un);
+            agy.apply(un);
+            tox.apply(un);
+            toy.apply(un);
 
             int iagx = (int)agx.solve();
             int iagy = (int)agy.solve();
