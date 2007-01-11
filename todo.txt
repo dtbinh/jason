@@ -15,6 +15,7 @@ Projects (!)
 . AS to programm robocode
 . Mobility for jason agents
 . Multi-environments (and agent entering/leaving them)
+. Test units, as JUnit.
 
 
 -------------------------   
@@ -31,31 +32,6 @@ MAS2J TODO
 
 -------------------------   
 AS TODO
-
---------------------------------
-Patterns
-
-  how to deal with
-	a(1).
-	a(2).
-	a(3).
-	+x : a(V) <- .print(V).
-  and we want to print 1, 2, and 3.
-  Discuss:
-        .foreach(X,a(X),call(.print(X)); // syntax problem
-  or
-	+x : true <- .findall(V,a(V),L); !do(L). // too verbose
-        +!do([]) : true <- true.
-        +!do([H|T]) : true <- .print(H); !do(T).
-  or 
-        +x : true <- { foreach(X,a(X),.print(X)) }.
-
-  If agreed, define a patterns for the above problem
-
---
-+(b and c) : .....
-===> +b: c <- ....
-     +c: b <- ......
 
 -----------------------------------
 Semantics TODO
@@ -74,9 +50,6 @@ Communication
 -----------------------------------
 Documentation TODO
 
-. to manual: examples of communication (ask, tellHow, ...; annots, 
-  semantic in KQMLPlans.asl)
-	
 . Getting start 
 
 
@@ -84,13 +57,11 @@ Documentation TODO
 Internal actions
 
 . moveTo
+
 . write the internal action .clone that creates a new agent. 
   The new agent as the same code, beliefs, intentions, .... ? that 
   the agent which call the .clone.
-
   
-. colocar no stdlib funcoes para uso de YP
-
 . Another controller demo for:
   Outras sugestoes foram um synchronous mode based on action, not on 
   reasoning cycle... (quer dizer, so quando todos decidiram uma acao vai
