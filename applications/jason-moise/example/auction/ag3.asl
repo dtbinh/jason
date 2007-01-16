@@ -26,8 +26,8 @@ desired_mission(doAuction,mParticipant).
       !bid_normally.
 
 +!bid[scheme(Sch)] 
-   :  goal_state(Sch, auction(N), _) & // get the auction number
-      commitment(Ag, mAuctionner, Sch) &  // get the agent committed to mAuctineer
+   :  goal_state(Sch, auction(N), _) &    // get the auction number
+      commitment(Ag, mAuctioneer, Sch) &  // get the agent committed to mAuctineer
       alliance(I,A)
    <- ?default_bid_value(B);
       ?bid(A,C);
@@ -35,8 +35,8 @@ desired_mission(doAuction,mParticipant).
       jmoise.set_goal_state(Sch,bid,satisfied).
 
 +!bid_normally 
-   :  goal_state(Sch, auction(N), _) & // get the auction number
-      commitment(Ag, mAuctionner, Sch)  // get the agent committed to mAuctineer
+   :  goal_state(Sch, auction(N), _) &  // get the auction number
+      commitment(Ag, mAuctioneer, Sch)  // get the agent committed to mAuctineer
    <- ?default_bid_value(B);
       .send(Ag, tell, place_bid(N,B));
       jmoise.set_goal_state(Sch,bid,satisfied).

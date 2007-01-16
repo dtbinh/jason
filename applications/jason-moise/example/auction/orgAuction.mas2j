@@ -12,7 +12,7 @@ MAS auction {
        orgManager     [osfile="auction-os.xml",gui=no] 
                        agentArchClass jmoise.OrgManager;
 
-       bob auctionner  agentArchClass jmoise.OrgAgent;
+       bob auctioneer  agentArchClass jmoise.OrgAgent;
        ag1             agentArchClass jmoise.OrgAgent;
 	   ag2             agentArchClass jmoise.OrgAgent;
        ag3             agentArchClass jmoise.OrgAgent;

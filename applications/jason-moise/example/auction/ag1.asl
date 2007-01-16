@@ -13,7 +13,7 @@ desired_mission(doAuction,mParticipant).
 // plan for the bid organisational goal
 +!bid[scheme(Sch)] 
    :  goal_state(Sch, auction(N), _) &   // get the auction number
-      commitment(Ag, mAuctionner, Sch)   // get the agent committed to mAuctineer
+      commitment(Ag, mAuctioneer, Sch)   // get the agent committed to mAuctineer
    <- .send(Ag, tell, place_bid(N,6));
       jmoise.set_goal_state(Sch,bid,satisfied).
 

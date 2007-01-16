@@ -23,7 +23,7 @@
 // and it was created by me
 +sch_players(Sch,0) 
    :  .my_name(Me) & scheme(_, Sch)[owner(Me)]
-   <- jmoise.finish_scheme(Sch).
+   <- jmoise.finish_scheme(Sch); .print(askfinish).
 
    
 /* Deontic events */

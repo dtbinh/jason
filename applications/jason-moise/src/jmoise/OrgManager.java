@@ -104,7 +104,7 @@ public class OrgManager extends AgArch {
                     processMoiseMessage(Pred.parsePred(content), agSender, m.getMsgId(), m.getIlForce().equals("ask"));
                 } else if (content.equals("add_agent")) {
                     currentOE.addAgent(m.getSender());
-                    updateMembersOE(currentOE.getAgent(m.getSender()), (Pred) null, true, true);
+                    updateMembersOE(currentOE.getAgent(m.getSender()), (String) null, true, true);
                 } else {
                     logger.log(Level.SEVERE, "The message " + m + " has a sender not registered in orgManger!");
                 }
@@ -192,7 +192,7 @@ public class OrgManager extends AgArch {
                         MissionPlayer mp = (MissionPlayer) mpi.next();
                         sender.removeMission(mp.getMission().getId(), schId);
                         mpi = sender.getMissions().iterator();
-                        Pred evUnCom = Pred.parsePred("commitment(" + sender + "," + mp.getMission().getId() + "," + sch.getId() + ")");
+                        String evUnCom = "commitment(" + sender + "," + mp.getMission().getId() + "," + sch.getId() + ")";
                         updateMembersOE(sch.getPlayers(), evUnCom, false, false);
                         if (!sch.isPlayer(sender)) {
                             updateMembersOE(sender, evUnCom, false, false);
@@ -203,7 +203,7 @@ public class OrgManager extends AgArch {
                     schId = m.getTerm(1).toString();
                     sch = currentOE.findScheme(schId);
                     sender.removeMission(misId, schId);
-                    Pred evUnCom = Pred.parsePred("commitment(" + sender + "," + misId + "," + sch.getId() + ")");
+                    String evUnCom = "commitment(" + sender + "," + misId + "," + sch.getId() + ")";
                     updateMembersOE(sender, evUnCom, false, false);
                     if (!sch.isPlayer(sender)) {
                         updateMembersOE(sch.getPlayers(), evUnCom, false, false);
@@ -212,7 +212,7 @@ public class OrgManager extends AgArch {
                 if (needsReply)
                     sendReply(sender, mId, "ok");
 
-                updateMembersOE(sender, (Pred) null, true, true);
+                updateMembersOE(sender, (String) null, true, true);
 
                 // notify owner that it can finish the scheme
                 updateMembersOE(sch.getOwner(), "sch_players(" + sch.getId() + ",NP)", false, false);
@@ -400,15 +400,7 @@ public class OrgManager extends AgArch {
         }
     }
 
-    void updateMembersOE(Collection ags, String event, boolean sendOE, boolean tell) {
-        updateMembersOE(ags, Pred.parsePred(event), sendOE, tell);
-    }
-
-    void updateMembersOE(OEAgent ag, String event, boolean sendOE, boolean tell) {
-        updateMembersOE(ag, Pred.parsePred(event), sendOE, tell);
-    }
-
-    private void updateMembersOE(Collection ags, Pred pEnv, boolean sendOE, boolean tell) {
+    private void updateMembersOE(Collection ags, String pEnv, boolean sendOE, boolean tell) {
         Set<OEAgent> all = new HashSet<OEAgent>(); // to remove duplicates
         Iterator iAgs = ags.iterator();
         while (iAgs.hasNext()) {
@@ -435,8 +427,8 @@ public class OrgManager extends AgArch {
         }
     }
 
-    private void updateMembersOE(OEAgent ag, Pred pEnv, boolean sendOE, boolean tell) {
-        if (!ag.getAgentId().equals("orgManager")) {
+    private void updateMembersOE(OEAgent ag, String pEnv, boolean sendOE, boolean tell) {
+        if (!ag.getId().equals("orgManager")) {
             try {
                 if (sendOE) {
                     Message moe = new Message("tell", null, ag.getId(), null);
@@ -447,7 +439,7 @@ public class OrgManager extends AgArch {
                     String perf = "tell";
                     if (!tell)
                         perf = "untell";
-                    sendMsg(new Message(perf, null, ag.getId(), pEnv.toString()));
+                    sendMsg(new Message(perf, null, ag.getId(), pEnv));
                 }
             } catch (Exception e) {
                 logger.log(Level.SEVERE, "Error sending update to " + ag + " (" + pEnv + ").", e);

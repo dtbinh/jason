@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <organisational-specification 
     id="auction"
-    os-version="0.3"
+    os-version="0.4"
   
     xmlns='http://moise.sourceforge.net/os'
     xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
@@ -11,24 +11,18 @@
 <structural-specification>
 
 <role-definitions>
- <role id="auctionner" />
+ <role id="auctioneer" />
  <role id="participant" />
 </role-definitions>
 
-<link-types>
- <link-type id="authority"/>
- <link-type id="acquaintance"/>
- <link-type id="communication"/>
-</link-types>
-
 <group-specification id="auctionGroup">
  <roles>
-  <role id="auctionner"  min="1" max="1"/>
+  <role id="auctioneer"  min="1" max="1"/>
   <role id="participant" min="1" max="300"/>
  </roles>
 
  <links>
-  <link from="auctionner" to="participant" type="communication" scope="intra-group" 
+  <link from="auctioneer" to="participant" type="communication" scope="intra-group" 
         extends-sub-groups="false" bi-dir="false"/>
  </links>
 
@@ -47,7 +41,7 @@
        </goal>
      </plan>
    </goal>
-   <mission id="mAuctionner" min="1" max="1">
+   <mission id="mAuctioneer" min="1" max="1">
      <goal id="auction"/>
      <goal id="start" />
      <goal id="winner" />
@@ -59,14 +53,9 @@
 </functional-specification>
 
 <deontic-specification>
-<deontic-operators>
- <deontic-operator id="obligation"/>
- <deontic-operator id="permission"/>
-</deontic-operators>
-
 <deontic-relation type="permission" 
-                  role="auctionner" 
-                  mission="mAuctionner" />
+                  role="auctioneer" 
+                  mission="mAuctioneer" />
 <deontic-relation type="permission" 
                   role="participant" 
                   mission="mParticipant" />
