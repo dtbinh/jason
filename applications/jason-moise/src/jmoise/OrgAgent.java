@@ -2,6 +2,7 @@ package jmoise;
 
 import jason.JasonException;
 import jason.architecture.AgArch;
+import jason.asSemantics.Agent;
 import jason.asSemantics.Event;
 import jason.asSemantics.Intention;
 import jason.asSemantics.Message;
@@ -57,10 +58,10 @@ public class OrgAgent extends AgArch {
     public void checkMail() {
         super.checkMail(); // get the messages
         // check the MailBox (at TS) for org messages
-        Iterator i = getTS().getC().getMailBox().iterator();
+        Iterator<Message> i = getTS().getC().getMailBox().iterator();
         while (i.hasNext()) {
             try {
-                Message m = (Message) i.next();
+                Message m = i.next();
                 // check if content is and OE
                 try {
                     currentOE = (OE) m.getPropCont();
@@ -149,9 +150,9 @@ public class OrgAgent extends AgArch {
     }
 
     void removeAchieveEvents(String schId) {
-        Iterator i = alreadyGeneratedEvents.iterator();
+        Iterator<GoalInstance> i = alreadyGeneratedEvents.iterator();
         while (i.hasNext()) {
-            GoalInstance gi = (GoalInstance) i.next();
+            GoalInstance gi = i.next();
             if (gi.getScheme().getId().equals(schId)) {
                 i.remove();
             }
@@ -165,14 +166,15 @@ public class OrgAgent extends AgArch {
     private static PredicateIndicator schPlayersLiteral  = new PredicateIndicator("sch_players", 2);
     private static PredicateIndicator commitmentLiteral  = new PredicateIndicator("commitment", 3);
 
-    /** remove all bels related to a Scheme */
+    /** removes all bels related to a Scheme */
     void removeBeliefs(String schId) {
-        getTS().getAg().abolish(buildLiteralToCleanBB(schId, obligationLiteral, false), new Unifier());
-        getTS().getAg().abolish(buildLiteralToCleanBB(schId, permissionLiteral, false), new Unifier());
-        getTS().getAg().abolish(buildLiteralToCleanBB(schId, schemeGroupLiteral, false), new Unifier());
-        getTS().getAg().abolish(buildLiteralToCleanBB(schId, goalStateLiteral, false), new Unifier());
-        getTS().getAg().abolish(buildLiteralToCleanBB(schId, schPlayersLiteral, false), new Unifier());
-        getTS().getAg().abolish(buildLiteralToCleanBB(schId, commitmentLiteral, true), new Unifier());
+        Agent ag = getTS().getAg();
+        ag.abolish(buildLiteralToCleanBB(schId, obligationLiteral, false), null);
+        ag.abolish(buildLiteralToCleanBB(schId, permissionLiteral, false), null);
+        ag.abolish(buildLiteralToCleanBB(schId, schemeGroupLiteral, false), null);
+        ag.abolish(buildLiteralToCleanBB(schId, goalStateLiteral, false), null);
+        ag.abolish(buildLiteralToCleanBB(schId, schPlayersLiteral, false), null);
+        ag.abolish(buildLiteralToCleanBB(schId, commitmentLiteral, true), null);
     }
 
     private Literal buildLiteralToCleanBB(String schId, PredicateIndicator pred, boolean schInEnd) {

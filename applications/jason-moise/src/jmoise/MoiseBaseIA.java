@@ -16,7 +16,7 @@ public abstract class MoiseBaseIA extends DefaultInternalAction  {
 
 	@Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
-    	String acName = this.getClass().getName().substring(7); // remove the package name "jmoise"
+    	String acName = this.getClass().getSimpleName(); // remove the package name "jmoise"
         Structure acTerm = new Structure(acName);
 		for (int i=0; i<args.length; i++) {
 			acTerm.addTerm(args[i]);
