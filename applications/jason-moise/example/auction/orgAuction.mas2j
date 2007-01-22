@@ -13,7 +13,7 @@ MAS auction {
                        agentArchClass jmoise.OrgManager;
 
        bob auctioneer  agentArchClass jmoise.OrgAgent;
-       ag1             agentArchClass jmoise.OrgAgent;
+       ag1             [verbose=1] agentArchClass jmoise.OrgAgent;
 	   ag2             agentArchClass jmoise.OrgAgent;
        ag3             agentArchClass jmoise.OrgAgent;
 

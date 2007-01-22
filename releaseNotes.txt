@@ -16,6 +16,10 @@ Changes in the API
 . Many internal actions was renamed to follow a Prolog pattern. E.g.
   addPlan -> add_plan, createAgent -> create_agent.
   
+Changes in AgentSpeak semantics
+. "-b" in a plan removes "b[source(self)]" from the Belief Base and 
+  not b with its all annotations.  
+  
 Documentation
 . all internal actions was documented using javadoc (see doc/api).
 

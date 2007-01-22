@@ -40,8 +40,9 @@ public class OrgAgent extends AgArch {
 
     OE                currentOE              = null;
     Set<GoalInstance> alreadyGeneratedEvents = new HashSet<GoalInstance>();
-    Term              managerSource          = DefaultTerm.parse("source(orgManager)");
-    Logger            logger                 = Logger.getLogger(OrgAgent.class.getName());
+    static final Term managerSource          = DefaultTerm.parse("source(orgManager)");
+    static final Atom rootAtom               = new Atom("root");
+    private Logger    logger                 = Logger.getLogger(OrgAgent.class.getName());
 
     @Override
     public void initAg(String agClass, ClassParameters bbPars, String asSrc, Settings stts) throws JasonException {
@@ -209,7 +210,7 @@ public class OrgAgent extends AgArch {
     }
 
     void updateGoalBels(Pred arg) {
-        String schId = arg.getTerm(0).toString();
+        String schId  = arg.getTerm(0).toString();
         String goalId = arg.getTerm(1).toString();
         for (SchemeInstance sch : getMyOEAgent().getAllMySchemes()) {
             if (sch.getId().equals(schId)) {
@@ -223,52 +224,44 @@ public class OrgAgent extends AgArch {
 
     void updateGoalBels(GoalInstance gi) {
         Pred gap = Pred.parsePred(gi.getAsProlog());
-        //if (!gap.isGround()) {
-        //    return;
-        //}
+
         if (gi.getScheme().getRoot() == gi) {
-            gap.addAnnot(new Atom("root"));
+            gap.addAnnot(rootAtom);
         }
-        //BeliefBase bb = fTS.getAg().getBS();
-        String gState = "unsatisfied";
+
+        Atom gState = new Atom("unsatisfied");
         if (gi.isSatisfied()) {
-            gState = "satisfied";
+            gState = new Atom("satisfied");
         } else if (gi.isImpossible()) {
-            gState = "impossible";
+            gState = new Atom("impossible");
         }
 
         // create the literal to be added
         Literal gil = new Literal("goal_state");
         gil.addTerm(new Atom(gi.getScheme().getId()));
         gil.addTerm(gap);
-        gil.addTerm(new VarTerm("S"));
+        VarTerm S = new VarTerm("S");
+        gil.addTerm(S);
+        gil.addAnnot(managerSource);
         
-        
-        // remove it from BB
         Unifier u = new Unifier();
-        Literal gilInBB = getTS().getAg().believes(gil, u);
+
+        Literal gilInBB = getTS().getAg().findBel(gil, u); 
         if (gilInBB != null) {
             // the agent believes in the goal, remove if different
         	// so that an event is produced
-            if (!u.get("S").equals(gState)) {
-                getTS().getAg().delBel(gilInBB);
-                if (logger.isLoggable(Level.FINE)) {
-                    logger.fine("Remove goal belief: " + gilInBB);
-                }
+        	if (!u.get(S).equals(gState) || !gap.equals(gilInBB.getTerm(1))) { 
+                if (!getTS().getAg().delBel(gilInBB)) {
+                	logger.warning("Belief "+gilInBB+" should be deleted, but was not!");
+                } else if (logger.isLoggable(Level.FINE)) logger.fine("Remove goal belief: " + gil);
             }
         }
 
-        gil = new Literal("goal_state");
-        gil.addTerm(new Atom(gi.getScheme().getId()));
-        gil.addTerm(gap);
-        gil.addTerm(new Atom(gState));
-        gilInBB = getTS().getAg().believes(gil, u);
-        if (gilInBB == null) {
-            gil.addAnnot(managerSource);
-            getTS().getAg().addBel(gil);
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("New goal belief: " + gil);
-            }
+        gil = (Literal)gil.clone();
+        gil.setTerm(2, gState);
+        
+        if (getTS().getAg().addBel(gil)) {
+        	if (logger.isLoggable(Level.FINE)) logger.fine("New goal belief: " + gil);
         }
     }    
 }

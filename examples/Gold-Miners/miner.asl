@@ -175,7 +175,7 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
 +picked(G)[source(A)] 
   :  .desire(handle(G)) | .desire(init_handle(G))
   <- .print(A," has taken ",G," that I am pursuing! Dropping my intention.");
-     -gold(X,Y);
+     -gold(X,Y)[source(_)];   // Remove despite the source 
      .drop_desire(handle(G)); // Rafa, do we need to drop the desire?
      .drop_intention(handle(G));
      !!choose_gold.
@@ -183,7 +183,7 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
 // someone else picked up a gold I know about, 
 // remove from my belief base
 +picked(gold(X,Y))
-  <- -gold(X,Y).
+  <- -gold(X,Y)[source(_)].
 
 
 @pih1[atomic]
@@ -212,14 +212,14 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
      ?depot(_,DX,DY);
      !pos(DX,DY);
      !ensure(drop, 0);
-     -gold(X,Y); 
+     -gold(X,Y)[source(_)]; 
      .print("Finish handling ",gold(X,Y));
      !!choose_gold.
 
 // if ensure(pick/drop) failed, pursue another gold
 -!handle(G) : G
   <- .print("failed to catch gold ",G);
-     -G;
+     -G[source(_)]; // ignore source
      !!choose_gold.
 -!handle(G) : true
   <- .print("failed to handle ",G,", it isn't in the BB anyway");
@@ -243,7 +243,7 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
      .sort(LD,[d(D,NewG)|_]);
      .print("Next gold is ",NewG);
      !!handle(NewG).
--!choose_gold : true <- -+free.
+-!choose_gold <- -+free.
 
 +!calc_gold_distance([],[]).
 +!calc_gold_distance([gold(GX,GY)|R],[d(D,gold(GX,GY))|RD]) 
@@ -251,7 +251,6 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
   <- jia.dist(IX,IY,GX,GY,D);
      !calc_gold_distance(R,RD).
 +!calc_gold_distance([_|R],RD) 
-  :  true
   <- !calc_gold_distance(R,RD).
 
 
