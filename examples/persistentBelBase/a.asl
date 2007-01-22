@@ -9,6 +9,6 @@
 +!start : a(X) 
   <- -+a(X+1); 
      .print("Not first run, I already run ",X," times.");
-     .wait(1000);
+     .wait(2000);
      .stopMAS.
 

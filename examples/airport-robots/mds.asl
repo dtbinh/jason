@@ -4,7 +4,7 @@ mds(5). // There are 5 MDS robots (including me)
 allBidsReceived(RN)    
       :- .findall(b,bid(RN,_),L) & .length(L,N) & mds(M) & N >= (M-1).
 iAmTheWinner(RN,MyBid)  
-      :- .myName(I) & winner(RN,I,MyBid).
+      :- .my_name(I) & winner(RN,I,MyBid).
 
 // perception of an unattented luggage at Terminal/Gate,
 // with report number RN
@@ -14,7 +14,7 @@ iAmTheWinner(RN,MyBid)
 // negotiation on which MDS robot will deal with a particular
 // unattended luggage report
 +!negotiate(RN) : free 
-      <- .myName(I);                      // Jason internal action
+      <- .my_name(I);                     // Jason internal action
          mds.calculateMyBid(RN,MyBid);    // user internal action
          +winner(RN,I,MyBid);             // assume winner until someone else bids higher
          .broadcast(tell, bid(RN,MyBid)). // tell all others what my bid is
