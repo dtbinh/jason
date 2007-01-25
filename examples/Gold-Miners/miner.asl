@@ -116,9 +116,9 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
 // this one which is nearer
 @pcell2[atomic]
 +cell(X,Y,gold)
-  :  not gold(X,Y) & not carrying_gold & not free & 
-     .desire(handle(gold(OldX,OldY))) & // I desire to handle another gold
-     pos(AgX,AgY) & not gold(AgX, AgY)  // I am not just above the gold 
+  :  not gold(X,Y) & not carrying_gold & not free & pos(AgX,AgY) &
+     .desire(handle(gold(OldX,OldY))) &    // I desire to handle another gold
+     jia.dist(OldX,OldY,AgX,AgY,D) & D > 1 // that are far than the just perceived
   <- +gold(X,Y);
      .drop_desire(handle(gold(OldX,OldY)));
      .drop_intention(handle(gold(_,_)));
