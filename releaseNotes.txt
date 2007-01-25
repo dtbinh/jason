@@ -18,7 +18,9 @@ Changes in the API
   
 Changes in AgentSpeak semantics
 . "-b" in a plan removes "b[source(self)]" from the Belief Base and 
-  not b with its all annotations.  
+  not b with its all annotations. However, the source(self) annot is
+  added only in case b has no annots. For -b[a], the source is not
+  added and only the annotation a is removed. 
   
 Documentation
 . all internal actions was documented using javadoc (see doc/api).
