@@ -118,7 +118,7 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
 +cell(X,Y,gold)
   :  not gold(X,Y) & not carrying_gold & not free & pos(AgX,AgY) &
      .desire(handle(gold(OldX,OldY))) &    // I desire to handle another gold
-     jia.dist(OldX,OldY,AgX,AgY,D) & D > 1 // that are far than the just perceived
+     jia.dist(OldX,OldY,AgX,AgY,D) & D > 1 // which is farther than the one just perceived
   <- +gold(X,Y);
      .drop_desire(handle(gold(OldX,OldY)));
      .drop_intention(handle(gold(_,_)));
