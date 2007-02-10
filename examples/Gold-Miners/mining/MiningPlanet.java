@@ -2,10 +2,10 @@ package mining;
 
 // Environment code for project jasonTeamSimLocal.mas2j
 
+import jason.asSyntax.DefaultTerm;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
-import jason.asSyntax.DefaultTerm;
 import jason.environment.grid.Location;
 
 import java.util.logging.Level;
@@ -83,7 +83,7 @@ public class MiningPlanet extends jason.environment.Environment {
             } else if (action.equals(left)) {
                 result = model.move(Move.LEFT, agId);
             } else if (action.equals(skip)) {
-                return true;
+                result = true;
             } else if (action.equals(pick)) {
                 result = model.pick(agId);
             } else if (action.equals(drop)) {
@@ -102,21 +102,24 @@ public class MiningPlanet extends jason.environment.Environment {
     }
 
     private void initWorld(int w) {
-        switch (w) {
-        case 1: model = WorldModel.world1(); break;
-        case 2: model = WorldModel.world2(); break;
-        case 3: model = WorldModel.world3(); break;
-        case 4: model = WorldModel.world4(); break;
-        case 5: model = WorldModel.world5(); break;
-        default:
-            logger.info("Invalid index!");
-            return;
-        }
+    	try {
+	        switch (w) {
+	        case 1: model = WorldModel.world1(); break;
+	        case 2: model = WorldModel.world2(); break;
+	        case 3: model = WorldModel.world3(); break;
+	        case 4: model = WorldModel.world4(); break;
+	        case 5: model = WorldModel.world5(); break;
+	        default:
+	            logger.info("Invalid index!");
+	            return;
+	        }
+	        addPercept(Literal.parseLiteral("gsize(" + simId + "," + model.getWidth() + "," + model.getHeight() + ")"));
+	        addPercept(Literal.parseLiteral("depot(" + simId + "," + model.getDepot().x + "," + model.getDepot().y + ")"));
 
-        addPercept(Literal.parseLiteral("gsize(" + simId + "," + model.getWidth() + "," + model.getHeight() + ")"));
-        addPercept(Literal.parseLiteral("depot(" + simId + "," + model.getDepot().x + "," + model.getDepot().y + ")"));
-
-        updateAgsPercept();
+	        updateAgsPercept();
+    	} catch (Exception e) {
+    		logger.warning("Error creating world "+e);
+    	}
     }
 
     private void endSimulation() {

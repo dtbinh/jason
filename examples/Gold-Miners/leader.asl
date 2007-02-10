@@ -4,7 +4,7 @@
 
 @quads[atomic]
 +gsize(S,W,H) : true
-  <- // calculates the area of each quadrant and remember them
+  <- // calculates the area of each quadrant and remembers them
      .print("Defining quadrants for ",W,"x",H," simulation ",S);
      +quad(S,1, 0, 0, W div 2 - 1, H div 2 - 1);
      +quad(S,2, W div 2, 0, W-1, H div 2 - 1);
@@ -13,11 +13,8 @@
      .print("Finished all quadrs for ",S).
 
 +init_pos(S,X,Y)[source(A)]
-  :  // if all miner have sent their position
-     init_pos(S,X1,Y1)[source(miner1)] & 
-     init_pos(S,X2,Y2)[source(miner2)] &
-     init_pos(S,X3,Y3)[source(miner3)] & 
-     init_pos(S,X4,Y4)[source(miner4)]
+  :  // if all miners have sent their position
+     .count(init_pos(S,_,_),4)
   <- .print("* InitPos ",A," is ",X,"x",Y);
      // remember who doesn't have a quadrant allocated
      // (initially all miners)
@@ -54,25 +51,26 @@
 
 /* negotiation for found gold */
 
-// TODO: timeout negotiation
++gold(X,Y) // some gold was found and can not be handled, defines timeout for the negotiation
+  <- .at("now + 1 s", "+!allocate_miner(Gold)").
+
 +bid(Gold,D)[source(M1)]
-  :  bid(Gold,_)[source(M2)] & 
-     bid(Gold,_)[source(M3)] &
-     M1 \== M2 & 
-     M1 \== M3 & 
-     M2 \== M3   // three different bids was received
+  :  .count(bid(Gold,_),4) // four bids was received
   <- .print("bid from ",M1," for ",Gold," is ",D);
      !allocate_miner(Gold);
      .abolish(bid(Gold,_)).
 +bid(Gold,D)[source(A)]
   <- .print("bid from ",A," for ",Gold," is ",D).  
  
-+!allocate_miner(Gold) : true
+@lam[atomic]
++!allocate_miner(Gold) 
+  :  Gold
   <- .findall(op(Dist,A),bid(Gold,Dist)[source(A)],LD);
      .sort(LD,[op(DistCloser,Closer)|_]);
      DistCloser < 1000;
      .print("Gold ",Gold," was allocated to ",Closer, " options was ",LD);
-     .broadcast(tell,allocated(Gold,Closer)).
+     .broadcast(tell,allocated(Gold,Closer));
+     -Gold[source(_)].
 -!allocate_miner(Gold) : true
   <- .print("could not allocate gold ",Gold).
 

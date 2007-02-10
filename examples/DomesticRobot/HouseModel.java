@@ -25,7 +25,11 @@ public class HouseModel extends GridWorldModel {
 
         // initial location of robot (column 3, line 3)
         // ag code 0 means the robot
-        setAgPos(0, GSize/2, GSize/2);
+        try {
+			setAgPos(0, GSize/2, GSize/2);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
         
         // initial location of fridge and owner
         add(FRIDGE, lFridge);
@@ -50,7 +54,7 @@ public class HouseModel extends GridWorldModel {
         }                
     }  
 
-    boolean moveTowards(Location dest) {
+    boolean moveTowards(Location dest) throws Exception {
         Location r1 = getAgPos(0);
         if (r1.x < dest.x)        r1.x++;
         else if (r1.x > dest.x)   r1.x--;

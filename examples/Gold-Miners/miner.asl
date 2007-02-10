@@ -141,7 +141,7 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
      not gold(X1,Y1) &              // I don't know this gold
      not allocated(gold(X1,Y1),_) & // It was not allocated yet
      not carrying_gold &            // I am not carrying gold
-     free &                         // and am free
+     free &                         // and I am free
      pos(X2,Y2)
   <- jia.dist(X1,Y1,X2,Y2,D);       // bid
      .send(leader,tell,bid(gold(X1,Y1),D)).
@@ -176,7 +176,7 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
   :  .desire(handle(G)) | .desire(init_handle(G))
   <- .print(A," has taken ",G," that I am pursuing! Dropping my intention.");
      -gold(X,Y)[source(_)];   // Remove despite the source 
-     .drop_desire(handle(G)); // Rafa, do we need to drop the desire?
+     .drop_desire(handle(G)); 
      .drop_intention(handle(G));
      !!choose_gold.
 
@@ -201,7 +201,7 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
      !!handle(Gold). // must use !! to perform "handle" as not atomic
 
 +!handle(gold(X,Y)) 
-  :  not free & .my_name(Me)
+  :  not free 
   <- .print("Handling ",gold(X,Y)," now.");
      .broadcast(tell, committed_to(gold(X,Y)));
      !pos(X,Y);
@@ -233,9 +233,9 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
 
 // Finished one gold, but others left
 // find the closest gold among the known options, 
-// which isn't committed by someone else
+// that nobody else committed to
 +!choose_gold 
-  :  gold(_,_)
+  :  gold(_,_) & not .desire(handle(_)) & not .desire(init_handle(_))
   <- .findall(gold(X,Y),gold(X,Y),LG);
      !calc_gold_distance(LG,LD);
      .length(LD,LLD); LLD > 0;

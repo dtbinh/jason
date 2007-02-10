@@ -1,7 +1,7 @@
+import jason.asSyntax.DefaultTerm;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
-import jason.asSyntax.DefaultTerm;
 import jason.environment.Environment;
 import jason.environment.grid.GridWorldModel;
 import jason.environment.grid.GridWorldView;
@@ -40,21 +40,25 @@ public class MarsEnv extends Environment {
     
     @Override
 	public boolean executeAction(String ag, Structure action) {
-		if (action.equals(ns)) {
-			model.nextSlot();
-		} else if (action.getFunctor().equals("move_towards")) {
-			int x = Integer.parseInt(action.getTerm(0).toString());
-			int y = Integer.parseInt(action.getTerm(1).toString());
-            model.moveTowards(x,y);
-		} else if (action.equals(pg)) {
-            model.pickGarb();
-		} else if (action.equals(dg)) {
-            model.dropGarb();
-		} else if (action.equals(bg)) {
-		    model.burnGarb();
-		} else {
-		    return false;
-        }
+		try {
+			if (action.equals(ns)) {
+				model.nextSlot();
+			} else if (action.getFunctor().equals("move_towards")) {
+				int x = Integer.parseInt(action.getTerm(0).toString());
+				int y = Integer.parseInt(action.getTerm(1).toString());
+	            model.moveTowards(x,y);
+			} else if (action.equals(pg)) {
+	            model.pickGarb();
+			} else if (action.equals(dg)) {
+	            model.dropGarb();
+			} else if (action.equals(bg)) {
+			    model.burnGarb();
+			} else {
+			    return false;
+	        }
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
         
         updatePercepts();
 
@@ -97,10 +101,14 @@ public class MarsEnv extends Environment {
             super(GSize, GSize, 2);
             
             // initial location of agents
-            setAgPos(0, 0, 0);
+            try {
+				setAgPos(0, 0, 0);
             
-            Location r2Loc = new Location(GSize/2, GSize/2);
-            setAgPos(1, r2Loc);
+				Location r2Loc = new Location(GSize/2, GSize/2);
+				setAgPos(1, r2Loc);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
             
             // initial location of garbage
             add(GARB, 3, 0);
@@ -110,7 +118,7 @@ public class MarsEnv extends Environment {
             add(GARB, GSize-1, GSize-1);
         }
         
-        void nextSlot() {
+        void nextSlot() throws Exception {
             Location r1 = getAgPos(0);
             r1.x++;
             if (r1.x == getWidth()) {
@@ -125,7 +133,7 @@ public class MarsEnv extends Environment {
             setAgPos(1, getAgPos(1)); // just to draw it in the view
         }
         
-        void moveTowards(int x, int y) {
+        void moveTowards(int x, int y) throws Exception {
             Location r1 = getAgPos(0);
             if (r1.x < x)
                 r1.x++;

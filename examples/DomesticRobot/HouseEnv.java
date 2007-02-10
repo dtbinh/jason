@@ -78,7 +78,12 @@ public class HouseEnv extends Environment {
 			} else if (l.equals("owner")) {
                 dest = model.lOwner;
 			}
-			result = model.moveTowards(dest);
+
+			try {
+				result = model.moveTowards(dest);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			
 		} else if (action.equals(gb)) {
             result = model.getBeer();

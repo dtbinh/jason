@@ -65,7 +65,7 @@ public class WorldModel extends GridWorldModel {
 
     /** Actions **/
 
-    boolean move(Move dir, int ag) {
+    boolean move(Move dir, int ag) throws Exception {
         Location l = getAgPos(ag);
         switch (dir) {
         case UP:
@@ -161,7 +161,7 @@ public class WorldModel extends GridWorldModel {
 
     
     /** no gold/no obstacle world */
-    static WorldModel world1() {
+    static WorldModel world1() throws Exception {
         WorldModel model = WorldModel.create(21, 21, 4);
         model.setDepot(5, 7);
         model.setAgPos(0, 1, 0);
@@ -171,7 +171,7 @@ public class WorldModel extends GridWorldModel {
         return model;
     }
 
-    static WorldModel world2() {
+    static WorldModel world2() throws Exception {
         WorldModel model = WorldModel.create(10, 10, 4);
         model.setDepot(5, 7);
         model.setAgPos(0, 1, 0);
@@ -182,7 +182,7 @@ public class WorldModel extends GridWorldModel {
     }
 
     /** world with gold, no obstacle */
-    static WorldModel world3() {
+    static WorldModel world3() throws Exception {
         WorldModel model = WorldModel.create(15, 15, 4);
         model.setDepot(5, 7);
         model.setAgPos(0, 1, 0);
@@ -195,7 +195,7 @@ public class WorldModel extends GridWorldModel {
     }
 
     /** world with gold, no obstacle */
-    static WorldModel world4() {
+    static WorldModel world4() throws Exception {
         WorldModel model = WorldModel.create(35, 35, 4);
         model.setDepot(5, 27);
         model.setAgPos(0, 1, 0);
@@ -219,7 +219,7 @@ public class WorldModel extends GridWorldModel {
     }
 
     /** world with gold and obstacles */
-    static WorldModel world5() {
+    static WorldModel world5() throws Exception {
         WorldModel model = WorldModel.create(35, 35, 4);
         model.setDepot(16, 16);
         model.setAgPos(0, 1, 0);
