@@ -12,9 +12,6 @@ New features
   has not the fourth argument, it does not suspend the intention. The 
   answer is added in the sender belief based as usual.
 
-Changes in the API
-. Many internal actions was renamed to follow a Prolog pattern. E.g.
-  addPlan -> add_plan, createAgent -> create_agent.
   
 Changes in AgentSpeak semantics
 . "-b" in a plan removes "b[source(self)]" from the Belief Base and 
@@ -23,8 +20,13 @@ Changes in AgentSpeak semantics
   added and only the annotation a is removed. 
 
 Changes in internal actions
-. drop_desire does not produce events anymore, it just removes the
+. Many internal actions was renamed to follow a Prolog pattern. E.g.
+  addPlan -> add_plan, createAgent -> create_agent.
+. .drop_desire does not produce events anymore, it just removes the
   event from the circumstance.
+. uses of .dropGoal(g,true) should be replaced by .succeed_goal(g).
+. uses of .dropGoal(g,false) should be replaced by .fail_goal(g).
+
   
 Documentation
 . all internal actions was documented using javadoc (see doc/api).
