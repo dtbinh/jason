@@ -235,7 +235,7 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
 // find the closest gold among the known options, 
 // that nobody else committed to
 +!choose_gold 
-  :  gold(_,_) & not .desire(handle(_)) & not .desire(init_handle(_))
+  :  gold(_,_)
   <- .findall(gold(X,Y),gold(X,Y),LG);
      !calc_gold_distance(LG,LD);
      .length(LD,LLD); LLD > 0;
