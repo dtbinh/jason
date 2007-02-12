@@ -55,7 +55,7 @@
   :  .count(bid(Gold,_,_),3)  // three bids were received
   <- .print("bid from ",Ag," for ",Gold," is ",D);
      !allocate_miner(Gold);
-     .abolish(bid(Gold,_)).
+     .abolish(bid(Gold,_,_)).
 +bid(Gold,D,Ag)
   <- .print("bid from ",Ag," for ",Gold," is ",D).
  

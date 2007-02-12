@@ -139,7 +139,7 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
 // someone else sent me a gold location
 +gold(X1,Y1)[source(A)]
   :  A \== self &
-     not allocated(gold(X1,Y1),_) & // It was not allocated yet
+     not allocated(gold(X1,Y1),_) & // The gold was not allocated yet
      not carrying_gold &            // I am not carrying gold
      free &                         // and I am free
      pos(X2,Y2) &
