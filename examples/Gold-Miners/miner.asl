@@ -126,6 +126,7 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
             " to handle ",gold(X,Y)," which I am seeing!");
      .print("Announcing ",gold(OldX,OldY)," to others");
      .broadcast(tell,gold(OldX,OldY));
+     .broadcast(untell, committed_to(gold(OldX,OldY)));
      !init_handle(gold(X,Y)).
      
 // I am not free, just add gold belief and announce to others

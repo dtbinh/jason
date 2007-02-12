@@ -52,7 +52,7 @@
 /* negotiation for found gold */
 
 +bid(Gold,D,Ag)
-  :  .count(bid(Gold,_,_),3)  // three bids was received
+  :  .count(bid(Gold,_,_),3)  // three bids were received
   <- .print("bid from ",Ag," for ",Gold," is ",D);
      !allocate_miner(Gold);
      .abolish(bid(Gold,_)).
@@ -63,7 +63,7 @@
   <- .findall(op(Dist,A),bid(Gold,Dist,A),LD);
      .sort(LD,[op(DistCloser,Closer)|_]);
      DistCloser < 10000;
-     .print("Gold ",Gold," was allocated to ",Closer, " options was ",LD);
+     .print("Gold ",Gold," was allocated to ",Closer, " options were ",LD);
      .broadcast(tell,allocated(Gold,Closer)).
      //-Gold[source(_)].
 -!allocate_miner(Gold)
