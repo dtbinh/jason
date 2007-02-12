@@ -138,18 +138,18 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
 // someone else sent me a gold location
 +gold(X1,Y1)[source(A)]
   :  A \== self &
-     not gold(X1,Y1) &              // I don't know this gold
      not allocated(gold(X1,Y1),_) & // It was not allocated yet
      not carrying_gold &            // I am not carrying gold
      free &                         // and I am free
-     pos(X2,Y2)
+     pos(X2,Y2) &
+     .my_name(Me)
   <- jia.dist(X1,Y1,X2,Y2,D);       // bid
-     .send(leader,tell,bid(gold(X1,Y1),D)).
+     .send(leader,tell,bid(gold(X1,Y1),D,Me)).
 
 // bid high as I'm not free
 +gold(X1,Y1)[source(A)]
-  :  A \== self
-  <- .send(leader,tell,bid(gold(X1,Y1),1000)).
+  :  A \== self & .my_name(Me)
+  <- .send(leader,tell,bid(gold(X1,Y1),10000,Me)).
 
 // gold allocated to me
 @palloc1[atomic]
@@ -219,7 +219,7 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
 // if ensure(pick/drop) failed, pursue another gold
 -!handle(G) : G
   <- .print("failed to catch gold ",G);
-     -G[source(_)]; // ignore source
+     .abolish(G); // ignore source
      !!choose_gold.
 -!handle(G) : true
   <- .print("failed to handle ",G,", it isn't in the BB anyway");

@@ -51,27 +51,22 @@
 
 /* negotiation for found gold */
 
-+gold(X,Y) // some gold was found and can not be handled, defines timeout for the negotiation
-  <- .at("now + 1 s", "+!allocate_miner(Gold)").
-
-+bid(Gold,D)[source(M1)]
-  :  .count(bid(Gold,_),4) // four bids was received
-  <- .print("bid from ",M1," for ",Gold," is ",D);
++bid(Gold,D,Ag)
+  :  .count(bid(Gold,_,_),3)  // three bids was received
+  <- .print("bid from ",Ag," for ",Gold," is ",D);
      !allocate_miner(Gold);
      .abolish(bid(Gold,_)).
-+bid(Gold,D)[source(A)]
-  <- .print("bid from ",A," for ",Gold," is ",D).  
++bid(Gold,D,Ag)
+  <- .print("bid from ",Ag," for ",Gold," is ",D).
  
-@lam[atomic]
 +!allocate_miner(Gold) 
-  :  Gold
-  <- .findall(op(Dist,A),bid(Gold,Dist)[source(A)],LD);
+  <- .findall(op(Dist,A),bid(Gold,Dist,A),LD);
      .sort(LD,[op(DistCloser,Closer)|_]);
-     DistCloser < 1000;
+     DistCloser < 10000;
      .print("Gold ",Gold," was allocated to ",Closer, " options was ",LD);
-     .broadcast(tell,allocated(Gold,Closer));
-     -Gold[source(_)].
--!allocate_miner(Gold) : true
+     .broadcast(tell,allocated(Gold,Closer)).
+     //-Gold[source(_)].
+-!allocate_miner(Gold)
   <- .print("could not allocate gold ",Gold).
 
 
