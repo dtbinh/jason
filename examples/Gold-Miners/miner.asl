@@ -120,7 +120,7 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
      .desire(handle(gold(OldX,OldY))) &   // I desire to handle another gold which
      pos(AgX,AgY) &
      jia.dist(X,   Y,   AgX,AgY,DNewG) &
-     jia.dist(OldX,OldY,AgX,AgY,DOldG)
+     jia.dist(OldX,OldY,AgX,AgY,DOldG) &
      DNewG < DOldG                        // is farther than the one just perceived
   <- +gold(X,Y);
      .drop_desire(handle(gold(OldX,OldY)));
