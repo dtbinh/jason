@@ -179,7 +179,7 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
 +picked(G)[source(A)] 
   :  .desire(handle(G)) | .desire(init_handle(G))
   <- .print(A," has taken ",G," that I am pursuing! Dropping my intention.");
-     -gold(X,Y)[source(_)];   // Remove despite the source 
+     .abolish(G);
      .drop_desire(handle(G)); 
      .drop_intention(handle(G));
      !!choose_gold.
