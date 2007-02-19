@@ -11,7 +11,7 @@
 
 	<property name="dist.properties" value="${basedir}/bin/dist.properties" />
 	<property name="version" value="0" />
-	<property name="release" value="9.5alpha" />
+	<property name="release" value="9.5" />
 	<property name="distDir" value="${env.HOME}/tmp/x/Jason-${version}.${release}" />
 	<property name="distFile" value="${env.HOME}/Jason-${version}.${release}" />
 
@@ -64,6 +64,7 @@
 		<and>
 			<uptodate property="parsers-ok" targetfile="${basedir}/src/jason/mas2j/parser/mas2j.java" srcfile="${basedir}/src/jason/mas2j/parser/MAS2JavaParser.jcc" />
 			<uptodate property="parsers-ok" targetfile="${basedir}/src/jason/asSyntax/parser/as2j.java" srcfile="${basedir}/src/jason/asSyntax/parser/AS2JavaParser.jcc" />
+			<uptodate property="parsers-ok" targetfile="${basedir}/doc/AS2JavaParser.html" srcfile="${basedir}/src/jason/asSyntax/parser/AS2JavaParser.jcc" />
 		</and>
 	</condition>
 
@@ -230,6 +231,7 @@
 		<delete failonerror="no" includeEmptyDirs="true">
 			<fileset dir="${distDir}/.settings" />
 			<fileset dir="${distDir}/bin/classes" />
+			<fileset dir="${distDir}/doc/faq" />
 			<fileset dir="${distDir}" includes=".project" />
 			<fileset dir="${distDir}" includes=".classpath" />
 		</delete>

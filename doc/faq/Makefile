@@ -7,7 +7,8 @@ html: $(TARGET).tex Makefile
               -show_section_numbers -noinfo -html_version 3.2,math -no_math \
               -math -no_navigation $(TARGET).tex
 	cp faq.css html
-
+	cp html/faq.html ..
+	cp faq.css ..
 
 clean:
 	rm -f $(TARGET).ps *.log $(TARGET).aux $(TARGET).out || true
