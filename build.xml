@@ -213,28 +213,21 @@
 			<fileset dir="${basedir}" includes="LICENSE" />
 			<fileset dir="${basedir}" includes="README" />
 
-			<fileset dir="${basedir}" includes="bin/*.*" excludes="bin/jedit.tgz" />
+			<fileset dir="${basedir}" includes="bin/*" excludes="bin/jedit.tgz" />
 			<fileset dir="${basedir}" includes="bin/jedit/**/*" />
 			<fileset dir="${basedir}" includes="doc/**/*" />
 			<fileset dir="${basedir}" includes="examples/**/*" />
 			<fileset dir="${basedir}" includes="lib/**/*" />
 			<fileset dir="${basedir}" includes="src/**/*" />
 		</copy>
-		<copy todir="${distDir}/doc">
-			<fileset dir="${basedir}/../../agents/Jason-doc" includes="*.*" />
-		</copy>
-
-		<!--copy todir="${distDir}/bin/jedit">
-                     <fileset dir="${jedit.install.dir}" includes="**/*"/>
-                </copy-->
 
 		<delete failonerror="no" includeEmptyDirs="true">
-			<fileset dir="${distDir}/.settings" />
-			<fileset dir="${distDir}/bin/classes" />
-			<fileset dir="${distDir}/doc/faq" />
+			<fileset dir="${distDir}" includes=".settings" />
 			<fileset dir="${distDir}" includes=".project" />
 			<fileset dir="${distDir}" includes=".classpath" />
 		</delete>
+		<delete dir="${distDir}/bin/classes" />
+		<delete dir="${distDir}/doc/faq" />
 
 		<tar compression="gzip" tarfile="${distFile}.tgz">
 			<tarfileset dir="${distDir}/.." mode="755">
