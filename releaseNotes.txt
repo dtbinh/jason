@@ -26,7 +26,7 @@ Changes in internal actions
   event from the circumstance.
 . uses of .dropGoal(g,true) should be replaced by .succeed_goal(g).
 . uses of .dropGoal(g,false) should be replaced by .fail_goal(g).
-
+. new internal action .nth to select some term of a list.
   
 Documentation
 . all internal actions were documented using javadoc (see doc/api).
