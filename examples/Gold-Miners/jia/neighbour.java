@@ -12,20 +12,15 @@ public class neighbour extends DefaultInternalAction {
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] terms) throws Exception {
         try {
-            NumberTerm agx = (NumberTerm) terms[0];
-            NumberTerm agy = (NumberTerm) terms[1];
-            NumberTerm tox = (NumberTerm) terms[2];
-            NumberTerm toy = (NumberTerm) terms[3];
-
-            agx.apply(un);
-            agy.apply(un);
-            tox.apply(un);
-            toy.apply(un);
-
-            int iagx = (int) agx.solve();
-            int iagy = (int) agy.solve();
-            int itox = (int) tox.solve();
-            int itoy = (int) toy.solve();
+            for (int i = 0; i < terms.length; i++) {
+                terms[i].apply(un);
+            }
+            
+            int iagx = (int)((NumberTerm)terms[0]).solve();
+            int iagy = (int)((NumberTerm)terms[1]).solve();
+            int itox = (int)((NumberTerm)terms[2]).solve();
+            int itoy = (int)((NumberTerm)terms[3]).solve();
+            
             return new Location(iagx, iagy).isNeigbour(new Location(itox, itoy));
         } catch (Throwable e) {
             e.printStackTrace();
