@@ -14,7 +14,7 @@ all_proposals_received(CNPId)
 
 // start the CNP
 +!startCNP(Id) 
-   <- .wait(2000);  // wait participants presentation
+   <- .wait(2000);  // wait participants introduction
       +cnp_state(Id,propose);   // remember the state of the CNP
       .findall(VendorName,introduction(participant,VendorName),LV);
       .print("Sending CFP to ",LV);
