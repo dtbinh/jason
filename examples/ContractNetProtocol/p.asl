@@ -24,6 +24,6 @@ plays(initiator,c).
       // build and deliver the product!
 	  
 @r2 +reject_proposal(CNPId)
-   <- .print("I loosed CNP ",CNPId, ".");
+   <- .print("I lost CNP ",CNPId, ".");
       -proposal(CNPId,_,_). // clean memory
 
