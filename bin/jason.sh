@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 CURDIR=`pwd`
 JASON_HOME=`dirname $0`
@@ -29,6 +29,9 @@ if [ $OS == Darwin ] ; then
 fi
 
 # run jIDE
-java -classpath "$JASON_HOME/lib/jason.jar":"$JASON_HOME/bin/jedit/jedit.jar":"$JASON_HOME/lib/saci.jar"  $DPAR org.gjt.sp.jedit.jEdit $1
+java -classpath "$JASON_HOME/lib/jason.jar":"$JASON_HOME/bin/jedit/jedit.jar":"$JASON_HOME/lib/saci.jar":"$JASON_HOME/bin/jedit/jars/ErrorList.jar":"$JASON_HOME/bin/jedit/jars/SideKick.jar" \
+   $DPAR \
+   org.gjt.sp.jedit.jEdit $1
+   
 #"$JASON_HOME/lib/ant.jar":"$JASON_HOME/lib/ant-launcher.jar":
 #-settings=$JASON_HOME/bin/.jedit 
