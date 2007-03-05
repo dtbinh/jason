@@ -36,7 +36,8 @@ Fixed bugs in 0.9.5b
 . The variable name in the KQML plans may conflict with users' 
   variables.
 . .sort changes the first parameter.
-  
+. the include directive can be used before initial beliefs.
+
 -------------
 version 0.9.4
 -------------
