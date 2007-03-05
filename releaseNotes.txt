@@ -31,10 +31,11 @@ Changes in internal actions
 Documentation
 . all internal actions were documented using javadoc (see doc/api).
 
-Bugs fixed
-. The date in the build.xml use latin characters.
-. Variable name in KQML plans.
-. .sort change the first parameter list.
+Fixed bugs in 0.9.5b
+. The date in the application build.xml use latin characters.
+. The variable name in the KQML plans may conflict with users' 
+  variables.
+. .sort changes the first parameter.
   
 -------------
 version 0.9.4
