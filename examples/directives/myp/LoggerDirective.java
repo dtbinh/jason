@@ -2,9 +2,15 @@
 package myp;
 
 import jason.asSemantics.Agent;
-import jason.asSyntax.*;
+import jason.asSyntax.BodyLiteral;
+import jason.asSyntax.Literal;
+import jason.asSyntax.Plan;
+import jason.asSyntax.Pred;
+import jason.asSyntax.BodyLiteral.BodyType;
+import jason.asSyntax.directives.Directive;
 
-import java.util.logging.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Pattern that add .print in the begin and end of plans.
