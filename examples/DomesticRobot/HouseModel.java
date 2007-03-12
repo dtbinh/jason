@@ -4,7 +4,11 @@ import jason.environment.grid.Location;
 /** class that implements the Model of Domestic Robot application */
 public class HouseModel extends GridWorldModel {
     
-    // constants for the grid objects
+    // constants for the grid objects.
+    // each different object is represented by having a single bit 
+    // set (a bit mask is used in the model), so any power of two
+    // represents different objects. Other numbers represent combinations 
+    // of objects which are all located in the same cell of the grid.
     public static final int FRIDGE = 16;
     public static final int OWNER  = 32;
 
