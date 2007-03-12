@@ -31,7 +31,10 @@ Changes in internal actions
 Documentation
 . all internal actions were documented using javadoc (see doc/api).
 
-Fixed bugs in 0.9.5b
+Bugs fixed in 0.9.5c
+. persistent BB in text files does not work
+
+Bugs fixed in 0.9.5b
 . The date in the application build.xml use latin characters.
 . The variable name in the KQML plans may conflict with users' 
   variables.
