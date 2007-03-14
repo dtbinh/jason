@@ -21,11 +21,11 @@ public class LoggerDirective implements Directive {
 
     static Logger logger = Logger.getLogger(LoggerDirective.class.getName());
 
-    public Agent process(Pred directive, Agent ag) {
+    public Agent process(Pred directive, Agent outerAg, Agent innerAg) {
         try {
         	Agent newAg = new Agent();
             // add .print(te) in the begin and end of the plan
-            for (Plan p: ag.getPL()) {
+            for (Plan p: innerAg.getPL()) {
                 Literal print1 = Literal.parseLiteral(".print(\"Entering \","+p.getTriggerEvent().getLiteral()+")");
                 BodyLiteral b1 = new BodyLiteral(BodyType.internalAction, print1);
                 p.getBody().add(0,b1);
