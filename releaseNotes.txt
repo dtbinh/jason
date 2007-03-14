@@ -33,6 +33,7 @@ Documentation
 
 Bugs fixed in 0.9.5c
 . persistent BB in text files does not work
+. strong negation is not shown in mind inspector
 
 Bugs fixed in 0.9.5b
 . The date in the application build.xml use latin characters.
