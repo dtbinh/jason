@@ -19,7 +19,8 @@ public class MiningPlanet extends jason.environment.Environment {
     int                     simId    = 5; // type of environment
     int                     nbWorlds = 5;
 
-    int sleep = 0;
+    int     sleep = 0;
+    boolean running = true;
     
     public static final int SIM_TIME = 60;                                                                         // in
                                                                                                                     // seconds
@@ -32,7 +33,7 @@ public class MiningPlanet extends jason.environment.Environment {
     Term                    pick     = DefaultTerm.parse("do(pick)");
     Term                    drop     = DefaultTerm.parse("do(drop)");
 
-    enum Move {
+    public enum Move {
         UP, DOWN, RIGHT, LEFT
     };
 
@@ -51,16 +52,22 @@ public class MiningPlanet extends jason.environment.Environment {
         
         new Thread() {
             public void run() {
-                while (true) {
+                while (running) {
                     try {
                         sleep(SIM_TIME * 1000);
-                        endSimulation();
+                        if (running) endSimulation();
                     } catch (Exception e) {
                         logger.log(Level.SEVERE, "Error!", e);
                     }
                 }
             }
         }.start();
+    }
+
+    @Override
+	public void stop() {
+        running = false;
+        super.stop();
     }
 
     @Override
@@ -72,7 +79,7 @@ public class MiningPlanet extends jason.environment.Environment {
             }
             
             // get the agent id based on its name
-            int agId = (Integer.parseInt(ag.substring(5))) - 1;
+            int agId = getAgIdBasedOnName(ag);
 
             if (action.equals(up)) {
                 result = model.move(Move.UP, agId);
@@ -101,6 +108,10 @@ public class MiningPlanet extends jason.environment.Environment {
         return false;
     }
 
+    private int getAgIdBasedOnName(String agName) {
+        return (Integer.parseInt(agName.substring(5))) - 1;
+    }
+    
     private void initWorld(int w) {
     	try {
 	        switch (w) {
