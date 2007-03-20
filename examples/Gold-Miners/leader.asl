@@ -36,7 +36,7 @@
      ~quad(S,_) // there still is a miner without quadrant 
   <- .findall(Ag, ~quad(S,Ag), LAgs);
      !calc_ag_dist(S,Q,LAgs,LD);
-     .sort(LD,[d(Dist,Ag)|_]); 
+     .min(LD,d(Dist,Ag)); 
      .print(Ag, "'s Quadrant is: ",Q);
      -~quad(S,Ag);
      .send(Ag,tell,quadrant(X1,Y1,X2,Y2)).
@@ -61,7 +61,7 @@
  
 +!allocate_miner(Gold) 
   <- .findall(op(Dist,A),bid(Gold,Dist,A),LD);
-     .sort(LD,[op(DistCloser,Closer)|_]);
+     .min(LD,op(DistCloser,Closer));
      DistCloser < 10000;
      .print("Gold ",Gold," was allocated to ",Closer, " options were ",LD);
      .broadcast(tell,allocated(Gold,Closer)).

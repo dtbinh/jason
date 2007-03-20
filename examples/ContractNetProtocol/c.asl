@@ -45,7 +45,7 @@ all_proposals_received(CNPId)
       .findall(offer(O,A),propose(CNPId,O)[source(A)],L);
       .print("Offers are ",L);
       L \== []; // constraint the plan execution to one offer at least
-      .sort(L,[offer(WOf,WAg)|_]); // sort offers, the first is the best
+      .min(L,offer(WOf,WAg));
       .print("Winner is ",WAg," with ",WOf);
       !announce_result(CNPId,L,WAg);
       -+cnp_state(Id,finished).

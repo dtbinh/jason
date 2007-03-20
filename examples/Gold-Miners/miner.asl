@@ -244,7 +244,7 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
      !calc_gold_distance(LG,LD);
      .length(LD,LLD); LLD > 0;
      .print("Uncommitted gold distances: ",LD,LLD);
-     .sort(LD,[d(D,NewG)|_]);
+     .min(LD,d(D,NewG));
      .print("Next gold is ",NewG);
      !!handle(NewG).
 -!choose_gold <- -+free.
