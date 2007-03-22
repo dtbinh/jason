@@ -1,7 +1,4 @@
-import jason.asSyntax.DefaultTerm;
-import jason.asSyntax.Literal;
-import jason.asSyntax.Structure;
-import jason.asSyntax.Term;
+import jason.asSyntax.*;
 import jason.environment.Environment;
 import jason.environment.grid.GridWorldModel;
 import jason.environment.grid.GridWorldView;
@@ -27,13 +24,13 @@ public class MarsEnv extends Environment {
 
 	static Logger logger = Logger.getLogger(MarsEnv.class.getName());
 
-    MarsModel model;
-    MarsView  view;
+    private MarsModel model;
+    private MarsView  view;
 	
     @Override
 	public void init(String[] args) {
         model = new MarsModel();
-        view = new MarsView(model);
+        view  = new MarsView(model);
         model.setView(view);
         updatePercepts();
 	}
@@ -44,8 +41,8 @@ public class MarsEnv extends Environment {
 			if (action.equals(ns)) {
 				model.nextSlot();
 			} else if (action.getFunctor().equals("move_towards")) {
-				int x = Integer.parseInt(action.getTerm(0).toString());
-				int y = Integer.parseInt(action.getTerm(1).toString());
+				int x = (int)((NumberTerm)action.getTerm(0)).solve();
+				int y = (int)((NumberTerm)action.getTerm(1)).solve();
 	            model.moveTowards(x,y);
 			} else if (action.equals(pg)) {
 	            model.pickGarb();
