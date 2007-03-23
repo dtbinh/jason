@@ -8,17 +8,17 @@ all_proposals_received(CNPId)
 
 /* Initial goals */
 
-!startCNP(1).
+!startCNP(1,pc(amd,[dual,ram(5,gb),hd(1,tb)])).
 
 /* Plans */
 
 // start the CNP
-+!startCNP(Id) 
++!startCNP(Id,Object) 
    <- .wait(2000);  // wait participants introduction
       +cnp_state(Id,propose);   // remember the state of the CNP
       .findall(VendorName,introduction(participant,VendorName),LV);
       .print("Sending CFP to ",LV);
-      .send(LV,tell,cfp(Id,pc(3,[dual,ram(5,gb),hd(1,tb)])));
+      .send(LV,tell,cfp(Id,Object));
       .concat("+!contract(",Id,")",Event);
       // the deadline of the CNP is now + 4 seconds, so
       // the event +!contract(Id) is generated that time
@@ -41,7 +41,7 @@ all_proposals_received(CNPId)
 @lc1[atomic]
 +!contract(CNPId)
    :  cnp_state(CNPId,propose)
-   <- -+cnp_state(Id,contract);
+   <- -+cnp_state(CNPId,contract);
       .findall(offer(O,A),propose(CNPId,O)[source(A)],L);
       .print("Offers are ",L);
       L \== []; // constraint the plan execution to one offer at least
