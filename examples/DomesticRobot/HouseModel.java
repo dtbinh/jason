@@ -4,11 +4,7 @@ import jason.environment.grid.Location;
 /** class that implements the Model of Domestic Robot application */
 public class HouseModel extends GridWorldModel {
     
-    // constants for the grid objects.
-    // each different object is represented by having a single bit 
-    // set (a bit mask is used in the model), so any power of two
-    // represents different objects. Other numbers represent combinations 
-    // of objects which are all located in the same cell of the grid.
+    // constants for the grid objects
     public static final int FRIDGE = 16;
     public static final int OWNER  = 32;
 
@@ -65,6 +61,10 @@ public class HouseModel extends GridWorldModel {
         if (r1.y < dest.y)        r1.y++;
         else if (r1.y > dest.y)   r1.y--;
         setAgPos(0, r1); // move the robot in the grid
+		
+		// repaint the fridge and owner locations
+		view.update(lFridge.x,lFridge.y);
+		view.update(lOwner.x,lOwner.y);
         return true;
     }
     
@@ -72,6 +72,7 @@ public class HouseModel extends GridWorldModel {
         if (fridgeOpen && availableBeers > 0 && !carryingBeer) {
             availableBeers--;
             carryingBeer = true;
+			view.update(lFridge.x,lFridge.y);
             return true;
         } else {
             return false;
@@ -80,6 +81,7 @@ public class HouseModel extends GridWorldModel {
     
     boolean addBeer(int n) {
         availableBeers += n;
+		view.update(lFridge.x,lFridge.y);
         return true;
     }
     
@@ -87,6 +89,7 @@ public class HouseModel extends GridWorldModel {
         if (carryingBeer) {
             sipCount = 10;
             carryingBeer = false;
+			view.update(lOwner.x,lOwner.y);
             return true;
         } else {
             return false;
@@ -96,6 +99,7 @@ public class HouseModel extends GridWorldModel {
     boolean sipBeer() {
         if (sipCount > 0) {
             sipCount--;
+			view.update(lOwner.x,lOwner.y);
             return true;
         } else {
             return false;

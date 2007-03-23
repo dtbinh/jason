@@ -95,7 +95,9 @@ public class HouseEnv extends Environment {
             result = model.sipBeer();
             
 		} else if (action.getFunctor().equals("deliver")) {
-			result = model.addBeer(Integer.parseInt(action.getTerm(1).toString()));
+			// wait 4 seconds to finish "deliver"
+			try { Thread.sleep(4000); } catch (Exception e) {}
+			result = model.addBeer( (int)((NumberTerm)action.getTerm(1)).solve());
             
 		} else {
 		    logger.info("Failed to execute action "+action);
@@ -103,9 +105,7 @@ public class HouseEnv extends Environment {
 
         if (result) {
             updatePercepts();
-            try {
-                Thread.sleep(100);
-            } catch (Exception e) {}
+            try { Thread.sleep(100); } catch (Exception e) {}
         }
 		return result;
 	}

@@ -1,4 +1,4 @@
-import jason.environment.grid.GridWorldView;
+import jason.environment.grid.*;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -8,9 +8,12 @@ import java.awt.Graphics;
 /** class that implements the View of Domestic Robot application */
 public class HouseView extends GridWorldView {
 
+	HouseModel hmodel;
+	
     public HouseView(HouseModel model) {
-        super(model, "Domestic Robot", 600);
-        defaultFont = new Font("Arial", Font.BOLD, 18); // change default font
+        super(model, "Domestic Robot", 700);
+		hmodel = model;
+        defaultFont = new Font("Arial", Font.BOLD, 16); // change default font
         setVisible(true);
         repaint();
     }
@@ -18,17 +21,37 @@ public class HouseView extends GridWorldView {
     /** draw application objects */
     @Override
     public void draw(Graphics g, int x, int y, int object) {
-        g.setColor(Color.black);
+		Location lRobot = hmodel.getAgPos(0);
+		super.drawAgent(g, x, y, Color.lightGray, -1);
         switch (object) {
-            case HouseModel.FRIDGE: drawString(g, x, y, defaultFont, "Fridge");  break;
-            case HouseModel.OWNER: drawString(g, x, y, defaultFont, "Owner");  break;
+            case HouseModel.FRIDGE: 
+				if (lRobot.equals(hmodel.lFridge)) {
+					super.drawAgent(g, x, y, Color.yellow, -1);
+				}
+				g.setColor(Color.black);
+				drawString(g, x, y, defaultFont, "Fridge ("+hmodel.availableBeers+")");  
+			    break;
+            case HouseModel.OWNER:
+				if (lRobot.equals(hmodel.lOwner)) {
+					super.drawAgent(g, x, y, Color.yellow, -1);
+				}
+			    String o = "Owner";
+				if (hmodel.sipCount > 0) {
+					o +=  " ("+hmodel.sipCount+")";
+				}
+				g.setColor(Color.black);
+				drawString(g, x, y, defaultFont, o);  
+				break;
         }
     }
 
     @Override
     public void drawAgent(Graphics g, int x, int y, Color c, int id) {
-        super.drawAgent(g, x, y, Color.yellow, -1);
-        g.setColor(Color.black);
-        super.drawString(g, x, y, defaultFont, "Robot");
+		Location lRobot = hmodel.getAgPos(0);
+        if (!lRobot.equals(hmodel.lOwner) && !lRobot.equals(hmodel.lFridge)) {
+			super.drawAgent(g, x, y, Color.yellow, -1);
+			g.setColor(Color.black);
+			super.drawString(g, x, y, defaultFont, "Robot");
+		}
     }
 }

@@ -56,4 +56,8 @@ public class VoidBB implements jason.bb.BeliefBase {
     public Element getAsDOM(Document document) {
         return null;
     }
+    
+    public Object clone()  {
+    	return new VoidBB();
+    }
 }
