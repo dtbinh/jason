@@ -255,6 +255,9 @@
 			<fileset dir="${basedir}/examples" includes="**/work" />
 			<fileset dir="${basedir}/examples" includes="**/build.xml" />
 			<fileset dir="${basedir}/examples" includes="**/.stop___MAS" />
+			<fileset dir="${basedir}/examples/Sniffer" includes="log.*" />
+			<fileset dir="${basedir}/examples/persistentBelBase" includes="a.bb" />
+			<fileset dir="${basedir}/examples/persistentBelBase" includes="bookstore.*" />
 		</delete>
 	</target>
 

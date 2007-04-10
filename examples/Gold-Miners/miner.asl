@@ -43,37 +43,40 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
 // if I am around upper-left corner, move to upper-right corner
 +around(X1,Y1) : quadrant(X1,Y1,X2,Y2) & free
   <- .print("in Q1 to ",X2,"x",Y1); 
-     -around(X1,Y1); -+last_dir(null); !around(X2,Y1).
+     !saround(X2,Y1).
 
 // if I am around the bottom-right corner, move to upper-left corner
 +around(X2,Y2) : quadrant(X1,Y1,X2,Y2) & free 
   <- .print("in Q4 to ",X1,"x",Y1); 
-     -around(X2,Y2); -+last_dir(null); !around(X1,Y1).
+     !saround(X1,Y1).
 
 // if I am around the right side, move to left side two lines bellow
 +around(X2,Y) : quadrant(X1,Y1,X2,Y2) & free  
   <- ?calc_new_y(Y,Y2,YF);
      .print("in Q2 to ",X1,"x",YF);
-     -around(X2,Y); -+last_dir(null); !around(X1,YF).
+     !saround(X1,YF).
 
 // if I am around the left side, move to right side two lines bellow
 +around(X1,Y) : quadrant(X1,Y1,X2,Y2) & free  
   <- ?calc_new_y(Y,Y2,YF);
      .print("in Q3 to ", X2, "x", YF); 
-     -around(X1,Y); -+last_dir(null); !around(X2,YF).
+     !saround(X2,YF).
 
 // the last "around" was not any of above, go back to my quadrant
 +around(X,Y) : quadrant(X1,Y1,X2,Y2) & free & Y <= Y2 & Y >= Y1  
   <- .print("in no Q, going to X1");
-     -around(X,Y); -+last_dir(null); !around(X1,Y).
+     !saround(X1,Y).
 +around(X,Y) : quadrant(X1,Y1,X2,Y2) & free & X <= X2 & X >= X1  
   <- .print("in no Q, going to Y1");
-     -around(X,Y); -+last_dir(null); !around(X,Y1).
+     !saround(X,Y1).
 
 +around(X,Y) : quadrant(X1,Y1,X2,Y2)
   <- .print("It should never happen!!!!!! - go home");
-     -around(X,Y); -+last_dir(null); !around(X1,Y1).
+     !saround(X1,Y1).
 
++!saround(X,Y) : free
+  <- -around(_,_); -last_dir(_); !around(X,Y).
+ 
 +!around(X,Y) 
    :  // I am around to some location if I am near it or
       // the last action was skip (meaning that there is no path to there)
