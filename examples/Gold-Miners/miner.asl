@@ -27,8 +27,8 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
 
 /* plans for wandering in my quadrant when I'm free */
 
-+free : last_checked(X,Y)     <- !around(X,Y).
-+free : quadrant(X1,Y1,X2,Y2) <- !around(X1,Y1).
++free : last_checked(X,Y)     <- !prep_around(X,Y).
++free : quadrant(X1,Y1,X2,Y2) <- !prep_around(X1,Y1).
 +free : true                  <- !wait_for_quad.
 
 @pwfq[atomic]
@@ -43,38 +43,38 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
 // if I am around upper-left corner, move to upper-right corner
 +around(X1,Y1) : quadrant(X1,Y1,X2,Y2) & free
   <- .print("in Q1 to ",X2,"x",Y1); 
-     !saround(X2,Y1).
+     !prep_around(X2,Y1).
 
 // if I am around the bottom-right corner, move to upper-left corner
 +around(X2,Y2) : quadrant(X1,Y1,X2,Y2) & free 
   <- .print("in Q4 to ",X1,"x",Y1); 
-     !saround(X1,Y1).
+     !prep_around(X1,Y1).
 
 // if I am around the right side, move to left side two lines bellow
 +around(X2,Y) : quadrant(X1,Y1,X2,Y2) & free  
   <- ?calc_new_y(Y,Y2,YF);
      .print("in Q2 to ",X1,"x",YF);
-     !saround(X1,YF).
+     !prep_around(X1,YF).
 
 // if I am around the left side, move to right side two lines bellow
 +around(X1,Y) : quadrant(X1,Y1,X2,Y2) & free  
   <- ?calc_new_y(Y,Y2,YF);
      .print("in Q3 to ", X2, "x", YF); 
-     !saround(X2,YF).
+     !prep_around(X2,YF).
 
 // the last "around" was not any of above, go back to my quadrant
 +around(X,Y) : quadrant(X1,Y1,X2,Y2) & free & Y <= Y2 & Y >= Y1  
   <- .print("in no Q, going to X1");
-     !saround(X1,Y).
+     !prep_around(X1,Y).
 +around(X,Y) : quadrant(X1,Y1,X2,Y2) & free & X <= X2 & X >= X1  
   <- .print("in no Q, going to Y1");
-     !saround(X,Y1).
+     !prep_around(X,Y1).
 
 +around(X,Y) : quadrant(X1,Y1,X2,Y2)
   <- .print("It should never happen!!!!!! - go home");
-     !saround(X1,Y1).
+     !prep_around(X1,Y1).
 
-+!saround(X,Y) : free
++!prep_around(X,Y) : free
   <- -around(_,_); -last_dir(_); !around(X,Y).
  
 +!around(X,Y) 
