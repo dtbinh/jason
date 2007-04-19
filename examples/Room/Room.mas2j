@@ -15,6 +15,7 @@ A Prometheus specification is available in the doc folder.
 MAS room {
 	infrastructure: Centralised
 	environment: RoomEnv
+	executionControl: jason.control.ExecutionControl
 	agents: porter; claustrophobe; paranoid;
 }
 
