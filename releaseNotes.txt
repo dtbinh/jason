@@ -1,7 +1,11 @@
 New internal actions
 . min(<list>,<term>) gets the minimal value of the list.
 . max(<list>,<term>) gets the maximal value of the list.
+. .drop_event(D) remove the event +!D from the set of events
 
+Changes in internal actions
+. .drop_desire(D) also removes the intentions related +!D.
+. .drop_all_desires also removes all intentions.
 
 -------------
 version 0.9.5

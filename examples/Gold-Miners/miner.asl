@@ -127,7 +127,6 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
      DNewG < DOldG                        // is farther than the one just perceived
   <- +gold(X,Y);
      .drop_desire(handle(gold(OldX,OldY)));
-     .drop_intention(handle(gold(_,_)));
      .print("Giving up current gold ",gold(OldX,OldY),
             " to handle ",gold(X,Y)," which I am seeing!");
      .print("Announcing ",gold(OldX,OldY)," to others");
@@ -184,7 +183,6 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
   <- .print(A," has taken ",G," that I am pursuing! Dropping my intention.");
      .abolish(G);
      .drop_desire(handle(G)); 
-     .drop_intention(handle(G));
      !!choose_gold.
 
 // someone else picked up a gold I know about, 
@@ -198,7 +196,6 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
   :  .desire(around(_,_)) 
   <- .print("Dropping around(_,_) desires and intentions to handle ",Gold);
      .drop_desire(around(_,_));
-     .drop_intention(around(_,_));
      !init_handle(Gold).
 @pih2[atomic]
 +!init_handle(Gold)
@@ -287,7 +284,6 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
 @end[atomic]
 +end_of_simulation(S,_) : true 
   <- .drop_all_desires; 
-     .drop_all_intentions;
      -quadrant(_,_,_,_);
      .abolish(gold(_,_));
      .abolish(committed_to(_));
