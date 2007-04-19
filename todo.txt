@@ -6,7 +6,6 @@ Plan for Jason 1.1
 
 -----------------------------------
 Projects (!)
-. PDT plug-in to generate AS code from MAS spec.
 . Eclipse plug-in to edit/run jason
 . New infrastructures (e.g. JADE) -- use a factory pattern 
   to simplify new infrastructure for Jason.
@@ -16,6 +15,7 @@ Projects (!)
 . Mobility for jason agents
 . Multi-environments (and agent entering/leaving them)
 . Test units, as JUnit.
+. functional programming with AS (functions as terms)
 
 
 -------------------------   
@@ -27,45 +27,11 @@ jIDE
       . control at semantic action level
       . bi-directional debug
 
--------------------------   
-MAS2J TODO
-
--------------------------   
-AS TODO
-
------------------------------------
-Semantics TODO
-
-
------------------------------------
-Communication
-
-. new performative: achievefb
-  received(achievefb,Contet) <- !fb(Content).
-  +!fb(C) <- !C; send(Sender, tell, ok(C).
-  -!fb(C) <- send(Sender, tell, noOk(C).
-  
-
 
 -----------------------------------
 Documentation TODO
 
 . Getting start 
-
-
------------------------------------
-Internal actions
-
-. moveTo
-
-. write the internal action .clone that creates a new agent. 
-  The new agent as the same code, beliefs, intentions, .... ? that 
-  the agent which call the .clone.
-  
-. Another controller demo for:
-  Outras sugestoes foram um synchronous mode based on action, not on 
-  reasoning cycle... (quer dizer, so quando todos decidiram uma acao vai
-  em frente um passo de simulacao: tipica simulacao reativa mas...)
 
 
 -------------------------   
