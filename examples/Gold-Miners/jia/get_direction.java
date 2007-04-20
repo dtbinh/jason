@@ -28,10 +28,6 @@ public class get_direction extends DefaultInternalAction {
 
             WorldModel model = WorldModel.get();
     
-            for (int i = 0; i < terms.length; i++) {
-                terms[i].apply(un);
-            }
-            
             int iagx = (int)((NumberTerm)terms[0]).solve();
             int iagy = (int)((NumberTerm)terms[1]).solve();
             int itox = (int)((NumberTerm)terms[2]).solve();
@@ -129,7 +125,7 @@ class GridState implements Estado, Heuristica {
     }
     
     public int hashCode() {
-        return pos.toString().hashCode();
+        return pos.hashCode();
     }
             
     public String toString() {
