@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import moise.common.MoiseException;
 import moise.oe.GoalInstance;
 import moise.oe.GroupInstance;
 import moise.oe.MissionPlayer;
@@ -101,7 +102,7 @@ public class OrgManager extends AgArch {
             OEAgent agSender = currentOE.getAgent(m.getSender());
             try {
                 if (agSender != null) {
-                    processMoiseMessage(Pred.parsePred(content), agSender, m.getMsgId(), m.getIlForce().equals("ask"));
+                    processMoiseMessage(Pred.parsePred(content), agSender, m.getMsgId());
                 } else if (content.equals("add_agent")) {
                     currentOE.addAgent(m.getSender());
                     updateMembersOE(currentOE.getAgent(m.getSender()), (String) null, true, true);
@@ -118,116 +119,46 @@ public class OrgManager extends AgArch {
     /**
      * see JMoise+ doc for messages parameters and generated events.
      */
-    private void processMoiseMessage(Pred m, OEAgent sender, String mId, boolean needsReply) {
+    private void processMoiseMessage(Pred m, OEAgent sender, String mId) {
         try {
-            logger.fine("Processing '" + m + "' for " + sender);
+            if (logger.isLoggable(Level.FINE)) logger.fine("Processing '" + m + "' for " + sender);
 
             if (m.getFunctor().equals("getOE")) {
                 sendReply(sender, mId, currentOE.partialOE(sender));
 
-                // -----------------------------------
-                // Agent -----------------------------
-                // -----------------------------------
+            // -----------------------------------
+            // Agent -----------------------------
+            // -----------------------------------
 
             } else if (m.getFunctor().equals("adopt_role")) {
-                String roleId = m.getTerm(0).toString();
-                String grId = m.getTerm(1).toString();
-                sender.adoptRole(roleId, grId);
-                GroupInstance gr = currentOE.findGroup(grId);
+            	adopt_role(sender, m.getTerm(0).toString(), m.getTerm(1).toString());
 
-                if (needsReply)
-                    sendReply(sender, mId, "ok");
-
-                // send schemes of this group to sender
-                for (SchemeInstance sch : gr.getRespSchemes()) {
-                    updateMembersOE(sender, "scheme_group(" + sch.getId() + "," + grId + ")", true, true);
-                }
-
-                // send players of this group to sender
-                for (RolePlayer rp : gr.getPlayers()) {
-                    if (!rp.getPlayer().getId().equals(sender)) {
-                        updateMembersOE(sender, "play(" + rp.getPlayer().getId() + "," + rp.getRole().getId() + "," + grId + ")", false, true);
-                    }
-                }
-
-                // send it the players of this group
-                updateMembersOE(gr.getAgents(), "play(" + sender + "," + roleId + "," + grId + ")", false, true);
-
+            } else if (m.getFunctor().equals("remove_role")) {
+            	remove_role(sender,m.getTerm(0).toString(),m.getTerm(1).toString());
+            	
             } else if (m.getFunctor().equals("commit_mission")) {
-                String misId = m.getTerm(0).toString();
-                String schId = m.getTerm(1).toString();
-
-                sender.commitToMission(misId, schId);
-                if (needsReply)
-                    sendReply(sender, mId, "ok");
-
-                SchemeInstance sch = currentOE.findScheme(schId);
-
-                // notify to the sender the current commitments of the scheme
-                for (MissionPlayer mp : sch.getPlayers()) {
-                    updateMembersOE(sch.getPlayers(), "commitment(" + mp.getPlayer().getId() + "," + mp.getMission().getId() + "," + sch.getId() + ")", false, true);
-                }
-
-                // notify to the scheme players the new player
-                updateMembersOE(sch.getPlayers(), "commitment(" + sender + "," + misId + "," + sch.getId() + ")", false, true);
-
-                // send a message to generate new goals
-                updateMembersOE(sender, "update_goals", true, true);
-
-                if (sch.getPlayersQty() > 1) {
-                    updateMembersOE(sch.getOwner(), "sch_players(" + sch.getId() + ",NP)", false, false);
-                }
-                updateMembersOE(sch.getOwner(), "sch_players(" + sch.getId() + "," + sch.getPlayersQty() + ")", false, true);
+            	commit_mission(sender, m.getTerm(0).toString(), m.getTerm(1).toString());
 
             } else if (m.getFunctor().equals("remove_mission")) {
-                boolean all = m.getTermsSize() == 1;
                 String misId = null;
-                String schId;
-                SchemeInstance sch;
+                String schId = null;
+                boolean all = m.getTermsSize() == 1;
                 if (all) {
                     schId = m.getTerm(0).toString();
-                    sch = currentOE.findScheme(schId);
-                    Iterator mpi = sender.getMissions().iterator();
-                    while (mpi.hasNext()) {
-                        MissionPlayer mp = (MissionPlayer) mpi.next();
-                        sender.removeMission(mp.getMission().getId(), schId);
-                        mpi = sender.getMissions().iterator();
-                        String evUnCom = "commitment(" + sender + "," + mp.getMission().getId() + "," + sch.getId() + ")";
-                        updateMembersOE(sch.getPlayers(), evUnCom, false, false);
-                        if (!sch.isPlayer(sender)) {
-                            updateMembersOE(sender, evUnCom, false, false);
-                        }
-                    }
                 } else {
                     misId = m.getTerm(0).toString();
                     schId = m.getTerm(1).toString();
-                    sch = currentOE.findScheme(schId);
-                    sender.removeMission(misId, schId);
-                    String evUnCom = "commitment(" + sender + "," + misId + "," + sch.getId() + ")";
-                    updateMembersOE(sender, evUnCom, false, false);
-                    if (!sch.isPlayer(sender)) {
-                        updateMembersOE(sch.getPlayers(), evUnCom, false, false);
-                    }
                 }
-                if (needsReply)
-                    sendReply(sender, mId, "ok");
+                remove_mission(sender, all, schId, misId);
 
-                updateMembersOE(sender, (String) null, true, true);
-
-                // notify owner that it can finish the scheme
-                updateMembersOE(sch.getOwner(), "sch_players(" + sch.getId() + ",NP)", false, false);
-                updateMembersOE(sch.getOwner(), "sch_players(" + sch.getId() + "," + sch.getPlayersQty() + ")", false, true);
-
-                // -----------------------------------
-                // Scheme ---------------------------
-                // -----------------------------------
+            // -----------------------------------
+            // Scheme ---------------------------
+            // -----------------------------------
 
             } else if (m.getFunctor().equals("start_scheme")) {
                 String schSpecId = m.getTerm(0).toString();
                 SchemeInstance sch = currentOE.startScheme(schSpecId.toString());
                 sch.setOwner(sender);
-                if (needsReply)
-                    sendReply(sender, mId, sch.getId());
                 updateMembersOE(currentOE.getAgents(), "scheme(" + schSpecId + "," + sch.getId() + ")[owner(" + sender + ")]", false, true);
 
             } else if (m.getFunctor().equals("add_responsible_group")) {
@@ -246,8 +177,6 @@ public class OrgManager extends AgArch {
                 GroupInstance gr = currentOE.findGroup(grId);
                 sch.addResponsibleGroup(gr);
 
-                if (needsReply)
-                    sendReply(sender, mId, "ok");
                 updateMembersOE(gr.getPlayers(), "scheme_group(" + schId + "," + grId + ")", true, true);
 
             } else if (m.getFunctor().equals("set_goal_state") || m.getFunctor().equals("set_goal_arg")) {
@@ -293,9 +222,6 @@ public class OrgManager extends AgArch {
                     gi.setArgumentValue(arg, value);
                 }
 
-                if (needsReply)
-                    sendReply(sender, mId, "ok");
-
                 updateMembersOE(sch.getPlayers(), "goal_state(" + gi.getScheme().getId() + "," + gi.getSpec().getId() + ")", true, true);
 
                
@@ -311,8 +237,6 @@ public class OrgManager extends AgArch {
                 }
 
                 currentOE.finishScheme(sch);
-                if (needsReply)
-                    sendReply(sender, mId, "ok");
 
                 // send untell to agents
                 updateMembersOE(currentOE.getAgents(), "scheme(" + sch.getSpec().getId() + "," + sch.getId() + ")[owner(" + sch.getOwner() + ")]", false, false);
@@ -340,9 +264,6 @@ public class OrgManager extends AgArch {
                 }
                 newGr.setOwner(sender);
 
-                if (needsReply)
-                    sendReply(sender, mId, newGr.getId());
-
                 updateMembersOE(currentOE.getAgents(), "group(" + m.getTerm(0).toString() + "," + newGr.getId() + ")[owner(" + sender + ")," + annot + "]", false, true);
 
             } else if (m.getFunctor().equals("remove_group")) {
@@ -357,8 +278,6 @@ public class OrgManager extends AgArch {
                 }
 
                 currentOE.removeGroup(grId);
-                if (needsReply)
-                    sendReply(sender, mId, "ok");
 
                 String annot = "root";
                 if (gr.getGrSpec().getFatherGroup() != null) {
@@ -379,6 +298,89 @@ public class OrgManager extends AgArch {
         }
     }
 
+    void adopt_role(OEAgent sender, String roleId, String grId) throws MoiseException {
+        sender.adoptRole(roleId, grId);
+        GroupInstance gr = currentOE.findGroup(grId);
+
+        // send schemes of this group to sender
+        for (SchemeInstance sch : gr.getRespSchemes()) {
+            updateMembersOE(sender, "scheme_group(" + sch.getId() + "," + grId + ")", true, true);
+        }
+
+        // send players of this group to sender
+        for (RolePlayer rp : gr.getPlayers()) {
+            if (!rp.getPlayer().getId().equals(sender)) {
+                updateMembersOE(sender, "play(" + rp.getPlayer().getId() + "," + rp.getRole().getId() + "," + grId + ")", false, true);
+            }
+        }
+
+        // notify other in the group about this new player
+        updateMembersOE(gr.getAgents(), "play(" + sender + "," + roleId + "," + grId + ")", false, true);
+    }
+
+    void remove_role(OEAgent sender, String roleId, String grId) throws MoiseException {
+    	sender.removeRole(roleId, grId);
+    	GroupInstance gr = currentOE.findGroup(grId);
+
+    	// notify other players
+    	updateMembersOE(gr.getAgents(), "play(" + sender + "," + roleId + "," + grId + ")", false, false);
+    }
+
+    void commit_mission(OEAgent sender, String misId, String schId) throws MoiseException {
+        sender.commitToMission(misId, schId);
+
+        SchemeInstance sch = currentOE.findScheme(schId);
+
+        // notify to the sender the current commitments of the scheme
+        for (MissionPlayer mp : sch.getPlayers()) {
+            updateMembersOE(sch.getPlayers(), "commitment(" + mp.getPlayer().getId() + "," + mp.getMission().getId() + "," + sch.getId() + ")", false, true);
+        }
+
+        // notify to the scheme players the new player
+        updateMembersOE(sch.getPlayers(), "commitment(" + sender + "," + misId + "," + sch.getId() + ")", false, true);
+
+        // send a message to generate new goals
+        updateMembersOE(sender, "update_goals", true, true);
+
+        if (sch.getPlayersQty() > 1) {
+            updateMembersOE(sch.getOwner(), "sch_players(" + sch.getId() + ",NP)", false, false);
+        }
+        updateMembersOE(sch.getOwner(), "sch_players(" + sch.getId() + "," + sch.getPlayersQty() + ")", false, true);
+    }
+    
+    void remove_mission(OEAgent sender, boolean all, String schId, String misId) throws MoiseException {
+        SchemeInstance sch;
+        if (all) {
+            sch = currentOE.findScheme(schId);
+            Iterator mpi = sender.getMissions().iterator();
+            while (mpi.hasNext()) {
+                MissionPlayer mp = (MissionPlayer) mpi.next();
+                sender.removeMission(mp.getMission().getId(), schId);
+                mpi = sender.getMissions().iterator();
+                String evUnCom = "commitment(" + sender + "," + mp.getMission().getId() + "," + sch.getId() + ")";
+                updateMembersOE(sch.getPlayers(), evUnCom, false, false);
+                if (!sch.isPlayer(sender)) {
+                    updateMembersOE(sender, evUnCom, false, false);
+                }
+            }
+        } else {
+            sch = currentOE.findScheme(schId);
+            sender.removeMission(misId, schId);
+            String evUnCom = "commitment(" + sender + "," + misId + "," + sch.getId() + ")";
+            updateMembersOE(sender, evUnCom, false, false);
+            if (!sch.isPlayer(sender)) {
+                updateMembersOE(sch.getPlayers(), evUnCom, false, false);
+            }
+        }
+
+        updateMembersOE(sender, (String) null, true, true);
+
+        // notify owner that it can finish the scheme
+        updateMembersOE(sch.getOwner(), "sch_players(" + sch.getId() + ",NP)", false, false);
+        updateMembersOE(sch.getOwner(), "sch_players(" + sch.getId() + "," + sch.getPlayersQty() + ")", false, true);
+
+    }
+    
     void sendReply(OEAgent to, String mId, String content) {
         try {
             Message r = new Message("tell", null, to.getId(), content);
