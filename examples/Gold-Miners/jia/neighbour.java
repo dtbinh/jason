@@ -12,10 +12,6 @@ public class neighbour extends DefaultInternalAction {
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] terms) throws Exception {
         try {
-            for (int i = 0; i < terms.length; i++) {
-                terms[i].apply(un);
-            }
-            
             int iagx = (int)((NumberTerm)terms[0]).solve();
             int iagy = (int)((NumberTerm)terms[1]).solve();
             int itox = (int)((NumberTerm)terms[2]).solve();
