@@ -3,9 +3,18 @@ New internal actions
 . max(<list>,<term>) gets the maximal value of the list.
 . .drop_event(D) remove the event +!D from the set of events
 
+
 Changes in internal actions
 . .drop_desire(D) also removes the intentions related +!D.
 . .drop_all_desires also removes all intentions.
+
+Bugs fixed
+. broadcast does not work with SACI.
+. persistent BB in text files does not work
+. strong negation is not shown in mind inspector
+. initial beliefs with negative arguments are not shown in mind
+  inspector
+
 
 -------------
 version 0.9.5
@@ -39,18 +48,12 @@ Changes in internal actions
 Documentation
 . all internal actions were documented using javadoc (see doc/api).
 
-Bugs fixed in 0.9.5c
-. persistent BB in text files does not work
-. strong negation is not shown in mind inspector
-. initial beliefs with negative arguments are not shown in mind
-  inspector
-
 Bugs fixed in 0.9.5b
 . The date in the application build.xml use latin characters.
 . The variable name in the KQML plans may conflict with users' 
   variables.
 . .sort changes the first parameter.
-. the include directive can be used before initial beliefs.
+. the include directive can not be used before initial beliefs.
 
 -------------
 version 0.9.4
