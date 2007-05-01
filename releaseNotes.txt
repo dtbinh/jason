@@ -1,8 +1,19 @@
+-------------
+version 0.9.6
+-------------
+
+New features
+. test goal with expressions like in 
+	+e : true <- ... ?(a & b | d); ...
+  the event +? will not be generated in case the test fails.
+. when some error occurs during the execution of a plan, it 
+  the corresponding line in the source code is shown 
+  in the console.
+
 New internal actions
 . min(<list>,<term>) gets the minimal value of the list.
 . max(<list>,<term>) gets the maximal value of the list.
 . .drop_event(D) remove the event +!D from the set of events
-
 
 Changes in internal actions
 . .drop_desire(D) also removes the intentions related +!D.
