@@ -9,6 +9,10 @@ New features
 . when some error occurs during the execution of a plan, it 
   the corresponding line in the source code is shown 
   in the console.
+. the build.xml file created for some application has two
+  new tasks: 
+  "jar": creates an executable jar for the application
+  "jnlp": creates a JavaWebStart application
 
 New internal actions
 . min(<list>,<term>) gets the minimal value of the list.

@@ -116,7 +116,7 @@
 		</propertyfile>
 		<property file="${dist.properties}" />
 
-		<jar jarfile="${jasonJar}" manifest="src/jasonManifest">
+		<jar jarfile="${jasonJar}" >
 			<fileset dir="${build.dir}">
 				<include name="jason/**/*.class" />
 			</fileset>
@@ -130,12 +130,15 @@
 			<fileset dir="${basedir}/bin">
 				<include name="dist.properties" />
 			</fileset>
+			<manifest>
+			      <attribute name="Main-Class" value="jason.infra.centralised.RunCentralisedMAS"/>
+            </manifest>
 		</jar>
 	</target>
 
 	<target name="signjar" depends="jar">
 		<copy file="${jasonJar}" tofile="${jasonSJar}" />
-		<signjar jar="${jasonSJar}"  alias="jomi" storepass="fred3271" keystore="${basedir}/src/jomiKeystore" />
+		<signjar jar="${jasonSJar}"  alias="jason" storepass="rbjhja" keypass="rbjhja" keystore="${basedir}/src/jasonKeystore" />
 	</target>
 	
 	<target name="plugin" depends="compile, jar">
