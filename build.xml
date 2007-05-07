@@ -4,8 +4,9 @@
 
 	<property environment="env" />
 
-	<property name="saciJar" value="${basedir}/lib/saci.jar" />
-	<property name="jasonJar" value="${basedir}/lib/jason.jar" />
+	<property name="saciJar"   value="${basedir}/lib/saci.jar" />
+	<property name="jasonJar"  value="${basedir}/lib/jason.jar" />
+	<property name="jasonSJar" value="${basedir}/lib/s-jason.jar" />
 
 	<property name="build.dir" value="${basedir}/bin/classes" />
 
@@ -115,7 +116,7 @@
 		</propertyfile>
 		<property file="${dist.properties}" />
 
-		<jar jarfile="${jasonJar}">
+		<jar jarfile="${jasonJar}" manifest="src/jasonManifest">
 			<fileset dir="${build.dir}">
 				<include name="jason/**/*.class" />
 			</fileset>
@@ -130,9 +131,13 @@
 				<include name="dist.properties" />
 			</fileset>
 		</jar>
-		<!--signjar jar="${jasonJar}" alias="jomi" storepass="fred3271" keystore="${basedir}/src/jomiKeystore" /-->
 	</target>
 
+	<target name="signjar" depends="jar">
+		<copy file="${jasonJar}" tofile="${jasonSJar}" />
+		<signjar jar="${jasonSJar}"  alias="jomi" storepass="fred3271" keystore="${basedir}/src/jomiKeystore" />
+	</target>
+	
 	<target name="plugin" depends="compile, jar">
 		<jar jarfile="${jedit.install.dir}/jars/${plugin.jar.name}">
 			<fileset dir="${basedir}/src/jeditPlugin">
