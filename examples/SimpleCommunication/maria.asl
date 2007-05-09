@@ -37,8 +37,4 @@ vl(2).
 */
 +!kqml_received(Sender, askOne, fullname, ReplyWith) : true
    <- .send(Sender,tell,"Maria dos Santos", ReplyWith). // send the answer
-   
-// A plan to achieve the hello goal
-
-+!hello(Who) <- .println("Hello ",Who); .wait(100); !hello(Who).
 

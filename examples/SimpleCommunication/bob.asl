@@ -37,6 +37,11 @@
       .send(maria, askOne, fullname, FN);
       .println("Full name is ",FN);
       
+	  // Send to maria a plan to achieve the goal hello
+	  .plan_label(Plan,hp); // get a plans based on a plan's label
+	  .println("Sending tell how: ",Plan);
+	  .send(maria,tellHow,Plan);
+	  
       .println("Asking Maria to achieve 'hello'");
       .send(maria,achieve, hello(bob));
       .wait(2000);
@@ -47,3 +52,8 @@
 +vl(X)[source(A)]
    <- .print("Received value ",X," from ",A).
    
+@hp // this plan will be sent to Maria 
++!hello(Who) 
+   <- .println("Hello ",Who); 
+      .wait(100);
+	  !hello(Who).   

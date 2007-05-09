@@ -385,7 +385,6 @@ public class SimpleJasonAgent extends AgArch {
        ag.run();
     }
 
-
     public SimpleJasonAgent() {
          // set up the Jason agent and the 
          // TransitionSystem (the BDI Engine where the AS 
@@ -398,6 +397,10 @@ public class SimpleJasonAgent extends AgArch {
                          new Settings()));
     }
     
+    public String getAgName() {
+        return "Bob";
+    }
+
     public void run() {
         while (true) {
           // calls the Jason engine to perform one reasoning cycle
@@ -432,7 +435,7 @@ java  SimpleJasonAgent
 
 The output will be 
 \begin{verbatim}
-[SimpleJasonAgent] Agent JasonAgent is doing: do(50)
+[Bob] Agent Bob is doing: do(50)
 \end{verbatim}
 
 Of course, the AgentSpeak code in this example cannot use communication
