@@ -47,7 +47,11 @@
       .wait(2000);
       
       .println("Asking Maria to unachieve 'hello'");
-      .send(maria,unachieve, hello(bob)).
+      .send(maria,unachieve, hello(bob));
+	  
+	  // send untell how to maria
+	  .send(maria,untellHow,hp).
+	  
 
 +vl(X)[source(A)]
    <- .print("Received value ",X," from ",A).
