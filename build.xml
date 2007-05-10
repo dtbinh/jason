@@ -12,7 +12,7 @@
 
 	<property name="dist.properties" value="${basedir}/bin/dist.properties" />
 	<property name="version" value="0" />
-	<property name="release" value="9.5c" />
+	<property name="release" value="9.6" />
 	<property name="distDir" value="${env.HOME}/tmp/x/Jason-${version}.${release}" />
 	<property name="distFile" value="${env.HOME}/Jason-${version}.${release}" />
 
@@ -263,6 +263,7 @@
 			<fileset dir="${basedir}/examples" includes="**/work" />
 			<fileset dir="${basedir}/examples" includes="**/build.xml" />
 			<fileset dir="${basedir}/examples" includes="**/.stop___MAS" />
+			<fileset dir="${basedir}/examples" includes="**/*-jws/**" />
 			<fileset dir="${basedir}/examples/Sniffer" includes="log.*" />
 			<fileset dir="${basedir}/examples/persistentBelBase" includes="a.bb" />
 			<fileset dir="${basedir}/examples/persistentBelBase" includes="bookstore.*" />

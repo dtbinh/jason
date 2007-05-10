@@ -50,6 +50,8 @@ public class MiningPlanet extends jason.environment.Environment {
             sleep = 0;
         }
         
+        
+        /*
         new Thread() {
             public void run() {
                 while (running) {
@@ -62,6 +64,7 @@ public class MiningPlanet extends jason.environment.Environment {
                 }
             }
         }.start();
+        */
     }
 
     @Override
@@ -133,6 +136,7 @@ public class MiningPlanet extends jason.environment.Environment {
     	}
     }
 
+    /*
     private void endSimulation() {
         for (int i = 0; i < model.getNbOfAgs(); i++) {
             clearPercepts("miner" + (i + 1));
@@ -144,6 +148,7 @@ public class MiningPlanet extends jason.environment.Environment {
         WorldModel.destroy();
         initWorld((simId % nbWorlds) + 1);// new Random().nextInt(3)+1);
     }
+    */
 
     private void updateAgsPercept() {
         for (int i = 0; i < model.getNbOfAgs(); i++) {

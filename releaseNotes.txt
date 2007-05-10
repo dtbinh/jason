@@ -3,32 +3,34 @@ version 0.9.6
 -------------
 
 New features
-. test goal with expressions like in 
+. test goal now can also have expressions, as in:
 	+e : true <- ... ?(a & b | d); ...
-  the event +? will not be generated in case the test fails.
-. when some error occurs during the execution of a plan, it 
-  the corresponding line in the source code is shown 
+  unlike simple test goals, the event +? will not be generated
+  in case the test fails. As before, simple expressions that make
+  no reference to the belief base don't need to be in a test goal.
+. when an error occurs during the execution of a plan,
+  the corresponding line in the source code is shown
   in the console.
-. the build.xml file created for some application has two
-  new tasks: 
+. the build.xml file created for each Jason application has two
+  new tasks:
   "jar": creates an executable jar for the application
   "jnlp": creates a JavaWebStart application
 
 New internal actions
-. min(<list>,<term>) gets the minimal value of the list.
-. max(<list>,<term>) gets the maximal value of the list.
-. .drop_event(D) remove the event +!D from the set of events
+. min(<list>,<term>) gets the minimum value from the list.
+. max(<list>,<term>) gets the maximum value from the list.
+. .drop_event(D) removes the event +!D from the set of events
 
 Changes in internal actions
-. .drop_desire(D) also removes the intentions related +!D.
+. .drop_desire(D) also removes the intentions related to +!D.
 . .drop_all_desires also removes all intentions.
 
 Bugs fixed
-. broadcast does not work with SACI.
-. persistent BB in text files does not work
-. strong negation is not shown in mind inspector
-. initial beliefs with negative arguments are not shown in mind
-  inspector
+. broadcast did not work with SACI.
+. persistent BB in text files did not work
+. strong negation was not shown in the mind inspector
+. initial beliefs with negative arguments were not shown in
+  the mind inspector
 
 
 -------------

@@ -280,7 +280,7 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
 
 
 /* end of a simulation */
-
+/*
 @end[atomic]
 +end_of_simulation(S,_) : true 
   <- .drop_all_desires; 
@@ -295,4 +295,4 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
 
 +!repost_gsize : gsize(S,W,H) <- -+gsize(S,W,H)[source(percept)].
 +!repost_gsize.
-
+*/
