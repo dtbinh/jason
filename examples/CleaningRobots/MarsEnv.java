@@ -197,6 +197,7 @@ public class MarsEnv extends Environment {
                 c = Color.yellow;
                 if (((MarsModel)model).r1HasGarb) {
                     label += " - G";
+                    c = Color.orange;
                 }
             }
             super.drawAgent(g, x, y, c, -1);

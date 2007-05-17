@@ -1,25 +1,31 @@
 // mars robot 1
 
-// Beliefs
-// --------------
+/* Initial goal */
 
-checking(slots).
+!check(slots). 
 
-// Plans
-// --------------
+/* Plans */
 
-+pos(r1,X,Y) : checking(slots) & not garbage(r1)
-   <- next(slot).
++!check(slots) : not garbage(r1)
+   <- next(slot);
+      !!check(slots).
++!check(slots). 
 
-+garbage(r1) : checking(slots)
-   <- !stop(check);
-      !take(garb,r2);
-      !continue(check).
 
-+!stop(check) : true
-   <- ?pos(r1,X,Y); 
-      +pos(back,X,Y);
-      -checking(slots).
++garbage(r1) : not .desire(carry_to(r2))
+   <- !carry_to(r2).
+   
++!carry_to(R)   
+   <- // remember where to go back
+      ?pos(r1,X,Y); 
+	  -+pos(back,X,Y);
+	  
+	  // carry garbage to r2
+      !take(garb,R);
+	  
+	  // goes back and continue to check
+      !go(back); 
+	  !!check(slots).
 
 +!take(S,L) : true
    <- !ensure_pick(S); 
@@ -30,12 +36,6 @@ checking(slots).
    <- pick(garb);
       !ensure_pick(S).
 +!ensure_pick(_).
-
-+!continue(check) : true
-   <- !go(back);
-      -pos(back,X,Y);
-      +checking(slots);
-      next(slot).
 
 +!go(L) : pos(L,X,Y) & pos(r1,X,Y).
 +!go(L) <- ?pos(L,X,Y);
