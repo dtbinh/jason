@@ -1,0 +1,9 @@
+/* Jason Project */
+
+MAS ipd {
+
+    infrastructure: Centralised
+
+    agents: arbitrer; playerTFT #5; playerAllD #5; playerAllC #5;
+}
+
