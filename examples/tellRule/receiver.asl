@@ -1,0 +1,17 @@
+// Agent receiver in project tell-rule.mas2j
+
+/* Initial beliefs */
+
+b.
+c.
+
+/* Plans */
+
++!test : a <- .print(ok).
++!test     <- .print(not_ok).
+
+// customisation of KQML performative tellRule
++!kqml_received(A,tellRule,Rule,_)
+   <- .print("Received rule(s) ",Rule);
+      rules.add_rule(Rule).
+	  

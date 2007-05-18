@@ -1,4 +1,13 @@
 -------------
+version 0.9.7
+-------------
+
+New examples:
+. IteratedPrisonersDilemma
+. tellRule
+
+
+-------------
 version 0.9.6
 -------------
 
