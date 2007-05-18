@@ -26,10 +26,13 @@ public class get_rules extends DefaultInternalAction {
             ListTerm result = new ListTermImpl();
             while (i.hasNext()) {
             	Literal l = i.next();
-            	if (l.isRule() && un.unifies(pattern, l)) {
-            		l = (Literal)l.clone();
-            		l.delSources();
-            		result.add(new StringTermImpl(l.toString()));
+                if (l.isRule()) {
+                    Unifier unc = (Unifier)un.clone();
+                    if (unc.unifies(pattern, l)) {
+                        l = (Literal)l.clone();
+                        l.delSources();
+                        result.add(new StringTermImpl(l.toString()));
+                    }
             	}
             }
             return un.unifies(args[1],result);
