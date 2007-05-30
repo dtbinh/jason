@@ -16,6 +16,8 @@ import jason.asSyntax.Term;
 import jason.asSyntax.Trigger;
 import jason.asSyntax.UnnamedVar;
 import jason.asSyntax.VarTerm;
+import jason.asSyntax.Trigger.TEOperator;
+import jason.asSyntax.Trigger.TEType;
 import jason.mas2j.ClassParameters;
 import jason.runtime.Settings;
 
@@ -144,7 +146,7 @@ public class OrgAgent extends AgArch {
                 // "role(notimplemented),group(notimplemented)"+
                 // TODO: add annots: role, group (percorrer as missoes do ag que
                 // em GI, procurar os papel com obrigacao para essa missao)
-                getTS().updateEvents(new Event(new Trigger(Trigger.TEAdd, Trigger.TEAchvG, l), Intention.EmptyInt));
+                getTS().updateEvents(new Event(new Trigger(TEOperator.add, TEType.achieve, l), Intention.EmptyInt));
                 if (logger.isLoggable(Level.FINE)) logger.fine("New goal: " + l);
             }
         }
