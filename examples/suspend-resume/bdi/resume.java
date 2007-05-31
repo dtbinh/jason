@@ -21,7 +21,7 @@
 //----------------------------------------------------------------------------
 
 
-package jason.stdlib;
+package bdi;
 
 import jason.JasonException;
 import jason.asSemantics.Circumstance;

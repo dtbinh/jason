@@ -21,7 +21,7 @@
 //----------------------------------------------------------------------------
 
 
-package jason.stdlib;
+package bdi;
 
 import jason.JasonException;
 import jason.asSemantics.ActionExec;
@@ -121,9 +121,8 @@ public class suspend extends DefaultInternalAction {
             // dropping the current intention?
             Intention i = C.getSelectedIntention();
             if (i.hasTrigger(g, un)) {
-        		ts.getLogger().info("in Current");
-        		// TODO: test it
         		suspendIntention = true;
+                i.peek().removeCurrentStep();
         		C.getPendingIntentions().put(k, i);
             }
                 
