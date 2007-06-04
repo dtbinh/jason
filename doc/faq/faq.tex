@@ -100,6 +100,7 @@ javac -classpath ...../Jason/lib/jason.jar:. myLib/myIA.java
 
 \end{enumerate}
 
+\section{Environment}
 
 \subsection{Is it possible to call an internal action from the
 environment?}
@@ -121,6 +122,54 @@ sense only when called by an agent).
 %new killAgent().killCentralisedAg("bob", getEnvironmentInfraTier());
 %...
 %\end{verbatim}
+
+\subsection{How to discover the name of the agents in the environment initialisation?}
+
+Once the environment is created before the agents, the set of agents
+is empty when the environment is created and thus the method
+\texttt{getEnvironmentInfraTier().getRuntimeServices().getAgentsName()}
+can not be used. However, if the set of agents is defined only by the
+.mas2j project file (i.e., no agent is dynamically created), the name
+of the agents can be obtained from that file.
+
+For instance, a project file called \texttt{ag-names.mas2j} can be
+passed as parameter to the environment as in the following example:
+
+\begin{verbatim}
+MAS ag_names {
+     environment: TestEnv("ag-names.mas2j")
+     agents:   a #10;   b;
+}
+\end{verbatim}
+
+The following code (in the environment initialisation) can then get
+all the names:
+
+\begin{verbatim}
+public void init(String[] args) {
+   // args[0] is the name of the project file
+   try {
+      // parse that file
+      jason.mas2j.parser.mas2j parser =
+          new jason.mas2j.parser.mas2j(new FileInputStream(args[0]));
+      MAS2JProject project = parser.mas();
+			
+      List<String> names = new ArrayList<String>();
+      // get the names from the project
+      for (AgentParameters ap : project.getAgents()) {
+         String agName = ap.name;
+         for (int cAg = 0; cAg < ap.qty; cAg++) {
+            String numberedAg = agName;
+            if (ap.qty > 1) {
+               numberedAg += (cAg + 1);
+            }
+         names.add(numberedAg);
+      }
+   }
+   logger.info("Agents' name: "+names);
+   ...
+\end{verbatim}
+
 
 
 % ---------------------------------------------------------------------
