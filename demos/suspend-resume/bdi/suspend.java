@@ -39,28 +39,19 @@ import jason.asSyntax.Trigger.TEType;
 
 /**
   <p>Internal action:
-  <b><code>.fail_goal(<i>G</i>)</code></b>.
+  <b><code>.suspend(<i>G</i>)</code></b>.
   
-  <p>Description: aborts goals <i>G</i> in the agent circumstance as if a plan
-  for such goal had failed. Assuming that one of the plans requiring <i>G</i> was 
-  <code>G0 &lt;- !G; ...</code>, an event <code>-!G0</code> is generated. In
-  case <i>G</i> was triggered by <code>!!G</code> (and therefore it was
-  not a subgoal, as happens, for instance, when an "achieve" performative is used),
-  the generated event is <code>-!G</code>.  A literal <i>G</i>
+  <p>Description: suspend goals <i>G</i>, i.e., all intentions trying to achieve G will stop 
+  running until the internal action <code>.resume</code> change the state of those intentions.  
+  A literal <i>G</i>
   is a goal if there is a trigerring event <code>+!G</code> in any plan within
-  any intention; also note that intentions can be suspended hence appearing
-  in sets E, PA, or PI of the agent's circumstance as well.
+  any intention in I, E, PI, or PA.
 
   <p>Example:<ul> 
 
-  <li> <code>.fail_goal(go(1,3))</code>: aborts any attempt to achieve
-  goals such as <code>!go(1,3)</code> as if a plan for it had failed. Assuming that
-  it is a subgoal in the plan <code>get_gold(X,Y) &lt;- go(X,Y); pick.</code>, the
-  generated event is <code>-!get_gold(1,3)</code>.
+  <li> <code>.suspend(go(1,3))</code>: suspends intentions to go to the location 1,3.
 
   </ul>
-
-  (Note: this internal action was introduced in a DALT 2006 paper, where it was called .dropGoal(G,false).)
 
   @see jason.stdlib.current_intention
   @see jason.stdlib.desire
@@ -94,11 +85,9 @@ public class suspend extends DefaultInternalAction {
             for (ActionExec a: C.getPendingActions().values()) {
             	Intention i = a.getIntention();
                 if (i.hasTrigger(g, un)) {
-                	// TODO: implement it.... 
-                	// nao da pra remover de PA simplismente, vai se perder o resultado da execucao da acao
-                	// talvez: no teste para retornar a acao, verificar se esta em PI, se estiver, nao fazer nada
-                	// no .resume, se a acao esta em PA, so tirar de PI e nao colocar em I
-            		ts.getLogger().info("** .suspend of intentions in PendingActions is not implemented!!!!");
+                    i.setSuspended(true);
+                    C.getPendingIntentions().put(k, i);
+                    // TODO: does not work with Centralised (since the action execution is syncronous)
                 }
             }
             
@@ -136,11 +125,10 @@ public class suspend extends DefaultInternalAction {
                     i.setSuspended(true);
                     C.removeEvent(e);                    
                     C.getPendingIntentions().put(k, i);
-                } //else if (un.unifies(e.getTrigger(), g)) {
-            		//ts.getLogger().info("** in E");
+                } else if (i == Intention.EmptyInt && un.unifies(e.getTrigger(), g)) { // the case of !!
+            		ts.getLogger().info("** NOT IMPLEMENTED ** (suspend of !!)");
                 	// TODO: what?
-                    //i.setSuspended(true);
-                //}
+                }
             }
             return true;
             

@@ -39,28 +39,15 @@ import java.util.Iterator;
 
 /**
   <p>Internal action:
-  <b><code>.fail_goal(<i>G</i>)</code></b>.
+  <b><code>.resume(<i>G</i>)</code></b>.
   
-  <p>Description: aborts goals <i>G</i> in the agent circumstance as if a plan
-  for such goal had failed. Assuming that one of the plans requiring <i>G</i> was 
-  <code>G0 &lt;- !G; ...</code>, an event <code>-!G0</code> is generated. In
-  case <i>G</i> was triggered by <code>!!G</code> (and therefore it was
-  not a subgoal, as happens, for instance, when an "achieve" performative is used),
-  the generated event is <code>-!G</code>.  A literal <i>G</i>
-  is a goal if there is a trigerring event <code>+!G</code> in any plan within
-  any intention; also note that intentions can be suspended hence appearing
-  in sets E, PA, or PI of the agent's circumstance as well.
+  <p>Description: resume goals <i>G</i> that was suspended by <code>.suspend</code>.
 
   <p>Example:<ul> 
 
-  <li> <code>.fail_goal(go(1,3))</code>: aborts any attempt to achieve
-  goals such as <code>!go(1,3)</code> as if a plan for it had failed. Assuming that
-  it is a subgoal in the plan <code>get_gold(X,Y) &lt;- go(X,Y); pick.</code>, the
-  generated event is <code>-!get_gold(1,3)</code>.
+  <li> <code>.resume(go(1,3))</code>: resume the goal of go to location 1,3.
 
   </ul>
-
-  (Note: this internal action was introduced in a DALT 2006 paper, where it was called .dropGoal(G,false).)
 
   @see jason.stdlib.current_intention
   @see jason.stdlib.desire
@@ -72,7 +59,9 @@ import java.util.Iterator;
   @see jason.stdlib.intend
   @see jason.stdlib.succeed_goal
   @see jason.stdlib.fail_goal
-  
+
+  // TODO: update this list when add this IA in stdlib
+   
  */
 public class resume extends DefaultInternalAction {
     
@@ -88,9 +77,13 @@ public class resume extends DefaultInternalAction {
             	if (k.startsWith(suspend.SUSPENDED_INT)) {
             		Intention i = C.getPendingIntentions().get(k);
 	            	if (i.hasTrigger(g, un)) {
-	                	C.addIntention(i);
 	                	i.setSuspended(false);
 	            		ik.remove();
+                        
+                        // add it back in I if not in PA
+                        if (! C.getPendingActions().containsKey(i.getId())) {
+                            C.addIntention(i);
+                        }
 	            	}
             	}
             }
