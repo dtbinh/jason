@@ -105,14 +105,13 @@ public class suspend extends DefaultInternalAction {
             // suspending from Pending Intentions
             for (Intention i: C.getPendingIntentions().values()) {
                 if (i.hasTrigger(g, un)) { 
-                	//ts.getLogger().info("in PI "+i);
             		i.setSuspended(true);
                 }
             }
 
             for (Intention i: C.getIntentions()) {
                 if (i.hasTrigger(g, un)) {
-            		//ts.getLogger().info("in I "+i);            	
+                    i.setSuspended(true);
                     C.removeIntention(i);
                     C.getPendingIntentions().put(k, i);
                 }
@@ -122,6 +121,7 @@ public class suspend extends DefaultInternalAction {
             Intention i = C.getSelectedIntention();
             if (i.hasTrigger(g, un)) {
         		suspendIntention = true;
+                i.setSuspended(true);
                 i.peek().removeCurrentStep();
         		C.getPendingIntentions().put(k, i);
             }
@@ -129,14 +129,18 @@ public class suspend extends DefaultInternalAction {
             // dropping G in Events
             for (Event e: C.getEvents()) {
                 i = e.getIntention();
-                if (i != null && i.hasTrigger(g, un)) {
-            		ts.getLogger().info("in E.i");
+                if ( i != null && 
+                        (i.hasTrigger(g, un)) ||       // the goal is in the i's stack of IM
+                         un.unifies(e.getTrigger(), g) // the goal is the trigger of the event
+                        ) {
+                    i.setSuspended(true);
                     C.removeEvent(e);                    
                     C.getPendingIntentions().put(k, i);
-                } else if (un.unifies(e.getTrigger(), g)) {
-            		ts.getLogger().info("** in E");
+                } //else if (un.unifies(e.getTrigger(), g)) {
+            		//ts.getLogger().info("** in E");
                 	// TODO: what?
-                }
+                    //i.setSuspended(true);
+                //}
             }
             return true;
             
