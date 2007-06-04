@@ -2,9 +2,16 @@
 version 0.9.7
 -------------
 
-New examples:
+New example:
 . IteratedPrisonersDilemma
-. tellRule
+
+New Demos:
+. tell-rule: implements a new performative to tell rules like
+       a :- b & c.
+  to other agents.
+
+. suspend-resume: implements two useful internal actions: one to
+  suspend intentions and other to resume them.
 
 
 -------------
