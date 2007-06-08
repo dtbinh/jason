@@ -49,7 +49,9 @@ public class HouseView extends GridWorldView {
     public void drawAgent(Graphics g, int x, int y, Color c, int id) {
 		Location lRobot = hmodel.getAgPos(0);
         if (!lRobot.equals(hmodel.lOwner) && !lRobot.equals(hmodel.lFridge)) {
-			super.drawAgent(g, x, y, Color.yellow, -1);
+            c = Color.yellow;
+            if (hmodel.carryingBeer) c = Color.orange;
+			super.drawAgent(g, x, y, c, -1);
 			g.setColor(Color.black);
 			super.drawString(g, x, y, defaultFont, "Robot");
 		}

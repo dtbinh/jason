@@ -39,6 +39,8 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
       !!wait_for_quad.
 +!wait_for_quad : not free 
    <- .print("No longer free while waiting for quadrant.").
+-!wait_for_quad // .wait might fail     
+   <- !!wait_for_quad.
 
 // if I am around upper-left corner, move to upper-right corner
 +around(X1,Y1) : quadrant(X1,Y1,X2,Y2) & free
