@@ -14,7 +14,9 @@ public class add_rule extends DefaultInternalAction {
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
         try {
         	if (args[0].isList()) {
-        		for (Term t: (ListTerm)args[0]) {
+                ListTerm l = (ListTerm)args[0];
+                for (int i=l.size()-1; i >= 0; i--) {
+                    Term t = l.get(i);
     	            addRule( ((StringTerm)t).getString(), ts );        			
         		}
         	} else {

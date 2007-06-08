@@ -14,7 +14,7 @@
 
 // another loop that resumes and suspend the start
 +!control
-  <- .wait(100);
+  <- .wait(30);
      bdi.suspend(dots); // suspend the intention with goal dots
 	 .println;
      .wait(200);

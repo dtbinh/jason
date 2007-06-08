@@ -32,6 +32,6 @@ MAS communication {
         bob;
         maria;
 
-    classpath: "../../lib/saci.jar"; "../persistentBelBase/lib/hsqldb.jar";
+    classpath: "../../lib/saci.jar"; "../../demos/persistent-belief-base/lib/hsqldb.jar";
 }
 

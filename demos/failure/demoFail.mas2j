@@ -6,7 +6,7 @@ This example simply shows how failure handling works.
 
 */
 
-MAS demoFail {
+MAS demo_fail {
 	agents: a;
 }
 
