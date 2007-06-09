@@ -105,6 +105,7 @@ public class MiningPlanet extends jason.environment.Environment {
                 updateAgPercept(agId);
                 return true;
             }
+        } catch (InterruptedException e) {
         } catch (Exception e) {
             logger.log(Level.SEVERE, "error executing " + action + " for " + ag, e);
         }
