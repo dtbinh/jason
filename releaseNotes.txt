@@ -2,6 +2,9 @@
 version 0.9.7
 -------------
 
+New feature:
+. Mind inspector has "bi-diretional" debug and other improvements.
+
 New example:
 . IteratedPrisonersDilemma
 
@@ -12,6 +15,13 @@ New Demos:
 
 . suspend-resume: implements two useful internal actions: one to
   suspend intentions and other to resume them.
+
+Bugs fixed:
+. JavaWebStart of Jason applications in windows.
+
+Changes:
+. new beliefs are added before the others in the belief base.
+. asynchronous acting in centralised infrastructure.
 
 
 -------------
