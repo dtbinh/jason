@@ -46,18 +46,33 @@ public class OrgAgent extends AgArch {
     static final Atom rootAtom               = new Atom("root");
     private Logger    logger                 = Logger.getLogger(OrgAgent.class.getName());
 
+    private String    orgManagerName         = "orgManager";
+    
     @Override
     public void initAg(String agClass, ClassParameters bbPars, String asSrc, Settings stts) throws JasonException {
         super.initAg(agClass, bbPars, asSrc, stts);
         logger = Logger.getLogger(OrgAgent.class.getName() + "." + getAgName());
-        try {
-            Message m = new Message("tell", null, "orgManager", "add_agent");
-            super.sendMsg(m);
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error sending addAgent to OrgManager!", e);
-        }
+        introduceMySelf();
     }
 
+    public String getOrgManagerName() {
+        return orgManagerName;
+    }
+    
+    public void setOrgManagerName(String name) {
+        orgManagerName = name;
+        introduceMySelf();
+    }
+    
+    private void introduceMySelf() {
+        try {
+            Message m = new Message("tell", null, getOrgManagerName(), "add_agent");
+            super.sendMsg(m);
+        } catch (Exception e) {
+            logger.fine("Error sending add_agent to OrgManager!");
+        }        
+    }
+    
     public void checkMail() {
         super.checkMail(); // get the messages
         // check the MailBox (at TS) for org messages

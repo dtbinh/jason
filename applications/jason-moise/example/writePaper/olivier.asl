@@ -30,7 +30,7 @@ desired_mission(writePaperSch,mBib).
 // when I receive a tell message from S and
 // S plays writer in a scheme, change the belief of
 // used refs
-+useRef(NewRef)[source(S)] 
++use_ref(NewRef)[source(S)] 
    :  play(S, writer,Gr) & refs(R)
    <- .print("adding ref ",NewRef, " to ", R);
       -refs(R); +refs([NewRef|R]).

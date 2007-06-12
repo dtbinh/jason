@@ -25,8 +25,9 @@ public abstract class MoiseBaseIA extends DefaultInternalAction  {
 		
 		// send acTerm as message to OrgManager
 		try {
-	        Message m = new Message("achieve", null, "orgManager", acTerm.toString());
-            ts.getUserAgArch().sendMsg(m);
+            OrgAgent oag = (OrgAgent)ts.getUserAgArch();
+	        Message m = new Message("achieve", null, oag.getOrgManagerName(), acTerm);
+            oag.sendMsg(m);
             return true;
     	} catch (Exception e) {
     		logger.log(Level.SEVERE, "Error sending "+acTerm+" to OrgManager.",e);

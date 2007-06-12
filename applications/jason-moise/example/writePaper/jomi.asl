@@ -20,7 +20,7 @@ desired_mission(writePaperSch,mColaborator).
 +!wsecs[scheme(Sch)] 
    :   commitment(Ag, mBib, Sch) 
    <- // send a message to the agent committed to mission mBib
-      .send(Ag, tell, useRef(bordini05));
+      .send(Ag, tell, use_ref(bordini05));
       .print("Writing sections!");
       jmoise.set_goal_state(Sch, wsecs, satisfied).
 

@@ -14,12 +14,14 @@ desired_mission(writePaperSch,mManager).
    Initial goals
 */
 
+
 !create_group. // initial goal
 
 // create a group to write a paper
 +!create_group : true 
    <- //.send(orgManager, achieve, create_group(wpgroup)).
       jmoise.create_group(wpgroup).
+
 
 
 /* 

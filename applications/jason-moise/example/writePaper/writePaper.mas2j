@@ -1,4 +1,4 @@
-MAS writePaper {
+MAS write_paper {
    infrastructure: Centralised
    agents:
        orgManager [osfile="wp-os.xml",gui=yes] 
