@@ -1,7 +1,13 @@
-import jason.asSemantics.*;
-import jason.asSyntax.*;
-import java.util.*;
-import org.w3c.dom.*;
+import jason.asSemantics.Agent;
+import jason.asSemantics.Unifier;
+import jason.asSyntax.Literal;
+import jason.asSyntax.PredicateIndicator;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 
 /**
@@ -22,6 +28,10 @@ public class VoidBB implements jason.bb.BeliefBase {
     }
 
     public boolean add(Literal l) {
+        return true;
+    }
+    
+    public boolean add(int index, Literal l) {
         return true;
     }
     

@@ -3,7 +3,7 @@ version 0.9.7
 -------------
 
 New feature:
-. Mind inspector has "bi-diretional" debug and other improvements.
+. Mind inspector has "bi-directional" debug and other improvements.
 
 New example:
 . IteratedPrisonersDilemma

@@ -18,14 +18,6 @@ Projects (!)
 . functional programming with AS (functions as terms)
 
 
--------------------------   
-jIDE 
-
-   . debug:
-      . step one agent, sniffer, ...
-      . act on agent's mind (remove bel, intention, generate event,...)
-      . control at semantic action level
-      . bi-directional debug
 
 
 -----------------------------------
