@@ -27,8 +27,14 @@ MAS custom_BB {
             "jdbc:hsqldb:bookstore", // URL connection
             "sa", // user
             "", // password
-            "[a(1,tablea),book(5),book_author(2),author(2),publisher(2)]");
-            // predicate a/1 is mapped to a table called "tablea"
-            // predicate book (with arity 5) is mapped to a table called "book"
+            "[a(1,tablea,columns(runs(integer))),book(5),book_author(2),author(2,author,columns(id(integer),name(varchar(30)))),publisher(2)]");
+            // predicate a/1 is mapped to a table called "tablea" with an integer column called runs;
+            //     the name and type of the columns is used only if the table does not exits and
+            //     have to be created;
+            //     if no column name/type is provided, an arbitrary name is used with type varchar(256)
+            // predicate book (with arity 5) is mapped to a table called "book" 
+            //     if no table name is provided the predicate name is used for the table name
+            // the columns for author are "id" (an integer) and "name" (char);
             // and so on...
+            // See JDBCPersistentBB API doc for more information
 }
