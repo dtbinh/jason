@@ -2,14 +2,22 @@ package mining;
 
 import jason.environment.grid.GridWorldView;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.Graphics;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 
 public class WorldView extends GridWorldView {
 
     // singleton pattern
-    private static WorldView view      = null;
+    private static WorldView view = null;
 
     synchronized public static WorldView create(WorldModel model) {
         if (view == null) {
@@ -29,6 +37,45 @@ public class WorldView extends GridWorldView {
         super(model, "Mining World", 600);
         setVisible(true);
         repaint();
+    }
+
+    JLabel jlMouseLoc;
+
+    @Override
+    public void initComponents(int width) {
+        super.initComponents(width);
+        JPanel s = new JPanel(new FlowLayout());
+        s.add(new JLabel("Click on the cells to add new pieces of gold."));
+        s.add(new JLabel("        (mouse at:"));
+        jlMouseLoc = new JLabel(")");
+        s.add(jlMouseLoc);
+        getContentPane().add(BorderLayout.SOUTH, s);        
+
+        getCanvas().addMouseListener(new MouseListener() {
+            public void mouseClicked(MouseEvent e) {
+                int col = e.getX() / cellSizeW;
+                int lin = e.getY() / cellSizeH;
+                if (col >= 0 && lin >= 0 && col < getModel().getWidth() && lin < getModel().getHeight()) {
+                    getModel().add(WorldModel.GOLD, col, lin);
+                    update(col, lin);
+                }
+            }
+            public void mouseExited(MouseEvent e) {}
+            public void mouseEntered(MouseEvent e) {}
+            public void mousePressed(MouseEvent e) {}
+            public void mouseReleased(MouseEvent e) {}
+        });
+
+        getCanvas().addMouseMotionListener(new MouseMotionListener() {
+            public void mouseDragged(MouseEvent e) { }
+            public void mouseMoved(MouseEvent e) {
+                int col = e.getX() / cellSizeW;
+                int lin = e.getY() / cellSizeH;
+                if (col >= 0 && lin >= 0 && col < getModel().getWidth() && lin < getModel().getHeight()) {
+                    jlMouseLoc.setText(col+","+lin+")");
+                }
+            }            
+        });
     }
 
     @Override
@@ -81,5 +128,9 @@ public class WorldView extends GridWorldView {
     public void drawEnemy(Graphics g, int x, int y) {
         g.setColor(Color.red);
         g.fillOval(x * cellSizeW + 7, y * cellSizeH + 7, cellSizeW - 8, cellSizeH - 8);
+    }
+    
+    public static void main(String[] args) throws Exception {
+        new WorldView(WorldModel.world5()).setVisible(true);
     }
 }
