@@ -20,6 +20,8 @@ public class WorldModel extends GridWorldModel {
 
     private Logger            logger   = Logger.getLogger("jasonTeamSimLocal.mas2j." + WorldModel.class.getName());
 
+    private String            id = "WorldModel";
+    
     // singleton pattern
     protected static WorldModel model = null;
     
@@ -43,6 +45,16 @@ public class WorldModel extends GridWorldModel {
         agWithGold = new HashSet<Integer>();
     }
 
+    public String getId() {
+        return id;
+    }
+    public void setId(String id) {
+        this.id = id;
+    }
+    public String toString() {
+        return id;
+    }
+    
     public Location getDepot() {
         return depot;
     }
@@ -197,6 +209,7 @@ public class WorldModel extends GridWorldModel {
     /** world with gold, no obstacle */
     static WorldModel world4() throws Exception {
         WorldModel model = WorldModel.create(35, 35, 4);
+        model.setId("Scenario 4");
         model.setDepot(5, 27);
         model.setAgPos(0, 1, 0);
         model.setAgPos(1, 20, 0);
@@ -221,6 +234,7 @@ public class WorldModel extends GridWorldModel {
     /** world with gold and obstacles */
     static WorldModel world5() throws Exception {
         WorldModel model = WorldModel.create(35, 35, 4);
+        model.setId("Scenario 5");
         model.setDepot(16, 16);
         model.setAgPos(0, 1, 0);
         model.setAgPos(1, 20, 0);

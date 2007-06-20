@@ -16,11 +16,12 @@ public class MiningPlanet extends jason.environment.Environment {
     private Logger          logger   = Logger.getLogger("jasonTeamSimLocal.mas2j." + MiningPlanet.class.getName());
     WorldModel              model;
 
-    int                     simId    = 5; // type of environment
-    int                     nbWorlds = 5;
+    int     simId    = 5; // type of environment
+    int     nbWorlds = 5;
 
-    int     sleep = 0;
-    boolean running = true;
+    int     sleep    = 0;
+    boolean running  = true;
+    boolean hasGUI   = true;
     
     public static final int SIM_TIME = 60;                                                                         // in
                                                                                                                     // seconds
@@ -39,32 +40,17 @@ public class MiningPlanet extends jason.environment.Environment {
 
     @Override
 	public void init(String[] args) {
-        simId = Integer.parseInt(args[0]);
-        initWorld(simId);
-
-        // get the parameters
-        sleep = Integer.parseInt(args[1]);
-        if (args[2].equals("yes")) {
-            WorldView.create(model);
-        } else {
-            sleep = 0;
-        }
-        
-        
-        /*
-        new Thread() {
-            public void run() {
-                while (running) {
-                    try {
-                        sleep(SIM_TIME * 1000);
-                        if (running) endSimulation();
-                    } catch (Exception e) {
-                        logger.log(Level.SEVERE, "Error!", e);
-                    }
-                }
-            }
-        }.start();
-        */
+        hasGUI = args[2].equals("yes"); 
+        sleep  = Integer.parseInt(args[1]);
+        initWorld(Integer.parseInt(args[0]));
+    }
+    
+    public int getSimId() {
+        return simId;
+    }
+    
+    public void setSleep(int s) {
+        sleep = s;
     }
 
     @Override
@@ -116,7 +102,8 @@ public class MiningPlanet extends jason.environment.Environment {
         return (Integer.parseInt(agName.substring(5))) - 1;
     }
     
-    private void initWorld(int w) {
+    public void initWorld(int w) {
+        simId = w;
     	try {
 	        switch (w) {
 	        case 1: model = WorldModel.world1(); break;
@@ -128,28 +115,33 @@ public class MiningPlanet extends jason.environment.Environment {
 	            logger.info("Invalid index!");
 	            return;
 	        }
-	        addPercept(Literal.parseLiteral("gsize(" + simId + "," + model.getWidth() + "," + model.getHeight() + ")"));
-	        addPercept(Literal.parseLiteral("depot(" + simId + "," + model.getDepot().x + "," + model.getDepot().y + ")"));
-
-	        updateAgsPercept();
+            setWorld(model);
     	} catch (Exception e) {
     		logger.warning("Error creating world "+e);
     	}
     }
+    
+    public void setWorld(WorldModel m) {
+        model = m;
+        addPercept(Literal.parseLiteral("gsize(" + simId + "," + model.getWidth() + "," + model.getHeight() + ")"));
+        addPercept(Literal.parseLiteral("depot(" + simId + "," + model.getDepot().x + "," + model.getDepot().y + ")"));
+        if (hasGUI) {
+            WorldView.create(model).setEnv(this);
+        }
+        updateAgsPercept();        
+        informAgsEnvironmentChanged();
+    }
 
-    /*
-    private void endSimulation() {
+    public void endSimulation() {
         for (int i = 0; i < model.getNbOfAgs(); i++) {
             clearPercepts("miner" + (i + 1));
         }
         clearPercepts();
         addPercept(Literal.parseLiteral("end_of_simulation(" + simId + ",0)"));
-        simId++;
+        informAgsEnvironmentChanged();
         WorldView.destroy();
         WorldModel.destroy();
-        initWorld((simId % nbWorlds) + 1);// new Random().nextInt(3)+1);
     }
-    */
 
     private void updateAgsPercept() {
         for (int i = 0; i < model.getNbOfAgs(); i++) {

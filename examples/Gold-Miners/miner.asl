@@ -18,7 +18,7 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
 /* plans for sending the initial position to leader */
 
 +gsize(S,_,_) : true // S is the simulation Id 
-  <- !send_init_pos(S).
+  <- .print(newgsize); !send_init_pos(S).
 +!send_init_pos(S) : pos(X,Y)
   <- .send(leader,tell,init_pos(S,X,Y)).
 +!send_init_pos(S) : not pos(_,_) // if I do not know my position
@@ -282,19 +282,14 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
 
 
 /* end of a simulation */
-/*
-@end[atomic]
+
 +end_of_simulation(S,_) : true 
   <- .drop_all_desires; 
-     -quadrant(_,_,_,_);
+     .abolish(quadrant(_,_,_,_));
      .abolish(gold(_,_));
      .abolish(committed_to(_));
      .abolish(picked(_));
      .abolish(last_checked(_,_));
-     !repost_gsize;
      -+free;
      .print("-- END ",S," --").
 
-+!repost_gsize : gsize(S,W,H) <- -+gsize(S,W,H)[source(percept)].
-+!repost_gsize.
-*/
