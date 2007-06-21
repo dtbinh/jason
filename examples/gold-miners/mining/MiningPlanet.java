@@ -14,10 +14,12 @@ import java.util.logging.Logger;
 public class MiningPlanet extends jason.environment.Environment {
 
     private Logger          logger   = Logger.getLogger("jasonTeamSimLocal.mas2j." + MiningPlanet.class.getName());
-    WorldModel              model;
-
-    int     simId    = 5; // type of environment
-    int     nbWorlds = 5;
+    
+    WorldModel  model;
+    WorldView   view;
+    
+    int     simId    = 3; // type of environment
+    int     nbWorlds = 3;
 
     int     sleep    = 0;
     boolean running  = true;
@@ -84,6 +86,7 @@ public class MiningPlanet extends jason.environment.Environment {
                 result = model.pick(agId);
             } else if (action.equals(drop)) {
                 result = model.drop(agId);
+                view.udpateCollectedGolds();
             } else {
                 logger.info("executing: " + action + ", but not implemented!");
             }
@@ -109,37 +112,29 @@ public class MiningPlanet extends jason.environment.Environment {
 	        case 1: model = WorldModel.world1(); break;
 	        case 2: model = WorldModel.world2(); break;
 	        case 3: model = WorldModel.world3(); break;
-	        case 4: model = WorldModel.world4(); break;
-	        case 5: model = WorldModel.world5(); break;
 	        default:
 	            logger.info("Invalid index!");
 	            return;
 	        }
-            setWorld(model);
+            clearPercepts();
+            addPercept(Literal.parseLiteral("gsize(" + simId + "," + model.getWidth() + "," + model.getHeight() + ")"));
+            addPercept(Literal.parseLiteral("depot(" + simId + "," + model.getDepot().x + "," + model.getDepot().y + ")"));
+            if (hasGUI) {
+                view = new WorldView(model);
+                view.setEnv(this);
+                view.udpateCollectedGolds();
+            }
+            updateAgsPercept();        
+            informAgsEnvironmentChanged();
     	} catch (Exception e) {
     		logger.warning("Error creating world "+e);
     	}
     }
     
-    public void setWorld(WorldModel m) {
-        model = m;
-        addPercept(Literal.parseLiteral("gsize(" + simId + "," + model.getWidth() + "," + model.getHeight() + ")"));
-        addPercept(Literal.parseLiteral("depot(" + simId + "," + model.getDepot().x + "," + model.getDepot().y + ")"));
-        if (hasGUI) {
-            WorldView.create(model).setEnv(this);
-        }
-        updateAgsPercept();        
-        informAgsEnvironmentChanged();
-    }
-
     public void endSimulation() {
-        for (int i = 0; i < model.getNbOfAgs(); i++) {
-            clearPercepts("miner" + (i + 1));
-        }
-        clearPercepts();
         addPercept(Literal.parseLiteral("end_of_simulation(" + simId + ",0)"));
         informAgsEnvironmentChanged();
-        WorldView.destroy();
+        if (view != null) view.setVisible(false);
         WorldModel.destroy();
     }
 

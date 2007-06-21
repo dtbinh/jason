@@ -26,26 +26,9 @@ import javax.swing.event.ChangeListener;
 
 public class WorldView extends GridWorldView {
 
-    // singleton pattern
-    private static WorldView view = null;
-
     MiningPlanet env = null;
     
-    synchronized public static WorldView create(WorldModel model) {
-        if (view == null) {
-            view = new WorldView(model);
-        }
-        return view;
-    }
-
-    public static void destroy() {
-        if (view != null) {
-            view.setVisible(false);
-            view = null;
-        }
-    }
-
-    private WorldView(WorldModel model) {
+    public WorldView(WorldModel model) {
         super(model, "Mining World", 600);
         setVisible(true);
         repaint();
@@ -59,16 +42,15 @@ public class WorldView extends GridWorldView {
     JLabel    jlMouseLoc;
     JComboBox scenarios;
     JSlider   jSpeed;
+    JLabel    jGoldsC;
 
     @Override
     public void initComponents(int width) {
         super.initComponents(width);
         scenarios = new JComboBox();
-        scenarios.addItem(1);
-        scenarios.addItem(2);
-        scenarios.addItem(3);
-        scenarios.addItem(4);
-        scenarios.addItem(5);
+        for (int i=1; i<=3; i++) {
+            scenarios.addItem(i);
+        }
         JPanel args = new JPanel();
         args.setLayout(new BoxLayout(args, BoxLayout.Y_AXIS));
 
@@ -110,6 +92,11 @@ public class WorldView extends GridWorldView {
         jlMouseLoc = new JLabel("0,0)");
         p.add(jlMouseLoc);
         msg.add(p);
+        p = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        p.add(new JLabel("Collected golds:"));
+        jGoldsC = new JLabel("0");
+        p.add(jGoldsC);
+        msg.add(p);
 
         JPanel s = new JPanel(new BorderLayout());
         s.add(BorderLayout.WEST, args);
@@ -140,8 +127,11 @@ public class WorldView extends GridWorldView {
                 int col = e.getX() / cellSizeW;
                 int lin = e.getY() / cellSizeH;
                 if (col >= 0 && lin >= 0 && col < getModel().getWidth() && lin < getModel().getHeight()) {
-                    getModel().add(WorldModel.GOLD, col, lin);
+                    WorldModel wm = (WorldModel)model;
+                    wm.add(WorldModel.GOLD, col, lin);
+                    wm.setInitialNbGolds(wm.getInitialNbGolds()+1);
                     update(col, lin);
+                    udpateCollectedGolds();
                 }
             }
             public void mouseExited(MouseEvent e) {}
@@ -160,6 +150,11 @@ public class WorldView extends GridWorldView {
                 }
             }            
         });
+    }
+    
+    public void udpateCollectedGolds() {
+        WorldModel wm = (WorldModel)model;
+        jGoldsC.setText(wm.getGoldsInDepot() + "/" + wm.getInitialNbGolds());    
     }
 
     @Override

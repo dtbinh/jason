@@ -18,7 +18,7 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
 /* plans for sending the initial position to leader */
 
 +gsize(S,_,_) : true // S is the simulation Id 
-  <- .print(newgsize); !send_init_pos(S).
+  <- !send_init_pos(S).
 +!send_init_pos(S) : pos(X,Y)
   <- .send(leader,tell,init_pos(S,X,Y)).
 +!send_init_pos(S) : not pos(_,_) // if I do not know my position
