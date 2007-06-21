@@ -7,7 +7,7 @@ working as a Sniffer (see comm/Sniffer*.java)
 
 */
 
-MAS communication {
+MAS sniffer {
    
     infrastructure: Centralised
 
