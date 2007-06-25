@@ -11,7 +11,7 @@
       
       .println("Sending synchronous ask ");
       .send(maria, askOne, vl(X), vl(X));
-      .println("Answer from ask is: ", X, " (should be 1)");
+      .println("Answer from ask is: ", X, " (should be 10)");
 
       .println("Sending assynchronous ask ");
       .send(maria, askOne, vl(X4)); // assync ask has no fourth argument
@@ -19,7 +19,7 @@
 
       .println("Sending ask for something Maria does not know, but can handle by +? ");
       .send(maria, askOne, t2(X3), Ans2);
-      .println("Answer from ask is: ", Ans2, " (should be t2(11))");
+      .println("Answer from ask is: ", Ans2, " (should be t2(20))");
       
       .println("Sending ask for something Maria does not know ");
       .send(maria, askOne, t1(X2), Ans1);
@@ -27,7 +27,7 @@
       
       .println("Sending askAll values");
       .send(maria, askAll, vl(Y), List1);
-      .println("Answer from askAll is: ", List1, " (should be [vl(1),vl(2),vl(10)])");
+      .println("Answer from askAll is: ", List1, " (should be [vl(10),vl(2),vl(1)])");
 
       .println("Sending askAll t1(X)");
       .send(maria, askAll, t1(Y), List2);
