@@ -6,6 +6,7 @@
 
 	<property name="saciJar"   value="${basedir}/lib/saci.jar" />
 	<property name="jasonJar"  value="${basedir}/lib/jason.jar" />
+	<property name="jadeJar"  value="${basedir}/lib/jade.jar" />
 	<property name="jasonSJar" value="${basedir}/lib/s-jason.jar" />
 
 	<property name="build.dir" value="${basedir}/bin/classes" />
@@ -22,6 +23,7 @@
 	<path id="run.classpath">
 		<pathelement location="${jedit.install.dir}/jedit.jar" />
 		<pathelement location="${saciJar}" />
+		<pathelement location="${jadeJar}" />
 	</path>
 
 	<path id="project.classpath">
