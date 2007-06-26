@@ -262,15 +262,35 @@
 	<target name="cleanExamples">
 		<delete failonerror="no" includeEmptyDirs="true" verbose="true">
 			<fileset dir="${basedir}/examples" includes="**/classes/*" />
+			<fileset dir="${basedir}/demos"    includes="**/classes/*" />
+
 			<fileset dir="${basedir}/examples" includes="**/classes" />
+			<fileset dir="${basedir}/demos"    includes="**/classes" />
+			
 			<fileset dir="${basedir}/examples" includes="**/*.class" />
+			<fileset dir="${basedir}/demos"    includes="**/*.class" />
+			
 			<fileset dir="${basedir}/examples" includes="**/work" />
+
 			<fileset dir="${basedir}/examples" includes="**/build.xml" />
+			<fileset dir="${basedir}/demos"    includes="**/build.xml" />
+
 			<fileset dir="${basedir}/examples" includes="**/.stop___MAS" />
+			<fileset dir="${basedir}/demos"    includes="**/.stop___MAS" />
+			
 			<fileset dir="${basedir}/examples" includes="**/*-jws/**" />
+
+			<fileset dir="${basedir}/examples" includes="**/APDescription.txt" />
+			<fileset dir="${basedir}/demos"    includes="**/APDescription.txt" />
+						
+			<fileset dir="${basedir}/examples" includes="**/MTPs-Main-Container.txt" />
+			<fileset dir="${basedir}/demos"    includes="**/MTPs-Main-Container.txt" />
+						
 			<fileset dir="${basedir}/examples/Sniffer" includes="log.*" />
 			<fileset dir="${basedir}/examples/persistentBelBase" includes="a.bb" />
 			<fileset dir="${basedir}/examples/persistentBelBase" includes="bookstore.*" />
+
+			<fileset dir="${basedir}" includes="**/*.*~" />
 		</delete>
 	</target>
 

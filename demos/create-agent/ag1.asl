@@ -6,7 +6,7 @@
       .send(bob, achieve, a);
       .wait(100);
       .print("Killing agent bob!");
-      .kill_agent(bob);
+      .kill_agent(bob).
       !end(10000).
       
 +!end(T) : T <= 0 <- .stopMAS.
