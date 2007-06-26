@@ -9,7 +9,7 @@ that sends messages to another agent (maria)
 
 MAS communication {
    
-	infrastructure: Centralised
+	infrastructure: Jade
 
 	agents:
 		bob;
