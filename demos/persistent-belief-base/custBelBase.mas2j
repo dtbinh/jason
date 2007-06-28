@@ -19,6 +19,7 @@ tables or to persiste the agent belief base.
 */
 
 MAS custom_BB {
+    infrastructure: Jade
     agents:
         a beliefBaseClass jason.bb.TextPersistentBB;
         b beliefBaseClass VoidBB;

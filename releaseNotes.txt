@@ -3,6 +3,8 @@ version 0.9.7
 -------------
 
 New feature:
+. First (experimental) version of JADE infrastructure 
+  (see FAQ for details)
 . Mind inspector has "bi-directional" debug and other improvements.
 
 New example:
