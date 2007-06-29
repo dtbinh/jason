@@ -1,0 +1,36 @@
+package mds;
+
+import jason.asSemantics.*;
+import jason.asSyntax.*;
+import java.util.*;
+
+/** example of agent function overriding */
+public class MDSAgent extends Agent {
+
+	/** unattendedLuggage event has priority */
+    @Override
+	public Event selectEvent(Queue<Event> events) {
+		Iterator<Event> i = events.iterator();
+		while (i.hasNext()) {
+			Event e = i.next();
+			if (e.getTrigger().getLiteral().getFunctor().equals("unattended_luggage")) {
+				i.remove();
+				return e;
+			}
+			// the unattended Luggage event could generate a
+			// sub-goal that generates other events 
+			if (e.getIntention() != null) {
+				Iterator<IntendedMeans> j = e.getIntention().iterator();
+				while (j.hasNext()) {
+					IntendedMeans im = j.next();
+					Trigger it = (Trigger) im.getPlan().getTriggerEvent();
+					if (it.getLiteral().getFunctor().equals("unattended_luggage")) {
+						i.remove();
+						return e;
+					}
+				}
+			}
+		}
+		return super.selectEvent(events);
+	}
+}
