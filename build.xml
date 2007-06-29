@@ -230,6 +230,7 @@
 			<fileset dir="${basedir}" includes="bin/jedit/**/*" />
 			<fileset dir="${basedir}" includes="doc/**/*" />
 			<fileset dir="${basedir}" includes="examples/**/*" />
+			<fileset dir="${basedir}" includes="demos/**/*" />
 			<fileset dir="${basedir}" includes="lib/**/*" />
 			<fileset dir="${basedir}" includes="src/**/*" />
 		</copy>
