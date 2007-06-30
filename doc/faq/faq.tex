@@ -372,41 +372,50 @@ You should have a look at the \code{ExecutionControlGUI} class for an example
 of how to do this, and the API documentation for further available methods
 inherited from \code{ExecutionControl}.
 
-
 % ---------------------------------------------------------------------
 \section{\jason Infrastructures}
 
 
-\subsection{What an infrastructure does?}
+\subsection{What are infrastructures for?}
 
-An infrastructure must provide the following services for the MAS:
+An infrastructure provides the following services for the MAS:
 \begin{itemize}
-\item communication (e.g. \saci infrastructure implements it using
-  KQML while \jade implements it using FIPA-ACL),
-\item control of the agent's life (creation, running, destruction).
+\item communication (e.g., the \saci infrastructure implements
+  communication based on
+  KQML whilst \jade implements it using FIPA-ACL),
+\item control of the agent life cycle (creation, running, destruction).
 \end{itemize}
 
 \subsection{Which infrastructures are available?}
 
 The current version of \jason has the following infrastructures:
-\begin{itemize}
-\item \emph{Centralised}: this infrastructure runs all agents in the
+\begin{description}
+\item[Centralised:] this infrastructure runs all agents in the
   same host. It provides fast startup and high performance for systems
-  that may be executed in only one computer. It is also useful to test
-  and develop the systems. Centralised is the default infrastructure.
+  that can be executed in a single computer. It is also useful to test
+  and develop (prototype) systems. Centralised is the default infrastructure.
 
-\item \emph{Saci}: provides distribution and communication with KQML.
+\item[Saci:] provides distribution and communication based on KQML;
+  click 
+\begin{rawhtml}
+  <a href="http://www.lti.pcs.usp.br/saci">here</a>
+\end{rawhtml}
+  for more details.
 
-\item \emph{Jade}: provides distribution and communication with
-  FIPA-ACL. With this infrastructure all tools available for \jade
+\item[Jade:] provides distribution and communication using 
+\begin{rawhtml}
+  <a href="http://jade.tilab.com/">Jade</a>,
+\end{rawhtml}
+  which is based on
+  FIPA-ACL. With this infrastructure, all tools available with \jade
   (e.g., Sniffer and Inspector) are also available to monitor and
   inspect \jason agents.
 
-  Since the \jason agents use KQML and \jade uses FIPA-ACL, we opted
+  Since \jason agents use KQML and \jade uses FIPA-ACL, we opted
   to translate the messages from KQML to FIPA-ACL and vice-versa to
   maintain the AgentSpeak programming the same for all
-  infrastructures. The following table resumes the translation of the
-  performatives:
+  infrastructures. The following table summarises the translation of the
+  basic performatives:
   \begin{center}
     \begin{tabular}{ll}
       \hline
@@ -430,26 +439,26 @@ MAS auction {
     agents: ag1; ag2; ag3; 
 }
 \end{verbatim}
-to use Jade:
-\begin{verbatim}
-MAS auction {
-    infrastructure: Jade
-    agents: ag1; ag2; ag3; 
-}
-\end{verbatim}
-and to use Saci:
+to use Saci:
 \begin{verbatim}
 MAS auction {
     infrastructure: Saci
     agents: ag1; ag2; ag3; 
 }
 \end{verbatim}
+and to use Jade:
+\begin{verbatim}
+MAS auction {
+    infrastructure: Jade
+    agents: ag1; ag2; ag3; 
+}
+\end{verbatim}
 
 Note that the agents do not need to be changed for different
-infrastructures. The \jason agent architecture binds them to the
+infrastructures. The \jason Agent Architecture binds them to the
 available infrastructure.
 
-\subsection{When should I use \saci or \jade infrastructure?}\label{sec:whysaci}
+\subsection{When should I use the \saci or \jade infrastructures?}\label{sec:whysaci}
 
 The centralised infrastructure does not support:
 \begin{itemize}
@@ -458,10 +467,11 @@ The centralised infrastructure does not support:
 \end{itemize}
 
 If you need any of these features, you should choose the \saci or
-\jade infrastructures (or implement a new infrastructure for \jason).
-The interoperability with non-\jason agents is achieved by \saci
-through KQML communication. An example of communication among \jason
-and \saci agents is available at \htlink{Source
+\jade infrastructures (or implement/plug a new infrastructure for/into
+\jason yourself).  The interoperability with non-\jason agents is
+achieved by \saci through KQML communication. An example of
+communication between \jason and \saci agents (implemented in Java) is
+available at \htlink{Source
   Force}{https://sourceforge.net/project/showfiles.php?group_id=98417}.
 
 \subsection{How to customise the \jade container?}
@@ -475,17 +485,18 @@ container is running at x.com):
 -gui -container -host x.com
 \end{verbatim}
 
-\subsection{How to start one \jason agent with \texttt{jade.Boot}?}
+\subsection{How to start a \jason agent with \texttt{jade.Boot}?}
 
 The \jade agent wrapper should be used to start a \jason agent using
-the \texttt{jade.Boot} instead of the \jason IDE. For example, to
-start an \jason agent called bob based on the AgentSpeak source of the
-file \texttt{auctioneer.asl} run the following command in a shell:
+\texttt{jade.Boot}, rather than doing it from the \jason IDE. For
+example, to start a \jason agent called `bob' based on the
+AgentSpeak source of the file \texttt{auctioneer.asl}, run the
+following command in a shell:
 \begin{verbatim}
 java jade.Boot bob:jason.infra.jade.JadeAgArch(auctionner.asl)
 \end{verbatim}
 
-In case one also wants to start the environment simulator
+To start up also a simulated environment
 (implemented, for instance, in the \texttt{Env} class):
 
 \begin{verbatim}
@@ -499,9 +510,9 @@ java jade.Boot \
 
 If you want to use only the \jason AgentSpeak interpreter and reasoning
 features, you can implement your own agent class where the \jason available
-infrastructure are not used.  This class must function as an "overall agent
+infrastructures are not used.  This class must function as an "overall agent
 architecture" for the AgentSpeak interpreter, i.e., it has to send
-perceptions to the interpreter and get the agent actions (which result from
+percepts to the interpreter and get the agent actions (which result from
 the AgentSpeak "reasoning").
 
 Suppose you need a simple agent that interprets and reasons according to the
@@ -514,7 +525,7 @@ following AgentSpeak source:
 
 The following class implements the required architecture (the complete
 code is available with the examples in the \jason distribution).  This
-code simply add \code{x(10)} into the agent's belief base through
+code simply adds \code{x(10)} into the agent's belief base through
 perception and get the output action, in this case \code{do(50)}.
 
 \begin{verbatim}
@@ -578,8 +589,8 @@ The output will be
 [Bob] Agent Bob is doing: do(50)
 \end{verbatim}
 
-Of course, the AgentSpeak code in this example cannot use communication
-actions since the specific architecture given above does not implement
+Of course, the AgentSpeak code in this example cannot use communicative
+actions, since the specific architecture given above does not implement
 communication.
 
 \section{AgentSpeak Language}
