@@ -288,8 +288,8 @@
 			<fileset dir="${basedir}/demos"    includes="**/MTPs-Main-Container.txt" />
 						
 			<fileset dir="${basedir}/examples/Sniffer" includes="log.*" />
-			<fileset dir="${basedir}/examples/persistentBelBase" includes="a.bb" />
-			<fileset dir="${basedir}/examples/persistentBelBase" includes="bookstore.*" />
+			<fileset dir="${basedir}/demos/persistent-belief-base" includes="a.bb" />
+			<fileset dir="${basedir}/demos/persistent-belief-base" includes="bookstore.*" />
 
 			<fileset defaultexcludes="no" dir="${basedir}" includes="**/*~" />
 		</delete>

@@ -8,7 +8,7 @@ New feature:
 . Mind inspector has "bi-directional" debug and other improvements.
 
 New example:
-. IteratedPrisonersDilemma
+. iterated-prisoners-dilemma
 
 New Demos:
 . tell-rule: implements a new performative to tell rules like
