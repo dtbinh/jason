@@ -3,7 +3,7 @@
 
 MAS mars {
 
-    infrastructure: Centralised
+    infrastructure: Jade
 
     environment: MarsEnv
     
