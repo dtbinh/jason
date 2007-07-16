@@ -262,19 +262,10 @@
 
 	<target name="cleanExamples">
 		<delete failonerror="no" includeEmptyDirs="true" verbose="true">
-			<fileset dir="${basedir}/examples" includes="**/classes/*" />
-			<fileset dir="${basedir}/demos"    includes="**/classes/*" />
-
-			<fileset dir="${basedir}/examples" includes="**/classes" />
-			<fileset dir="${basedir}/demos"    includes="**/classes" />
-			
-			<fileset dir="${basedir}/examples" includes="**/*.class" />
-			<fileset dir="${basedir}/demos"    includes="**/*.class" />
+			<fileset dir="${basedir}/examples" includes="**/bin/**" />
+			<fileset dir="${basedir}/demos"    includes="**/bin/**" />
 			
 			<fileset dir="${basedir}/examples" includes="**/work" />
-
-			<fileset dir="${basedir}/examples" includes="**/build.xml" />
-			<fileset dir="${basedir}/demos"    includes="**/build.xml" />
 
 			<fileset dir="${basedir}/examples" includes="**/.stop___MAS" />
 			<fileset dir="${basedir}/demos"    includes="**/.stop___MAS" />
