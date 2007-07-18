@@ -27,21 +27,16 @@ auction_id(0).
 */
 
 // when I start playing the role "auctioneer",
-// create a doAuction scheme
+// create a doAuction scheme.
+// My group will be the responsible group for the scheme
 +play(Me,auctioneer,GId) 
    :  .my_name(Me) 
-   <- jmoise.start_scheme(doAuction).
-
-// when a doAuction scheme is created,
-// add a responsible group for it
-+scheme(doAuction,SId) 
-   : group(auctionGroup,GId)
-   <- jmoise.add_responsible_group(SId, GId).
+   <- jmoise.create_scheme(doAuction, [GId]).
 
 // when a scheme has finished, start another
 -scheme(doAuction,SId) 
-   :  auction_id(N) & N < 7
-   <- jmoise.start_scheme(doAuction).
+   :  auction_id(N) & N < 7 & group(auctionGroup,GId)
+   <- jmoise.create_scheme(doAuction, [GId]).
 //-scheme(doAuction,SId)
 //   <- .stopMAS.
 

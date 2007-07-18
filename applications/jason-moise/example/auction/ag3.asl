@@ -42,8 +42,8 @@ desired_mission(doAuction,mParticipant).
       jmoise.set_goal_state(Sch,bid,satisfied).
 
 +!alliance(A) 
-   :  true
-   <- .send(A,tell,alliance).
+   <- .print("Proposing alliance to ",A);
+      .send(A,tell,alliance).
    
 // remember the winners
 +goal_state(Sch, winner(W), satisfied) 

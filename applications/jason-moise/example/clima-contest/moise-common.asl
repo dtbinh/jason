@@ -40,7 +40,8 @@
 // when the root goal of the scheme is satisfied, 
 // remove my missions
 +goal_state(Sch, G[root], satisfied) 
+   :  true
    <- jmoise.remove_mission(Sch).
    
 +error(M)[source(orgManager)] <- .print("Error in organisational action: ",M); -error(M).
-   
+

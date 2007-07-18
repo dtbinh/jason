@@ -35,20 +35,15 @@ desired_mission(writePaperSch,mManager).
 // create a writePaper scheme
 +play(Me,editor,GId) 
    :  .my_name(Me) 
-   <- jmoise.start_scheme(writePaperSch).
+   <- jmoise.create_scheme(writePaperSch, [GId]).
 
       
 /* Functional events */
 
-// when a writePaper scheme is created,
-// add a responsible group for it
-+scheme(writePaperSch,SId) 
-   :  group(wpgroup,GId)
-   <- jmoise.add_responsible_group(SId, GId).
-
 // when a scheme has finished, start another
--scheme(writePaperSch,SId) : true
-   <- jmoise.start_scheme(writePaperSch).
+-scheme(writePaperSch,SId)
+   :  group(wpgroup,GId)
+   <- jmoise.create_scheme(writePaperSch, [GId]).
 
 // include common plans for MOISE+ agents
 { include("moise-common.asl") }

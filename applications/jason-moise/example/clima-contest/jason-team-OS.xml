@@ -1,55 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<organisational-specification id="jason-clima-team">
+<organisational-specification 
 
+    id="jason-clima-team"
+    os-version="0.4"
+  
+    xmlns='http://moise.sourceforge.net/os'
+    xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+    xsi:schemaLocation='http://moise.sourceforge.net/os
+                        http://moise.sourceforge.net/xml/os.xsd' >
+    
 <structural-specification>
 
 <role-definitions>
   <role id="miner"/>
-  <role id="leader">
-    <extends role="miner"/>
-  </role>
-  <role id="courier">
-    <extends role="miner"/>
-  </role>
+  <role id="leader">    <extends role="miner"/>  </role>
+  <role id="courier">   <extends role="miner"/>  </role>
 </role-definitions>
-
-<link-types>
-  <link-type id="authority"/>
-  <link-type id="acquaintance"/>
-  <link-type id="communication"/>
-</link-types>
-
 
 <group-specification id="team">
   <roles>
-      <role id="miner"/>
-	  <role id="leader"/>
-	  <role id="courier"/>
+      <role id="miner"   min="4" max="4" />
+	  <role id="leader"  min="1" max="1" />
+	  <role id="courier" min="1" max="1" />
   </roles>
   <links>
       <link from="miner" to="miner" 
-         type="communication" 
-         scope="intra-group" 
-         symmetric="false"/>
+            type="communication" 
+            scope="intra-group" 
+            bi-dir="false"/>
       <link from="leader" to="miner" 
-         type="authority" 
-         scope="intra-group" 
-         symmetric="false"/>
+            type="authority" 
+            scope="intra-group" 
+            bi-dir="false"/>
   </links>
 
   <formation-constraints>
-    <cardinality min="4" max="4" object="role" id="miner"/>
-    <cardinality min="1" max="1" object="role" id="leader"/>
-    <cardinality min="1" max="1" object="role" id="courier"/>
     <compatibility from="miner" to="leader" type="compatibility" 
-                   scope="intra-group" extendsToSubGroups="false" 
-                   symmetric="true"/>
+                   scope="intra-group" extends-sub-groups="false" bi-dir="true"/>
     <compatibility from="miner" to="courier" type="compatibility" 
-                   scope="intra-group" extendsToSubGroups="false" 
-                   symmetric="true"/>
+                   scope="intra-group" extends-sub-groups="false" bi-dir="true"/>
     <compatibility from="courier" to="leader" type="compatibility"
-                   scope="intra-group" extendsToSubGroups="false" 
-                   symmetric="true"/>
+	               scope="intra-group" extends-sub-groups="false" bi-dir="true"/>
   </formation-constraints>
 </group-specification>
 
@@ -57,13 +48,14 @@
 
 <functional-specification>
 
-<scheme id="meeting_point" root-goal="mp(X,Y)">
-
-  <plan operator="sequence" >
-    <goal id="proposeMP" />
-    <goal id="goldAtDepot" min="1" />
-  </plan>
-
+<scheme id="meeting_point">
+  <goal id="mp">
+	  <plan operator="sequence" >
+		<goal id="proposeMP" />
+		<goal id="goldAtDepot" min="1" />
+	  </plan>
+  </goal>
+  <!--
   <plan head-goal="goldAtDepot" operator="choice" >
     <goal id="option1">
 	   <plan operator="sequence" >
@@ -79,22 +71,22 @@
 	   </plan>
 	</goal>
   </plan>
-  
+  -->
   <mission id="mMiner" min="1" max="1">
     <goal id="mp"/>
-    <goal id="proposeMP"/>
+    <!--<goal id="proposeMP"/>
     <goal id="goldAtDepot"/>
     <goal id="gotoMP"/>
-    <goal id="minerCarryGoldToDepot"/>
+    <goal id="minerCarryGoldToDepot"/>-->
   </mission>
 
   <mission id="mCourier" min="1" max="1">
     <goal id="goldAtDepot"/>
-    <goal id="option1"/>
+    <!--<goal id="option1"/>
     <goal id="option2"/>
     <goal id="agreeMP"/>
     <goal id="refuseMP"/>
-    <goal id="courierCarryGoldToDepot"/>
+    <goal id="courierCarryGoldToDepot"/>-->
   </mission>
 </scheme>
 
@@ -102,15 +94,8 @@
 
 
 <deontic-specification>
-  <deontic-operators>
-    <deontic-operator id="obligation"/>
-    <deontic-operator id="permission"/>
-  </deontic-operators>
-  
-  <deontic-relation type="permission" 
-                    role="miner" mission="mMiner" />
-  <deontic-relation type="obligation" 
-                    role="courier" mission="mCourier" />
+  <deontic-relation type="permission" role="miner" mission="mMiner" />
+  <deontic-relation type="obligation" role="courier" mission="mCourier" />
 </deontic-specification>
 
 </organisational-specification>

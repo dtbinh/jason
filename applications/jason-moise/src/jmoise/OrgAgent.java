@@ -40,13 +40,13 @@ import moise.oe.SchemeInstance;
   */
 public class OrgAgent extends AgArch {
 
-    OE                currentOE              = null;
-    Set<GoalInstance> alreadyGeneratedEvents = new HashSet<GoalInstance>();
-    static final Term managerSource          = DefaultTerm.parse("source(orgManager)");
-    static final Atom rootAtom               = new Atom("root");
-    private Logger    logger                 = Logger.getLogger(OrgAgent.class.getName());
+    private static final Term managerSource          = DefaultTerm.parse("source(orgManager)");
+    private static final Atom rootAtom               = new Atom("root");
 
-    private String    orgManagerName         = "orgManager";
+    private Logger            logger                 = Logger.getLogger(OrgAgent.class.getName());
+    private OE                currentOE              = null;
+    private Set<GoalInstance> alreadyGeneratedEvents = new HashSet<GoalInstance>();
+    private String            orgManagerName         = "orgManager";
     
     @Override
     public void initAg(String agClass, ClassParameters bbPars, String asSrc, Settings stts) throws JasonException {
@@ -62,6 +62,10 @@ public class OrgAgent extends AgArch {
     public void setOrgManagerName(String name) {
         orgManagerName = name;
         introduceMySelf();
+    }
+    
+    public OE getOE() {
+        return currentOE;
     }
     
     private void introduceMySelf() {
@@ -119,10 +123,8 @@ public class OrgAgent extends AgArch {
         String schId = m.getTerm(0).toString();
         String grId = m.getTerm(1).toString();
         Set<Permission> obligations = new HashSet<Permission>();
-        if (logger.isLoggable(Level.FINE)) {
-            logger.fine("Computing obl/per for " + m + " in obl=" + getMyOEAgent().getObligations() 
-                    + " and per=" + getMyOEAgent().getPermissions());
-        }
+        if (logger.isLoggable(Level.FINE)) logger.fine("Computing obl/per for " + m + " in obl=" + getMyOEAgent().getObligations() + " and per=" + getMyOEAgent().getPermissions());
+
         // obligations
         for (Permission p : getMyOEAgent().getObligations()) {
             if (p.getRolePlayer().getGroup().getId().equals(grId) && p.getScheme().getId().equals(schId)) {
@@ -241,7 +243,7 @@ public class OrgAgent extends AgArch {
 
     void updateGoalBels(GoalInstance gi) {
         Pred gap = Pred.parsePred(gi.getAsProlog());
-
+        
         if (gi.getScheme().getRoot() == gi) {
             gap.addAnnot(rootAtom);
         }
@@ -260,10 +262,9 @@ public class OrgAgent extends AgArch {
         VarTerm S = new VarTerm("S");
         gil.addTerm(S);
         gil.addAnnot(managerSource);
-        
-        Unifier u = new Unifier();
 
-        Literal gilInBB = getTS().getAg().findBel(gil, u); 
+        Unifier u = new Unifier();
+        Literal gilInBB = getTS().getAg().findBel(gil, u);
         if (gilInBB != null) {
             // the agent believes in the goal, remove if different
         	// so that an event is produced
@@ -280,5 +281,5 @@ public class OrgAgent extends AgArch {
         if (getTS().getAg().addBel(gil)) {
         	if (logger.isLoggable(Level.FINE)) logger.fine("New goal belief: " + gil);
         }
-    }    
+    }
 }

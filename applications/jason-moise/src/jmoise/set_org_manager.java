@@ -5,9 +5,12 @@ import jason.asSemantics.Unifier;
 import jason.asSyntax.Term;
 
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** changes the name of the OrgManager agent, the default name is "orgManager" */
 public class set_org_manager extends MoiseBaseIA {
+
+    private static Logger logger = Logger.getLogger(set_org_manager.class.getName());
 
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {

@@ -3,7 +3,8 @@ MAS jasonteam {
    agents:
        orgManager [osfile="jason-team-OS.xml",gui=no] agentArchClass jmoise.OrgManager;
 
-       miner      [verbose=1] agentArchClass jmoise.OrgAgent #4;
+       miner      agentArchClass jmoise.OrgAgent #2;
+	   leader     agentArchClass jmoise.OrgAgent;
 
    classpath: "../../lib/moise.jar";"../../lib/jmoise.jar";
 }

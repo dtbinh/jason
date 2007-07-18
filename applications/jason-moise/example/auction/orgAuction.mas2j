@@ -9,11 +9,11 @@ See readme.txt for more information.
 MAS auction {
    infrastructure: Centralised
    agents:
-       orgManager      [osfile="auction-os.xml",gui=yes] 
+       orgManager      [osfile="auction-os.xml",gui=no] 
                        agentArchClass jmoise.OrgManager;
 
        bob auctioneer  agentArchClass jmoise.OrgAgent;
-       ag1             [verbose=1] agentArchClass jmoise.OrgAgent;
+       ag1             agentArchClass jmoise.OrgAgent;
 	   ag2             agentArchClass jmoise.OrgAgent;
        ag3             agentArchClass jmoise.OrgAgent;
 
