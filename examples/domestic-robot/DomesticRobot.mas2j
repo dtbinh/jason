@@ -5,7 +5,7 @@
 */
 
 MAS domestic_robot {
-    infrastructure: Jade
+    infrastructure: Centralised
     environment: HouseEnv(gui) // use "nogui" as parameter to not show the GUI
     agents: robot;
             owner;
