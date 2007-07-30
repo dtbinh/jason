@@ -251,7 +251,7 @@ public class OrgManager extends AgArch {
         public void process(OE currentOE, Pred command, OEAgent sender, String mId) throws MoiseException {
             String misId = null;
             String schId = null;
-            boolean all = command.getTermsSize() == 1;
+            boolean all = command.getArity() == 1;
             if (all) {
                 schId = command.getTerm(0).toString();
             } else {
@@ -296,7 +296,7 @@ public class OrgManager extends AgArch {
             return "create_group";
         }
         public void process(OE currentOE, Pred command, OEAgent sender, String mId) throws MoiseException {
-            boolean isNewRoot = command.getTermsSize() == 1;
+            boolean isNewRoot = command.getArity() == 1;
             GroupInstance newGr;
             String annot  = "root";
             String specId = command.getTerm(0).toString();
@@ -370,7 +370,7 @@ public class OrgManager extends AgArch {
             sch.setOwner(sender);
             updateMembersOE(currentOE.getAgents(), "scheme(" + schSpecId + "," + sch.getId() + ")[owner(" + sender + ")]", true, true);
             
-            if (command.getTermsSize() > 1) {
+            if (command.getArity() > 1) {
                 // set the inicial groups
                 for (Term gr: (ListTerm)command.getTerm(1)) {
                     GroupInstance gi = currentOE.findGroup(gr.toString());
