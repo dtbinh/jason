@@ -1,8 +1,18 @@
 -------------
+version 0.9.8
+-------------
+
+New features:
+. the centralised infrastructure can use a thread pool instead of
+  one thread by agent. It is useful to run thousand of agents.
+  See demo/big for more details.
+
+
+-------------
 version 0.9.7
 -------------
 
-New feature:
+New features:
 . First (experimental) version of JADE infrastructure 
   (see FAQ for details)
 . Mind inspector has "bi-directional" debug and other improvements.
