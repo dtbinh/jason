@@ -29,7 +29,7 @@ public class HeathrowEnv extends Environment {
     @Override
     public boolean executeAction(String ag, Structure action) {
         if (action.getFunctor().equals("place_bid")) {
-            Integer x = new Integer(action.getTerm(2).toString());
+            //int x = (int)((NumberTerm)action.getTerm(2)).solve();
             // TODO: implement it!
             //bid.put(ag,x);
         }
