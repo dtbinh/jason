@@ -12,7 +12,7 @@ public class LifeView extends GridWorldView {
     LifeModel hmodel;
 	
     public LifeView(LifeModel model) {
-        super(model, "Game of Life", 700);
+        super(model, "Game of Life", 500);
 		hmodel = model;
         setVisible(true);
         repaint();
@@ -24,6 +24,7 @@ public class LifeView extends GridWorldView {
         if (hmodel.isAlive(x,y)) {
             c = Color.darkGray;            
         }
-        super.drawAgent(g, x, y, c, -1);
+        g.setColor(c);
+        g.fillRect(x * cellSizeW + 1, y * cellSizeH+1, cellSizeW-1, cellSizeH-1);
     }
 }

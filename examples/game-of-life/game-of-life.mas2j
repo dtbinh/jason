@@ -11,7 +11,7 @@ MAS game_of_life {
 
     infrastructure: Centralised(pool)
 
-    environment: LifeEnvironment(30) // 30% of initial density
+    environment: LifeEnvironment(35) // 35% of initial density
 
     agents: 
         cell [verbose=0] 

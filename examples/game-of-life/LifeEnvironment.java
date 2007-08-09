@@ -11,6 +11,10 @@ public class LifeEnvironment extends jason.environment.Environment {
 
     private LifeModel model;
     
+    public LifeEnvironment() {
+        super(20); // use 20 threads in the environemnt implementation
+    }
+    
     /** Called before the MAS execution with the args informed in .mas2j */
     @Override
     public void init(String[] args) {
@@ -77,6 +81,7 @@ public class LifeEnvironment extends jason.environment.Environment {
         if (model.isAlive(l.x - 1, l.y))     alive++;
         if (model.isAlive(l.x - 1, l.y + 1)) alive++;
         if (model.isAlive(l.x, l.y - 1))     alive++;
+        //if (model.isAlive(l.x, l.y))         alive++;
         if (model.isAlive(l.x, l.y + 1))     alive++;
         if (model.isAlive(l.x + 1, l.y - 1)) alive++;
         if (model.isAlive(l.x + 1, l.y))     alive++;
