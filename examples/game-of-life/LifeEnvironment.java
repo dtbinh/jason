@@ -5,9 +5,6 @@ import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Structure;
 import jason.environment.grid.Location;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 public class LifeEnvironment extends jason.environment.Environment {
 
     //private Logger logger = Logger.getLogger("game-of-life.mas2j."+LifeEnvironment.class.getName());
@@ -40,32 +37,27 @@ public class LifeEnvironment extends jason.environment.Environment {
     
     void updateAgsPercept() {
         for (int i = 0; i < model.getNbOfAgs(); i++) {
-            updateAgPercept(i, new ArrayList<String>());
+            updateAgPercept(i);
         }
     }
 
     void updateNeighbors(int ag) {
-        Collection<String> updated = new ArrayList<String>(9);
-        
         Location l = model.getAgPos(ag);
-        updateAgPercept(model.getAgId(l.x - 1, l.y - 1), updated);
-        updateAgPercept(model.getAgId(l.x - 1, l.y), updated);
-        updateAgPercept(model.getAgId(l.x - 1, l.y + 1), updated);
-        updateAgPercept(model.getAgId(l.x, l.y - 1), updated);
-        updateAgPercept(model.getAgId(l.x, l.y), updated);
-        updateAgPercept(model.getAgId(l.x, l.y + 1), updated);
-        updateAgPercept(model.getAgId(l.x + 1, l.y - 1), updated);
-        updateAgPercept(model.getAgId(l.x + 1, l.y), updated);
-        updateAgPercept(model.getAgId(l.x + 1, l.y + 1), updated);
-        
-        informAgsEnvironmentChanged(updated);
+        updateAgPercept(model.getAgId(l.x - 1, l.y - 1));
+        updateAgPercept(model.getAgId(l.x - 1, l.y));
+        updateAgPercept(model.getAgId(l.x - 1, l.y + 1));
+        updateAgPercept(model.getAgId(l.x, l.y - 1));
+        updateAgPercept(model.getAgId(l.x, l.y));
+        updateAgPercept(model.getAgId(l.x, l.y + 1));
+        updateAgPercept(model.getAgId(l.x + 1, l.y - 1));
+        updateAgPercept(model.getAgId(l.x + 1, l.y));
+        updateAgPercept(model.getAgId(l.x + 1, l.y + 1));
     }
     
-    void updateAgPercept(int ag, Collection<String> updated) {
+    void updateAgPercept(int ag) {
         if (ag < 0 || ag >= model.getNbOfAgs()) return;
         String name = "cell" + (ag + 1);
         updateAgPercept(name, ag);
-        updated.add(name);
     }
 
     void updateAgPercept(String agName, int ag) {

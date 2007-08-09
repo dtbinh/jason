@@ -1,7 +1,9 @@
-/* Jason Project -- Game of Life
+/* Jason Project 
 
-based on the description available at
-  http://ccl.northwestern.edu/netlogo/models/Life
+   -- Game of Life --
+
+   based on the description available at
+    http://ccl.northwestern.edu/netlogo/models/Life
 
 */
 
@@ -11,7 +13,9 @@ MAS game_of_life {
 
     environment: LifeEnvironment(30) // 30% of initial density
 
-    agents: cell [verbose=0] #900; // a 30x30 grid has 900 agents
+    agents: 
+        cell [verbose=0] 
+             agentArchClass CellArch 
+             #900; // a 30x30 grid has 900 agents
 
 }
-
