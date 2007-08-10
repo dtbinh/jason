@@ -9,13 +9,15 @@
 
 MAS game_of_life {
 
-    infrastructure: Centralised(pool)
+    // use a thread pool instead of one thread by agent
+    // the pool has only one thread
+    infrastructure: Centralised(pool,1) 
 
-    environment: LifeEnvironment(35) // 35% of initial density
+    environment: LifeEnvironment(40,35) // grid size = 40, initial density = 35%
 
     agents: 
         cell [verbose=0] 
              agentArchClass CellArch 
-             #900; // a 30x30 grid has 900 agents
+             #1600; // a 40x40 grid has 1600 agents
 
 }

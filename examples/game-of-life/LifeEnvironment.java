@@ -11,14 +11,10 @@ public class LifeEnvironment extends jason.environment.Environment {
 
     private LifeModel model;
     
-    public LifeEnvironment() {
-        super(20); // use 20 threads in the environemnt implementation
-    }
-    
     /** Called before the MAS execution with the args informed in .mas2j */
     @Override
     public void init(String[] args) {
-        model = new LifeModel(Integer.parseInt(args[0]));
+        model = new LifeModel(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
         model.setView(new LifeView(model));
         updateAgsPercept();
     }
