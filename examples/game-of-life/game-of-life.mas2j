@@ -17,7 +17,6 @@ MAS game_of_life {
 
     agents: 
         cell [verbose=0] 
-             agentArchClass CellArch 
              #1600; // a 40x40 grid has 1600 agents
 
 }

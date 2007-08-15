@@ -2,7 +2,7 @@
 plays(initiator,c).
 
 // send a message to initiator introducing myself as a participant
-+plays(initiator,I)
++plays(initiator,In)
    :  .my_name(Me)
-   <- .send(I,tell,introduction(participant,Me)).
+   <- .send(In,tell,introduction(participant,Me)).
    

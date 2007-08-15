@@ -1,7 +1,7 @@
 plays(initiator,c). 
-+plays(initiator,I)
++plays(initiator,In)
    :  .my_name(Me)
-   <- .send(I,tell,introduction(participant,Me)).
+   <- .send(In,tell,introduction(participant,Me)).
 
 // plan to answer a CFP
 +cfp(CNPId,Object)[source(A)] 
