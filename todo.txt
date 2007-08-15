@@ -3,12 +3,13 @@ Plan for Jason 1.1
 
 . capabilities
 . if <test> then <c> [else <c>]; in plan body
+  (or special internal action like 
+   .if(b & a, action1; action2)
+
 
 -----------------------------------
 Projects (!)
 . Eclipse plug-in to edit/run jason
-. New infrastructures (e.g. JADE) -- use a factory pattern 
-  to simplify new infrastructure for Jason.
 . Jason for large scale
 . AS to Java for running in the Lego JVM
 . AS to programm robocode
@@ -33,7 +34,7 @@ Discussed in April 06 meeting
 . !! -> implemented
 . div -> implemented
 
-. +!idle event. (postponed)
+. +!idle event. (TODO)
   As an alternative: empty TE with 2 options:
   . high priority: evaluated before normal events
   . low: evaluated after normal events (or no event)
