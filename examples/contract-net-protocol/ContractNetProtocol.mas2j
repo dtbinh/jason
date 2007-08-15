@@ -14,7 +14,7 @@ http://www.fipa.org/specs/fipa00029/
 
 MAS cnp {
 
-    infrastructure: Centralised(pool)
+    infrastructure: Centralised
 
     agents:
         c;    // the CNP initiator
