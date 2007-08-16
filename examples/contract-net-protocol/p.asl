@@ -12,15 +12,15 @@ plays(initiator,c).
    <- .send(In,tell,introduction(participant,Me)).
 
 // answer to Call For Proposal   
-@c1 +cfp(CNPId,Object)[source(A)]
-   :  plays(initiator,A) & price(Object,Offer)
-   <- +proposal(CNPId,Object,Offer); // remember my proposal
+@c1 +cfp(CNPId,Task)[source(A)]
+   :  plays(initiator,A) & price(Task,Offer)
+   <- +proposal(CNPId,Task,Offer); // remember my proposal
       .send(A,tell,propose(CNPId,Offer)).
 
 @r1 +accept_proposal(CNPId)
-   :  proposal(CNPId,Object,Offer)
+   :  proposal(CNPId,Task,Offer)
    <- .print("My proposal '",Offer,"' won CNP ",CNPId,
-             " for ",Object,"!").
+             " for ",Task,"!").
       // build and deliver the product!
 	  
 @r2 +reject_proposal(CNPId)

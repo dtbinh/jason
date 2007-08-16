@@ -8,17 +8,17 @@ all_proposals_received(CNPId)
 
 /* Initial goals */
 
-!startCNP(1,pc(amd,[dual,ram(5,gb),hd(1,tb)])).
+!startCNP(1,fix(computer)).
 
 /* Plans */
 
 // start the CNP
-+!startCNP(Id,Object) 
++!startCNP(Id,Task) 
    <- .wait(2000);  // wait participants introduction
       +cnp_state(Id,propose);   // remember the state of the CNP
       .findall(VendorName,introduction(participant,VendorName),LV);
       .print("Sending CFP to ",LV);
-      .send(LV,tell,cfp(Id,Object));
+      .send(LV,tell,cfp(Id,Task));
       .concat("+!contract(",Id,")",Event);
       // the deadline of the CNP is now + 4 seconds, so
       // the event +!contract(Id) is generated that time

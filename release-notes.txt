@@ -2,10 +2,13 @@
 version 0.9.8
 -------------
 
-New features:
+New feature
 . the centralised infrastructure can use a thread pool instead of
   one thread by agent. It is useful to run thousand of agents.
   See demo/big and examples/game-of-life for more details.
+
+New Demo:
+. demo/clone shows how an agent can create a clone of itself.
 
 
 -------------
