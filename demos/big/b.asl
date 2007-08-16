@@ -1,7 +1,5 @@
 // Agent b in project big.mas2j
 
-/* Initial beliefs and rules */
-
 /* Initial goals */
 
 !start(0).
