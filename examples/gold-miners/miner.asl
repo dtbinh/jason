@@ -138,7 +138,7 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
      
 // I am not free, just add gold belief and announce to others
 +cell(X,Y,gold) 
-  :  not gold(X,Y) & not committed(gold(X,Y))
+  :  not gold(X,Y) & not committed_to(gold(X,Y))
   <- +gold(X,Y);
      .print("Announcing ",gold(X,Y)," to others");
      .broadcast(tell,gold(X,Y)). 
@@ -173,8 +173,8 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
 +allocated(Gold,Ag)[source(leader)] 
   :  .my_name(Ag) & not free // I am no longer free
   <- .print("I can not handle ",Gold," anymore!");
-     .print("(Re)announcing ",gold(X,Y)," to others");
-     .broadcast(tell,gold(X,Y)). 
+     .print("(Re)announcing ",Gold," to others");
+     .broadcast(tell,Gold). 
      
      
 // someone else picked up the gold I am going to go,
