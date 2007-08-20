@@ -2,12 +2,12 @@
 
 /* beliefs */
 
-last_dir(null). // the last movement
+last_dir(null). // the last movement I did
 free.
 
 /* rules */
 
-// next line is the bottom line of the quadrant
+// next line is the bottom of the quadrant
 // if 2 lines bellow is too far
 calc_new_y(AgY,QuadY2,QuadY2) :- AgY+2 > QuadY2.
 
@@ -21,7 +21,7 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
   <- !send_init_pos(S).
 +!send_init_pos(S) : pos(X,Y)
   <- .send(leader,tell,init_pos(S,X,Y)).
-+!send_init_pos(S) : not pos(_,_) // if I do not know my position
++!send_init_pos(S) : not pos(_,_) // if I do not know my position yet
   <- .wait("+pos(X,Y)", 500);     // wait for it and try again
      !!send_init_pos(S).
 
@@ -42,7 +42,7 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
 -!wait_for_quad // .wait might fail     
    <- !!wait_for_quad.
 
-// if I am around upper-left corner, move to upper-right corner
+// if I am around the upper-left corner, move to upper-right corner
 +around(X1,Y1) : quadrant(X1,Y1,X2,Y2) & free
   <- .print("in Q1 to ",X2,"x",Y1); 
      !prep_around(X2,Y1).
@@ -64,7 +64,7 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
      .print("in Q3 to ", X2, "x", YF); 
      !prep_around(X2,YF).
 
-// the last "around" was not any of above, go back to my quadrant
+// last "around" was none of the above, go back to my quadrant
 +around(X,Y) : quadrant(X1,Y1,X2,Y2) & free & Y <= Y2 & Y >= Y1  
   <- .print("in no Q, going to X1");
      !prep_around(X1,Y).
@@ -81,7 +81,7 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
  
 +!around(X,Y) 
    :  // I am around to some location if I am near it or
-      // the last action was skip (meaning that there is no path to there)
+      // the last action was skip (meaning that there are no paths to there)
       (pos(AgX,AgY) & jia.neighbour(AgX,AgY,X,Y)) | last_dir(skip) 
    <- +around(X,Y).
 +!around(X,Y) : not around(X,Y)
@@ -108,7 +108,7 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
 
 // I perceived unknown gold and I am free, handle it
 @pcell[atomic]           // atomic: so as not to handle another 
-                         // event until handle gold is carrying on
+                         // event until handle gold is initialised
 +cell(X,Y,gold) 
   :  not carrying_gold & free
   <- -free;
@@ -231,8 +231,8 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
   <- .print("failed to handle ",G,", it isn't in the BB anyway");
      !!choose_gold.
 
-// Hopefully going first to home if never got there 
-// because some gold was found
+// no known gold to choose from
+// become free again to search for gold
 +!choose_gold 
   :  not gold(_,_)
   <- -+free.

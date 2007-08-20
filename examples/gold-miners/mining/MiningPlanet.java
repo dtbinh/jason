@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 
 public class MiningPlanet extends jason.environment.Environment {
 
-    private Logger          logger   = Logger.getLogger("jasonTeamSimLocal.mas2j." + MiningPlanet.class.getName());
+    private Logger logger = Logger.getLogger("jasonTeamSimLocal.mas2j." + MiningPlanet.class.getName());
     
     WorldModel  model;
     WorldView   view;

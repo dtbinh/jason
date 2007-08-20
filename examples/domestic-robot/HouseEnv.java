@@ -41,7 +41,7 @@ public class HouseEnv extends Environment {
         // get the robot location
         Location lRobot = model.getAgPos(0);
 
-        // add agents' locations in perceptions
+        // add agent location to its percepts
         if (lRobot.equals(model.lFridge)) {
             addPercept("robot", af);
         }
@@ -49,7 +49,7 @@ public class HouseEnv extends Environment {
             addPercept("robot", ao);
         }
         
-        // add beer "status" in perception
+        // add beer "status" to perception
         if (model.fridgeOpen) {
             addPercept("robot", Literal.parseLiteral("stock(beer,"+model.availableBeers+")"));
         }

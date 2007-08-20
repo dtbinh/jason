@@ -4,7 +4,7 @@
 
 @quads[atomic]
 +gsize(S,W,H) : true
-  <- // calculates the area of each quadrant and remembers them
+  <- // calculate the area of each quadrant and remember them
      .print("Defining quadrants for ",W,"x",H," simulation ",S);
      +quad(S,1, 0, 0, W div 2 - 1, H div 2 - 1);
      +quad(S,2, W div 2, 0, W-1, H div 2 - 1);
@@ -30,7 +30,7 @@
   <- !assign_quad(S,Q);
      !assign_all_quads(S,T).
 
-// assign the quadrant Q to a miner     
+// assign quadrant Q to a miner     
 +!assign_quad(S,Q) 
   :  quad(S,Q,X1,Y1,X2,Y2) & 
      ~quad(S,_) // there still is a miner without quadrant 

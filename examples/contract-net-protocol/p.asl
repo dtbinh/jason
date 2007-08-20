@@ -6,7 +6,7 @@ plays(initiator,c).
 
 /* Plans */
 
-// send a message to initiator introducing myself as a participant
+// send a message to the initiator introducing myself as a participant
 +plays(initiator,In)
    :  .my_name(Me)
    <- .send(In,tell,introduction(participant,Me)).
@@ -21,9 +21,9 @@ plays(initiator,c).
    :  proposal(CNPId,Task,Offer)
    <- .print("My proposal '",Offer,"' won CNP ",CNPId,
              " for ",Task,"!").
-      // build and deliver the product!
+      // do the task and report to initiator
 	  
 @r2 +reject_proposal(CNPId)
    <- .print("I lost CNP ",CNPId, ".");
-      -proposal(CNPId,_,_). // clean memory
+      -proposal(CNPId,_,_). // clear memory
 
