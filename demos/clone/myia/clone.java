@@ -17,9 +17,11 @@ public class clone extends DefaultInternalAction {
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
     	
+    	String agName = ((StringTerm)args[0]).getString();
+    	
     	// create infrastructure architecture (it works only for centralised infra!)
     	CentralisedAgArch infraArch = new CentralisedAgArch();
-    	infraArch.setAgName(((StringTerm)args[0]).getString());
+    	infraArch.setAgName(agName);
     	infraArch.setEnvInfraTier(RunCentralisedMAS.getRunner().getEnvironmentInfraTier());
     	RunCentralisedMAS.getRunner().addAg(infraArch);
     	
@@ -34,7 +36,7 @@ public class clone extends DefaultInternalAction {
         // start the agent
         infraArch.setUserAgArch(arch);
     	infraArch.setLogger();
-        infraArch.start();
+        (new Thread(infraArch, agName)).start();
         
         return true;
     }
