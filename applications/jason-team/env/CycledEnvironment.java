@@ -22,8 +22,10 @@ public abstract class CycledEnvironment extends jason.environment.Environment {
 
     protected int 			  cycle      = 0; // cycle number
 	private   ActRequest[]    finished; // the agents that did an action in the current cycle
-    private   ExecutorService executor; // the thread pool used to execute actions
-    private   int             sleep; // mili seconds after each cycle
+	
+	// TODO: use executor of super class
+    private   ExecutorService executor;  // the thread pool used to execute actions
+    private   int             sleep;     // mili seconds after each cycle
     private   int             cycleTime; // seconds of each cycle
     
 	public void init(int nbOfAgents, int nbOfThreads, int sleep, int cycleTime) {
@@ -153,7 +155,7 @@ public abstract class CycledEnvironment extends jason.environment.Environment {
 			}
 			
 		}
-        if (all) { // all agents act in this cicle
+        if (all) { // all agents act in this cycle
         	finishCycle();
         }	        
 	}
