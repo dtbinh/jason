@@ -71,7 +71,7 @@ public class MinerArch extends AgArch {
 		return model;
 	}
 
-    /** The perception of the grid size is removed from the perceptions list 
+    /** The perception of the grid size is removed from the percepts list 
         and "directly" added as a belief */
     void gsizePerceived(int w, int h) {
 		if (view != null) {
@@ -85,14 +85,14 @@ public class MinerArch extends AgArch {
         playing = true;
     }
     
-    /** The perception of the depot location is removed from the perceptions list 
+    /** The perception of the depot location is removed from the percepts list 
         and "directly" added as a belief */
     void depotPerceived(int x, int y) {
         model.setDepot(x, y);
         getTS().getAg().addBel(Literal.parseLiteral("depot("+simId+","+x+","+y+")"));
     }
 
-    /** The number of steps of the simulation is removed from the perceptions list 
+    /** The number of steps of the simulation is removed from the percepts list 
         and "directly" added as a belief */
     void stepsPerceived(int s) {
     	getTS().getAg().addBel(Literal.parseLiteral("steps("+simId+","+s+")"));

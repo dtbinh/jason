@@ -32,9 +32,9 @@ public class HouseEnv extends Environment {
         updatePercepts();
     }
 	
-    /** creates the agents perceptions based on the HouseModel */
+    /** creates the agents percepts based on the HouseModel */
     void updatePercepts() {
-        // clear the perceptps of the agents
+        // clear the percepts of the agents
         clearPercepts("robot");
         clearPercepts("owner");
         

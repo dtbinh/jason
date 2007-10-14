@@ -101,7 +101,7 @@ public class ACProxy extends ACAgent {
     
 	public void processRequestAction(Element perception, long currenttime, long deadline) {
 		try {
-			List<Literal> perceptions = new ArrayList<Literal>();
+			List<Literal> percepts = new ArrayList<Literal>();
 			
 			rid = perception.getAttribute("id");
 			int agX   = Integer.parseInt(perception.getAttribute("posx"));
@@ -118,15 +118,15 @@ public class ACProxy extends ACAgent {
 			lpos.addTerm(new NumberTermImpl(agX));
 			lpos.addTerm(new NumberTermImpl(agY));
     		lpos.addTerm(new NumberTermImpl(step));
-			perceptions.add(lpos);
+			percepts.add(lpos);
 
             // add carrying gold in perception
             Literal cg = new Literal("carrying_gold");
             cg.addTerm(new NumberTermImpl(items));
-            perceptions.add(cg);
+            percepts.add(cg);
         
             if (arq.model.mayCarryMoreGold(arq.getMyId())) {
-                perceptions.add(MiningEnvironment.aCAP);
+                percepts.add(MiningEnvironment.aCAP);
             }
             
 			// add in perception what is around
@@ -164,17 +164,17 @@ public class ACProxy extends ACAgent {
 						if (type.getNodeName().equals("agent")) {
 							if (type.getAttribute("type").equals("ally")) {
 								//arq.allyPerceived(cx, cy);
-								perceptions.add(MiningEnvironment.createCellPerception(cx, cy, MiningEnvironment.aALLY));
+								percepts.add(MiningEnvironment.createCellPerception(cx, cy, MiningEnvironment.aALLY));
 							} else if (type.getAttribute("type").equals("enemy")) {
 								arq.enemyPerceived(cx, cy);
-								perceptions.add(MiningEnvironment.createCellPerception(cx, cy, MiningEnvironment.aENEMY));
+								percepts.add(MiningEnvironment.createCellPerception(cx, cy, MiningEnvironment.aENEMY));
 							}
                             
 						} else if (type.getNodeName().equals("obstacle")) { 
 							arq.obstaclePerceived(cx, cy, MiningEnvironment.createCellPerception(cx, cy, MiningEnvironment.aOBSTACLE));
                             
 						} else if (type.getNodeName().equals("gold")) {
-							perceptions.add(MiningEnvironment.createCellPerception(cx, cy, MiningEnvironment.aGOLD));
+							percepts.add(MiningEnvironment.createCellPerception(cx, cy, MiningEnvironment.aGOLD));
 							arq.goldPerceived(cx, cy);
 							
 						/*
@@ -190,9 +190,9 @@ public class ACProxy extends ACAgent {
 			}
 	
 			//if (logger.isLoggable(Level.FINE)) 
-			logger.info("Request action for "+lpos+" / "+rid + " perceptions: "+perceptions);
+			logger.info("Request action for "+lpos+" / "+rid + " percepts: "+percepts);
 			
-			arq.startNextStep(step,perceptions);
+			arq.startNextStep(step,percepts);
 			
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "error processing request",e);

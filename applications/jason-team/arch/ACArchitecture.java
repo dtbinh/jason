@@ -26,7 +26,7 @@ public class ACArchitecture extends MinerArch {
 	private Logger logger;	
 
 	private ACProxy       proxy;
-	private List<Literal> perceptions = new ArrayList<Literal>();
+	private List<Literal> percepts = new ArrayList<Literal>();
 	
 	//ActionExec acExec; // action of the current cycle
 	
@@ -50,13 +50,13 @@ public class ACArchitecture extends MinerArch {
 
 	@Override
 	public List<Literal> perceive() {
-		return new ArrayList<Literal>(perceptions);
+		return new ArrayList<Literal>(percepts);
 	}
 
 	Queue<ActionExec> toExecute = new ConcurrentLinkedQueue<ActionExec>();
     
 	public void startNextStep(int step, List<Literal> p) {
-		perceptions = p;
+		percepts = p;
 
 		List<ActionExec> feedback = getTS().getC().getFeedbackActions();
 		while (!toExecute.isEmpty()) {

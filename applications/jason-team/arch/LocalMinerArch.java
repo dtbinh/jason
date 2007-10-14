@@ -18,7 +18,7 @@ public class LocalMinerArch extends MinerArch {
 
 
 	/** this version of perceive is used in local simulator. it get
-        the perception and updates the world model. only relevant perceptions
+        the perception and updates the world model. only relevant percepts
         are leaved in the list of perception for the agent.
       */
 	@Override
