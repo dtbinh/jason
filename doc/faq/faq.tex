@@ -644,9 +644,9 @@ internal (pushed on top of the intention) or external (a new focus of
 attention is created).
 
 \subsection{Does "?p" in a plan body cause two effects, i.e. testing p
-from the
-  belief base and generating the events "+?p"? Is "-?p" generated when a
-  test goal "?p" is failed? When does the test goal "?p" fails?}
+from the belief base and generating the events "+?p"? Is "-?p"
+  generated when a test goal "?p" is failed? When does the test goal
+  "?p" fails?}
 
 When "?p" is executed, first the interpreter tries a simple query to the
 belief base. If that doesn't succeed, before failing the intention, first an
@@ -672,6 +672,28 @@ wants). You could add internal beliefs (or have beliefs from perception of the
 environment) that p(t) is true and that ~p(t) is also true: \jason won't do
 consistency checks for you! Note that strong negation can also appear in the
 triggering events, plan body, anywhere a literal can appear.
+
+
+\subsection{What's the difference between ! and !!?}
+
+The difference between ! and !! is that the latter causes the goal to
+be pursued as a separate intention. Within the body of a plan in one
+intention, if you have "!g1; !g2" the agent will attempt to achieve g2
+only after achieving (or finishing executing a plan for) g1.  If you
+say "!!g1; !g2" the agent will then have another separate intention to
+achieve g1 and can immediately start attempting to achieve g2. What
+will be done first (executing a bit of the intention with g1 or the
+old intention with g2) will depend on the choices that the intention
+selection function makes. 
+
+You may have noticed !! is used a lot at the end of recursive
+plans as in the following code:
+\begin{verbatim}
++!g : end_recursion_context.
++!g : true <- action1; !!g.
+\end{verbatim}
+In this case, the !! is used to avoid Jason creating long stacks of
+plans. 
 
 
 \subsection{Why is \jason's plan failure mechanism different from
