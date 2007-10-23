@@ -1,21 +1,21 @@
 // Environment code for project game-of-life.mas2j
 
-import jason.asSyntax.Literal;
-import jason.asSyntax.NumberTermImpl;
-import jason.asSyntax.Structure;
+import jason.asSyntax.*;
 import jason.environment.grid.Location;
+import java.util.logging.*;
 
-public class LifeEnvironment extends jason.environment.Environment {
+public class LifeEnvironment extends jason.environment.SteppedEnvironment {
 
-    //private Logger logger = Logger.getLogger("game-of-life.mas2j."+LifeEnvironment.class.getName());
+    private Logger logger = Logger.getLogger("game-of-life.mas2j."+LifeEnvironment.class.getName());
 
     private LifeModel model;
     
     /** Called before the MAS execution with the args informed in .mas2j */
     @Override
     public void init(String[] args) {
+		super.init(new String[] { "3000" } ); // set step timeout
         model = new LifeModel(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
-        model.setView(new LifeView(model));
+        model.setView(new LifeView(model, this));
         updateAgsPercept();
     }
 
@@ -31,6 +31,15 @@ public class LifeEnvironment extends jason.environment.Environment {
         return true;
     }
 
+    @Override
+	protected void stepStarted(int step) {
+		//logger.info("new step "+step);
+        Literal lstep = new Literal("step");
+        lstep.addTerm(new NumberTermImpl(step));
+		clearPercepts();
+        addPercept(lstep);
+    }
+	
     int getAgIdBasedOnName(String agName) {
         return (Integer.parseInt(agName.substring(4))) - 1;
     }
@@ -86,5 +95,7 @@ public class LifeEnvironment extends jason.environment.Environment {
         lAlive.addTerm(new NumberTermImpl(alive));
         addPercept(agName, lAlive);
     }
+	
+	
 }
 
