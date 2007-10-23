@@ -1,14 +1,18 @@
 // Environment code for project game-of-life.mas2j
 
-import jason.asSyntax.*;
+import jason.asSyntax.Literal;
+import jason.asSyntax.NumberTermImpl;
+import jason.asSyntax.Structure;
 import jason.environment.grid.Location;
-import java.util.logging.*;
+
+import java.util.logging.Logger;
 
 public class LifeEnvironment extends jason.environment.SteppedEnvironment {
 
     private Logger logger = Logger.getLogger("game-of-life.mas2j."+LifeEnvironment.class.getName());
 
     private LifeModel model;
+    private Literal lstep; // current step
     
     /** Called before the MAS execution with the args informed in .mas2j */
     @Override
@@ -27,17 +31,21 @@ public class LifeEnvironment extends jason.environment.SteppedEnvironment {
         } else if (action.getFunctor().equals("live")) {
             model.alive(ag);
         }
-        updateNeighbors(ag);
+        //updateNeighbors(ag);
         return true;
     }
 
     @Override
 	protected void stepStarted(int step) {
-		//logger.info("new step "+step);
-        Literal lstep = new Literal("step");
-        lstep.addTerm(new NumberTermImpl(step));
-		clearPercepts();
-        addPercept(lstep);
+    	//logger.info("start step "+step);
+    	lstep = new Literal("step");
+        lstep.addTerm(new NumberTermImpl(step+1));
+        if (model != null) updateAgsPercept();
+    }
+    
+    @Override
+    protected void stepFinished(int step, long time, boolean timeout) {
+    	logger.info("step "+step+" finished in "+time+" ms.");
     }
 	
     int getAgIdBasedOnName(String agName) {
@@ -45,8 +53,8 @@ public class LifeEnvironment extends jason.environment.SteppedEnvironment {
     }
     
     void updateAgsPercept() {
-        for (int i = 0; i < model.getNbOfAgs(); i++) {
-            updateAgPercept(i);
+    	for (int i = 0; i < model.getNbOfAgs(); i++) {
+    	    updateAgPercept(i);
         }
     }
 
@@ -64,13 +72,14 @@ public class LifeEnvironment extends jason.environment.SteppedEnvironment {
     }
     
     void updateAgPercept(int ag) {
-        if (ag < 0 || ag >= model.getNbOfAgs()) return;
+        //if (ag < 0 || ag >= model.getNbOfAgs()) return;
         String name = "cell" + (ag + 1);
         updateAgPercept(name, ag);
     }
 
     void updateAgPercept(String agName, int ag) {
         clearPercepts(agName);
+        
         // its location
         Location l = model.getAgPos(ag);
         /*
@@ -80,7 +89,7 @@ public class LifeEnvironment extends jason.environment.SteppedEnvironment {
         addPercept(agName, lpos);
         */
 
-        // how many alive neighbors
+        // how many alive neighbours
         int alive = 0;
         if (model.isAlive(l.x - 1, l.y - 1)) alive++;
         if (model.isAlive(l.x - 1, l.y))     alive++;
@@ -94,8 +103,7 @@ public class LifeEnvironment extends jason.environment.SteppedEnvironment {
         Literal lAlive = new Literal("alive_neighbors");
         lAlive.addTerm(new NumberTermImpl(alive));
         addPercept(agName, lAlive);
+        
+		addPercept(agName, lstep);
     }
-	
-	
 }
-
