@@ -21,7 +21,7 @@ public class LoggerDirective implements Directive {
 
     static Logger logger = Logger.getLogger(LoggerDirective.class.getName());
 
-    public Agent process(Pred directive, Agent outterContent, Agent innerContent) {
+    public Agent process(Pred directive, Agent outerContent, Agent innerContent) {
         try {
         	Agent newAg = new Agent();
             // add .print(te) in the begin and end of the plan
