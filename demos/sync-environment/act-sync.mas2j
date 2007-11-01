@@ -2,7 +2,7 @@
 
 Jason Project 
 
-This project exemplifies the use of SteepedEnvironment. This environment has
+This project exemplifies the use of SteppedEnvironment. This environment has
 steps where each agent can perform only one action. When all agents have 
 asked for the execution of an action, the actions are really executed, the
 perception updated and the next step starts. 
@@ -17,9 +17,9 @@ MAS act_sync {
     infrastructure: Centralised
 
     //environment: Env
-	environment: EnvSync(1000) // timeout in miliseconds
+    environment: EnvSync(1000) // timeout in miliseconds
 
-	// the system has 9 agents of 3 different types (see their sources for more details)
+    // the system has 9 agents of 3 different types (see their sources for more details)
     agents:
         count [verbose=0] #5;
 
@@ -27,4 +27,3 @@ MAS act_sync {
 
         dcount [verbose=0] #2;
 }
-
