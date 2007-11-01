@@ -12,7 +12,7 @@ are proposed in the paper:
   Japan, pages 65-81. Springer, 2006.
 See the code of agent a for more information.
 
-Agent b uses a user-defined directive. This directive, called
+Agent b uses an user-defined directive. This directive, called
 LoggerDirective (LD), add some code in the begin and in the end of 
 a set of plans.  User directives should be declared in the
 project file (see the end of this file). 
