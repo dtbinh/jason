@@ -92,8 +92,9 @@ public class OrgManager extends AgArch {
         addCommand(new AdoptRole());
         addCommand(new RemoveRole());
         
-        addCommand(new RemoveGroup());
         addCommand(new CreateGroup());
+        addCommand(new RemoveGroup());
+
         addCommand(new CommitMission());
         addCommand(new RemoveMission());
 
@@ -101,7 +102,7 @@ public class OrgManager extends AgArch {
         addCommand(new AddResponsibleGroup());
         addCommand(new SetGoalState());
         addCommand(new SetGoalArg());
-        addCommand(new FinishScheme());
+        addCommand(new RemoveScheme());
         
         addCommand(new AddAgent());
     }
@@ -371,7 +372,7 @@ public class OrgManager extends AgArch {
             updateMembersOE(currentOE.getAgents(), "scheme(" + schSpecId + "," + sch.getId() + ")[owner(" + sender + ")]", true, true);
             
             if (command.getArity() > 1) {
-                // set the inicial groups
+                // set the initial groups
                 for (Term gr: (ListTerm)command.getTerm(1)) {
                     GroupInstance gi = currentOE.findGroup(gr.toString());
                     if (gi == null) {
@@ -413,9 +414,9 @@ public class OrgManager extends AgArch {
         }
     }
     
-    class FinishScheme implements OrgManagerCommand {
+    class RemoveScheme implements OrgManagerCommand {
         public String getId() {
-            return "finish_scheme";
+            return "remove_scheme";
         }
         public void process(OE currentOE, Pred command, OEAgent sender, String mId) throws MoiseException {
             String schId       = command.getTerm(0).toString();
@@ -527,7 +528,8 @@ public class OrgManager extends AgArch {
         }
     }
 
-    private void updateMembersOE(Collection ags, Object pEnv, boolean sendOE, boolean tell) {
+    @SuppressWarnings("unchecked")
+	private void updateMembersOE(Collection ags, Object pEnv, boolean sendOE, boolean tell) {
         Set<OEAgent> all = new HashSet<OEAgent>(); // to remove duplicates
         Iterator iAgs = ags.iterator();
         while (iAgs.hasNext()) {

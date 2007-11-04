@@ -23,7 +23,7 @@
 // and it was created by me
 +sch_players(Sch,0) 
    :  .my_name(Me) & scheme(_, Sch)[owner(Me)]
-   <- jmoise.finish_scheme(Sch).
+   <- jmoise.remove_scheme(Sch).
 
    
 /* Deontic events */
@@ -40,7 +40,8 @@
 // when the root goal of the scheme is satisfied, 
 // remove my missions
 +goal_state(Sch, G[root], satisfied) 
+   :  true
    <- jmoise.remove_mission(Sch).
    
 +error(M)[source(orgManager)] <- .print("Error in organisational action: ",M); -error(M).
-   
+

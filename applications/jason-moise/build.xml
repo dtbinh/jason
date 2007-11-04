@@ -9,6 +9,7 @@
 
     <property name="version"         value="0"/>
     <property name="release"         value="9.7"/>
+    <property name="moiseDir"        value="${env.HOME}/Moise-svn" />
     <property name="distDir"         value="${env.HOME}/tmp/jmoise-${version}.${release}" />
     <property name="distFile"        value="${env.HOME}/jason-moise-${version}.${release}" />
     <property name="doc-src-dir"     value="${env.HOME}/programming/Moise-doc" />
@@ -22,7 +23,7 @@
     <target name="init">
 	<mkdir dir="${basedir}/bin/classes" />
         <copy toDir="${basedir}/lib" >
-            <fileset dir="${env.HOME}/moise/lib" includes="moise.jar" />
+            <fileset dir="${moiseDir}/lib" includes="moise.jar" />
         </copy>
     </target>
 	
