@@ -18,6 +18,7 @@ public class LifeEnvironment extends jason.environment.SteppedEnvironment {
     @Override
     public void init(String[] args) {
 		super.init(new String[] { "3000" } ); // set step timeout
+		setOverActionsPolicy(OverActionsPolicy.ignoreSecond);
         model = new LifeModel(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
         model.setView(new LifeView(model, this));
         updateAgsPercept();
@@ -25,10 +26,14 @@ public class LifeEnvironment extends jason.environment.SteppedEnvironment {
 
     @Override
     public boolean executeAction(String agName, Structure action) {
-        int ag = getAgIdBasedOnName(agName);
-        if (action.getFunctor().equals("die")) {
+    	String actId = action.getFunctor();
+    	if (actId.equals("skip")) 
+    		return true;
+        
+    	int ag = getAgIdBasedOnName(agName);
+        if (actId.equals("die")) {
             model.dead(ag);
-        } else if (action.getFunctor().equals("live")) {
+        } else if (actId.equals("live")) {
             model.alive(ag);
         }
         //updateNeighbors(ag);
@@ -43,9 +48,13 @@ public class LifeEnvironment extends jason.environment.SteppedEnvironment {
         if (model != null) updateAgsPercept();
     }
     
+    private long sum = 0;
+    
     @Override
     protected void stepFinished(int step, long time, boolean timeout) {
-    	logger.info("step "+step+" finished in "+time+" ms.");
+    	long mean = (step > 0 ? sum / step : 0);
+    	logger.info("step "+step+" finished in "+time+" ms. mean = "+mean);
+    	sum += time;
     }
 	
     int getAgIdBasedOnName(String agName) {
