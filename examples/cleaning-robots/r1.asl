@@ -1,5 +1,9 @@
 // mars robot 1
 
+/* Initial beliefs */
+
+at(P) :- pos(P,X,Y) & pos(r1,X,Y).
+
 /* Initial goal */
 
 !check(slots). 
@@ -18,18 +22,18 @@
 +!carry_to(R)   
    <- // remember where to go back
       ?pos(r1,X,Y); 
-	  -+pos(back,X,Y);
+	  -+pos(last,X,Y);
 	  
 	  // carry garbage to r2
       !take(garb,R);
 	  
 	  // goes back and continue to check
-      !go(back); 
+      !at(last); 
 	  !!check(slots).
 
 +!take(S,L) : true
    <- !ensure_pick(S); 
-      !go(L);
+      !at(L);
       drop(S).
 
 +!ensure_pick(S) : garbage(r1)
@@ -37,7 +41,7 @@
       !ensure_pick(S).
 +!ensure_pick(_).
 
-+!go(L) : pos(L,X,Y) & pos(r1,X,Y).
-+!go(L) <- ?pos(L,X,Y);
++!at(L) : at(L).
++!at(L) <- ?pos(L,X,Y);
            move_towards(X,Y);
-           !go(L).
+           !at(L).
