@@ -53,7 +53,6 @@ resource_needed(1).
 
 @pbf[atomic]
 +building_finished : true
-   <- .dropAllDesires;
-      .dropAllIntentions;
+   <- .drop_all_desires;
       !go(boss).
       
