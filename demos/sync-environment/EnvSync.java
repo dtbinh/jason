@@ -15,6 +15,12 @@ public class EnvSync extends SteppedEnvironment {
 	
 	int actionCount = 0; // counts the number of actions executed
 	
+	public EnvSync() {
+		// use queue policy when an agent tries more than one action in the same cycle,
+		// in queue policy, the second action is postponed for the next cycle.
+		setOverActionsPolicy(OverActionsPolicy.queue);
+	}
+	
     @Override
     public boolean executeAction(String agName, Structure action) {
     	actionCount++;
