@@ -1,12 +1,12 @@
 -------------
-version 1.1
+version 1.0.1
 -------------
 
 New Demo
 . demo/sync-environment shows how to use the SteppedEnvironment. 
   This environment has steps where each agent can perform only one action.
   When all agents have asked for the execution of an action, the actions
-  are really executed, the perception updated and the next step starts.
+  are really executed, the perception is updated and the next step starts.
   The game-of-live example is also updated to use this kind of
   environment.
 
