@@ -45,7 +45,6 @@ public class LifeEnvironment extends jason.environment.SteppedEnvironment {
     	//logger.info("start step "+step);
     	lstep = new Literal("step");
         lstep.addTerm(new NumberTermImpl(step+1));
-        if (model != null) updateAgsPercept();
     }
     
     private long sum = 0;
@@ -61,7 +60,8 @@ public class LifeEnvironment extends jason.environment.SteppedEnvironment {
         return (Integer.parseInt(agName.substring(4))) - 1;
     }
     
-    void updateAgsPercept() {
+    @Override
+    protected void updateAgsPercept() {
     	for (int i = 0; i < model.getNbOfAgs(); i++) {
     	    updateAgPercept(i);
         }
