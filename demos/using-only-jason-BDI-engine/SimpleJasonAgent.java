@@ -81,6 +81,14 @@ public class SimpleJasonAgent extends AgArch {
         return true;
     }
 
+    // a very simple implementation of sleep
+    @Override
+    public void sleep() {
+    	try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {}
+    }
+    
     // Not used methods
     // This simple agent does not need messages/control/...
     @Override
@@ -94,4 +102,5 @@ public class SimpleJasonAgent extends AgArch {
     @Override
     public void checkMail() {
     }
+
 }
