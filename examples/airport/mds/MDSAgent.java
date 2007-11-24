@@ -41,13 +41,15 @@ public class MDSAgent extends Agent {
     /** prefer to select intentions with +unattended_luggage(_,_,_) event in stack of IMs */
     @Override
     public Intention selectIntention(Queue<Intention> intentions) {
-    	Iterator<Intention> i = intentions.iterator();
-    	while (i.hasNext()) {
-    		Intention cit = i.next();
-    		if (cit.hasTrigger(unattendedLuggage, new Unifier())) {
-    			i.remove();
-    			return cit;
-    		}
+    	if (intentions.size() > 1) { // only search for a particular intention if there exists more options
+	    	Iterator<Intention> i = intentions.iterator();
+	    	while (i.hasNext()) {
+	    		Intention cit = i.next();
+	    		if (cit.hasTrigger(unattendedLuggage, new Unifier())) {
+	    			i.remove();
+	    			return cit;
+	    		}
+	    	}
     	}
     	
     	// do not find +unattended_luggage(_,_,_), use default selection
