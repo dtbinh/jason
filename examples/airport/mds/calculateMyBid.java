@@ -14,6 +14,5 @@ public class calculateMyBid extends DefaultInternalAction {
         int bid = Integer.parseInt(id) * 10;
         // args[0] is the unattended luggage Report Number
         return un.unifies(args[1], new NumberTermImpl(bid));
-        //System.out.println("**="+un);
     }
 }

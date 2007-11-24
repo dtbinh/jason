@@ -7,7 +7,9 @@ import java.util.*;
 /** example of agent function overriding */
 public class MDSAgent extends Agent {
 
-	/** unattendedLuggage event has priority */
+	private Trigger unattendedLuggage = Trigger.parseTrigger("+unattended_luggage(_,_,_)");
+	
+	/** unattended_luggage event has priority */
     @Override
 	public Event selectEvent(Queue<Event> events) {
 		Iterator<Event> i = events.iterator();
@@ -17,13 +19,15 @@ public class MDSAgent extends Agent {
 				i.remove();
 				return e;
 			}
-			// the unattended Luggage event could generate a
-			// sub-goal that generates other events 
+
+			// the intention that handles +unattended_luggage could have a
+			// sub-goal that generates other events (+!<sub-goal>), in this case
+			// the +unattended_luggage event is in the bottom of the stack
 			if (e.getIntention() != null) {
 				Iterator<IntendedMeans> j = e.getIntention().iterator();
 				while (j.hasNext()) {
 					IntendedMeans im = j.next();
-					Trigger it = (Trigger) im.getPlan().getTriggerEvent();
+					Trigger it = (Trigger) im.getTrigger();
 					if (it.getLiteral().getFunctor().equals("unattended_luggage")) {
 						i.remove();
 						return e;
@@ -33,4 +37,20 @@ public class MDSAgent extends Agent {
 		}
 		return super.selectEvent(events);
 	}
+    
+    /** prefer to select intentions with +unattended_luggage(_,_,_) event in stack of IMs */
+    @Override
+    public Intention selectIntention(Queue<Intention> intentions) {
+    	Iterator<Intention> i = intentions.iterator();
+    	while (i.hasNext()) {
+    		Intention cit = i.next();
+    		if (cit.hasTrigger(unattendedLuggage, new Unifier())) {
+    			i.remove();
+    			return cit;
+    		}
+    	}
+    	
+    	// do not find +unattended_luggage(_,_,_), use default selection
+    	return super.selectIntention(intentions);
+    }
 }

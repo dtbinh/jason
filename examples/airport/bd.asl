@@ -26,7 +26,7 @@ safe_area(field1).
 +!move_to_safe_area(RN) : true
    <- ?safe_area(Place);
       !discoverFreeCPH(FreeCPH);
-      .send(FreeCPH, achieve, carryToSafePlace(RN,Place)).
+      .send(FreeCPH, achieve, carry_to_safe_place(RN,Place)).
 
 // temporary plans, not implemented
 

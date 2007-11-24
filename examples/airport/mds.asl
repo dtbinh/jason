@@ -1,12 +1,12 @@
 free.   // I'm free, initially
 mds(5). // There are 5 MDS robots (including me)
 
-allBidsReceived(RN)    
+all_bids_received(RN)    
       :- .findall(b,bid(RN,_),L) & .length(L,N) & mds(M) & N >= (M-1).
-iAmTheWinner(RN,MyBid)  
+i_am_winner(RN,MyBid)  
       :- .my_name(I) & winner(RN,I,MyBid).
 
-// perception of an unattented luggage at Terminal/Gate,
+// perception of an unattended luggage at Terminal/Gate,
 // with report number RN
 +unattended_luggage(Terminal,Gate,RN) : true
       <- !negotiate(RN).
@@ -24,13 +24,13 @@ iAmTheWinner(RN,MyBid)
 
 @pb1[atomic]  // for a bid better than mine
 +bid(RN,B)[source(Sender)] 
-      :  iAmTheWinner(RN,MyBid) & MyBid < B
+      :  i_am_winner(RN,MyBid) & MyBid < B
       <- -+winner(RN,Sender,B);
          .print("just lost to another MDS").
 
 @pb2[atomic] // for other bids when I'm still the winner
 +bid(RN,B) 
-      :  iAmTheWinner(RN,MyBid)
+      :  i_am_winner(RN,MyBid)
       <- !check_negot_finished(RN).
 
 // TODO: cope with two equal bids
@@ -43,8 +43,8 @@ iAmTheWinner(RN,MyBid)
 +bid(RN,B).
 
 +!check_negot_finished(RN) 
-      :  iAmTheWinner(RN,MyBid) & allBidsReceived(RN)
-      <- .print("*************** I won!!!!");
+      :  i_am_winner(RN,MyBid) & all_bids_received(RN)
+      <- .print("*************** I won !!!!");
          -free;
          !check_luggage(RN);
          !finish_case(RN).
@@ -59,7 +59,7 @@ iAmTheWinner(RN,MyBid)
 +!finish_case(RN) : bomb(RN,Type) // tell bd1 about the bomb
       <- .send(bd1, tell, bomb(RN,Type)).
 
-+!finish_case(RN) : true // it wasn't a bomb afterall
++!finish_case(RN) : true // it wasn't a bomb after all
       <- +free;          // so nothing else to do, just tidy up
          -bids(RN,X).
 

@@ -10,7 +10,7 @@ public class CPHAgent extends Agent {
 		if (m.getIlForce().equals("achieve") && m.getSender().startsWith("mds")) {
 			return true;
 		} else {
-			System.out.println("CPH agent is not allowed to handle message "+m);
+			System.out.println("CustomAgentClass: CPH agent is not allowed to handle message "+m);
 			return false;
 		}
 	}

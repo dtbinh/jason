@@ -30,7 +30,7 @@ public class CPHAgArch extends AgArch {
 		if (!taction.getFunctor().equals("disarm")) {
             super.act(action,feedback);
 		} else {
-			System.out.println("An CPH is trying to disarm a bomb! Disabled by its architecture.");
+			System.out.println("A CPH is trying to disarm a bomb! Disabled by its architecture.");
 		}
 	}
 }
