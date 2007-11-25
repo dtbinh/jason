@@ -18,4 +18,6 @@ MAS auction {
        ag3             agentArchClass jmoise.OrgAgent;
 
    classpath: "../../lib/moise.jar";"../../lib/jmoise.jar";
+   
+   aslSourcePath: ".";"../../src/asl";
 }
