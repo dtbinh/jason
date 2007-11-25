@@ -27,7 +27,7 @@ public class MDSAgent extends Agent {
 				Iterator<IntendedMeans> j = e.getIntention().iterator();
 				while (j.hasNext()) {
 					IntendedMeans im = j.next();
-					Trigger it = (Trigger) im.getTrigger();
+					Trigger it = (Trigger) im.getPlan().getTrigger();
 					if (it.getLiteral().getFunctor().equals("unattended_luggage")) {
 						i.remove();
 						return e;

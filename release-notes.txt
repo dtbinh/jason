@@ -2,6 +2,21 @@
 version 1.0.1
 -------------
 
+New features
+. a new entry is added in the mas2j project: aslSourcePath. This entry
+  allows the developer to set where the runtime will search for AgentSpeak
+  sources. E.g:
+
+     MAS ts {
+       agents: a; b; c;
+       aslSourcePath: "."; "src/asl"; "kk";
+     }
+
+  search the sources of agents a, b, and c in the paths "." (current path),
+  "src/asl", and "kk". 
+  The default value is the project's directory.
+
+
 New Demo
 . demo/sync-environment shows how to use the SteppedEnvironment. 
   This environment has steps where each agent can perform only one action.
@@ -9,6 +24,14 @@ New Demo
   are really executed, the perception is updated and the next step starts.
   The game-of-live example is also updated to use this kind of
   environment.
+
+New internal actions
+. .suspend and .resume were moved from the example to the standard library.
+  They can thus be used in any Jason application.
+
+Bugs fixed
+. clone example
+. use-only-jason-bdi example
 
 
 -------------

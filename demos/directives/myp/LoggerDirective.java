@@ -26,11 +26,11 @@ public class LoggerDirective implements Directive {
         	Agent newAg = new Agent();
             // add .print(te) in the begin and end of the plan
             for (Plan p: innerContent.getPL()) {
-                Literal print1 = Literal.parseLiteral(".print(\"Entering \","+p.getTriggerEvent().getLiteral()+")");
+                Literal print1 = Literal.parseLiteral(".print(\"Entering \","+p.getTrigger().getLiteral()+")");
                 BodyLiteral b1 = new BodyLiteral(BodyType.internalAction, print1);
                 p.getBody().add(0,b1);
 
-                Literal print2 = Literal.parseLiteral(".print(\"Leaving \","+p.getTriggerEvent().getLiteral()+")");
+                Literal print2 = Literal.parseLiteral(".print(\"Leaving \","+p.getTrigger().getLiteral()+")");
                 BodyLiteral b2 = new BodyLiteral(BodyType.internalAction, print2);
                 p.getBody().add(b2);
                 

@@ -16,18 +16,20 @@ MAS miners {
         //             3. whether display the gui
 	    
 	agents:
-        leader ./asl/leader.asl  
+        leader  
 		      beliefBaseClass agent.DiscardBelsBB("my_status","picked","committed_to","cell");
- 		miner ./asl/miner.asl
+ 		miner
 		      agentClass agent.SelectEvent 
 		      beliefBaseClass agent.UniqueBelsBB("gsize(_,_,_)","depot(_,_,_)","steps(_,_)")
               agentArchClass arch.LocalMinerArch 
               #5;
- 		miner6 ./asl/miner.asl
+ 		miner6 miner.asl 
 		      [verbose=1,gui=no] 
 		      agentClass agent.SelectEvent 
 		      beliefBaseClass agent.UniqueBelsBB("gsize(_,_,_)","depot(_,_,_)","steps(_,_)")
               agentArchClass arch.LocalMinerArch 
               #1;
+			  
+    aslSourcePath: "asl";
 }
 
