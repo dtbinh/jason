@@ -12,3 +12,4 @@ MAS write_paper {
    
    aslSourcePath: ".";"../../src/asl";
 }
+
