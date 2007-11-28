@@ -8,20 +8,25 @@ JASON_HOME=`pwd`
 cd $CURDIR
 
 OS=`uname`
-if [ -z $JAVA_HOME ] ; then
+
+if [ -z $JDK_HOME ] ; then
+    if [ -n $JAVA_HOME ] ; then
+	JDK_HOME=$JAVA_HOME
+    fi
+fi
+
+if [ -z $JDK_HOME ] ; then
 	if [ $OS == Darwin ] ; then
 		JAVA_HOME=/usr
 	fi
-	if [ $OS == Linux ] ; then
-		JAVA_HOME=/usr/local/j2sdk1.4
-	fi
-fi
-# check JAVA_HOME
-if [ ! -f $JAVA_HOME/bin/javac ] ; then
-   echo JAVA_HOME is not properly set!
 fi
 
-export PATH="$JAVA_HOME/bin":$PATH
+# check JDK_HOME
+if [ ! -f $JDK_HOME/bin/javac ] ; then
+   echo JDK_HOME is not properly set!
+fi
+
+export PATH="$JDK_HOME/bin":$PATH
 
 DPAR=""
 if [ $OS == Darwin ] ; then
