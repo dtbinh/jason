@@ -32,7 +32,7 @@ New internal actions
 Bugs fixed
 . clone example
 . use-only-jason-bdi example
-
+. the save files when opening a new project locks the jEdit
 
 -------------
 version 1.0
