@@ -153,6 +153,7 @@
 				<include name="actions.xml" />
 				<include name="dockables.xml" />
 				<include name="services.xml" />
+				<include name="xmode.dtd" />
 			</fileset>
 			<fileset dir="${build.dir}">
 				<include name="jason/**/*.class" />
