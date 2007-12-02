@@ -17,7 +17,7 @@ fi
 
 if [ -z $JDK_HOME ] ; then
 	if [ $OS == Darwin ] ; then
-		JAVA_HOME=/usr
+		JDK_HOME=/usr
 	fi
 fi
 
