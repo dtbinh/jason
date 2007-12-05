@@ -57,6 +57,22 @@
             id="net.sourceforge.jasonide.wizards.NewAgentWizard"
             name="Agent"
             project="false"/>
+      <wizard
+            category="net.sourceforge.jasonide.menus"
+            class="net.sourceforge.jasonide.wizards.NewInternalActionWizard"
+            hasPages="true"
+            icon="icons/createIA.gif"
+            id="net.sourceforge.jasonide.wizards.NewInternalActionWizard"
+            name="New Internal Action Wizard"
+            project="false"/>
+      <wizard
+            category="net.sourceforge.jasonide.menus"
+            class="net.sourceforge.jasonide.wizards.NewEnvironmentWizard"
+            hasPages="true"
+            icon="icons/createEnv.gif"
+            id="net.sourceforge.jasonide.wizards.NewEnvironmentWizard"
+            name="New Environment Wizard"
+            project="false"/>
    </extension>
 
 	<extension

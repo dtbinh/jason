@@ -91,6 +91,52 @@ public class PluginMarkerUtils {
 	}
 		
 	/**
+	 * Gets position of start char in the document contents.
+	 * @param documentContents Got by editor input.
+	 * @param line
+	 * @param msg
+	 * @return
+	 */
+	public static int getCharStartFromLexicalError(String documentContents, int line, String msg) {
+		String[] lines = documentContents.replace("\n", "@@").split("@@");
+		
+		int charCount = 0;
+		for (int i = 0; i < (line-1); i++) {
+			charCount += lines[i].length()+1;
+		}
+
+		String[] msgTokens = msg.split(" ");
+		for (int i = 0; i < msgTokens.length; i++) {
+			if (msgTokens[i].equals("column")) {
+				int col = Integer.parseInt( msgTokens[i+1].substring(0, msgTokens[i+1].length()-1) );
+				return charCount + (col -1); // starts by 0
+			}
+		}
+		
+		return 1;
+	}
+	
+	/**
+	 * Gets position of end char in the document contents.
+	 * @param documentContents Got by editor input.
+	 * @param line
+	 * @param msg
+	 * @return
+	 */
+	public static int getCharEndLexicalError(String documentContents, int line, String msg) {
+		String[] msgTokens = msg.split(" ");
+		for (int i = 0; i < msgTokens.length; i++) {
+			if (msgTokens[i].equals("Encountered:")) {
+				int wordSize = getCharStartFromLexicalError(documentContents, line, msg) + (msgTokens[i+1].length() - 2);
+				//System.out.println("End: " + wordSize);
+				return wordSize;
+			}
+		}
+		
+		return 1;
+	}
+	
+	/**
 	 * Gets position of end char in the document contents.
 	 * @param documentContents Got by editor input.
 	 * @param line

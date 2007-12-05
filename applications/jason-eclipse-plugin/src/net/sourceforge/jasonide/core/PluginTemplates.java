@@ -12,6 +12,8 @@ public class PluginTemplates {
 	
 	public static final String ENVIRONMENT = "environment";
 	
+	public static final String INTERNAL_ACTION = "ia";
+	
 	public static final String AGENT = "agent.asl";
 	
 	public static final String MAS2J = "project.mas2j";

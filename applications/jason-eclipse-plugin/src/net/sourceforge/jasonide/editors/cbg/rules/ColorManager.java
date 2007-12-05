@@ -17,19 +17,19 @@ import org.eclipse.swt.widgets.Display;
 
 public class ColorManager {
 	public static final RGB DEFAULT_STRING_COLOR = new RGB(0, 0, 0);
-	public static final RGB DEFAULT_KEYWORD1_COLOR = new RGB(160, 32, 240);
-	public static final RGB DEFAULT_KEYWORD2_COLOR = new RGB(160, 0, 240);
-	public static final RGB DEFAULT_KEYWORD3_COLOR = new RGB(160, 32, 0);	
-	public static final RGB DEFAULT_COMMENT1_COLOR = new RGB(178, 0, 34);
-	public static final RGB DEFAULT_COMMENT2_COLOR = new RGB(178, 34, 0);
-	public static final RGB DEFAULT_LITERAL1_COLOR = new RGB(0, 0, 255);
-	public static final RGB DEFAULT_LITERAL2_COLOR = new RGB(160, 32, 240);
-	public static final RGB DEFAULT_LABEL_COLOR = new RGB(160, 0, 240);
-	public static final RGB DEFAULT_FUNCTION_COLOR = new RGB(160, 32, 0);	
-	public static final RGB DEFAULT_MARKUP_COLOR = new RGB(178, 0, 34);
-	public static final RGB DEFAULT_OPERATOR_COLOR = new RGB(178, 34, 0);
-	public static final RGB DEFAULT_DIGIT_COLOR = new RGB(160, 32, 0);	
-	public static final RGB DEFAULT_INVALID_COLOR = new RGB(178, 0, 34);
+	public static final RGB DEFAULT_KEYWORD1_COLOR = new RGB(128, 128, 255);
+	public static final RGB DEFAULT_KEYWORD2_COLOR = new RGB(255, 0, 128);
+	public static final RGB DEFAULT_KEYWORD3_COLOR = new RGB(255, 128, 0);	
+	public static final RGB DEFAULT_COMMENT1_COLOR = new RGB(193, 0, 0);
+	public static final RGB DEFAULT_COMMENT2_COLOR = new RGB(255, 128, 0);
+	public static final RGB DEFAULT_LITERAL1_COLOR = new RGB(255, 89, 172);
+	public static final RGB DEFAULT_LITERAL2_COLOR = new RGB(180, 116, 179);
+	public static final RGB DEFAULT_LABEL_COLOR = new RGB(255, 128, 0);
+	public static final RGB DEFAULT_FUNCTION_COLOR = new RGB(255, 0, 255);	
+	public static final RGB DEFAULT_MARKUP_COLOR = new RGB(0, 0, 255);
+	public static final RGB DEFAULT_OPERATOR_COLOR = new RGB(128, 0, 255);
+	public static final RGB DEFAULT_DIGIT_COLOR = new RGB(255, 0, 0);
+	public static final RGB DEFAULT_INVALID_COLOR = new RGB(255, 255, 128);
 
 	private Map colorMap;
 	private IPreferenceStore store;
@@ -102,25 +102,25 @@ public class ColorManager {
 	}
 
 	public static void initDefaultColors(IPreferenceStore store) {
-		PreferenceConverter.setDefault(store, ColorsPreferencePage.NULL_COLOR, new RGB(0, 0, 0));
-		PreferenceConverter.setDefault(store, ColorsPreferencePage.COMMENT1_COLOR, new RGB(0,128,128));
-		PreferenceConverter.setDefault(store, ColorsPreferencePage.COMMENT2_COLOR, new RGB(192,192,192));
-		PreferenceConverter.setDefault(store, ColorsPreferencePage.LITERAL1_COLOR, new RGB(0,0,255));
-		PreferenceConverter.setDefault(store, ColorsPreferencePage.LITERAL2_COLOR, new RGB(213,234,255));
-		PreferenceConverter.setDefault(store, ColorsPreferencePage.LABEL_COLOR, new RGB(255,128,0));
-		PreferenceConverter.setDefault(store, ColorsPreferencePage.KEYWORD1_COLOR, new RGB(128,128,255));
-		PreferenceConverter.setDefault(store, ColorsPreferencePage.KEYWORD2_COLOR, new RGB(255,0,128));
-		PreferenceConverter.setDefault(store, ColorsPreferencePage.KEYWORD3_COLOR, new RGB(255,128,0));
-		PreferenceConverter.setDefault(store, ColorsPreferencePage.KEYWORD4_COLOR, new RGB(255,128,128));
-		PreferenceConverter.setDefault(store, ColorsPreferencePage.FUNCTION_COLOR, new RGB(128,255,255));
-		PreferenceConverter.setDefault(store, ColorsPreferencePage.MARKUP_COLOR, new RGB(0,128,64));
-		PreferenceConverter.setDefault(store, ColorsPreferencePage.OPERATOR_COLOR, new RGB(255,128,255));
-		PreferenceConverter.setDefault(store, ColorsPreferencePage.DIGIT_COLOR, new RGB(0,255,255));
-		PreferenceConverter.setDefault(store, ColorsPreferencePage.INVALID_COLOR, new RGB(255,255,128));
+		PreferenceConverter.setDefault(store, ColorsPreferencePage.NULL_COLOR, DEFAULT_STRING_COLOR);
+		PreferenceConverter.setDefault(store, ColorsPreferencePage.COMMENT1_COLOR, DEFAULT_COMMENT1_COLOR);
+		PreferenceConverter.setDefault(store, ColorsPreferencePage.COMMENT2_COLOR, DEFAULT_COMMENT2_COLOR);
+		PreferenceConverter.setDefault(store, ColorsPreferencePage.LITERAL1_COLOR, DEFAULT_LITERAL1_COLOR);
+		PreferenceConverter.setDefault(store, ColorsPreferencePage.LITERAL2_COLOR, DEFAULT_LITERAL2_COLOR);
+		PreferenceConverter.setDefault(store, ColorsPreferencePage.LABEL_COLOR, DEFAULT_LABEL_COLOR);
+		PreferenceConverter.setDefault(store, ColorsPreferencePage.KEYWORD1_COLOR, DEFAULT_KEYWORD1_COLOR);
+		PreferenceConverter.setDefault(store, ColorsPreferencePage.KEYWORD2_COLOR, DEFAULT_KEYWORD2_COLOR);
+		PreferenceConverter.setDefault(store, ColorsPreferencePage.KEYWORD3_COLOR, DEFAULT_KEYWORD3_COLOR);
+		//PreferenceConverter.setDefault(store, ColorsPreferencePage.KEYWORD4_COLOR, DEFAULT_KEYWORD4_COLOR);
+		PreferenceConverter.setDefault(store, ColorsPreferencePage.FUNCTION_COLOR, DEFAULT_FUNCTION_COLOR);
+		PreferenceConverter.setDefault(store, ColorsPreferencePage.MARKUP_COLOR, DEFAULT_MARKUP_COLOR);
+		PreferenceConverter.setDefault(store, ColorsPreferencePage.OPERATOR_COLOR, DEFAULT_OPERATOR_COLOR);
+		PreferenceConverter.setDefault(store, ColorsPreferencePage.DIGIT_COLOR, DEFAULT_DIGIT_COLOR);
+		PreferenceConverter.setDefault(store, ColorsPreferencePage.INVALID_COLOR, DEFAULT_INVALID_COLOR);
 		
 		String bold = ColorsPreferencePage.BOLD_SUFFIX;
 		store.setDefault(ColorsPreferencePage.COMMENT1_COLOR + bold, false);
-		store.setDefault(ColorsPreferencePage.COMMENT2_COLOR + bold, true);		
+		store.setDefault(ColorsPreferencePage.COMMENT2_COLOR + bold, false);		
 		store.setDefault(ColorsPreferencePage.DIGIT_COLOR + bold,  false);
 		store.setDefault(ColorsPreferencePage.FUNCTION_COLOR + bold,  false);
 		store.setDefault(ColorsPreferencePage.INVALID_COLOR + bold,  false);
@@ -146,5 +146,4 @@ public class ColorManager {
 	public int getStyleForType(String type) {
 		return getStyleFor(colorForType(type));
 	}
-
 }

@@ -67,7 +67,9 @@ public class ASLEditor extends ColoringEditor {
 				File file = new File(asFileName);
 				if (file.exists()) {
 					jason.asSyntax.parser.as2j parser = new jason.asSyntax.parser.as2j(new FileReader(file));
-					parser.agent(null);
+					if (parser != null) {
+						parser.agent(null);
+					}
 					break;
 				} 
 			}
@@ -76,6 +78,7 @@ public class ASLEditor extends ColoringEditor {
 			showError(e.getMessage(), e);
 		} catch (ParseException e) {
 			String msg = e.getMessage();
+			
 			int lineError = PluginMarkerUtils.getLineNumberFromMsg(msg);
 			PluginMarkerUtils.createMarker(ifile, e.getMessage().replace("\r", "").replace("\n", ""), 
 						 lineError,
@@ -86,12 +89,23 @@ public class ASLEditor extends ColoringEditor {
 			showError(msg, e);
 		} catch (jason.asSyntax.parser.ParseException e) {
 			String msg = e.getMessage();
+			
 			int lineError = PluginMarkerUtils.getLineNumberFromMsg(msg);
 			PluginMarkerUtils.createMarker(ifile, e.getMessage().replace("\r", "").replace("\n", ""), 
 						 lineError,
 						 PluginMarkerUtils.getCharStart(document.get(), lineError, msg),
 						 PluginMarkerUtils.getCharEnd(document.get(), lineError, msg));
-		}
+		} catch (jason.asSyntax.parser.TokenMgrError e) {
+			String msg = e.getMessage();
+			
+			int lineError = PluginMarkerUtils.getLineNumberFromMsg(msg);
+			int charStart = PluginMarkerUtils.getCharStartFromLexicalError(document.get(), lineError, msg);
+			int charEnd = PluginMarkerUtils.getCharEndLexicalError(document.get(), lineError, msg);
+			PluginMarkerUtils.createMarker(ifile, e.getMessage().replace("\r", "").replace("\n", ""), 
+						 lineError,
+						 charStart,
+						 charEnd);
+		} 
 	}
 	
 	private void showError(String msg, Throwable e) {

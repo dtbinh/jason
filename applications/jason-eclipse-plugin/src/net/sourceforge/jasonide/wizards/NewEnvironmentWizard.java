@@ -1,6 +1,6 @@
 package net.sourceforge.jasonide.wizards;
 
-import jason.mas2j.AgentParameters;
+import jason.mas2j.ClassParameters;
 import jason.mas2j.MAS2JProject;
 import jason.mas2j.parser.ParseException;
 
@@ -42,17 +42,23 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
 /**
- * Wizard for create a new agent with default contents.
- * @author Germano
+ * This is a sample new wizard. Its role is to create a new file 
+ * resource in the provided container. If the container resource
+ * (a folder or a project) is selected in the workspace 
+ * when the wizard is opened, it will accept it as the target
+ * container. The wizard creates one file with the extension
+ * "java". If a sample multi-page editor (also available
+ * as a template) is registered for the same extension, it will
+ * be able to open it.
  */
-public class NewAgentWizard extends Wizard implements INewWizard {
-	private NewAgentWizardPage page;
+public class NewEnvironmentWizard extends Wizard implements INewWizard {
+	private NewEnvironmentWizardPage page;
 	private ISelection selection;
 
 	/**
-	 * Constructor for NewFileAgentWizard.
+	 * Constructor for NewInternalActionWizard.
 	 */
-	public NewAgentWizard() {
+	public NewEnvironmentWizard() {
 		super();
 		setNeedsProgressMonitor(true);
 	}
@@ -60,8 +66,9 @@ public class NewAgentWizard extends Wizard implements INewWizard {
 	/**
 	 * Adding the page to the wizard.
 	 */
+
 	public void addPages() {
-		page = new NewAgentWizardPage(selection);
+		page = new NewEnvironmentWizardPage(selection);
 		addPage(page);
 	}
 
@@ -71,13 +78,19 @@ public class NewAgentWizard extends Wizard implements INewWizard {
 	 * using wizard as execution context.
 	 */
 	public boolean performFinish() {
-		final String containerName = page.getContainerName();
-		final String fileName = page.getFileName();
+		String tmpContainerName = page.getContainerName();
+		final String packageName = page.getPackageName();
 		
+		if (packageName != null) {
+			tmpContainerName += "/" + packageName.replace(".", "/");
+		}
+		
+		final String containerName = tmpContainerName;
+		final String fileName = page.getFileName();
 		IRunnableWithProgress op = new IRunnableWithProgress() {
 			public void run(IProgressMonitor monitor) throws InvocationTargetException {
 				try {
-					doFinish(containerName, fileName, monitor);
+					doFinish(containerName, packageName, fileName, monitor);
 				} catch (CoreException e) {
 					throw new InvocationTargetException(e);
 				} finally {
@@ -102,31 +115,35 @@ public class NewAgentWizard extends Wizard implements INewWizard {
 	 * file if missing or just replace its contents, and open
 	 * the editor on the newly created file.
 	 */
-	private void doFinish(String containerName, String fileName, IProgressMonitor monitor) throws CoreException {
-		
+
+	private void doFinish(String containerName, String packageName, String fileName, IProgressMonitor monitor) throws CoreException {
 		// create a sample file
 		monitor.beginTask("Creating " + fileName, 2);
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-
 		IResource resource = root.findMember(new Path(containerName));
+		
 		if (!resource.exists() || !(resource instanceof IContainer)) {
 			throwCoreException("Container \"" + containerName + "\" does not exist.");
 		}
-		IContainer container = (IContainer) resource;
 		
-		final IFile file = container.getFile(new Path(fileName));
+		IContainer container = (IContainer) resource;
+		final IFile file = container.getFile(new Path(fileName + ".java"));
 		try {
-			InputStream stream = openContentStream(containerName, fileName);
+			InputStream stream = openContentStream(containerName, packageName, fileName);
 			if (file.exists()) {
 				file.setContents(stream, true, true, monitor);
 			} else {
 				file.create(stream, true, monitor);
-				registerNewAgentInMas2JProjectFile(resource, file);
+				
+				String className = fileName;
+				if (packageName != null) {
+					className = packageName + "." + className;
+				}
+				registerNewEnvironmentMas2JProjectFile(resource, file, className);
 			}
 			stream.close();
 		} catch (IOException e) {
 		}
-		
 		monitor.worked(1);
 		monitor.setTaskName("Opening file for editing...");
 		getShell().getDisplay().asyncExec(new Runnable() {
@@ -142,21 +159,12 @@ public class NewAgentWizard extends Wizard implements INewWizard {
 		monitor.worked(1);
 	}
 	
-	/**
-	 * Register the new created agent in Mas2j file project.
-	 * @param resource
-	 * @param file
-	 * @throws CoreException
-	 */
-	private void registerNewAgentInMas2JProjectFile(IResource resource, IFile file) throws CoreException {
+	private void registerNewEnvironmentMas2JProjectFile(IResource resource, IFile file, String className) throws CoreException {
 		try {
 			// parse the mas2j file project.
 			MAS2JProject project2 = MAS2JHandler.parse(MAS2JHandler.getMas2JFileName(file.getProject()));
 			
-			AgentParameters ag = new AgentParameters();
-			ag.name = file.getName().replace(MAS2JHandler.AS_EXT, ""); // removes the file extension.
-			
-			project2.addAgent(ag);
+			project2.setEnvClass(new ClassParameters(className));
 
 			MAS2JHandler.persistMas2JFile(file.getProject(), MAS2JHandler.mas2jProjectToString(project2));
 		} catch (ParseException e1) {
@@ -167,46 +175,45 @@ public class NewAgentWizard extends Wizard implements INewWizard {
 			throwCoreException(e1.getMessage());
 		}
 	}
-	
+
 	/**
 	 * We will initialize file contents with a sample text.
 	 */
-	private InputStream openContentStream(String containerName, String fileName) {
+
+	private InputStream openContentStream(String containerName, String packageName, String fileName) {
 		try {
 			String jasonHome = JasonPluginConstants.JASON_HOME;
-			String envTempl = jasonHome + 
+			String iaTempl = jasonHome + 
 			                  File.separator + 
 			                  PluginTemplates.TEMPLATE_DIR +
 			                  File.separator + 
-			                  PluginTemplates.AGENT;
+			                  PluginTemplates.ENVIRONMENT;
 			
 			StringBuffer buffer = new StringBuffer();
-			Scanner s = new Scanner(new File(envTempl));
+			Scanner s = new Scanner(new File(iaTempl));
 			while (s.hasNextLine()) {
 				buffer.append(s.nextLine().concat("\r\n"));
 			}
 			
-			String agentFileContents = buffer.toString();
+			String environmentContents = buffer.toString();
 			
-			fileName = fileName.replace(".", ">");
-			String agentName = fileName.split(">")[0];
+			String iaName = fileName;
 			String projectName = containerName.split("/")[1];
 			
-			agentFileContents = agentFileContents.replace("<AG_NAME>", agentName);
-			agentFileContents = agentFileContents.replace("<PROJECT_NAME>", projectName);
+			environmentContents = environmentContents.replace("<ENV_NAME>", iaName);
+			environmentContents = environmentContents.replace("<PROJECT_NAME>", projectName);
 			
-			return new ByteArrayInputStream(agentFileContents.getBytes());
+			if (packageName != null) {
+				environmentContents = "package ".concat(packageName).concat(";\r\n\r\n").concat(environmentContents);
+			}
+			
+			return new ByteArrayInputStream(environmentContents.getBytes());
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
 
-	/**
-	 * Throw CoreException for a given message.
-	 * @param message
-	 * @throws CoreException
-	 */
 	private void throwCoreException(String message) throws CoreException {
 		IStatus status =
 			new Status(IStatus.ERROR, Activator.getPluginId(), IStatus.OK, message, null);
