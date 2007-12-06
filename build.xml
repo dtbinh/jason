@@ -136,8 +136,9 @@
 			</fileset>
 			<manifest>
 			      <attribute name="Main-Class" value="jason.infra.centralised.RunCentralisedMAS"/>
-            </manifest>
+                        </manifest>
 		</jar>
+                <copy file="${jasonJar}" todir="applications/jason-eclipse-plugin/lib" />
 	</target>
 
 	<target name="signjar" depends="jar">
