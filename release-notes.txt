@@ -28,6 +28,7 @@ New Demo
 New internal actions
 . .suspend and .resume were moved from the example to the standard library.
   They can thus be used in any Jason application.
+. .delete to remove elements from lists or strings
 
 Bugs fixed
 . clone example

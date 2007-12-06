@@ -22,14 +22,14 @@ at(P) :- pos(P,X,Y) & pos(r1,X,Y).
 +!carry_to(R)   
    <- // remember where to go back
       ?pos(r1,X,Y); 
-	  -+pos(last,X,Y);
+      -+pos(last,X,Y);
 	  
-	  // carry garbage to r2
+      // carry garbage to r2
       !take(garb,R);
 	  
-	  // goes back and continue to check
+      // goes back and continue to check
       !at(last); 
-	  !!check(slots).
+      !!check(slots).
 
 +!take(S,L) : true
    <- !ensure_pick(S); 
