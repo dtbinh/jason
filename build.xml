@@ -244,6 +244,7 @@
 		</delete>
 		<delete dir="${distDir}/bin/classes" />
 		<delete dir="${distDir}/doc/faq" />
+		<delete dir="${distDir}/doc/mini-tutorial/src" />
 
 		<tar compression="gzip" tarfile="${distFile}.tgz">
 			<tarfileset dir="${distDir}/.." mode="755">
@@ -282,7 +283,6 @@
 						
 			<fileset dir="${basedir}/examples/Sniffer" includes="log.*" />
 			<fileset dir="${basedir}/demos/persistent-belief-base" includes="a.bb" />
-			<fileset dir="${basedir}/demos/persistent-belief-base" includes="bookstore.*" />
 
 			<fileset defaultexcludes="no" dir="${basedir}" includes="**/*~" />
 		</delete>

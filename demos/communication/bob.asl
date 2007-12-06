@@ -27,7 +27,7 @@
       
       .println("Sending askAll values");
       .send(maria, askAll, vl(Y), List1);
-      .println("Answer from askAll is: ", List1, " (should be [vl(10),vl(2),vl(1)])");
+      .println("Answer from askAll is: ", List1, " (should be [vl(10),vl(1),vl(2)])");
 
       .println("Sending askAll t1(X)");
       .send(maria, askAll, t1(Y), List2);

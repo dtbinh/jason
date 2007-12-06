@@ -17,5 +17,5 @@ clean:
 	find . -name *bak -exec rm {} \; || true
 	find . -name *~ -exec rm {} \; || true
 
-publica:
+publish:
 	scp html/*.html jomifred@ssh.sf.net:/home/groups/j/ja/jason/htdocs/faq

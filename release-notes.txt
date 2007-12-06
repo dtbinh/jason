@@ -15,7 +15,12 @@ New features
   search the sources of agents a, b, and c in the paths "." (current path),
   "src/asl", and "kk". 
   The default value is the project's directory.
+  
+. a preliminary version of an eclipse plugin (http://jasonplugin.wikidot.com) 
 
+New documentation
+. A getting started with Jason (see doc/index.html)
+. A mini-tutorial of interoperability between Jason and JADE (see doc/index.html)
 
 New Demo
 . demo/sync-environment shows how to use the SteppedEnvironment. 
