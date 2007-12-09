@@ -46,7 +46,7 @@ public class MAS2JEditor extends MultiPageEditorPart implements IResourceChangeL
 	private String [] sourcePath;
 	
 	private MAS2JDesignComposite mas2jDesignComposite;
-	
+
 	/**
 	 * Creates a multi-page editor example.
 	 */
@@ -107,7 +107,7 @@ public class MAS2JEditor extends MultiPageEditorPart implements IResourceChangeL
 	public void doSave(IProgressMonitor monitor) {
 		getEditor(0).doSave(monitor);
 		
-		compileInput(getEditor(0).getEditorInput());
+		compileInput();
 	}
 	
 	/**
@@ -153,7 +153,9 @@ public class MAS2JEditor extends MultiPageEditorPart implements IResourceChangeL
 	 * Compiles Mas2J Project for given editorInput.
 	 * @param editorInput
 	 */
-	private void compileInput(IEditorInput editorInput) {
+	void compileInput() {
+		IEditorInput editorInput = getEditor(0).getEditorInput();
+		
 		IFileEditorInput iei = (IFileEditorInput)editorInput;
 		IFile ifile = iei.getFile();
 		
@@ -232,8 +234,8 @@ public class MAS2JEditor extends MultiPageEditorPart implements IResourceChangeL
 			// do something
 		}
 		else {
-			// do something
-			compileInput(getEditor(0).getEditorInput());
+			// compile
+			compileInput();
 			
 			// update GUI
 			updateDesignGUI();

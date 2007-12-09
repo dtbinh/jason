@@ -22,14 +22,16 @@ public class NewAgentWizardPage extends WizardNewFileCreationPage {
 	 * @param pageName
 	 */
 	public NewAgentWizardPage(ISelection selection) {
-		super("wizardPage", StructuredSelection.EMPTY);
-		ITreeSelection ts = (ITreeSelection)selection;
-		
-		Object firstElement = ts.getFirstElement();
-		if (firstElement != null) {
-			if (firstElement instanceof IPackageFragmentRoot) {
-				IPackageFragmentRoot pfr = (IPackageFragmentRoot)firstElement;
-				setContainerFullPath(ResourcesPlugin.getWorkspace().getRoot().findMember(new Path(pfr.getPath().toFile().getPath())).getFullPath());
+		super("New AgentSpeak File", StructuredSelection.EMPTY);
+		if (selection instanceof ITreeSelection) {
+			ITreeSelection ts = (ITreeSelection)selection;
+			
+			Object firstElement = ts.getFirstElement();
+			if (firstElement != null) {
+				if (firstElement instanceof IPackageFragmentRoot) {
+					IPackageFragmentRoot pfr = (IPackageFragmentRoot)firstElement;
+					setContainerFullPath(ResourcesPlugin.getWorkspace().getRoot().findMember(new Path(pfr.getPath().toFile().getPath())).getFullPath());
+				}
 			}
 		}
 		

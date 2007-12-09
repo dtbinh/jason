@@ -1,5 +1,8 @@
 package net.sourceforge.jasonide.wizards;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -63,77 +66,79 @@ public class NewInternalActionWizardPage extends WizardPage {
 	 */
 	public NewInternalActionWizardPage(ISelection selection) {
 		super("wizardPage");
-		ITreeSelection ts = (ITreeSelection)selection;
 		
-		Object firstElement = ts.getFirstElement();
-		if (firstElement != null) {
-			// is a Source Folder?
-			if (firstElement instanceof IPackageFragmentRoot) {
-				IPackageFragmentRoot pfr = (IPackageFragmentRoot)firstElement;
-				 
-				if (pfr.getPath().segmentCount() > 0) {
-					containerName = pfr.getPath().segments()[0];
-					for (int i = 1; i < pfr.getPath().segmentCount(); i++) {
-						containerName += "/" + pfr.getPath().segments()[i];
-					}
-				}
-			}
-			// is a Package?
-			else if (firstElement instanceof IPackageFragment) {
-				IPackageFragment pfr = (IPackageFragment)firstElement;
-				
-				String[] names = ((PackageFragment)pfr).names; // TODO: fix that
-				if (names.length > 0) {
-					packageName = names[0];
-					for (int i = 1; i < names.length; i++) {
-						packageName += "." + names[i];
-					}
-				}
-				
-				IJavaElement parent = pfr.getParent();
-				if (parent.getPath().segmentCount() > 0) {
-					containerName = parent.getPath().segments()[0];
-					for (int i = 1; i < parent.getPath().segmentCount(); i++) {
-						containerName += "/" + parent.getPath().segments()[i];
-					}
-				}
-			}
-			// is a file?
-			else if (firstElement instanceof ICompilationUnit) {
-				ICompilationUnit pfr = (ICompilationUnit)firstElement;
-				IJavaElement parent = pfr.getParent();
-				while (!(parent instanceof IJavaProject)) {
-					if (parent instanceof IPackageFragmentRoot) {
-						//System.out.println("source folder:" + parent.getPath().segments()[parent.getPath().segments().length-1]);
-						if (containerName == null) {
-							if (parent.getPath().segmentCount() > 0) {
-								containerName = parent.getPath().segments()[0];
-								for (int i = 1; i < parent.getPath().segmentCount(); i++) {
-									containerName += "/" + parent.getPath().segments()[i];
-								}
-							}
+		if (selection instanceof ITreeSelection) {
+			ITreeSelection ts = (ITreeSelection)selection;
+			
+			Object firstElement = ts.getFirstElement();
+			if (firstElement != null) {
+				// is a Source Folder?
+				if (firstElement instanceof IPackageFragmentRoot) {
+					IPackageFragmentRoot pfr = (IPackageFragmentRoot)firstElement;
+					 
+					if (pfr.getPath().segmentCount() > 0) {
+						containerName = pfr.getPath().segments()[0];
+						for (int i = 1; i < pfr.getPath().segmentCount(); i++) {
+							containerName += "/" + pfr.getPath().segments()[i];
 						}
 					}
-					else if (parent instanceof IPackageFragment) {
-						if (packageName == null) {
-							//System.out.println("eh pacote: " + parent.getPath().segments()[parent.getPath().segments().length-1]);
-							String[] names = ((PackageFragment)parent).names; // TODO: fix that
-							if (names.length > 0) {
-								packageName = names[0];
-								for (int i = 1; i < names.length; i++) {
-									packageName += "." + names[i];
-								}
-							}
+				}
+				// is a Package?
+				else if (firstElement instanceof IPackageFragment) {
+					IPackageFragment pfr = (IPackageFragment)firstElement;
+					
+					String[] names = ((PackageFragment)pfr).names; // TODO: fix that
+					if (names.length > 0) {
+						packageName = names[0];
+						for (int i = 1; i < names.length; i++) {
+							packageName += "." + names[i];
 						}
 					}
 					
-					parent = parent.getParent();
+					IJavaElement parent = pfr.getParent();
+					if (parent.getPath().segmentCount() > 0) {
+						containerName = parent.getPath().segments()[0];
+						for (int i = 1; i < parent.getPath().segmentCount(); i++) {
+							containerName += "/" + parent.getPath().segments()[i];
+						}
+					}
+				}
+				// is a file?
+				else if (firstElement instanceof ICompilationUnit) {
+					ICompilationUnit pfr = (ICompilationUnit)firstElement;
+					IJavaElement parent = pfr.getParent();
+					while (!(parent instanceof IJavaProject)) {
+						if (parent instanceof IPackageFragmentRoot) {
+							//System.out.println("source folder:" + parent.getPath().segments()[parent.getPath().segments().length-1]);
+							if (containerName == null) {
+								if (parent.getPath().segmentCount() > 0) {
+									containerName = parent.getPath().segments()[0];
+									for (int i = 1; i < parent.getPath().segmentCount(); i++) {
+										containerName += "/" + parent.getPath().segments()[i];
+									}
+								}
+							}
+						}
+						else if (parent instanceof IPackageFragment) {
+							if (packageName == null) {
+								//System.out.println("eh pacote: " + parent.getPath().segments()[parent.getPath().segments().length-1]);
+								String[] names = ((PackageFragment)parent).names; // TODO: fix that
+								if (names.length > 0) {
+									packageName = names[0];
+									for (int i = 1; i < names.length; i++) {
+										packageName += "." + names[i];
+									}
+								}
+							}
+						}
+						
+						parent = parent.getParent();
+					}
 				}
 			}
 		}
 		
-		workspaceRoot= ResourcesPlugin.getWorkspace().getRoot();	
-		
+		workspaceRoot= ResourcesPlugin.getWorkspace().getRoot();
 		setTitle("New Internal Action Class");
 		setDescription("This wizard creates a new Internal Action class.");
 		this.selection = selection;
@@ -386,16 +391,19 @@ public class NewInternalActionWizardPage extends WizardPage {
 			return;
 		}
 		else {
-			IStatus val = JavaConventions.validateJavaTypeName(fileName);
-			if (val.getSeverity() == IStatus.ERROR) {
-				setMessage("Class name must be valid", ERROR);
-				return;
-			} else if (val.getSeverity() == IStatus.WARNING) {
-				setMessage("Type name is discouraged. By convention, Java type names usually start with an uppercase letter", WARNING);
+			if (!isValidClassName(fileName)) {
+				updateStatus("Class name must start with lowercase char");
 				return;
 			}
 		}
 		updateStatus(null);
+	}
+	
+	private boolean isValidClassName(String className) {
+		Pattern pat = Pattern.compile("[a-z]([a-zA-Z0-9]|_)*");  
+		Matcher matcher = pat.matcher(className);   
+		
+		return matcher.matches(); 
 	}
 
 	private void updateStatus(String message) {

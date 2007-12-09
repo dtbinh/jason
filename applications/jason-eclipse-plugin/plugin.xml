@@ -63,7 +63,7 @@
             hasPages="true"
             icon="icons/createIA.gif"
             id="net.sourceforge.jasonide.wizards.NewInternalActionWizard"
-            name="New Internal Action Wizard"
+            name="Internal Action"
             project="false"/>
       <wizard
             category="net.sourceforge.jasonide.menus"
@@ -71,7 +71,15 @@
             hasPages="true"
             icon="icons/createEnv.gif"
             id="net.sourceforge.jasonide.wizards.NewEnvironmentWizard"
-            name="New Environment Wizard"
+            name="Environment"
+            project="false"/>
+      <wizard
+            category="net.sourceforge.jasonide.menus"
+            class="net.sourceforge.jasonide.wizards.NewLogConfigurationWizard"
+            hasPages="true"
+            icon="icons/list.gif"
+            id="net.sourceforge.jasonide.wizards.NewLogConfigurationWizard"
+            name="Log Configuration"
             project="false"/>
    </extension>
 

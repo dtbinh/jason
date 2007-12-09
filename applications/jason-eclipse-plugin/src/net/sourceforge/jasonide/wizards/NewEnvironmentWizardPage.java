@@ -43,7 +43,6 @@ import org.eclipse.ui.dialogs.SelectionDialog;
  * as the file name. The page will only accept file name without the extension
  * OR with the extension that matches the expected one (java).
  */
-
 public class NewEnvironmentWizardPage extends WizardPage {
 	private Text containerText;
 	private Text fileText;
@@ -63,76 +62,79 @@ public class NewEnvironmentWizardPage extends WizardPage {
 	 */
 	public NewEnvironmentWizardPage(ISelection selection) {
 		super("wizardPage");
-		ITreeSelection ts = (ITreeSelection)selection;
 		
-		Object firstElement = ts.getFirstElement();
-		if (firstElement != null) {
-			// is a Source Folder?
-			if (firstElement instanceof IPackageFragmentRoot) {
-				IPackageFragmentRoot pfr = (IPackageFragmentRoot)firstElement;
-				 
-				if (pfr.getPath().segmentCount() > 0) {
-					containerName = pfr.getPath().segments()[0];
-					for (int i = 1; i < pfr.getPath().segmentCount(); i++) {
-						containerName += "/" + pfr.getPath().segments()[i];
-					}
-				}
-			}
-			// is a Package?
-			else if (firstElement instanceof IPackageFragment) {
-				IPackageFragment pfr = (IPackageFragment)firstElement;
-				
-				String[] names = ((PackageFragment)pfr).names; // TODO: fix that
-				if (names.length > 0) {
-					packageName = names[0];
-					for (int i = 1; i < names.length; i++) {
-						packageName += "." + names[i];
-					}
-				}
-				
-				IJavaElement parent = pfr.getParent();
-				if (parent.getPath().segmentCount() > 0) {
-					containerName = parent.getPath().segments()[0];
-					for (int i = 1; i < parent.getPath().segmentCount(); i++) {
-						containerName += "/" + parent.getPath().segments()[i];
-					}
-				}
-			}
-			// is a file?
-			else if (firstElement instanceof ICompilationUnit) {
-				ICompilationUnit pfr = (ICompilationUnit)firstElement;
-				IJavaElement parent = pfr.getParent();
-				while (!(parent instanceof IJavaProject)) {
-					if (parent instanceof IPackageFragmentRoot) {
-						//System.out.println("source folder:" + parent.getPath().segments()[parent.getPath().segments().length-1]);
-						if (containerName == null) {
-							if (parent.getPath().segmentCount() > 0) {
-								containerName = parent.getPath().segments()[0];
-								for (int i = 1; i < parent.getPath().segmentCount(); i++) {
-									containerName += "/" + parent.getPath().segments()[i];
-								}
-							}
+		if (selection instanceof ITreeSelection) {
+			ITreeSelection ts = (ITreeSelection)selection;
+			
+			Object firstElement = ts.getFirstElement();
+			if (firstElement != null) {
+				// is a Source Folder?
+				if (firstElement instanceof IPackageFragmentRoot) {
+					IPackageFragmentRoot pfr = (IPackageFragmentRoot)firstElement;
+					 
+					if (pfr.getPath().segmentCount() > 0) {
+						containerName = pfr.getPath().segments()[0];
+						for (int i = 1; i < pfr.getPath().segmentCount(); i++) {
+							containerName += "/" + pfr.getPath().segments()[i];
 						}
 					}
-					else if (parent instanceof IPackageFragment) {
-						if (packageName == null) {
-							//System.out.println("eh pacote: " + parent.getPath().segments()[parent.getPath().segments().length-1]);
-							String[] names = ((PackageFragment)parent).names; // TODO: fix that
-							if (names.length > 0) {
-								packageName = names[0];
-								for (int i = 1; i < names.length; i++) {
-									packageName += "." + names[i];
-								}
-							}
+				}
+				// is a Package?
+				else if (firstElement instanceof IPackageFragment) {
+					IPackageFragment pfr = (IPackageFragment)firstElement;
+					
+					String[] names = ((PackageFragment)pfr).names; // TODO: fix that
+					if (names.length > 0) {
+						packageName = names[0];
+						for (int i = 1; i < names.length; i++) {
+							packageName += "." + names[i];
 						}
 					}
 					
-					parent = parent.getParent();
+					IJavaElement parent = pfr.getParent();
+					if (parent.getPath().segmentCount() > 0) {
+						containerName = parent.getPath().segments()[0];
+						for (int i = 1; i < parent.getPath().segmentCount(); i++) {
+							containerName += "/" + parent.getPath().segments()[i];
+						}
+					}
 				}
-			}
+				// is a file?
+				else if (firstElement instanceof ICompilationUnit) {
+					ICompilationUnit pfr = (ICompilationUnit)firstElement;
+					IJavaElement parent = pfr.getParent();
+					while (!(parent instanceof IJavaProject)) {
+						if (parent instanceof IPackageFragmentRoot) {
+							//System.out.println("source folder:" + parent.getPath().segments()[parent.getPath().segments().length-1]);
+							if (containerName == null) {
+								if (parent.getPath().segmentCount() > 0) {
+									containerName = parent.getPath().segments()[0];
+									for (int i = 1; i < parent.getPath().segmentCount(); i++) {
+										containerName += "/" + parent.getPath().segments()[i];
+									}
+								}
+							}
+						}
+						else if (parent instanceof IPackageFragment) {
+							if (packageName == null) {
+								//System.out.println("eh pacote: " + parent.getPath().segments()[parent.getPath().segments().length-1]);
+								String[] names = ((PackageFragment)parent).names; // TODO: fix that
+								if (names.length > 0) {
+									packageName = names[0];
+									for (int i = 1; i < names.length; i++) {
+										packageName += "." + names[i];
+									}
+								}
+							}
+						}
+						
+						parent = parent.getParent();
+					}
+				}
+			}	
 		}
 		
-		workspaceRoot= ResourcesPlugin.getWorkspace().getRoot();	
+		workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
 		
 		setTitle("New Environment Class");
 		setDescription("This wizard creates a new Environment class.");
@@ -223,7 +225,7 @@ public class NewEnvironmentWizardPage extends WizardPage {
 		}
 		IPath path= new Path(str);
 		IResource res= workspaceRoot.findMember(path);
-		if (res != null) {
+		if (res != null) {	
 			int resType= res.getType();
 			if (resType == IResource.PROJECT || resType == IResource.FOLDER) {
 				IProject proj= res.getProject();
@@ -333,7 +335,6 @@ public class NewEnvironmentWizardPage extends WizardPage {
 				dialog.setTitle("Package Selection");
 				dialog.setInitialSelections(new String[] {getPackageName()});
 				if (dialog.open() == SelectionDialog.OK) {
-					System.out.println("oi");
 					Object[] result = dialog.getResult();
 					if (result.length == 1) {
 						String[] names = ((PackageFragment)result[0]).names; // TODO: fix that
@@ -360,8 +361,7 @@ public class NewEnvironmentWizardPage extends WizardPage {
 	 * Ensures that both text fields are set.
 	 */
 	private void dialogChanged() {
-		IResource container = ResourcesPlugin.getWorkspace().getRoot()
-				.findMember(new Path(getContainerName()));
+		IResource container = ResourcesPlugin.getWorkspace().getRoot().findMember(new Path(getContainerName()));
 		String fileName = getFileName();
 		String packageName = getPackageName();
 		if (getContainerName().length() == 0) {

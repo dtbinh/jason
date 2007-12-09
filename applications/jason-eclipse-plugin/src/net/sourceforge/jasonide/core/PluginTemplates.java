@@ -20,6 +20,8 @@ public class PluginTemplates {
 	
 	public static final String BUILD = "build-template.xml";
 	
+	public static final String LOGGING_CONFIGURATION = "logging.properties";
+	
 	public static final String CORE_PREFS = "org.eclipse.jdt.core.prefs";
 	
 	public static final String UI_PREFS = "org.eclipse.jdt.ui.prefs";

@@ -40,7 +40,7 @@ import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 /**
  * This wizard creates a new Jason project.
  * Jason project contains two initial files:<br>
- *  - <b>project_name.mas2j</b> - Main Jason Project file.<br>
+ *  - <b>project_name.mas2j</b> - Main Jason project file.<br>
  *  - <b>environment_classname.java</b> - Java based environment class.
  * 
  * @author Germano
