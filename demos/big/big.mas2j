@@ -10,7 +10,7 @@ MAS big {
 	// (the threads in the pool are shared by the agents)
     infrastructure: Centralised(pool)
 	
-    environment: Env
+    environment: BEnv
     
 	agents:
         a #2000; // 2000 agents of type a

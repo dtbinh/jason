@@ -5,5 +5,5 @@
 	<classpathentry kind="lib" path="lib/search.jar"/>
 	<classpathentry kind="lib" path="/Jason/lib/junit.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Jason"/>
-	<classpathentry kind="output" path=""/>
+	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

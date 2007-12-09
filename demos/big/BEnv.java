@@ -4,9 +4,9 @@ import jason.asSyntax.*;
 import jason.environment.*;
 import java.util.logging.*;
 
-public class Env extends jason.environment.Environment {
+public class BEnv extends jason.environment.Environment {
 
-    private Logger logger = Logger.getLogger("big.mas2j."+Env.class.getName());
+    private Logger logger = Logger.getLogger("big.mas2j."+BEnv.class.getName());
 
     @Override
     public boolean executeAction(String ag, Structure action) {

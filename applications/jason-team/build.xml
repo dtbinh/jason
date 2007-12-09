@@ -15,7 +15,7 @@
     <property name="mas2j.project.file" value="Local-JasonTeam.mas2j"/>
     <property name="debug" value=""/> <!-- use "-debug" to run in debug mode -->
 
-    <property name="jasonJar" value="/Users/jomi/jason/lib/jason.jar"/>
+    <property name="jasonJar" value="/Users/jomi/Jason/Jason-svn/lib/jason.jar"/>
 
     <path id="project.classpath">
         <pathelement location="."/>

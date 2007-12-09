@@ -18,6 +18,8 @@ import arch.LocalMinerArch;
  */
 public abstract class CycledEnvironment extends jason.environment.Environment {
 
+    // TODO: use Steeped env
+    
     private static Logger logger   = Logger.getLogger("jasonTeamSimLocal.mas2j." + CycledEnvironment.class.getName());
 
     protected int 			  cycle      = 0; // cycle number
@@ -114,6 +116,7 @@ public abstract class CycledEnvironment extends jason.environment.Environment {
 
 	/** this method is called by the agents to request some action performance */
     public void addActionInSchedule(final LocalMinerArch ag, final ActionExec act) {
+        if (!isRunning()) return;
 		synchronized (finished) {
 			if (finished[getAgNbFromName(ag.getAgName())] != null) { // the agent already did an action in this cycle
 				logger.warning("** Agent "+ag.getAgName()+" is trying two action is the same cycle! This action was ignored.");
