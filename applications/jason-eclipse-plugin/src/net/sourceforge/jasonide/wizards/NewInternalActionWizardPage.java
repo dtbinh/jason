@@ -26,6 +26,7 @@ import org.eclipse.jface.dialogs.IDialogPage;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -81,6 +82,9 @@ public class NewInternalActionWizardPage extends WizardPage {
 						for (int i = 1; i < pfr.getPath().segmentCount(); i++) {
 							containerName += "/" + pfr.getPath().segments()[i];
 						}
+						
+						// default source folder for java classes
+						containerName += "/src/java";
 					}
 				}
 				// is a Package?
@@ -134,6 +138,16 @@ public class NewInternalActionWizardPage extends WizardPage {
 						
 						parent = parent.getParent();
 					}
+				}
+			}
+		}
+		else if (selection instanceof StructuredSelection) {
+			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+			IProject[] projects = root.getProjects();
+			for (int i = 0; i < projects.length; i++) {
+				if (projects[i].isOpen()) {
+					containerName = projects[i].getName() + "/src/java";
+					break;
 				}
 			}
 		}
@@ -338,7 +352,6 @@ public class NewInternalActionWizardPage extends WizardPage {
 				dialog.setTitle("Package Selection");
 				dialog.setInitialSelections(new String[] {getPackageName()});
 				if (dialog.open() == SelectionDialog.OK) {
-					System.out.println("oi");
 					Object[] result = dialog.getResult();
 					if (result.length == 1) {
 						String[] names = ((PackageFragment)result[0]).names; // TODO: fix that

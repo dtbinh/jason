@@ -23,6 +23,7 @@ import org.eclipse.jface.dialogs.IDialogPage;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -68,8 +69,21 @@ public class NewEnvironmentWizardPage extends WizardPage {
 			
 			Object firstElement = ts.getFirstElement();
 			if (firstElement != null) {
+				if (firstElement instanceof IJavaProject) {
+					IJavaProject pfr = (IJavaProject)firstElement;
+					
+					if (pfr.getPath().segmentCount() > 0) {
+						containerName = pfr.getPath().segments()[0];
+						for (int i = 1; i < pfr.getPath().segmentCount(); i++) {
+							containerName += "/" + pfr.getPath().segments()[i];
+						}
+						
+						// default source folder for java classes
+						containerName += "/src/java";
+					}
+				}
 				// is a Source Folder?
-				if (firstElement instanceof IPackageFragmentRoot) {
+				else if (firstElement instanceof IPackageFragmentRoot) {
 					IPackageFragmentRoot pfr = (IPackageFragmentRoot)firstElement;
 					 
 					if (pfr.getPath().segmentCount() > 0) {
@@ -132,6 +146,16 @@ public class NewEnvironmentWizardPage extends WizardPage {
 					}
 				}
 			}	
+		}
+		else if (selection instanceof StructuredSelection) {
+			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+			IProject[] projects = root.getProjects();
+			for (int i = 0; i < projects.length; i++) {
+				if (projects[i].isOpen()) {
+					containerName = projects[i].getName() + "/src/java";
+					break;
+				}
+			}
 		}
 		
 		workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
@@ -210,10 +234,20 @@ public class NewEnvironmentWizardPage extends WizardPage {
 		
 		if (containerName != null) {
 			containerText.setText(containerName);
+			packageText.setFocus();
+		}
+		else {
+			containerText.setFocus();
 		}
 		
 		if (packageName != null) {
 			packageText.setText(packageName);
+			fileText.setFocus();
+		}
+		else {
+			if (containerName != null) {
+				packageText.setFocus();
+			}
 		}
 	}
 	

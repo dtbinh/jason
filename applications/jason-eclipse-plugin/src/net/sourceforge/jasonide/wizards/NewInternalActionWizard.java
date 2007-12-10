@@ -1,25 +1,37 @@
 package net.sourceforge.jasonide.wizards;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Scanner;
+
 import net.sourceforge.jasonide.Activator;
 import net.sourceforge.jasonide.core.JasonPluginConstants;
 import net.sourceforge.jasonide.core.PluginTemplates;
 
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
-import org.eclipse.core.runtime.*;
-import org.eclipse.jface.operation.*;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Scanner;
-
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.core.resources.*;
-import org.eclipse.core.runtime.CoreException;
-import java.io.*;
-
-import org.eclipse.ui.*;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWizard;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
 /**
@@ -138,7 +150,7 @@ public class NewInternalActionWizard extends Wizard implements INewWizard {
 	 * We will initialize file contents with a sample text.
 	 */
 
-	private InputStream openContentStream(String containerName, String packageName, String fileName) {
+	private InputStream openContentStream(String containerName, String packageName, String fileName) throws CoreException {
 		try {
 			String jasonHome = JasonPluginConstants.JASON_HOME;
 			String iaTempl = jasonHome + 
@@ -167,7 +179,7 @@ public class NewInternalActionWizard extends Wizard implements INewWizard {
 			
 			return new ByteArrayInputStream(agentFileContents.getBytes());
 		} catch (IOException e) {
-			e.printStackTrace();
+			throwCoreException(e.getMessage());
 			return null;
 		}
 	}

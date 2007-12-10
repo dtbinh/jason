@@ -260,4 +260,7 @@ public class MAS2JEditor extends MultiPageEditorPart implements IResourceChangeL
 			});
 		}
 	}
+	public MAS2JTextEditor getEditor() {
+		return editor;
+	}
 }
