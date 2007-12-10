@@ -35,14 +35,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
 /**
- * This is a sample new wizard. Its role is to create a new file 
- * resource in the provided container. If the container resource
- * (a folder or a project) is selected in the workspace 
- * when the wizard is opened, it will accept it as the target
- * container. The wizard creates one file with the extension
- * "java". If a sample multi-page editor (also available
- * as a template) is registered for the same extension, it will
- * be able to open it.
+ * Wizard for create a new Internal Action with default contents.
+ * @author Germano
  */
 public class NewInternalActionWizard extends Wizard implements INewWizard {
 	private NewInternalActionWizardPage page;
@@ -130,6 +124,7 @@ public class NewInternalActionWizard extends Wizard implements INewWizard {
 			}
 			stream.close();
 		} catch (IOException e) {
+			MessageDialog.openError(getShell(), "Error", e.getMessage());
 		}
 		monitor.worked(1);
 		monitor.setTaskName("Opening file for editing...");
@@ -140,6 +135,7 @@ public class NewInternalActionWizard extends Wizard implements INewWizard {
 				try {
 					IDE.openEditor(page, file, true);
 				} catch (PartInitException e) {
+					MessageDialog.openError(getShell(), "Error", e.getMessage());
 				}
 			}
 		});

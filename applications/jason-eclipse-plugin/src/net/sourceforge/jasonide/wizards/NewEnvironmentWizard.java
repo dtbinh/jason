@@ -45,14 +45,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
 /**
- * This is a sample new wizard. Its role is to create a new file 
- * resource in the provided container. If the container resource
- * (a folder or a project) is selected in the workspace 
- * when the wizard is opened, it will accept it as the target
- * container. The wizard creates one file with the extension
- * "java". If a sample multi-page editor (also available
- * as a template) is registered for the same extension, it will
- * be able to open it.
+ * Wizard for create a new Environment with default contents.
+ * @author Germano
  */
 public class NewEnvironmentWizard extends Wizard implements INewWizard {
 	private NewEnvironmentWizardPage page;
@@ -131,6 +125,7 @@ public class NewEnvironmentWizard extends Wizard implements INewWizard {
 			}
 			stream.close();
 		} catch (IOException e) {
+			MessageDialog.openError(getShell(), "Error", e.getMessage());
 		}
 
 		getShell().getDisplay().asyncExec(new Runnable() {
@@ -140,6 +135,7 @@ public class NewEnvironmentWizard extends Wizard implements INewWizard {
 				try {
 					IDE.openEditor(page, file, true);
 				} catch (PartInitException e) {
+					MessageDialog.openError(getShell(), "Error", e.getMessage());
 				}
 			}
 		});
@@ -234,7 +230,7 @@ public class NewEnvironmentWizard extends Wizard implements INewWizard {
 			
 			return new ByteArrayInputStream(environmentContents.getBytes());
 		} catch (IOException e) {
-			e.printStackTrace();
+			MessageDialog.openError(getShell(), "Error", e.getMessage());
 			return null;
 		}
 	}

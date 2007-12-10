@@ -112,6 +112,7 @@ public class NewAgentWizard extends Wizard implements INewWizard {
 			}
 			stream.close();
 		} catch (IOException e) {
+			MessageDialog.openError(getShell(), "Error", e.getMessage());
 		}
 		
 		getShell().getDisplay().asyncExec(new Runnable() {
@@ -121,6 +122,7 @@ public class NewAgentWizard extends Wizard implements INewWizard {
 				try {
 					IDE.openEditor(page, file, true);
 				} catch (PartInitException e) {
+					MessageDialog.openError(getShell(), "Error", e.getMessage());
 				}
 			}
 		});
@@ -223,7 +225,7 @@ public class NewAgentWizard extends Wizard implements INewWizard {
 			
 			return new ByteArrayInputStream(agentFileContents.getBytes());
 		} catch (IOException e) {
-			e.printStackTrace();
+			MessageDialog.openError(getShell(), "Error", e.getMessage());
 			return null;
 		}
 	}

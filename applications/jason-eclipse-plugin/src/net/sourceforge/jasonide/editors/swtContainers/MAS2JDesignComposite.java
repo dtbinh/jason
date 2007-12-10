@@ -161,7 +161,6 @@ public class MAS2JDesignComposite extends Composite {
 								document.set(MAS2JHandler.mas2jProjectToString(project2));
 							}
 							finally {
-								// TODO: fix the problem...
 								MAS2JHandler.deleteMas2JTempFile(tempFileName);
 							}
 						}
@@ -260,7 +259,6 @@ public class MAS2JDesignComposite extends Composite {
 								document.set(MAS2JHandler.mas2jProjectToString(project2));
 							}
 							finally {
-								// TODO: fix the problem...
 								MAS2JHandler.deleteMas2JTempFile(tempFileName);
 							}
 						}
@@ -320,7 +318,6 @@ public class MAS2JDesignComposite extends Composite {
 								document.set(MAS2JHandler.mas2jProjectToString(project2));
 							}
 							finally {
-								// TODO: fix the problem...
 								MAS2JHandler.deleteMas2JTempFile(tempFileName);
 							}
 						}
@@ -419,7 +416,6 @@ public class MAS2JDesignComposite extends Composite {
 								document.set(MAS2JHandler.mas2jProjectToString(project2));
 							}
 							finally {
-								// TODO: fix the problem...
 								MAS2JHandler.deleteMas2JTempFile(tempFileName);
 							}
 						}
@@ -828,7 +824,6 @@ public class MAS2JDesignComposite extends Composite {
 							document.set(MAS2JHandler.mas2jProjectToString(project2));
 						}
 						finally {
-							// TODO: fix the problem...
 							MAS2JHandler.deleteMas2JTempFile(tempFileName);
 						}
 					}

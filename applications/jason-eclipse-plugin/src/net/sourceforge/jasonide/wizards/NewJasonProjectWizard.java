@@ -152,7 +152,7 @@ public class NewJasonProjectWizard extends BasicNewProjectResourceWizard impleme
 			newProject.getWorkspace().getRoot().refreshLocal(IWorkspaceRoot.DEPTH_INFINITE, monitor);
 			monitor.beginTask("Project created in current workspace", 2);
 		} catch (Exception e) {
-			e.printStackTrace();
+			MessageDialog.openError(getShell(), "Error", e.getMessage());
 		}
 	}
 
@@ -182,7 +182,7 @@ public class NewJasonProjectWizard extends BasicNewProjectResourceWizard impleme
 			fw.flush();
 			fw.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			MessageDialog.openError(getShell(), "Error", e.getMessage());
 		}
 	}
 	
@@ -206,7 +206,7 @@ public class NewJasonProjectWizard extends BasicNewProjectResourceWizard impleme
 		
 			project.setDescription(pd, monitor);
 		} catch (CoreException e) { 
-			e.printStackTrace();
+			MessageDialog.openError(getShell(), "Error", e.getMessage());
 		}
 	}
 	
@@ -220,7 +220,7 @@ public class NewJasonProjectWizard extends BasicNewProjectResourceWizard impleme
 			fw.flush();
 			fw.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			MessageDialog.openError(getShell(), "Error", e.getMessage());
 		}
 	}
 	
@@ -247,7 +247,7 @@ public class NewJasonProjectWizard extends BasicNewProjectResourceWizard impleme
 			fw.flush();
 			fw.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			MessageDialog.openError(getShell(), "Error", e.getMessage());
 		}
 	}
 	
@@ -319,7 +319,7 @@ public class NewJasonProjectWizard extends BasicNewProjectResourceWizard impleme
 			fw.flush();
 			fw.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			MessageDialog.openError(getShell(), "Error", e.getMessage());
 		}
 	}
 	
@@ -355,7 +355,7 @@ public class NewJasonProjectWizard extends BasicNewProjectResourceWizard impleme
 			fw.flush();
 			fw.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			MessageDialog.openError(getShell(), "Error", e.getMessage());
 		}
 	}
 
@@ -390,7 +390,7 @@ public class NewJasonProjectWizard extends BasicNewProjectResourceWizard impleme
 			fw.flush();
 			fw.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			MessageDialog.openError(getShell(), "Error", e.getMessage());
 		}
 	}
 	
@@ -438,8 +438,7 @@ public class NewJasonProjectWizard extends BasicNewProjectResourceWizard impleme
 			/*ILaunchConfiguration config = */
 			workingCopy.doSave();
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			MessageDialog.openError(getShell(), "Error", e.getMessage());
 		}
 	}
 	
