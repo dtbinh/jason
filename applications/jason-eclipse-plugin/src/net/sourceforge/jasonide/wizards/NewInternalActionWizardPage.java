@@ -73,10 +73,9 @@ public class NewInternalActionWizardPage extends WizardPage {
 			
 			Object firstElement = ts.getFirstElement();
 			if (firstElement != null) {
-				// is a Source Folder?
-				if (firstElement instanceof IPackageFragmentRoot) {
-					IPackageFragmentRoot pfr = (IPackageFragmentRoot)firstElement;
-					 
+				if (firstElement instanceof IJavaProject) {
+					IJavaProject pfr = (IJavaProject)firstElement;
+					
 					if (pfr.getPath().segmentCount() > 0) {
 						containerName = pfr.getPath().segments()[0];
 						for (int i = 1; i < pfr.getPath().segmentCount(); i++) {
@@ -85,6 +84,17 @@ public class NewInternalActionWizardPage extends WizardPage {
 						
 						// default source folder for java classes
 						containerName += "/src/java";
+					}
+				}
+				// is a Source Folder?
+				else if (firstElement instanceof IPackageFragmentRoot) {
+					IPackageFragmentRoot pfr = (IPackageFragmentRoot)firstElement;
+					 
+					if (pfr.getPath().segmentCount() > 0) {
+						containerName = pfr.getPath().segments()[0];
+						for (int i = 1; i < pfr.getPath().segmentCount(); i++) {
+							containerName += "/" + pfr.getPath().segments()[i];
+						}
 					}
 				}
 				// is a Package?
@@ -139,7 +149,7 @@ public class NewInternalActionWizardPage extends WizardPage {
 						parent = parent.getParent();
 					}
 				}
-			}
+			}	
 		}
 		else if (selection instanceof StructuredSelection) {
 			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();

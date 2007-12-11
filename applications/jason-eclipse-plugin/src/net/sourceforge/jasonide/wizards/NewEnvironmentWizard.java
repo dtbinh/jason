@@ -24,6 +24,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
@@ -102,8 +103,11 @@ public class NewEnvironmentWizard extends Wizard implements INewWizard {
 	private void doFinish(String containerName, String packageName, String fileName) throws CoreException {		
 		// create a sample file
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-		IResource resource = root.findMember(new Path(containerName));
 		
+		// if necessary, create the packages.
+		containerName = createPackages(containerName, null, root);
+		
+		IResource resource = root.findMember(new Path(containerName));
 		if (!resource.exists() || !(resource instanceof IContainer)) {
 			throwCoreException("Container \"" + containerName + "\" does not exist.");
 		}
@@ -139,6 +143,17 @@ public class NewEnvironmentWizard extends Wizard implements INewWizard {
 				}
 			}
 		});
+	}
+	
+	private String createPackages(String containerName, IProgressMonitor monitor, IWorkspaceRoot root) throws CoreException {
+		String rootLocation = root.getLocation().toString();
+		
+		if (!containerName.startsWith("/")) {
+			containerName = "/" + containerName;
+		}
+		new File(rootLocation + containerName).mkdirs();
+		root.refreshLocal(IWorkspaceRoot.DEPTH_INFINITE, monitor);
+		return containerName;
 	}
 	
 	private void registerNewEnvironmentMas2JProjectFile(IResource resource, IFile file, String className) throws CoreException {			

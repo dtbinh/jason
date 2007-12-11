@@ -104,16 +104,21 @@ public class NewInternalActionWizard extends Wizard implements INewWizard {
 	 */
 
 	private void doFinish(String containerName, String packageName, String fileName, IProgressMonitor monitor) throws CoreException {
+		//new File(tmpContainerName).mkdirs();
+		
 		// create a sample file
 		monitor.beginTask("Creating " + fileName, 2);
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-		IResource resource = root.findMember(new Path(containerName));
+
+		// if necessary, create the packages.
+		containerName = createPackages(containerName, monitor, root);
 		
-		if (!resource.exists() || !(resource instanceof IContainer)) {
+		IResource resource = root.findMember(new Path(containerName));
+		if ((resource == null) || (!resource.exists() || !(resource instanceof IContainer))) {
 			throwCoreException("Container \"" + containerName + "\" does not exist.");
 		}
 		
-		IContainer container = (IContainer) resource;
+		IContainer container = (IContainer) resource;		
 		final IFile file = container.getFile(new Path(fileName + ".java"));
 		try {
 			InputStream stream = openContentStream(containerName, packageName, fileName);
@@ -140,6 +145,17 @@ public class NewInternalActionWizard extends Wizard implements INewWizard {
 			}
 		});
 		monitor.worked(1);
+	}
+
+	private String createPackages(String containerName, IProgressMonitor monitor, IWorkspaceRoot root) throws CoreException {
+		String rootLocation = root.getLocation().toString();
+		
+		if (!containerName.startsWith("/")) {
+			containerName = "/" + containerName;
+		}
+		new File(rootLocation + containerName).mkdirs();
+		root.refreshLocal(IWorkspaceRoot.DEPTH_INFINITE, monitor);
+		return containerName;
 	}
 	
 	/**
