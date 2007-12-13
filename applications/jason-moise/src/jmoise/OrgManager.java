@@ -186,7 +186,7 @@ public class OrgManager extends AgArch {
 
             // send schemes of this group to sender
             for (SchemeInstance sch : gr.getRespSchemes()) {
-                updateMembersOE(sender, "scheme_group(" + sch.getId() + "," + grId + ")", false, true);
+                updateMembersOE(sender, "scheme_group(" + sch.getId() + "," + grId + ")", true, true);
             }
 
             // send players of this group to sender
@@ -196,7 +196,7 @@ public class OrgManager extends AgArch {
                 }
             }
 
-            // notify other in the group about this new player
+            // notify others in the group about this new player
             updateMembersOE(gr.getAgents(), "play(" + sender + "," + roleId + "," + grId + ")", true, true);
         }        
     }

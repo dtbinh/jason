@@ -78,8 +78,12 @@ public class OrgAgent extends AgArch {
     }
     
     public void checkMail() {
-        super.checkMail(); // get the messages
-        // check the MailBox (at TS) for org messages
+        super.checkMail(); // get the messages from arch to circumstance
+        
+        
+    	// TODO: produce this events after the scheme and resp group are put in the BB
+    	// coloca os scheme direto na memoria, via add bel, e remove a msg
+        
         Iterator<Message> i = getTS().getC().getMailBox().iterator();
         while (i.hasNext()) {
             try {
@@ -90,11 +94,21 @@ public class OrgAgent extends AgArch {
                     i.remove();
                 } catch (Exception e) {
                     // the content is a normal predicate
-                    String content = m.getPropCont().toString();
-                    if (content.startsWith("scheme_group")) { 
+                    final String content = m.getPropCont().toString();
+                    final boolean isTell = m.getIlForce().equals("tell");
+                    if (isTell && content.startsWith("scheme(")) {
+                    	i.remove();
+                    	Literal l = Literal.parseLiteral(content);
+                        l.addAnnot(managerSource);
+                    	getTS().getAg().addBel(l);
+                    } else if (isTell && content.startsWith("scheme_group")) {
+                    	i.remove();
                         // this message is generated when my group becomes
                         // responsible for a scheme
-                        generateObligationPermissionEvents(Pred.parsePred(content));
+                    	Literal l = Literal.parseLiteral(content);
+                        l.addAnnot(managerSource);
+                    	getTS().getAg().addBel(l);
+                        generateObligationPermissionEvents(l);  			
                     } else if (content.startsWith("update_goals")) { 
                         // I need to generate AS Trigger like !<orggoal>
                         i.remove();
@@ -121,7 +135,7 @@ public class OrgAgent extends AgArch {
     void generateObligationPermissionEvents(Pred m) {
         // computes this agent obligations in the scheme
         String schId = m.getTerm(0).toString();
-        String grId = m.getTerm(1).toString();
+        String grId  = m.getTerm(1).toString();
         Set<Permission> obligations = new HashSet<Permission>();
         if (logger.isLoggable(Level.FINE)) logger.fine("Computing obl/per for " + m + " in obl=" + getMyOEAgent().getObligations() + " and per=" + getMyOEAgent().getPermissions());
 
@@ -151,7 +165,7 @@ public class OrgAgent extends AgArch {
         }
     }
 
-    void generateOrgGoalEvents() {
+   private void generateOrgGoalEvents() {
         for (GoalInstance gi : getMyOEAgent().getPossibleAndPermittedGoals()) {
             if (!alreadyGeneratedEvents.contains(gi)) {
                 alreadyGeneratedEvents.add(gi);
@@ -179,12 +193,12 @@ public class OrgAgent extends AgArch {
         }
     }
 
-    private static PredicateIndicator obligationLiteral  = new PredicateIndicator("obligation", 2);
-    private static PredicateIndicator permissionLiteral  = new PredicateIndicator("permission", 2);
-    private static PredicateIndicator schemeGroupLiteral = new PredicateIndicator("scheme_group", 2);
-    private static PredicateIndicator goalStateLiteral   = new PredicateIndicator("goal_state", 3);
-    private static PredicateIndicator schPlayersLiteral  = new PredicateIndicator("sch_players", 2);
-    private static PredicateIndicator commitmentLiteral  = new PredicateIndicator("commitment", 3);
+    private static final PredicateIndicator obligationLiteral  = new PredicateIndicator("obligation", 2);
+    private static final PredicateIndicator permissionLiteral  = new PredicateIndicator("permission", 2);
+    private static final PredicateIndicator schemeGroupLiteral = new PredicateIndicator("scheme_group", 2);
+    private static final PredicateIndicator goalStateLiteral   = new PredicateIndicator("goal_state", 3);
+    private static final PredicateIndicator schPlayersLiteral  = new PredicateIndicator("sch_players", 2);
+    private static final PredicateIndicator commitmentLiteral  = new PredicateIndicator("commitment", 3);
 
     /** removes all bels related to a Scheme */
     void removeBeliefs(String schId) {

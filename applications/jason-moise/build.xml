@@ -20,11 +20,20 @@
         <pathelement location="${basedir}/lib/moise.jar"/>
     </path>
 
-    <target name="init">
-	<mkdir dir="${basedir}/bin/classes" />
+	<condition property="moisejar-nexist" value="yes">
+		<not>
+	        <available file="${moiseDir}/lib/moise.jar" />
+		</not>
+	</condition>
+
+	<target name="copy-moise" unless="moisejar-nexist">
         <copy toDir="${basedir}/lib" >
             <fileset dir="${moiseDir}/lib" includes="moise.jar" />
         </copy>
+	</target>
+
+    <target name="init" depends="copy-moise">
+	    <mkdir dir="${basedir}/bin/classes" />
     </target>
 	
     <target name="compile" depends="init">

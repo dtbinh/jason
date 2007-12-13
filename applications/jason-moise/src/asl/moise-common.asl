@@ -33,9 +33,15 @@
 +obligation(Sch, Mission) 
    :  scheme(SchSpec,Sch) & desired_mission(SchSpec, Mission)
    <- jmoise.commit_mission(Mission,Sch).
++obligation(Sch, Mission) 
+   :  not scheme(SchSpec,Sch)
+   <- .println("I do not understand why I have an obligation for a scheme I do not know! Scheme:",Sch," Mission:", Mission).
 +permission(Sch, Mission)
    :  scheme(SchSpec,Sch) & desired_mission(SchSpec, Mission)
    <- jmoise.commit_mission(Mission,Sch).
++permission(Sch, Mission) 
+   :  not scheme(SchSpec,Sch)
+   <- .println("I do not understand why I have a permission for a scheme I do not know! Scheme:",Sch," Mission:", Mission).
 
 // when the root goal of the scheme is satisfied, 
 // remove my missions
