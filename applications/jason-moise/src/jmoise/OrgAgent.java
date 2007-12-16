@@ -80,10 +80,6 @@ public class OrgAgent extends AgArch {
     public void checkMail() {
         super.checkMail(); // get the messages from arch to circumstance
         
-        
-    	// TODO: produce this events after the scheme and resp group are put in the BB
-    	// coloca os scheme direto na memoria, via add bel, e remove a msg
-        
         Iterator<Message> i = getTS().getC().getMailBox().iterator();
         while (i.hasNext()) {
             try {
