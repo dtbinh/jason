@@ -70,7 +70,6 @@
             </mission>
 
             <mission id="mManager" min="1" max="1">
-                <goal id="fdv"/>
                 <goal id="wabs"/>
                 <goal id="wpGoal"/>
                 <goal id="wtitle"/>

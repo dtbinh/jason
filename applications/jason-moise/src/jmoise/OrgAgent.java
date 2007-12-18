@@ -162,7 +162,7 @@ public class OrgAgent extends AgArch {
     }
 
    private void generateOrgGoalEvents() {
-        for (GoalInstance gi : getMyOEAgent().getPossibleAndPermittedGoals()) {
+        for (GoalInstance gi : getMyOEAgent().getPossibleGoals()) {
             if (!alreadyGeneratedEvents.contains(gi)) {
                 alreadyGeneratedEvents.add(gi);
 
@@ -251,6 +251,12 @@ public class OrgAgent extends AgArch {
         }
     }
 
+    // goal states
+    private static final Atom aWaiting    = new Atom("waiting");
+    private static final Atom aPossible   = new Atom("possible");
+    private static final Atom aImpossible = new Atom("impossible");
+    private static final Atom aAchieved   = new Atom("achieved");
+
     void updateGoalBels(GoalInstance gi) {
         Pred gap = Pred.parsePred(gi.getAsProlog());
         
@@ -258,11 +264,13 @@ public class OrgAgent extends AgArch {
             gap.addAnnot(rootAtom);
         }
 
-        Atom gState = new Atom("unsatisfied");
-        if (gi.isSatisfied()) {
-            gState = new Atom("satisfied");
+        Atom gState = aWaiting;
+        if (gi.isPossible()) {
+            gState = aPossible;
+        } else if (gi.isAchieved()) {
+            gState = aAchieved;
         } else if (gi.isImpossible()) {
-            gState = new Atom("impossible");
+            gState = aImpossible;
         }
 
         // create the literal to be added

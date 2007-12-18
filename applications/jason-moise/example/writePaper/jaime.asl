@@ -66,10 +66,6 @@ desired_mission(writePaperSch,mManager).
    <- .print("Writing section titles!");
       jmoise.set_goal_state(Sch,wsectitles,satisfied).
 
-+!fdv[scheme(Sch)] : true 
-   <- .print("Writing the first draft version!");
-      jmoise.set_goal_state(Sch,fdv,satisfied).
-
 +!wconc[scheme(Sch)] : true 
    <- .print("Writing conclusion!");
       jmoise.set_goal_state(Sch,wconc,satisfied).

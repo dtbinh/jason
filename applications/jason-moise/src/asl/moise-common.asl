@@ -43,11 +43,10 @@
    :  not scheme(SchSpec,Sch)
    <- .println("I do not understand why I have a permission for a scheme I do not know! Scheme:",Sch," Mission:", Mission).
 
-// when the root goal of the scheme is satisfied, 
+// when the root goal of the scheme is achieved, 
 // remove my missions
-+goal_state(Sch, G[root], satisfied) 
++goal_state(Sch, G[root], achieved) 
    :  true
    <- jmoise.remove_mission(Sch).
    
 +error(M)[source(orgManager)] <- .print("Error in organisational action: ",M); -error(M).
-

@@ -9,7 +9,7 @@
 
     <property name="version"         value="0"/>
     <property name="release"         value="9.7"/>
-    <property name="moiseDir"        value="${env.HOME}/Moise-svn" />
+    <property name="moiseDir"        value="${env.HOME}/Moise/Moise-svn" />
     <property name="distDir"         value="${env.HOME}/tmp/jmoise-${version}.${release}" />
     <property name="distFile"        value="${env.HOME}/jason-moise-${version}.${release}" />
     <property name="doc-src-dir"     value="${env.HOME}/programming/Moise-doc" />
