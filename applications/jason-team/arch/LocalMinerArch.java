@@ -1,17 +1,10 @@
 package arch;
 
-import jason.asSemantics.ActionExec;
 import jason.asSyntax.Literal;
 import jason.asSyntax.NumberTerm;
-import jason.infra.centralised.CentralisedEnvironment;
-import jason.infra.centralised.RunCentralisedMAS;
 
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
-
-import env.MiningEnvironment;
 
 /** architecture for local simulator */
 public class LocalMinerArch extends MinerArch {
@@ -88,6 +81,7 @@ public class LocalMinerArch extends MinerArch {
 		return per;
 	}
 	
+	/*
    	boolean           waitingExecution = false;
 	Queue<ActionExec> toExecute = new LinkedList<ActionExec>();
 	
@@ -123,5 +117,5 @@ public class LocalMinerArch extends MinerArch {
     	}
     	getTS().getUserAgArch().getArchInfraTier().wake(); // in case the agent is sleeping...
     }
-
+    */
 }

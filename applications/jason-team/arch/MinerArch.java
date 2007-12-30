@@ -96,7 +96,7 @@ public class MinerArch extends AgArch {
         and "directly" added as a belief */
     void stepsPerceived(int s) {
     	getTS().getAg().addBel(Literal.parseLiteral("steps("+simId+","+s+")"));
-        model.setSteps(s);
+        model.setMaxSteps(s);
     }
     
 	/** udpate the model with obstacle and share them with the teamates */

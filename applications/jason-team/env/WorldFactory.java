@@ -56,7 +56,7 @@ public class WorldFactory  {
     /** world with gold, no obstacle */
     public static WorldModel world4() throws Exception {
         WorldModel model = new WorldModel(35, 35);
-        model.setSteps(200);
+        model.setMaxSteps(200);
         model.setPSim(0);
         model.setPMax(0);
         model.setDepot(15,5); //5, 27);
@@ -372,7 +372,7 @@ public class WorldFactory  {
         
         model.setPSim(0.01);
         model.setPMax(0.3);
-        model.setSteps(1300);
+        model.setMaxSteps(1300);
         
         model.setDepot(25, 39);
         

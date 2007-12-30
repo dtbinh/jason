@@ -34,7 +34,7 @@ public class WorldModel extends GridWorldModel {
     int[][]                   visited; // count the visited locations
     int                       minVisited = 0; // min value for near least visited
     
-    int	                      steps = 0; // number of steps of the simulation
+    int	                      maxSteps = 0; // number of steps of the simulation
     
     private Logger            logger   = Logger.getLogger("jasonTeamSimLocal.mas2j." + WorldModel.class.getName());
 
@@ -144,11 +144,11 @@ public class WorldModel extends GridWorldModel {
         return PSim + ((PMax - PSim)/AG_CAPACITY) * golds; 
     }
     
-    public void setSteps(int s) {
-    	steps = s;
+    public void setMaxSteps(int s) {
+    	maxSteps = s;
     }
-    public int getSteps() {
-    	return steps;
+    public int getMaxSteps() {
+    	return maxSteps;
     }
         
     public int getVisited(Location l) {

@@ -6,6 +6,7 @@ import jason.asSyntax.Literal;
 import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
+import jason.environment.SteppedEnvironment;
 import jason.environment.grid.Location;
 
 import java.util.Random;
@@ -18,7 +19,7 @@ import java.util.logging.Logger;
  * 
  * @author Jomi
  */
-public class MiningEnvironment extends CycledEnvironment {
+public class MiningEnvironment extends SteppedEnvironment {
 
     private Logger          logger   = Logger.getLogger("jasonTeamSimLocal.mas2j." + MiningEnvironment.class.getName());
 
@@ -40,18 +41,23 @@ public class MiningEnvironment extends CycledEnvironment {
 
     boolean                 hasGUI   = true;
 
-    int                     finishedAt = 0; // cycle where all golds was colletected
+    int                     finishedAt = 0; // cycle where all golds was collected
 
-    
     @Override
 	public void init(String[] args) {
+        setOverActionsPolicy(OverActionsPolicy.queue);
+
         // get the parameters
-        hasGUI    = args[2].equals("yes"); 
-        int sleep = Integer.parseInt(args[1]);
+        setSleep(Integer.parseInt(args[1]));
+        hasGUI = args[2].equals("yes"); 
         initWorld(Integer.parseInt(args[0]));
-        super.init(model.getNbOfAgs(), 4, sleep, 2);
     }
 
+    @Override
+    protected void updateNumberOfAgents() {
+        setNbAgs(model.getNbOfAgs());
+    }
+    
     @Override
 	public void stop() {
 		super.stop();
@@ -93,11 +99,11 @@ public class MiningEnvironment extends CycledEnvironment {
             } else if (action.equals(drop)) {
                 result = model.drop(agId);
             } else {
-                logger.info("executing: " + action + ", but not implemented!");
+                logger.warning("executing: " + action + ", but not implemented!");
             }
             if (result) {
                 if (model.isAllGoldsCollected() && finishedAt == 0 && model.getInitialNbGolds() > 0) {
-                	finishedAt = cycle;
+                	finishedAt = getStep();
                 	logger.info("** All golds collected in "+finishedAt+" cycles!");
                 	getEnvironmentInfraTier().getRuntimeServices().stopMAS();
                 }
@@ -113,6 +119,7 @@ public class MiningEnvironment extends CycledEnvironment {
     }
 
     public static int getAgId(String agName) {
+        // TODO: use map (as in FoodSim)
 		return (Integer.parseInt(agName.substring(5))) - 1;    	
     }
 
@@ -135,15 +142,16 @@ public class MiningEnvironment extends CycledEnvironment {
 	            return;
 	        }
             
-            setCycle(0);
+	        super.init(new String[] { "1000" } ); // set step timeout
+	        updateNumberOfAgents();
             
             // add perception for all agents
             clearPercepts();
 	        addPercept(Literal.parseLiteral("gsize(" + simId + "," + model.getWidth() + "," + model.getHeight() + ")"));
 	        addPercept(Literal.parseLiteral("depot(" + simId + "," + model.getDepot().x + "," + model.getDepot().y + ")"));
-			int steps = model.getSteps();
-			if (steps == 0) steps = 100000;
-	        addPercept(Literal.parseLiteral("steps(" + simId + "," + steps + ")"));
+			int msteps = model.getMaxSteps();
+			if (msteps == 0) msteps = 100000;
+	        addPercept(Literal.parseLiteral("steps(" + simId + "," + msteps + ")"));
             
 	        updateAgsPercept();
             informAgsEnvironmentChanged();
@@ -156,16 +164,6 @@ public class MiningEnvironment extends CycledEnvironment {
     		logger.warning("Error creating world "+e);
     	}
     }
-
-    public void endSimulation() {
-        //for (int i = 0; i < model.getNbOfAgs(); i++) {
-        //    clearPercepts("miner" + (i + 1));
-        //}
-        addPercept(Literal.parseLiteral("end_of_simulation(" + simId + ",0)"));
-        if (view != null) view.setVisible(false);
-    }
-
-
     public static Atom aCAP      = new Atom("container_has_space");
 
     public static Atom aOBSTACLE = new Atom("obstacle");
@@ -173,7 +171,8 @@ public class MiningEnvironment extends CycledEnvironment {
     public static Atom aENEMY    = new Atom("enemy");
     public static Atom aALLY     = new Atom("ally");
 
-    private void updateAgsPercept() {
+    @Override
+    public void updateAgsPercept() {
         for (int i = 0; i < model.getNbOfAgs(); i++) {
             updateAgPercept(i);
         }
@@ -190,7 +189,7 @@ public class MiningEnvironment extends CycledEnvironment {
         Literal p = new Literal("pos");
         p.addTerm(new NumberTermImpl(l.x));
         p.addTerm(new NumberTermImpl(l.y));
-        p.addTerm(new NumberTermImpl(cycle));
+        p.addTerm(new NumberTermImpl(getStep()));
         addPercept(agName, p);
         
         Literal cg = new Literal("carrying_gold");
@@ -241,36 +240,46 @@ public class MiningEnvironment extends CycledEnvironment {
     }
 
     
+
+    Integer nextWorld;
+    
+    public void startNewWorld(int w) {
+        addPercept(Literal.parseLiteral("end_of_simulation(" + simId + ",0)"));
+        if (view != null) view.setVisible(false);
+        nextWorld = new Integer(w);
+    }
+
     // some customisation for cycled environment
 
     @Override
-    protected void startNextCycle() {
-    	super.startNextCycle();
-		if (view != null) view.setCycle(cycle);
+    protected void stepStarted(int step) {
+        if (view != null) view.setCycle(getStep());
+    }
 
-		// in cycle 15, all agents already get gsize, depot, .... clear global perception
-        //if (cycle == 15) {
-        //    clearPercepts();
-        //}
-    }    
+    private long sum = 0;
 
     @Override
-	protected void cycleFinished(ActRequest[] acts) {
-    	// notify the agents
-		for (ActRequest areq : acts) {
-			if (areq != null) {
-				updateAgPercept(getAgNbFromName(areq.ag.getAgName()));
-				areq.ag.actFinished(areq.action);
-			}
-		}
-		if (cycle == model.getSteps() && model.getSteps() > 0) {
-        	logger.info("** Finished at the maximal number of steps!");
-        	try {
-				getEnvironmentInfraTier().getRuntimeServices().stopMAS();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
-    
+    protected void stepFinished(int step, long time, boolean timeout) {
+        if (step == 0) {
+            sum = 0;
+            return;
+        }
+        if (step == model.getMaxSteps() && model.getMaxSteps() > 0) {
+            logger.info("** Finished at the maximal number of steps!");
+            try {
+                getEnvironmentInfraTier().getRuntimeServices().stopMAS();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        
+        sum += time;
+        logger.info("Cycle "+step+" finished in "+time+" mili-seconds, mean is "+(sum/step)+")");
+        
+        if (nextWorld != null) {
+            initWorld(nextWorld.intValue());
+            nextWorld = null;
+        }
+    }
+
 }

@@ -131,10 +131,7 @@ public class WorldView extends GridWorldView {
             public void itemStateChanged(ItemEvent ievt) {
                 int w = ((Integer)scenarios.getSelectedItem()).intValue();
                 if (env != null && env.getSimId() != w) {
-                    env.endSimulation();
-                    env.initWorld(w);
-                    env.setCycle(0);
-                    env.startNextCycle();
+                    env.startNewWorld(w);
                 }
             }            
         });
@@ -178,8 +175,8 @@ public class WorldView extends GridWorldView {
     		WorldModel wm = (WorldModel)model;
     		
     		String steps = "";
-    		if (wm.getSteps() > 0) {
-    			steps = "/" + wm.getSteps();
+    		if (wm.getMaxSteps() > 0) {
+    			steps = "/" + wm.getMaxSteps();
     		}
     		jCycle.setText(c+steps);
             
