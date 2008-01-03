@@ -6,8 +6,7 @@
  * By Jomi & Rafael
  */
 
-Our team can run in three configurations (Jason 0.9.6 is
-required):
+Our team can run in three configurations (Jason 1.0.1 is required):
 
 1. With a local simulator developed by us to test the team. 
 

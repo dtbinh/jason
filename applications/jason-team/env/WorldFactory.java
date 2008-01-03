@@ -380,7 +380,7 @@ public class WorldFactory  {
         
         model.setPSim(0.01);
         model.setPMax(0.3);
-        model.setMaxSteps(1300);
+        model.setMaxSteps(1400);
         
         model.setDepot(25, 39);
         

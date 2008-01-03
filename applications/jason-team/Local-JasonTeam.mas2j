@@ -19,17 +19,18 @@ MAS miners {
 	    
 	agents:
         leader  
-		      beliefBaseClass agent.DiscardBelsBB("my_status","picked","committed_to","cell");
+		       beliefBaseClass agent.DiscardBelsBB("my_status","picked","committed_to","cell");
 			  
  		miner
-		      agentClass agent.SelectEvent 
-		      beliefBaseClass agent.UniqueBelsBB("gsize(_,_,_)","depot(_,_,_)","steps(_,_)")
-              agentArchClass arch.LocalMinerArch 
-              #6;
+		       agentClass agent.SelectEvent 
+		       beliefBaseClass agent.UniqueBelsBB("gsize(_,_,_)","depot(_,_,_)","steps(_,_)")
+               agentArchClass arch.LocalMinerArch 
+               #6;
  		
 			  
  		dummie agentClass agent.SelectEvent 
-		       agentArchClass arch.LocalMinerArch  #6;
+		       agentArchClass arch.LocalMinerArch  
+			   #6;
 			  
     aslSourcePath: "asl";
 }

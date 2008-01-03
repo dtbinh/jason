@@ -82,7 +82,7 @@ public class MiningEnvironment extends SteppedEnvironment {
             agId = getAgNbFromName(ag);
             
             // check failure
-            if (random.nextDouble() < model.getAgFatigue(agId)) {
+            if (!action.equals(drop) && random.nextDouble() < model.getAgFatigue(agId)) {
             	//logger.info("Action "+action+" from agent "+ag+" failed!");
                 return true; // does nothing
             }
@@ -109,7 +109,13 @@ public class MiningEnvironment extends SteppedEnvironment {
                 if (model.isAllGoldsCollected() && finishedAt == 0 && model.getInitialNbGolds() > 0) {
                 	finishedAt = getStep();
                 	logger.info("** All golds collected in "+finishedAt+" cycles!");
-                	getEnvironmentInfraTier().getRuntimeServices().stopMAS();
+					new Thread() {
+						public void run() {
+							try {
+								getEnvironmentInfraTier().getRuntimeServices().stopMAS();
+							} catch (Exception e) {}
+						}
+					}.start();
                 }
             }
         } catch (Exception e) {
@@ -277,7 +283,7 @@ public class MiningEnvironment extends SteppedEnvironment {
             sum = 0;
             return;
         }
-        if (step == model.getMaxSteps() && model.getMaxSteps() > 0) {
+        if (step >= model.getMaxSteps() && model.getMaxSteps() > 0) {
             logger.info("** Finished at the maximal number of steps!");
             try {
                 getEnvironmentInfraTier().getRuntimeServices().stopMAS();
@@ -287,7 +293,7 @@ public class MiningEnvironment extends SteppedEnvironment {
         }
         
         sum += time;
-        logger.info("Cycle "+step+" finished in "+time+" mili-seconds, mean is "+(sum/step)+")");
+        logger.info("Cycle "+step+" finished in "+time+" ms, mean is "+(sum/step)+".");
         
         if (nextWorld != null) {
             initWorld(nextWorld.intValue());

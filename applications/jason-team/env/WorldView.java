@@ -223,7 +223,7 @@ public class WorldView extends GridWorldView {
             g.setColor(Color.blue);
             g.fillOval(x * cellSizeW + gw, y * cellSizeH + gw, cellSizeW - gw*2, cellSizeH - gw*2);
             if (id >= 0) {
-                g.setColor(Color.black);
+                g.setColor(Color.white);
                 drawString(g, x, y, defaultFont, String.valueOf(id-5));
             }
         }
