@@ -43,6 +43,8 @@ public class MiningEnvironment extends SteppedEnvironment {
 
     int                     finishedAt = 0; // cycle where all golds was collected
 
+    String                  redTeamName, blueTeamName;
+    
     @Override
 	public void init(String[] args) {
         setOverActionsPolicy(OverActionsPolicy.queue);
@@ -50,6 +52,8 @@ public class MiningEnvironment extends SteppedEnvironment {
         // get the parameters
         setSleep(Integer.parseInt(args[1]));
         hasGUI = args[2].equals("yes"); 
+        redTeamName  = args[3];
+        blueTeamName = args[4];
         initWorld(Integer.parseInt(args[0]));
     }
 
@@ -115,12 +119,21 @@ public class MiningEnvironment extends SteppedEnvironment {
     }
 
     public int getAgNbFromName(String agName) {
-		return getAgId(agName);    	
+    	if (agName.startsWith(redTeamName)) {
+    		return (Integer.parseInt(agName.substring(redTeamName.length()))) - 1; 
+    	}
+    	if (agName.startsWith(blueTeamName)) {
+    		return (Integer.parseInt(agName.substring(blueTeamName.length()))) + 5; 
+    	}
+    	logger.warning("There is no ID for agent named "+agName);
+		return -1;    	
     }
-
-    public static int getAgId(String agName) {
-        // TODO: use map (as in FoodSim)
-		return (Integer.parseInt(agName.substring(5))) - 1;    	
+    
+    public String getAgNameFromID(int id) {
+    	if (id > 5)
+    		return blueTeamName + (id-5);
+    	else 
+    		return redTeamName + (id+1);
     }
 
     public void initWorld(int w) {
@@ -142,7 +155,7 @@ public class MiningEnvironment extends SteppedEnvironment {
 	            return;
 	        }
             
-	        super.init(new String[] { "1000" } ); // set step timeout
+	        super.init(new String[] { "500" } ); // set step timeout
 	        updateNumberOfAgents();
             
             // add perception for all agents
@@ -154,7 +167,7 @@ public class MiningEnvironment extends SteppedEnvironment {
 	        addPercept(Literal.parseLiteral("steps(" + simId + "," + msteps + ")"));
             
 	        updateAgsPercept();
-            informAgsEnvironmentChanged();
+            //informAgsEnvironmentChanged();
             
             if (hasGUI) {
                 view = new WorldView(model);
@@ -164,7 +177,7 @@ public class MiningEnvironment extends SteppedEnvironment {
     		logger.warning("Error creating world "+e);
     	}
     }
-    public static Atom aCAP      = new Atom("container_has_space");
+    public static Literal aCAP   = new Literal("container_has_space");
 
     public static Atom aOBSTACLE = new Atom("obstacle");
     public static Atom aGOLD     = new Atom("gold");
@@ -179,7 +192,7 @@ public class MiningEnvironment extends SteppedEnvironment {
     }
 
     private void updateAgPercept(int ag) {
-        updateAgPercept("miner" + (ag + 1), ag);
+        updateAgPercept(getAgNameFromID(ag), ag);
     }
 
     private void updateAgPercept(String agName, int ag) {
@@ -222,9 +235,9 @@ public class MiningEnvironment extends SteppedEnvironment {
             if (model.hasObject(WorldModel.GOLD, x, y)) {
                 addPercept(agName, createCellPerception(x, y, aGOLD));
             }
-            if (model.hasObject(WorldModel.ENEMY, x, y)) {
-                addPercept(agName, createCellPerception(x, y, aENEMY));
-            }
+            //if (model.hasObject(WorldModel.ENEMY, x, y)) {
+            //    addPercept(agName, createCellPerception(x, y, aENEMY));
+            //}
             if (model.hasObject(WorldModel.AGENT, x, y)) {
                 addPercept(agName, createCellPerception(x, y, aALLY));
             }

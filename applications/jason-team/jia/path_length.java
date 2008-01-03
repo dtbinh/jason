@@ -1,20 +1,25 @@
 package jia;
 
-import jason.asSemantics.*;
-import jason.asSyntax.*;
+import jason.asSemantics.DefaultInternalAction;
+import jason.asSemantics.TransitionSystem;
+import jason.asSemantics.Unifier;
+import jason.asSyntax.NumberTerm;
+import jason.asSyntax.NumberTermImpl;
+import jason.asSyntax.Term;
 import jason.environment.grid.Location;
+
+import java.util.logging.Level;
+
+import arch.LocalWorldModel;
 import arch.MinerArch;
 import busca.Nodo;
-import java.util.logging.*;
-
-import env.WorldModel;
 
 public class path_length extends DefaultInternalAction {
     
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] terms) throws Exception {
         try {
-            WorldModel model = ((MinerArch)ts.getUserAgArch()).getModel();
+            LocalWorldModel model = ((MinerArch)ts.getUserAgArch()).getModel();
     
             int iagx = (int)((NumberTerm)terms[0]).solve();
             int iagy = (int)((NumberTerm)terms[1]).solve();

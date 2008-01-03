@@ -11,8 +11,7 @@ import jason.environment.grid.Location;
 import java.util.Random;
 import java.util.logging.Level;
 
-import env.WorldModel;
-
+import arch.LocalWorldModel;
 import arch.MinerArch;
 import busca.Nodo;
 
@@ -32,7 +31,7 @@ public class direction extends DefaultInternalAction {
         try {
             String sAction = "skip";
 
-            WorldModel model = ((MinerArch)ts.getUserAgArch()).getModel();
+            LocalWorldModel model = ((MinerArch)ts.getUserAgArch()).getModel();
     
             int iagx = (int)((NumberTerm)terms[0]).solve();
             int iagy = (int)((NumberTerm)terms[1]).solve();

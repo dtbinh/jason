@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.Queue;
 
 /**
- * change the default select event fuction to prefer cell(_,_,gold) events.
+ * change the default select event function to prefer cell(_,_,gold) events.
  * 
  * @author Jomi
  */

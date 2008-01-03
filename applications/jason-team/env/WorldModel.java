@@ -3,14 +3,13 @@ package env;
 import jason.environment.grid.GridWorldModel;
 import jason.environment.grid.Location;
 
-import java.util.Random;
 import java.util.logging.Logger;
 
 
 /**
- * Class used to model the scenario (either by an global or local view)
+ * Class used to model the scenario (for an global view -- used by environment simulator)
  * 
- * @author jomi
+ * @author Jomi
  */
 public class WorldModel extends GridWorldModel {
 
@@ -21,25 +20,22 @@ public class WorldModel extends GridWorldModel {
 
     public static final int   AG_CAPACITY = 3; // how many golds an agent can carry
 
-    
     double                    PSim = 0.1; // probability of action/information failure
     double                    PMax = 0.5; // maximal value for action/information failure
     
     Location                  depot;
     int[]                     goldsWithAg;  // how many golds each agent is carrying
 
-    int                       goldsInDepot   = 0;
+    int                       goldsInDepotRed  = 0; // #golds the red team puts in the depot
+    int                       goldsInDepotBlue = 0; // #golds the blue team puts in the depot
     int 					  initialNbGolds = 0;
-    
-    int[][]                   visited; // count the visited locations
-    int                       minVisited = 0; // min value for near least visited
     
     int	                      maxSteps = 0; // number of steps of the simulation
     
     private Logger            logger   = Logger.getLogger("jasonTeamSimLocal.mas2j." + WorldModel.class.getName());
 
-    private Random			  random = new Random();
-
+    int agsByTeam = 6;
+    
     public enum Move {
         UP, DOWN, RIGHT, LEFT
     };
@@ -49,24 +45,17 @@ public class WorldModel extends GridWorldModel {
     	return new WorldModel(w,h,nbAg);
     }
     
-    public WorldModel(int w, int h) {
-        this(w, h, 6);
-    }
-    
     public WorldModel(int w, int h, int nbAg) {
         super(w, h, nbAg);
         
         goldsWithAg = new int[nbAg];
         for (int i=0; i< goldsWithAg.length; i++) goldsWithAg[i] = 0;
-        
-        visited = new int[getWidth()][getHeight()];
-        for (int i = 0; i < getWidth(); i++) {
-            for (int j = 0; j < getHeight(); j++) {
-            	visited[i][j] = 0;
-            }
-        }
     }
 
+    public int getAgsByTeam() {
+    	return agsByTeam;
+    }
+    
     @Override 
     public boolean isFree(int x, int y) {
         return super.isFree(x,y) && !hasObject(ENEMY, x, y);
@@ -79,11 +68,9 @@ public class WorldModel extends GridWorldModel {
     public void setDepot(int x, int y) {
     	if (depot != null) {
     		data[depot.x][depot.y]    = CLEAN;
-            visited[depot.x][depot.y] = 0;
     	}
         depot = new Location(x, y);
         data[x][y] = DEPOT;
-        visited[x][y] = 10000;
     }
     
 
@@ -91,8 +78,12 @@ public class WorldModel extends GridWorldModel {
         return depot;
     }
     
-    public int getGoldsInDepot() {
-    	return goldsInDepot;
+    public int getGoldsInDepotBlue() {
+    	return goldsInDepotBlue;
+    }
+
+    public int getGoldsInDepotRed() {
+    	return goldsInDepotRed;
     }
     
     public boolean hasGold() {
@@ -100,7 +91,7 @@ public class WorldModel extends GridWorldModel {
     }
     
     public boolean isAllGoldsCollected() {
-    	return goldsInDepot == initialNbGolds;
+    	return goldsInDepotRed + goldsInDepotBlue == initialNbGolds;
     }
     
     public void setInitialNbGolds(int i) {
@@ -151,111 +142,6 @@ public class WorldModel extends GridWorldModel {
     	return maxSteps;
     }
         
-    public int getVisited(Location l) {
-    	return visited[l.x][l.y];
-    }
-
-    public void incVisited(Location l) {
-    	incVisited(l.x,l.y);
-    }
-    public void incVisited(int x, int y) {
-    	visited[x][y] += 2;
-    	
-    	if (x > 0) visited[x-1][y]++;
-    	if (y > 0) visited[x][y-1]++;
-    	if (y > 0 && x > 0) visited[x-1][y-1]++;
-    	if (y+1 < getHeight()) visited[x][y+1]++;
-    	if (x > 0 && y+1 < getHeight()) visited[x-1][y+1]++;
-    	if (x+1 < getWidth()) visited[x+1][y]++;
-    	if (x+1 < getWidth() && y > 0) visited[x+1][y-1]++;
-    	if (x+1 < getWidth() && y+1 < getHeight()) visited[x+1][y+1]++;
-    }
-    
-    /** returns the near location of x,y that was least visited */
-    public Location getNearLeastVisited(int agx, int agy) {
-    	//int distanceToBorder = (agx < getWidth()/2 ? agx : getWidth() - agx) - 1; 
-    	Location agloc = new Location(agx,agy);
-    	
-        /*
-    	logger.info("------");
-        for (int i = 0; i < getWidth(); i++) {
-        	String line = "";
-            for (int j = 0; j < getHeight(); j++) {
-            	line += visited[j][i] + " ";
-            }
-            logger.info(line);
-        }
-        */
-    	
-    	//int visitedTarget = 0;
-    	while (true) {
-
-        	int x = agx;
-        	int y = agy;
-    		int w = 1; 
-        	int dx = 0;
-        	int dy = 0;
-        	int stage = 1;//(x % 2 == 0 ? 1 : 2);
-        	Location better = null;
-        	
-	    	while (w < getWidth()) { //( (w/2+distanceToBorder) < getWidth()) {
-	    		switch (stage) {
-	    			case 1: if (dx < w) {
-	    				    	dx++;
-	    				    	break;
-	    					} else {
-	    						stage = 2;//(x % 2 == 0) ? 2 : 3; 
-	    					}
-	    			case 2: if (dy < w) {
-	    						dy++;
-	    						break;
-	    					} else {
-	    						stage = 3;//(x % 2 == 0) ? 3 : 1;
-	    					}
-	    			case 3: if (dx > 0) {
-								dx--;
-								break;
-							} else {
-								stage = 4;
-							}
-	    			case 4: if (dy > 0) {
-								dy--;
-								break;
-							} else {
-								stage = 1;
-								x--;
-								y--;
-								w += 2;
-							}
-	    		}
-	    		
-    			Location l = new Location(x+dx,y+dy);
-	    		if (isFree(l) && !l.equals(agloc)) {
-	    			if (visited[l.x][l.y] < minVisited) { // a place better then minVisited! go there
-	    				return l;
-	    			} if (visited[l.x][l.y] == minVisited) { // a place in the minVisited level
-		    			if (better == null) {
-		    				better = l;
-		    			} else if (l.distance(agloc) < better.distance(agloc)) {
-		    				better = l;
-		    			} else if (l.distance(agloc) == better.distance(agloc) && random.nextBoolean()) { // to chose ramdomly equal options
-		    				better = l;
-		    			}
-	    			}
-	    		}
-	    	} // end while
-	    	
-	    	if (better != null) {
-				return better;
-			}
-	    	minVisited++;
-    	}
-    }
-    
-    //public static void main(String[] a) {
-    //	WorldModel m = new WorldModel(10,10);
-    //	System.out.println(m.getNearLeastVisited(5, 5));
-    //}
     
     /** Actions **/
 
@@ -316,7 +202,10 @@ public class WorldModel extends GridWorldModel {
         if (isCarryingGold(ag)) {
             if (l.equals(getDepot())) {
                 logger.info("Agent miner" + (ag + 1) + " carried "+goldsWithAg[ag]+" golds to depot!");
-                goldsInDepot += goldsWithAg[ag];
+                if (ag < agsByTeam)
+                	goldsInDepotRed += goldsWithAg[ag];
+                else
+                	goldsInDepotBlue += goldsWithAg[ag];
                 goldsWithAg[ag] = 0;
             } else {
                 add(WorldModel.GOLD, l.x, l.y);
@@ -327,59 +216,6 @@ public class WorldModel extends GridWorldModel {
         return false;
     }
 
-    /** removes enemies/gold around l */
-    public void clearAgView(Location l) {
-    	clearAgView(l.x, l.y);
-    }
-
-    /** removes enemies/gold around x,y */
-    public void clearAgView(int x, int y) {
-        int e1 = ~(ENEMY + GOLD);
-        
-        // nw
-        if (x > 0 && y > 0) {
-            data[x - 1][y - 1] &= e1;
-            if (view != null) view.update(x-1,y-1);
-        } 
-        // n
-        if (y > 0) {
-            data[x][y - 1] &= e1;
-            if (view != null) view.update(x,y-1);
-        } 
-        // ne
-        if (x < (getWidth() - 1) && y > 0) {
-            data[x + 1][y - 1] &= e1;
-            if (view != null) view.update(x+1,y-1);
-        } 
-        // w
-        if (x > 0) {
-            data[x - 1][y] &= e1;
-            if (view != null) view.update(x-1,y);
-        } 
-        // cur
-        data[x][y] &= e1;
-        
-        // e
-        if (x < (getWidth() - 1)) {
-            data[x + 1][y] &= e1;
-            if (view != null) view.update(x+1,y);
-        } 
-        // sw
-        if (x > 0 && y < (getHeight() - 1)) {
-            data[x - 1][y + 1] &= e1;
-            if (view != null) view.update(x-1,y+1);
-        } 
-        // s
-        if (y < (getHeight() - 1)) {
-            data[x][y + 1] &= e1;
-            if (view != null) view.update(x,y+1);
-        } 
-        // se
-        if (x < (getWidth() - 1) && y < (getHeight() - 1)) {
-            data[x + 1][y + 1] &= e1;
-            if (view != null) view.update(x+1,y+1);
-        }
-    }
 
     public void wall(int x1, int y1, int x2, int y2) {
     	for (int i=x1; i<=x2; i++) {

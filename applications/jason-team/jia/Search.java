@@ -8,29 +8,28 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Logger;
 
-import env.WorldFactory;
-import env.WorldModel;
-
+import arch.LocalWorldModel;
 import busca.AEstrela;
 import busca.Busca;
 import busca.Estado;
 import busca.Heuristica;
 import busca.Nodo;
+import env.WorldModel;
 
 public class Search {
     
-	final WorldModel   model;
-    final Location     from, to;
-    final boolean      considerAgentsAsObstacles;
-	final boolean      depotIsTarget; 
-    int[]              actionsOrder;    
-    int                nbStates = 0;
+	final LocalWorldModel model;
+    final Location        from, to;
+    final boolean         considerAgentsAsObstacles;
+	final boolean         depotIsTarget; 
+    int[]                 actionsOrder;    
+    int                   nbStates = 0;
     
     static final int[] defaultActions = { 1, 2, 3, 4 }; // initial order of actions
 
     Logger logger = Logger.getLogger(Search.class.getName());
     
-    Search(WorldModel m, Location from, Location to, int[] actions, boolean considerAgentsAsObstacles) {
+    Search(LocalWorldModel m, Location from, Location to, int[] actions, boolean considerAgentsAsObstacles) {
     	this.model = m;
     	this.from  = from;
     	this.to    = to;
@@ -44,7 +43,7 @@ public class Search {
     }
 
     /** used normally to discover the distance from 'from' to 'to' */
-    Search(WorldModel m, Location from, Location to) {
+    Search(LocalWorldModel m, Location from, Location to) {
     	this(m,from,to,null,false);
     }
     
@@ -72,6 +71,7 @@ public class Search {
     }
 
     // test
+    /*
     public static  void main(String[] a) throws Exception {
     	System.out.println("init");
     	Location pos = new Location(2,2);
@@ -100,6 +100,7 @@ public class Search {
     	System.out.println("action = "+ia.firstAction(solution) + ", path size = "+ solution.getProfundidade());
     	//System.out.println(solution.montaCaminho());
     }
+    */
 }
 
 
@@ -200,8 +201,8 @@ final class GridState implements Estado, Heuristica {
 
 class VisitedComparator implements Comparator<Estado> {
 
-	WorldModel model;
-	VisitedComparator(WorldModel m) {
+	LocalWorldModel model;
+	VisitedComparator(LocalWorldModel m) {
 		model = m;
 	}
 	

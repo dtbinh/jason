@@ -1,15 +1,15 @@
 package jia;
 
-import java.util.logging.Level;
-
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.NumberTerm;
 import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Term;
+
+import java.util.logging.Level;
+
 import arch.MinerArch;
-import env.MiningEnvironment;
 import env.WorldModel;
 
 /** adds the miner fatigue in some path length 
@@ -26,7 +26,7 @@ public class add_fatigue extends DefaultInternalAction {
     public Object execute(TransitionSystem ts, Unifier un, Term[] terms) throws Exception {
     	try {
 	        WorldModel model = ((MinerArch)ts.getUserAgArch()).getModel();
-	        int agId = MiningEnvironment.getAgId(ts.getUserAgArch().getAgName());
+	        int agId = MinerArch.getAgId(ts.getUserAgArch().getAgName());
 	
 	        int in = (int)((NumberTerm)terms[0]).solve();
 	        int ig = 0;

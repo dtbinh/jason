@@ -1,6 +1,5 @@
 package jia;
 
-import arch.MinerArch;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
@@ -9,9 +8,10 @@ import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Term;
 import jason.environment.grid.Location;
 
-import java.util.logging.*;
+import java.util.logging.Level;
 
-import env.WorldModel;
+import arch.LocalWorldModel;
+import arch.MinerArch;
 
 /**
  * Gets the near least visited location.
@@ -25,7 +25,7 @@ public class near_least_visited extends DefaultInternalAction {
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] terms) throws Exception {
         try {
-            WorldModel model = ((MinerArch)ts.getUserAgArch()).getModel();
+            LocalWorldModel model = ((MinerArch)ts.getUserAgArch()).getModel();
             if (model == null) {
                 ts.getLogger().log(Level.SEVERE, "no model to get near_least_visited!");
             } else {

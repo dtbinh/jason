@@ -16,7 +16,7 @@ public class ag_pos extends DefaultInternalAction {
     	try {
 	        WorldModel model = ((MinerArch)ts.getUserAgArch()).getModel();
 	
-	        int agId = MiningEnvironment.getAgId(terms[0].toString());
+	        int agId = MinerArch.getAgId(terms[0].toString());
 	        Location l = model.getAgPos(agId);
 	        if (l != null) {
 	        	return un.unifies(terms[1], new NumberTermImpl(l.x)) &&

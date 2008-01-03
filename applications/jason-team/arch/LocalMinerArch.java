@@ -81,41 +81,4 @@ public class LocalMinerArch extends MinerArch {
 		return per;
 	}
 	
-	/*
-   	boolean           waitingExecution = false;
-	Queue<ActionExec> toExecute = new LinkedList<ActionExec>();
-	
-	// ask action in the environment, but do not block the agent waiting the action to finish its execution
-    synchronized public void act(ActionExec action, List<ActionExec> feedback) {
-    	if (isRunning()) {
-	    	if (waitingExecution) {
-	    		toExecute.add(action);
-	    	} else {
-		    	waitingExecution = true;
-		    	//getTS().getAg().getLogger().info("doing: " + action.getActionTerm());
-		    	CentralisedEnvironment jEnv = RunCentralisedMAS.getRunner().getEnvironmentInfraTier();
-		    	if (jEnv != null) {
-			    	MiningEnvironment env = (MiningEnvironment)jEnv.getUserEnvironment();
-			    	env.addActionInSchedule(this, action);
-		    	}
-	    	}
-    	}
-    }
-    
-    synchronized public void actFinished(ActionExec action) {
-    	List<ActionExec> feedback = getTS().getC().getFeedbackActions();
-    	feedback.add(action);
-    	waitingExecution = false;
-    	
-    	// if there is an action waiting for execution
-    	if (!toExecute.isEmpty()) {
-    		action = toExecute.poll();
-        	// if the action is for an intention already dropped (it is not in PA anymore), ignore it
-        	if (getTS().getC().getPendingActions().containsKey(action.getIntention().getId())) {
-        		act(action, feedback);
-        	}
-    	}
-    	getTS().getUserAgArch().getArchInfraTier().wake(); // in case the agent is sleeping...
-    }
-    */
 }

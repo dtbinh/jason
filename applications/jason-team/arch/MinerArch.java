@@ -15,14 +15,13 @@ import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
-import env.MiningEnvironment;
 import env.WorldModel;
 import env.WorldView;
 
 /** Common arch for local and contest architectures */
 public class MinerArch extends AgArch {
 
-	WorldModel model = null;
+	LocalWorldModel model = null;
 	WorldView  view  = null;
 	
 	String     simId = null;
@@ -62,12 +61,12 @@ public class MinerArch extends AgArch {
 
 	public int getMyId() {
 		if (myId < 0) {
-			myId = Integer.parseInt(getAgName().substring(5)) - 1;
+			myId = getAgId(getAgName());
 		}
 		return myId;
 	}
 
-	public WorldModel getModel() {
+	public LocalWorldModel getModel() {
 		return model;
 	}
 
@@ -77,7 +76,7 @@ public class MinerArch extends AgArch {
 		if (view != null) {
 			view.dispose();
 		}
-        model = new WorldModel(w, h);
+        model = new LocalWorldModel(w, h);
         if (gui) {
         	view = new WorldView("Mining (view of miner "+(getMyId()+1)+")",model);
         }
@@ -99,7 +98,7 @@ public class MinerArch extends AgArch {
         model.setMaxSteps(s);
     }
     
-	/** udpate the model with obstacle and share them with the teamates */
+	/** update the model with obstacle and share them with the team mates */
 	void obstaclePerceived(int x, int y, Literal p) {
 		if (! model.hasObject(WorldModel.OBSTACLE, x, y)) {
 			model.add(WorldModel.OBSTACLE, x, y);
@@ -121,7 +120,7 @@ public class MinerArch extends AgArch {
              lo6 = new Location(-1,-1);
 
 	
-	/** udpate the model with the agent location and share this information with teammates */
+	/** update the model with the agent location and share this information with team mates */
 	void locationPerceived(int x, int y) {
 		Location oldLoc = model.getAgPos(getMyId());
         if (oldLoc != null) {
@@ -197,6 +196,19 @@ public class MinerArch extends AgArch {
         //if (writeModelT != null) writeModelT.writeModel();
     }
     
+    /** change broadcast to send messages to only my team mates */
+    @Override
+    public void broadcast(Message m) throws Exception {
+    	String basename = getAgName().substring(0,getAgName().length()-1);
+    	for (int i=1; i <= model.getAgsByTeam() ; i++) {
+    		if (i != getMyId()) {
+    			Message msg = new Message(m);
+    			msg.setReceiver(basename+i);
+    			sendMsg(msg);
+    		}
+    	}
+    }
+    
 	@Override
     public void checkMail() {
 		super.checkMail();
@@ -225,7 +237,7 @@ public class MinerArch extends AgArch {
 				if (model.inGrid(x,y)) {
 					int g = (int)((NumberTerm)p.getTerm(2)).solve();
 					try {
-						int agid = MiningEnvironment.getAgId(m.getSender());
+						int agid = getAgId(m.getSender());
 						model.setAgPos(agid, x, y);
 						model.setGoldsWithAg(agid, g);
 						model.incVisited(x, y);
@@ -238,6 +250,12 @@ public class MinerArch extends AgArch {
 			}
 		}
     }
+	
+    public static int getAgId(String agName) {
+		return (Integer.parseInt(agName.substring(agName.length()-1))) - 1;    	
+    }
+
+	
 	
 	class WriteModelThread extends Thread {
 		public void run() {

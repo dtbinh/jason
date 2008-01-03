@@ -52,7 +52,7 @@ public class WorldView extends GridWorldView {
     }
     
     public WorldView(String title, WorldModel model) {
-        super(model, title, 700);
+        super(model, title, 800);
         setVisible(true);
         repaint();
     }
@@ -108,7 +108,7 @@ public class WorldView extends GridWorldView {
         p.add(new JLabel("Cycle:"));
         jCycle = new JLabel("0");
         p.add(jCycle);
-        p.add(new JLabel("        Collected golds:"));
+        p.add(new JLabel("        Collected golds (red x blue / total):"));
         jGoldsC = new JLabel("0");
         p.add(jGoldsC);
         msg.add(p);
@@ -180,7 +180,7 @@ public class WorldView extends GridWorldView {
     		}
     		jCycle.setText(c+steps);
             
-            jGoldsC.setText(wm.getGoldsInDepot() + "/" + wm.getInitialNbGolds());    
+            jGoldsC.setText(wm.getGoldsInDepotRed() + " x " + wm.getGoldsInDepotBlue() + "/" + wm.getInitialNbGolds());    
     	}
     }
     
@@ -194,6 +194,7 @@ public class WorldView extends GridWorldView {
         }
     }
 
+    /*
     Color[] agColor = { Color.blue,
                         new Color(249,255,222),
                         Color.orange, //new Color(228,255,103),
@@ -202,16 +203,33 @@ public class WorldView extends GridWorldView {
                         Color.black,
                         Color.darkGray,
                         Color.red } ;
+    */
     
     @Override
     public void drawAgent(Graphics g, int x, int y, Color c, int id) {
         int golds = ((WorldModel)model).getGoldsWithAg(id);
-        super.drawAgent(g, x, y, agColor[golds], -1); 
-        g.setColor(idColor[golds]);
-        drawString(g, x, y, defaultFont, String.valueOf(id+1));
+        if (id < 6) {
+        	// red team
+        	int gw = (WorldModel.AG_CAPACITY - golds) + 1;
+            g.setColor(Color.red);
+            g.fillOval(x * cellSizeW + gw, y * cellSizeH + gw, cellSizeW - gw*2, cellSizeH - gw*2);
+            if (id >= 0) {
+                g.setColor(Color.black);
+                drawString(g, x, y, defaultFont, String.valueOf(id+1));
+            }
+        } else {
+        	// blue team
+        	int gw = (WorldModel.AG_CAPACITY - golds) + 1;
+            g.setColor(Color.blue);
+            g.fillOval(x * cellSizeW + gw, y * cellSizeH + gw, cellSizeW - gw*2, cellSizeH - gw*2);
+            if (id >= 0) {
+                g.setColor(Color.black);
+                drawString(g, x, y, defaultFont, String.valueOf(id-5));
+            }
+        }
         if (golds > 0) {
             g.setColor(Color.darkGray);
-            g.fillRect(x*cellSizeW+3, (y+1)*cellSizeH-3, golds*3, 2);
+            g.fillRect(x*cellSizeW+3, (y+1)*cellSizeH-3, (cellSizeW-6)/(WorldModel.AG_CAPACITY+1-golds), 2);
         }
     }
 

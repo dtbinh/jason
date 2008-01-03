@@ -1,15 +1,12 @@
 package env;
 
-
-
-
 /** factory for some scenarios */
 public class WorldFactory  {
 
     
     /** no gold/no obstacle world */
     public static WorldModel world1() throws Exception {
-        WorldModel model = new WorldModel(21, 21);
+        WorldModel model = new WorldModel(21, 21, 6);
         model.setPSim(0);
         model.setPMax(0);
         model.setDepot(5, 7);
@@ -23,7 +20,7 @@ public class WorldFactory  {
 
     // to test scan
     public static WorldModel world2() throws Exception {
-        WorldModel model = new WorldModel(30, 30);
+        WorldModel model = new WorldModel(30, 30, 6);
         model.setDepot(5, 7);
         model.setAgPos(0, 1, 0);
         model.setAgPos(1, 1, 2);
@@ -37,7 +34,7 @@ public class WorldFactory  {
 
     /** world with gold, no obstacle */
     public static WorldModel world3() throws Exception {
-        WorldModel model = new WorldModel(15, 15);
+        WorldModel model = new WorldModel(15, 15, 6);
         model.setPSim(0);
         model.setPMax(0);
         model.setDepot(5, 7);
@@ -55,7 +52,7 @@ public class WorldFactory  {
 
     /** world with gold, no obstacle */
     public static WorldModel world4() throws Exception {
-        WorldModel model = new WorldModel(35, 35);
+        WorldModel model = new WorldModel(35, 35, 6);
         model.setMaxSteps(200);
         model.setPSim(0);
         model.setPMax(0);
@@ -105,7 +102,7 @@ public class WorldFactory  {
 
     /** world with gold and obstacles */
     public static WorldModel world5() throws Exception {
-        WorldModel model = new WorldModel(35, 35);
+        WorldModel model = new WorldModel(35, 35, 6);
         model.setPSim(0);
         model.setPMax(0);
         model.setDepot(16, 16);
@@ -275,16 +272,27 @@ public class WorldFactory  {
 
     // scenario with few gold
     public static WorldModel world7() throws Exception {
-        WorldModel model = new WorldModel(45, 51);
+        WorldModel model = new WorldModel(45, 51, 12);
         model.setPSim(0.1);
         model.setPMax(0.3);
         model.setDepot(40, 40);
+
+        // red team
         model.setAgPos(0, 1, 0);
         model.setAgPos(1, 20, 0);
         model.setAgPos(2, 6, 26);
         model.setAgPos(3, 20, 20);
         model.setAgPos(4, 3, 4);
         model.setAgPos(5, 7, 4);
+        
+        // blue team
+        model.setAgPos(6, 2, 2);
+        model.setAgPos(7, 30, 50);
+        model.setAgPos(8, 8, 26);
+        model.setAgPos(9, 21, 20);
+        model.setAgPos(10, 30, 40);
+        model.setAgPos(11, 44, 50);
+        
         model.add(WorldModel.GOLD, 20, 13);
         model.add(WorldModel.GOLD, 15, 20);
         model.add(WorldModel.GOLD, 41, 1);
