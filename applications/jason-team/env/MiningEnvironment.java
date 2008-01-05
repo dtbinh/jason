@@ -40,7 +40,8 @@ public class MiningEnvironment extends SteppedEnvironment {
     Term                    drop     = DefaultTerm.parse("do(drop)");
 
     boolean                 hasGUI   = true;
-
+    int                     windowSize = 800;
+    
     int                     finishedAt = 0; // cycle where all golds was collected
 
     String                  redTeamName, blueTeamName;
@@ -54,6 +55,8 @@ public class MiningEnvironment extends SteppedEnvironment {
         hasGUI = args[2].equals("yes"); 
         redTeamName  = args[3];
         blueTeamName = args[4];
+        if (args.length > 5)
+            windowSize = Integer.parseInt(args[5]);
         initWorld(Integer.parseInt(args[0]));
     }
 
@@ -108,7 +111,7 @@ public class MiningEnvironment extends SteppedEnvironment {
             if (result) {
                 if (model.isAllGoldsCollected() && finishedAt == 0 && model.getInitialNbGolds() > 0) {
                 	finishedAt = getStep();
-                	logger.info("** All golds collected in "+finishedAt+" cycles!");
+                	logger.info("** All golds collected in "+finishedAt+" cycles! Result (red x blue) = "+model.getGoldsInDepotRed() + " x "+model.getGoldsInDepotBlue());
 					new Thread() {
 						public void run() {
 							try {
@@ -129,17 +132,17 @@ public class MiningEnvironment extends SteppedEnvironment {
     		return (Integer.parseInt(agName.substring(redTeamName.length()))) - 1; 
     	}
     	if (agName.startsWith(blueTeamName)) {
-    		return (Integer.parseInt(agName.substring(blueTeamName.length()))) + 5; 
+    		return (Integer.parseInt(agName.substring(blueTeamName.length()))) + (model.agsByTeam - 1); 
     	}
     	logger.warning("There is no ID for agent named "+agName);
 		return -1;    	
     }
     
     public String getAgNameFromID(int id) {
-    	if (id > 5)
-    		return blueTeamName + (id-5);
+    	if (id < model.agsByTeam)
+            return redTeamName + (id+1);
     	else 
-    		return redTeamName + (id+1);
+            return blueTeamName + (id-(model.agsByTeam-1));
     }
 
     public void initWorld(int w) {
@@ -161,7 +164,7 @@ public class MiningEnvironment extends SteppedEnvironment {
 	            return;
 	        }
             
-	        super.init(new String[] { "500" } ); // set step timeout
+	        super.init(new String[] { "1000" } ); // set step timeout
 	        updateNumberOfAgents();
             
             // add perception for all agents
@@ -176,7 +179,7 @@ public class MiningEnvironment extends SteppedEnvironment {
             //informAgsEnvironmentChanged();
             
             if (hasGUI) {
-                view = new WorldView(model);
+                view = new WorldView(model, windowSize);
                 view.setEnv(this);
             }
     	} catch (Exception e) {
@@ -241,11 +244,14 @@ public class MiningEnvironment extends SteppedEnvironment {
             if (model.hasObject(WorldModel.GOLD, x, y)) {
                 addPercept(agName, createCellPerception(x, y, aGOLD));
             }
-            //if (model.hasObject(WorldModel.ENEMY, x, y)) {
-            //    addPercept(agName, createCellPerception(x, y, aENEMY));
-            //}
-            if (model.hasObject(WorldModel.AGENT, x, y)) {
-                addPercept(agName, createCellPerception(x, y, aALLY));
+            int otherag = model.getAgAtPos(x, y);
+            if (otherag >= 0 && otherag != agId) {
+                boolean agIsRed    = agId < model.agsByTeam; 
+                boolean otherIsRed = otherag < model.agsByTeam; 
+                if (agIsRed == otherIsRed) // ally
+                    addPercept(agName, createCellPerception(x, y, aALLY));
+                else
+                    addPercept(agName, createCellPerception(x, y, aENEMY));
             }
         }
     }
@@ -284,7 +290,7 @@ public class MiningEnvironment extends SteppedEnvironment {
             return;
         }
         if (step >= model.getMaxSteps() && model.getMaxSteps() > 0) {
-            logger.info("** Finished at the maximal number of steps!");
+            logger.info("** Finished at the maximal number of steps! Red x Blue = "+model.getGoldsInDepotRed() + " x "+model.getGoldsInDepotBlue());
             try {
                 getEnvironmentInfraTier().getRuntimeServices().stopMAS();
             } catch (Exception e) {

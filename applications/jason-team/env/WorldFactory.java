@@ -102,16 +102,28 @@ public class WorldFactory  {
 
     /** world with gold and obstacles */
     public static WorldModel world5() throws Exception {
-        WorldModel model = new WorldModel(35, 35, 6);
+        WorldModel model = new WorldModel(35, 35, 12);
         model.setPSim(0);
         model.setPMax(0);
+
         model.setDepot(16, 16);
+        
+        // red team
         model.setAgPos(0, 1, 0);
         model.setAgPos(1, 20, 0);
         model.setAgPos(2, 6, 26);
         model.setAgPos(3, 20, 20);
         model.setAgPos(4, 3, 4);
         model.setAgPos(5, 7, 4);
+        
+        // blue team
+        model.setAgPos(6, 2, 2);
+        model.setAgPos(7, 30, 31);
+        model.setAgPos(8, 8, 26);
+        model.setAgPos(9, 21, 20);
+        model.setAgPos(10, 31, 31);
+        model.setAgPos(11, 31, 32);
+        
         model.add(WorldModel.GOLD, 20, 13);
         model.add(WorldModel.GOLD, 15, 20);
         model.add(WorldModel.GOLD, 1, 1);

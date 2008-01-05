@@ -33,7 +33,7 @@ public class MinerArch extends AgArch {
 	int        cycle  = 0;
 	
 	WriteModelThread writeModelT = null;
-	private Logger logger = Logger.getLogger(MinerArch.class.getName());
+	protected Logger logger = Logger.getLogger(MinerArch.class.getName());
 
 	
 	@Override

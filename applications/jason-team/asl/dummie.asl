@@ -1,60 +1,58 @@
-// Code of dummies agents
+// Code of dummies agents (Blue team)
 
-{ include("moving.asl") } // plans for movements in the scenario
-
-
-free. // free means not carrying gold
-
-// the following plans (+pos....) reacts to the next step
+// the following plans (+pos....) reacts to the step starting
 // (since each new steps causes a new +pos perception)
 
 /* -- Gold found! -- */
 
-@l2[atomic]  // this plan is atomic: no other intention is executed while this one is not finished
+// in the positon of the agent
 +pos(X,Y,_) 
    : cell(X,Y,gold) &
-     container_has_space  
-  <- .drop_all_desires; // just in case I was doing other thing....
-     !fetch_gold;
-	 !carry_to_depot.
+     carrying_gold(N) & N < 3 // container has space 
+  <- do(pick);
+     .print("picked gold!");
+	 +back_pos(X,Y). // remembers a place to return 
 
-/* -- Random move (if free) -- */	 
+// in a cell besides
++pos(X,Y,_) 
+   : cell(GX,GY,gold) &
+     carrying_gold(N) & N < 3 // container has space 
+  <- jia.direction(X, Y, GX, GY, D);
+     do(D).
+  
+/* -- has gold, carry it/them to depot -- */
+
+// when arrive on depot
++pos(X,Y,_) 
+   : carrying_gold(N) & N > 0 &
+     depot(_,X,Y)
+  <- .print("on depot");
+     do(drop);
+     do(up).
+
+// when still not in depot
++pos(X,Y,_) 
+   : carrying_gold(N) & N > 0 & 
+     depot(_,DX,DY)
+  <- jia.direction(X, Y, DX, DY, D); // uses A* to find a path to the depot
+     //.print("from ",X,"x",Y," to ",DX,"x",DY," -> ",D);
+     do(D).
+
+/* -- returns to the back pos -- */
+
+// in the back_pos
++pos(X,Y,_) 
+   : back_pos(X,Y)
+  <- -back_pos(X,Y);
+     do(up).
++pos(X,Y,_) 
+   : back_pos(BX,BY)
+  <- jia.direction(X, Y, BX, BY, D);
+     do(D).
+	 
+/* -- random move -- */	 
 +pos(_,_,_) 
-    : free 
    <- .random(N);
       .nth(N*4,[up,down,left,right],A);
-	  do(A).
-
+      do(A).
 	  
-/* -- plans for handling gold -- */
-
-+!fetch_gold
-  <- ?carrying_gold(N1);
-     .print("gold found while I am carrying ",N1," golds.");
-     -free;
-     do(pick); // pick twice to ensure pick
-	 do(pick); 
-    .print("picked gold!"). 
-	 	 
-+!carry_to_depot
-   : carrying_gold(N2) & N2 > 0
-  <- ?depot(_,DX,DY);
-     .print("going to depot!"); 
-	 !pos(DX,DY);
-     .print("on depot");
-     do(drop); do(drop);
-	 .print("dropped");
-	 do(up); // leave depot
-	 +free.
-
-// restart is perceived when the agent is blocked in the same position for 5 steps 
-+restart
-   : carrying_gold(0)
-  <- .print("** Restarting (search gold) **");
-     .drop_all_desires;
-     +free.
-+restart
-  <- .print("** Restarting (go to depot) **");
-     .drop_all_desires;
-     !carry_to_depot.
-	 

@@ -1,8 +1,9 @@
-/* Jason Team for the
- * Multi-Agent Programming Contest 2007
- * (http://cig.in.tu-clausthal.de/AgentContest)
+/* 
+ * Jason Team for the
+ *   Multi-Agent Programming Contest 2007
+ *   (http://cig.in.tu-clausthal.de/AgentContest)
  * 
- * Configuration for local simulator
+ *   Configuration for local simulator
  *
  * By Jomi & Rafael
  */
@@ -10,12 +11,13 @@
 MAS miners {
     infrastructure: Centralised
 	
-    environment: env.MiningEnvironment(10, 0, yes, "miner", "dummie")
+    environment: env.MiningEnvironment(5, 0, yes, "miner", "dummie", 1000)
         // parameters: 1. environment configuration id (from 1 to 10)
         //             2. sleep time (in ms) after each action
         //             3. whether display the gui
 		//             4. name of the agents of red team 
 		//             5. name of the agents of blue team 
+		//             6. window size
 	    
 	agents:
         leader  

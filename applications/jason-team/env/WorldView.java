@@ -47,12 +47,16 @@ public class WorldView extends GridWorldView {
     	setVisible(false);
     }
 
-    public WorldView(WorldModel model) {
-        this("Mining World", model);
+    public WorldView(WorldModel model, int windowSize) {
+        this("Mining World", model, windowSize);
     }
     
     public WorldView(String title, WorldModel model) {
-        super(model, title, 800);
+        this(title,model,800);
+    }
+    
+    public WorldView(String title, WorldModel model, int windowSize) {
+        super(model, title, windowSize);
         setVisible(true);
         repaint();
     }
