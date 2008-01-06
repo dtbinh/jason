@@ -11,7 +11,7 @@
      carrying_gold(N) & N < 3 // container has space 
   <- do(pick);
      .print("picked gold!");
-	 +back_pos(X,Y). // remembers a place to return 
+     +back_pos(X,Y). // remembers a place to return 
 
 // in a cell besides
 +pos(X,Y,_) 
@@ -27,8 +27,7 @@
    : carrying_gold(N) & N > 0 &
      depot(_,X,Y)
   <- .print("on depot");
-     do(drop);
-     do(up).
+     do(drop).
 
 // when still not in depot
 +pos(X,Y,_) 

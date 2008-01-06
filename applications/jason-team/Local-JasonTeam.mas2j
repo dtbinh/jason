@@ -11,7 +11,7 @@
 MAS miners {
     infrastructure: Centralised
 	
-    environment: env.MiningEnvironment(5, 0, yes, "miner", "dummie", 1000)
+    environment: env.MiningEnvironment(10, 0, yes, "dummie", "miner", 1000)
         // parameters: 1. environment configuration id (from 1 to 10)
         //             2. sleep time (in ms) after each action
         //             3. whether display the gui
@@ -30,8 +30,7 @@ MAS miners {
                #6;
  		
 			  
- 		dummie agentClass agent.SelectEvent 
-		       agentArchClass arch.LocalMinerArch  
+ 		dummie agentArchClass arch.LocalMinerArch  
 			   #6;
 			  
     aslSourcePath: "asl";

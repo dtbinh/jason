@@ -201,7 +201,7 @@ public class WorldModel extends GridWorldModel {
         Location l = getAgPos(ag);
         if (isCarryingGold(ag)) {
             if (l.equals(getDepot())) {
-                logger.info("Agent miner" + (ag + 1) + " carried "+goldsWithAg[ag]+" golds to depot!");
+                logger.info("Agent " + (ag + 1) + " carried "+goldsWithAg[ag]+" golds to depot!");
                 if (ag < agsByTeam)
                 	goldsInDepotRed += goldsWithAg[ag];
                 else

@@ -13,6 +13,8 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.JOptionPane;
+
 
 /**
  * Implementation of the local simulator for the competition scenario.
@@ -78,6 +80,7 @@ public class MiningEnvironment extends SteppedEnvironment {
     @Override
     public boolean executeAction(String ag, Structure action) {
     	
+        @SuppressWarnings("unused")
         boolean result = false;
         int agId = -10;
         try {
@@ -107,19 +110,6 @@ public class MiningEnvironment extends SteppedEnvironment {
                 result = model.drop(agId);
             } else {
                 logger.warning("executing: " + action + ", but not implemented!");
-            }
-            if (result) {
-                if (model.isAllGoldsCollected() && finishedAt == 0 && model.getInitialNbGolds() > 0) {
-                	finishedAt = getStep();
-                	logger.info("** All golds collected in "+finishedAt+" cycles! Result (red x blue) = "+model.getGoldsInDepotRed() + " x "+model.getGoldsInDepotBlue());
-					new Thread() {
-						public void run() {
-							try {
-								getEnvironmentInfraTier().getRuntimeServices().stopMAS();
-							} catch (Exception e) {}
-						}
-					}.start();
-                }
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "error executing " + action + " for " + ag + " (ag code:"+agId+")", e);
@@ -289,22 +279,36 @@ public class MiningEnvironment extends SteppedEnvironment {
             sum = 0;
             return;
         }
-        if (step >= model.getMaxSteps() && model.getMaxSteps() > 0) {
-            logger.info("** Finished at the maximal number of steps! Red x Blue = "+model.getGoldsInDepotRed() + " x "+model.getGoldsInDepotBlue());
-            try {
-                getEnvironmentInfraTier().getRuntimeServices().stopMAS();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        
+
         sum += time;
         logger.info("Cycle "+step+" finished in "+time+" ms, mean is "+(sum/step)+".");
+        
+        // test end of match
+        try {
+            if (step >= model.getMaxSteps() && model.getMaxSteps() > 0) {
+                String msg = "Finished at the maximal number of steps! Red x Blue = "+model.getGoldsInDepotRed() + " x "+model.getGoldsInDepotBlue(); 
+                logger.info("** "+msg);
+                if (hasGUI) {
+                    JOptionPane.showMessageDialog(null, msg);
+                }
+                getEnvironmentInfraTier().getRuntimeServices().stopMAS();
+            }
+            if (model.isAllGoldsCollected() && finishedAt == 0 && model.getInitialNbGolds() > 0) {
+                finishedAt = getStep();
+                String msg = "All golds collected in "+finishedAt+" cycles! Result (red x blue) = "+model.getGoldsInDepotRed() + " x "+model.getGoldsInDepotBlue();
+                logger.info("** "+msg);
+                if (hasGUI) {
+                    JOptionPane.showMessageDialog(null, msg);
+                }
+                getEnvironmentInfraTier().getRuntimeServices().stopMAS();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         
         if (nextWorld != null) {
             initWorld(nextWorld.intValue());
             nextWorld = null;
         }
     }
-
 }
