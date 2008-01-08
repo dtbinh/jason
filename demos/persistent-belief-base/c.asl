@@ -7,13 +7,16 @@
 +!start : a(X) 
   <- -+a(X+1); // a is stored in a DB
      .print("Not first run, I already run ",X," times.");
-     !show_book(X).
+     !show_book(X);
+	 .println; .print("All titles:");
+	 ?show_all_titles.
+	 
 
 +!show_book(X) 
-  :  Id = (X mod 2)+1 &
+  :  Id = (X mod 3)+1 &
      book(Id, Title, PubId, Year, ISBN) & publisher(PubId, Publisher)
      // book and publisher are tables in a DB
-  <- .print(Title, ". ", Publisher, ", ",Year, ". (ISBN ",ISBN,")");
+  <- .print(Title, ". ", Publisher, ", ",Year, ". ",ISBN);
      .findall(Author, book_author(Id,Author), LA);
      .print("Authors: ");
      !show_authors(LA).
@@ -26,3 +29,6 @@
 +!show_authors([A|T])
   <- !show_authors(T).
 
+// Rules used to show all books  
+show_all_titles :- book(_, Title, _, Year, ISBN) & .println("-- ", Title) & false.
+show_all_titles.
