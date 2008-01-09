@@ -50,7 +50,7 @@ public class MiningEnvironment extends SteppedEnvironment {
     
     @Override
 	public void init(String[] args) {
-        setOverActionsPolicy(OverActionsPolicy.queue);
+        setOverActionsPolicy(OverActionsPolicy.ignoreSecond);
 
         // get the parameters
         setSleep(Integer.parseInt(args[1]));
@@ -185,6 +185,7 @@ public class MiningEnvironment extends SteppedEnvironment {
     public static Atom aGOLD     = new Atom("gold");
     public static Atom aENEMY    = new Atom("enemy");
     public static Atom aALLY     = new Atom("ally");
+    public static Atom aEMPTY    = new Atom("empty");
 
     @Override
     public void updateAgsPercept() {
@@ -231,14 +232,18 @@ public class MiningEnvironment extends SteppedEnvironment {
     private void updateAgPercept(String agName, int agId, int x, int y) {
         if (random.nextDouble() < model.getAgFatigue(agId)) return; // perception omission
         if (model == null || !model.inGrid(x,y)) return;
+        boolean isEmpty = true;
         if (model.hasObject(WorldModel.OBSTACLE, x, y)) {
             addPercept(agName, createCellPerception(x, y, aOBSTACLE));
+            isEmpty = false;
         } else {
             if (model.hasObject(WorldModel.GOLD, x, y)) {
                 addPercept(agName, createCellPerception(x, y, aGOLD));
+                isEmpty = false;
             }
             int otherag = model.getAgAtPos(x, y);
             if (otherag >= 0 && otherag != agId) {
+                isEmpty = false;
                 boolean agIsRed    = agId < model.agsByTeam; 
                 boolean otherIsRed = otherag < model.agsByTeam; 
                 if (agIsRed == otherIsRed) // ally
@@ -247,6 +252,8 @@ public class MiningEnvironment extends SteppedEnvironment {
                     addPercept(agName, createCellPerception(x, y, aENEMY));
             }
         }
+        if (isEmpty) 
+            addPercept(agName, createCellPerception(x, y, aEMPTY));
     }
     
     public static Literal createCellPerception(int x, int y, Atom obj) {

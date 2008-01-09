@@ -46,6 +46,7 @@ search_gold_strategy(near_unvisited). // initial strategy
  :  container_has_space &               // I have space for more gold
     .findall(gold(X,Y),gold(X,Y),LG) &  // LG is all known golds
     evaluate_golds(LG,LD) &             // evaluate golds in LD
+	.print("All golds=",LG,", evaluation=",LD) &
     .length(LD,LLD) & LLD > 0 &         // is there a gold to fetch?
     .min(LD,d(D,NewG,_)) &              // get the near
     worthwhile(NewG)
@@ -116,12 +117,13 @@ evaluate_gold(gold(X,Y),Utility,Annot)
      jia.add_fatigue(D,Utility) &
      check_commit(gold(X,Y),Utility,Annot).
 
+// distance 0, always consider
+check_commit(_,0,in_my_place).
 // if no other is committed to the gold, OK.
-check_commit(G,_,not_committed) 
-  :- not committed_to(G,_).
+check_commit(G,_,not_committed) :- not committed_to(G,_,_).
 // if someone else if committed, check who is nearer  
 check_commit(gold(X,Y),MyD,committed_by(Ag,at(OtX,OtY),far(OtD))) 
-  :- committed_to(gold(X,Y),_)[source(Ag)] & // get the agent committed to the gold
+  :- committed_to(gold(X,Y),_,Ag) &          // get the agent committed to the gold
      jia.ag_pos(Ag,OtX,OtY) &                // get its location
      jia.path_length(OtX,OtY,X,Y,OtD) &      // calc its distance from the gold
      MyD < OtD.                              // ok to consider the gold if I am near
@@ -161,20 +163,29 @@ worthwhile(gold(GX,GY)) :-
 @pcell0[atomic]          // atomic: so as not to handle another 
                          // event until handle gold is carrying on
 +cell(X,Y,gold) 
-  :  container_has_space
+  :  container_has_space &
+     not gold(X,Y) // is is an unknown gold
   <- .print("Gold perceived: ",gold(X,Y));
      +gold(X,Y);
      !choose_goal.
 
 // I am not free and do not have space, just add gold belief and announce to others
 +cell(X,Y,gold) 
-  :  not container_has_space & not gold(X,Y) & not committed(gold(X,Y),_)
+  :  not container_has_space & not gold(X,Y) & not committed(gold(X,Y),_,_)
   <- +gold(X,Y);
      +announced(gold(X,Y));
      .print("Announcing ",gold(X,Y)," to others");
      .broadcast(tell,gold(X,Y)). 
 
+// If I see an empty cell where it was supposed to be gold, announce it to others
++cell(X,Y,empty)
+  :  gold(X,Y) & 
+     not .desire(fetch_gold(gold(X,Y))) // in this case, I empty the cell!
+  <- !remove(gold(X,Y));
+     .print("The gold at ",X,",",Y," was picked by someone else! Announcing to others.");
+     .broadcast(tell,picked(gold(X,Y))). 
 
+     
 /* end of a simulation */
 
 +end_of_simulation(S,R) 
@@ -192,7 +203,7 @@ worthwhile(gold(GX,GY)) :-
 
 +!remove(gold(X,Y))
   <- .abolish(gold(X,Y));
-     .abolish(committed_to(gold(X,Y),_));
+     .abolish(committed_to(gold(X,Y),_,_));
      .abolish(picked(gold(X,Y)));
 	 .abolish(announced(gold(X,Y)));
      .abolish(allocated(gold(X,Y),_)).

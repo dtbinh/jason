@@ -177,11 +177,13 @@ public class ACProxy extends ACAgent {
 							percepts.add(MiningEnvironment.createCellPerception(cx, cy, MiningEnvironment.aGOLD));
 							arq.goldPerceived(cx, cy);
 							
+                        } else if (type.getNodeName().equals("empty")) {
+                            percepts.add(MiningEnvironment.createCellPerception(cx, cy, MiningEnvironment.aEMPTY));
+						
 						/*
 						} else if (type.getNodeName().equals("mark")) {
 						} else if (type.getNodeName().equals("unknown")) {
 						} else if (type.getNodeName().equals("depot")) {
-						} else if (type.getNodeName().equals("empty")) {
 						*/
 						}
 

@@ -201,9 +201,10 @@ public class MinerArch extends AgArch {
     public void broadcast(Message m) throws Exception {
     	String basename = getAgName().substring(0,getAgName().length()-1);
     	for (int i=1; i <= model.getAgsByTeam() ; i++) {
-    		if (i != getMyId()) {
+    	    String oname = basename+i;
+    		if (!getAgName().equals(oname)) {
     			Message msg = new Message(m);
-    			msg.setReceiver(basename+i);
+    			msg.setReceiver(oname);
     			sendMsg(msg);
     		}
     	}
