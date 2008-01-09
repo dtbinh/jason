@@ -149,6 +149,9 @@ public class MiningEnvironment extends SteppedEnvironment {
 	        case 8:  model = WorldFactory.world8(); break;
 	        case 9:  model = WorldFactory.world9(); break;
 	        case 10: model = WorldFactory.world10(); break;
+	        case 11: model = WorldFactory.worldFromContest2007("Fence"); break;
+	        case 12: model = WorldFactory.worldFromContest2007("Semiramis"); break;
+	        case 13: model = WorldFactory.worldFromContest2007("Overkill"); break;
 	        default:
 	            logger.warning("Invalid index!");
 	            return;

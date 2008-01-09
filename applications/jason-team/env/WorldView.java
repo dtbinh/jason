@@ -65,7 +65,7 @@ public class WorldView extends GridWorldView {
     public void initComponents(int width) {
         super.initComponents(width);
         scenarios = new JComboBox();
-        for (int i=1; i<=10; i++) {
+        for (int i=1; i<=13; i++) {
             scenarios.addItem(i);
         }
         JPanel args = new JPanel();

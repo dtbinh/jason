@@ -1,5 +1,17 @@
 package env;
 
+import java.io.File;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
 /** factory for some scenarios */
 public class WorldFactory  {
 
@@ -416,5 +428,87 @@ public class WorldFactory  {
         model.setInitialNbGolds(model.countObjects(WorldModel.GOLD));
         return model;
     }
+    
+    // load the fence scenario from 2007 contest
+    public static WorldModel worldFromContest2007(String simId) throws Exception {
+    	File f = new File("env/serverconfig.contest-2007.xml");
+    	if (! f.exists()) {
+    		f = new File("applications/jason-team/"+f);
+    		if (! f.exists()) {
+    			System.out.println("Sercer config file does not found!");
+    			return null;
+    		}
+    	}
+    	
+    	DocumentBuilderFactory fac = DocumentBuilderFactory.newInstance();
+    	DocumentBuilder builder = fac.newDocumentBuilder();
+    	Document doc = builder.parse(f);
+    	XPath expr = XPathFactory.newInstance().newXPath();
+    	
+    	// get the simulation node
+    	Element fence = (Element)((NodeList)expr.evaluate("//simulation[@id='"+simId+"']/configuration", doc, XPathConstants.NODESET)).item(0);
+    	if (fence == null) {
+    		System.out.println("Do not find fence configuration in the conf file!");
+    		return null;
+    	}
+    	
+    	// get the size
+    	int w = Integer.parseInt(fence.getAttribute("sizex"));
+    	int h = Integer.parseInt(fence.getAttribute("sizey"));
+    	int nbAg = Integer.parseInt(fence.getAttribute("numberOfAgents"));
+    	WorldModel model = new WorldModel(w,h,nbAg);
+    	
+    	model.setMaxSteps(Integer.parseInt(fence.getAttribute("maxNumberOfSteps")));
+    	model.setPSim(Double.parseDouble(fence.getAttribute("actionFailureProbability"))/100);
+    	model.setPMax(Double.parseDouble(fence.getAttribute("maxActionFailureProbability"))/100);
+    	
+    	// depot
+    	int dx = Integer.parseInt(fence.getAttribute("depotx"));
+    	int dy = Integer.parseInt(fence.getAttribute("depoty"));
+    	model.setDepot(dx, dy);
+    	
+    	// agents
+    	int[] agx = getArray(fence, "agentPositionX");
+    	int[] agy = getArray(fence, "agentPositionY");
+    	for (int i=0; i<nbAg; i++) {
+    		model.setAgPos(i,  agx[i], agy[i]);
+    	}
+    	
+    	// gold
+    	int[] gx = getArray(fence, "GoldPositionX");
+    	int[] gy = getArray(fence, "GoldPositionY");
+    	for (int i=0; i<gx.length; i++) {
+    		model.add(WorldModel.GOLD, gx[i], gy[i]);
+    	}
+    	
+    	// obstacles
+    	int[] ox = getArray(fence, "obstaclePositionX");
+    	int[] oy = getArray(fence, "obstaclePositionY");
+    	for (int i=0; i<gx.length; i++) {
+    		model.add(WorldModel.OBSTACLE, ox[i], oy[i]);
+    	}
+    	
+    	
+    	return model;
+    }
+    
+    private static int[] getArray(Element e, String id) {
+    	NodeList l = e.getElementsByTagName("array");
+    	for (int i=0; i<l.getLength(); i++) {
+    		Element n = (Element)l.item(i);
+    		if (id.equals(n.getAttribute("meta:name"))) {
+    			int[] r = new int[Integer.parseInt(n.getAttribute("meta:length"))];
+    			for (int ai=0; ai<r.length; ai++) {
+    				r[ai] = Integer.parseInt(n.getAttribute("item"+ai));
+    			}
+    			return r;
+    		}
+    	}
+    	return null;
+    }
+    
 
+    public static void main(String[] args) throws Exception {
+    	new WorldView("Test - Fence", worldFromContest2007("Semiramis"), 1000);
+	}
 }
