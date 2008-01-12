@@ -13,6 +13,7 @@ import jason.runtime.Settings;
 
 import java.io.PrintWriter;
 import java.util.Iterator;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import env.WorldModel;
@@ -212,44 +213,48 @@ public class MinerArch extends AgArch {
     
 	@Override
     public void checkMail() {
-		super.checkMail();
-
-		// remove messages related to obstacles and agent_position
-		// and update the model
-		Iterator<Message> im = getTS().getC().getMailBox().iterator();
-		while (im.hasNext()) {
-			Message m  = im.next();
-			String  ms = m.getPropCont().toString();
-			if (ms.startsWith("cell") && ms.endsWith("obstacle)") && model != null) {
-				Literal p = (Literal)m.getPropCont();
-				int x = (int)((NumberTerm)p.getTerm(0)).solve();
-				int y = (int)((NumberTerm)p.getTerm(1)).solve();
-				if (model.inGrid(x,y)) {
-					model.add(WorldModel.OBSTACLE, x, y);
-				}
-				im.remove();
-				//getTS().getAg().getLogger().info("received obs="+p);
-				
-			} else if (ms.startsWith("my_status") && model != null) {
-				// update others location
-				Literal p = Literal.parseLiteral(m.getPropCont().toString());
-				int x = (int)((NumberTerm)p.getTerm(0)).solve();
-				int y = (int)((NumberTerm)p.getTerm(1)).solve();
-				if (model.inGrid(x,y)) {
-					int g = (int)((NumberTerm)p.getTerm(2)).solve();
-					try {
-						int agid = getAgId(m.getSender());
-						model.setAgPos(agid, x, y);
-						model.setGoldsWithAg(agid, g);
-						model.incVisited(x, y);
-						//getTS().getAg().getLogger().info("ag pos "+getMinerId(m.getSender())+" = "+x+","+y);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-				im.remove(); 
-			}
-		}
+	    try {
+    		super.checkMail();
+    
+    		// remove messages related to obstacles and agent_position
+    		// and update the model
+    		Iterator<Message> im = getTS().getC().getMailBox().iterator();
+    		while (im.hasNext()) {
+    			Message m  = im.next();
+    			String  ms = m.getPropCont().toString();
+    			if (ms.startsWith("cell") && ms.endsWith("obstacle)") && model != null) {
+    				Literal p = (Literal)m.getPropCont();
+    				int x = (int)((NumberTerm)p.getTerm(0)).solve();
+    				int y = (int)((NumberTerm)p.getTerm(1)).solve();
+    				if (model.inGrid(x,y)) {
+    					model.add(WorldModel.OBSTACLE, x, y);
+    				}
+    				im.remove();
+    				//getTS().getAg().getLogger().info("received obs="+p);
+    				
+    			} else if (ms.startsWith("my_status") && model != null) {
+    				// update others location
+    				Literal p = Literal.parseLiteral(m.getPropCont().toString());
+    				int x = (int)((NumberTerm)p.getTerm(0)).solve();
+    				int y = (int)((NumberTerm)p.getTerm(1)).solve();
+    				if (model.inGrid(x,y)) {
+    					int g = (int)((NumberTerm)p.getTerm(2)).solve();
+    					try {
+    						int agid = getAgId(m.getSender());
+    						model.setAgPos(agid, x, y);
+    						model.setGoldsWithAg(agid, g);
+    						model.incVisited(x, y);
+    						//getTS().getAg().getLogger().info("ag pos "+getMinerId(m.getSender())+" = "+x+","+y);
+    					} catch (Exception e) {
+    						e.printStackTrace();
+    					}
+    				}
+    				im.remove(); 
+    			}
+    		}
+	    } catch (Exception e) {
+	        logger.log(Level.SEVERE, "Error checking email!",e);
+	    }
     }
 	
     public static int getAgId(String agName) {

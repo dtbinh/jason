@@ -96,8 +96,12 @@ public class HouseEnv extends Environment {
             
 		} else if (action.getFunctor().equals("deliver")) {
 			// wait 4 seconds to finish "deliver"
-			try { Thread.sleep(4000); } catch (Exception e) {}
-			result = model.addBeer( (int)((NumberTerm)action.getTerm(1)).solve());
+			try {
+			    Thread.sleep(4000); 
+                result = model.addBeer( (int)((NumberTerm)action.getTerm(1)).solve());
+            } catch (Exception e) {
+                logger.info("Failed to execute action deliver!"+e);
+            }
             
 		} else {
 		    logger.info("Failed to execute action "+action);
