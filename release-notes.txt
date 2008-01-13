@@ -5,8 +5,11 @@ version 1.0.2
 New features
 . Performance improvements: in general, an application runs 30%
   faster.
+
 . Arithmetic functions: math.abs, math.max, ...
   see doc/index.html and demo/function for more information
+
+. Compiler warns about singleton variables in plans and rules
 
 
 -------------

@@ -129,7 +129,7 @@ check_commit(gold(X,Y),MyD,committed_by(Ag,at(OtX,OtY),far(OtD)))
      MyD < OtD.                              // ok to consider the gold if I am near
 	 
 
-worthwhile(gold(GX,GY)) :- 
+worthwhile(gold(_,_)) :- 
      carrying_gold(0).
 worthwhile(gold(GX,GY)) :-  
      carrying_gold(NG) &

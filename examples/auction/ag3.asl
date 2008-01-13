@@ -18,7 +18,7 @@ threshold(3).
       !bid_normally(S,N).
 
 +auction(N)[source(S)] 
-   :  alliance(I,A)
+   :  alliance(_,A)
    <- ?default_bid_value(B);
       ?bid(A,C);
       .send(S, tell, place_bid(N,B+C)).

@@ -27,7 +27,7 @@
           DY >= Y1 & DY <= Y2)
   <- .send(Miner,tell,quadrant(X1,Y1,X2,Y2)).
 
-+!inform_quad(S,Miner,Q)
++!inform_quad(_,Miner,_)
   <- .print("Miner ",Miner," is in the depot quadrant.").
 
 
