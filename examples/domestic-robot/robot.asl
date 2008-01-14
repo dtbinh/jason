@@ -51,7 +51,7 @@ too_much(B) :-
      !at(robot,P).
 
 // when the supermarket finished the order, try the 'has' goal again   
-+delivered(beer,Qtd,OrderId)[source(supermarket)]
++delivered(beer,_Qtd,_OrderId)[source(supermarket)]
   :  true
   <- +available(beer,fridge);
      !has(owner,beer). 

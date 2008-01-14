@@ -1,6 +1,6 @@
 // gets the price for the product,
 // a random value between 100 and 110.
-price(Service,X) :- .random(R) & X = (10*R)+100.
+price(_Service,X) :- .random(R) & X = (10*R)+100.
 
 plays(initiator,c). 
 

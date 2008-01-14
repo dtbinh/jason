@@ -246,7 +246,7 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
      !calc_gold_distance(LG,LD);
      .length(LD,LLD); LLD > 0;
      .print("Uncommitted gold distances: ",LD,LLD);
-     .min(LD,d(D,NewG));
+     .min(LD,d(_,NewG));
      .print("Next gold is ",NewG);
      !!handle(NewG).
 -!choose_gold <- -+free.
@@ -272,7 +272,7 @@ calc_new_y(AgY,_,Y) :- Y = AgY+2.
      !pos(X,Y).
 
 
-+!ensure(pick,G) : pos(X,Y) & cell(X,Y,gold)
++!ensure(pick,_) : pos(X,Y) & cell(X,Y,gold)
   <- do(pick); ?carrying_gold. 
 // fail if no gold there or not carrying_gold after pick! 
 // handle(G) will "catch" this failure.

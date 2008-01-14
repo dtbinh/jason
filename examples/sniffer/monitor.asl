@@ -2,5 +2,5 @@
 
 // msgSent beliefs are stored in a database
 
-+msg_sent(Time,Id,Irt,Ilf,Sender,Receiver,Content)
++msg_sent(Time,Id,_Irt,_Ilf,Sender,Receiver,Content)
    <- .print("Message ",Id," from ",Sender," to ",Receiver," = ", Content, " at ", Time).

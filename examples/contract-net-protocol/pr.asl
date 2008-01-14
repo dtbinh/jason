@@ -4,7 +4,7 @@ plays(initiator,c).
    <- .send(In,tell,introduction(participant,Me)).
 
 // plan to answer a CFP
-+cfp(CNPId,Task)[source(A)] 
++cfp(CNPId,_Service)[source(A)] 
    :   plays(initiator,A)
    <- .send(A,tell,refuse(CNPId)).
 

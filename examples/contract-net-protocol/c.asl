@@ -14,7 +14,8 @@ all_proposals_received(CNPId)
 
 // start the CNP
 +!startCNP(Id,Task) 
-   <- .wait(2000);  // wait participants introduction
+   <- .print("Waiting participants...");
+      .wait(2000);  // wait participants introduction
       +cnp_state(Id,propose);   // remember the state of the CNP
       .findall(Name,introduction(participant,Name),LP);
       .print("Sending CFP to ",LP);
@@ -27,7 +28,7 @@ all_proposals_received(CNPId)
 
 // receive proposal 
 // if all proposal have been received, don't wait for the deadline
-@r1 +propose(CNPId,Offer)
+@r1 +propose(CNPId,_Offer)
    :  cnp_state(CNPId,propose) & all_proposals_received(CNPId)
    <- !contract(CNPId).
 
@@ -48,21 +49,21 @@ all_proposals_received(CNPId)
       .min(L,offer(WOf,WAg)); // sort offers, the first is the best
       .print("Winner is ",WAg," with ",WOf);
       !announce_result(CNPId,L,WAg);
-      -+cnp_state(Id,finished).
+      -+cnp_state(CNPId,finished).
 
 // nothing todo, the current phase is not 'propose'
-@lc2 +!contract(CNPId). 
+@lc2 +!contract(_). 
 
 -!contract(CNPId)
    <- .print("CNP ",CNPId," has failed!").
 
 +!announce_result(_,[],_).
 // announce to the winner
-+!announce_result(CNPId,[offer(O,WAg)|T],WAg) 
++!announce_result(CNPId,[offer(_,WAg)|T],WAg) 
    <- .send(WAg,tell,accept_proposal(CNPId));
       !announce_result(CNPId,T,WAg).
 // announce to others
-+!announce_result(CNPId,[offer(O,LAg)|T],WAg) 
++!announce_result(CNPId,[offer(_,LAg)|T],WAg) 
    <- .send(LAg,tell,reject_proposal(CNPId));
       !announce_result(CNPId,T,WAg).
 
