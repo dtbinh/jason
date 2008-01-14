@@ -26,9 +26,9 @@
   :  author(A,Name)
   <- .print("          ",Name);
      !show_authors(T).
-+!show_authors([A|T])
++!show_authors([_|T])
   <- !show_authors(T).
 
 // Rules used to show all books  
-show_all_titles :- book(_, Title, _, Year, ISBN) & .println("-- ", Title) & false.
+show_all_titles :- book(_, Title, _, _Year, _ISBN) & .println("-- ", Title) & false.
 show_all_titles.

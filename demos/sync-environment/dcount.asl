@@ -26,7 +26,7 @@ vl(0).
 
 	  
 @r[atomic]		 
-+!reset : vl(X)
++!reset : vl(_)
    <- .drop_all_desires; 
       -+vl(1); // add 1 since I am killing at one intentoin waiting act 
 	  !i1; 

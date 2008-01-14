@@ -20,7 +20,7 @@ public class RoomEnv extends Environment {
      */
     @Override
     public boolean executeAction(String ag, Structure act) {
-	
+	    System.out.println("Agent "+ag+" is doing "+act);
 	    clearPercepts();
         
 	    if (act.getFunctor().equals("lock"))
@@ -30,12 +30,10 @@ public class RoomEnv extends Environment {
 		    doorLocked = false;
 	
 	    // update percepts given state of the environment
-	    if (doorLocked) {
+	    if (doorLocked)
 		    addPercept(ld);
-	    }
-	    else {
+	    else
 		    addPercept(nld);
-	    }
 	    return true;
     }
 }

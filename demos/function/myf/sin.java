@@ -9,7 +9,7 @@ import jason.asSyntax.*;
 public class sin extends DefaultArithFunction {
 
 	@Override
-	public double evaluate(TransitionSystem ts, Term[] args) throws JasonException {
+	public double evaluate(TransitionSystem ts, Term[] args) throws Exception {
 		if (args[0].isNumeric()) {
 			double n = ((NumberTerm)args[0]).solve(); // get the first argument
 			return Math.sin(n);
