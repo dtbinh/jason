@@ -1,5 +1,5 @@
 !test_disarm. // initial goal
-+!test_disarm <- disarm(Bomb). // illegal tentative action, must cause an error
++!test_disarm <- disarm(_). // illegal tentative action, must cause an error
 
 // carry a Bomb to a safe place
 +!carry_to_safe_place(RN,Place) : true 
@@ -11,5 +11,5 @@
      
 
 // void plans, not implemented yet.
-+!go(T,G).
-+!go(P).
++!go(_,_).
++!go(_).

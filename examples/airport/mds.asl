@@ -8,7 +8,7 @@ i_am_winner(RN,MyBid)
 
 // perception of an unattended luggage at Terminal/Gate,
 // with report number RN
-+unattended_luggage(Terminal,Gate,RN) : true
++unattended_luggage(_Terminal,_Gate,RN) : true
       <- !negotiate(RN).
 
 // negotiation on which MDS robot will deal with a particular
@@ -29,27 +29,27 @@ i_am_winner(RN,MyBid)
          .print("just lost to another MDS").
 
 @pb2[atomic] // for other bids when I'm still the winner
-+bid(RN,B) 
-      :  i_am_winner(RN,MyBid)
++bid(RN,_) 
+      :  i_am_winner(RN,_)
       <- !check_negot_finished(RN).
 
 // TODO: cope with two equal bids
 // just to remember who won anyway
 +bid(RN,B)[source(Sender)] 
-      :  winner(RN,W,WB) & B > WB
+      :  winner(RN,_,WB) & B > WB
       <- -+winner(RN,Sender,B).
 
 // ignore loosing bids, as I'm not the winner for this RN
-+bid(RN,B).
++bid(_,_).
 
 +!check_negot_finished(RN) 
-      :  i_am_winner(RN,MyBid) & all_bids_received(RN)
+      :  i_am_winner(RN,_MyBid) & all_bids_received(RN)
       <- .print("*************** I won !!!!");
          -free;
          !check_luggage(RN);
          !finish_case(RN).
 
-+!check_negot_finished(RN).
++!check_negot_finished(_).
 
 +!check_luggage(RN) : true     // mybid was the best one
       <- ?unattended_luggage(T,G,RN);
@@ -61,9 +61,9 @@ i_am_winner(RN,MyBid)
 
 +!finish_case(RN) : true // it wasn't a bomb after all
       <- +free;          // so nothing else to do, just tidy up
-         -bids(RN,X).
+         -bids(RN,_).
 
 // fake plans (for the time being)
-+!go(T,G) : true <- true.
++!go(_,_) : true <- true.
 +!do_all_checks(RN) : true <- +bomb(RN,bioBomb).
 

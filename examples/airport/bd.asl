@@ -11,7 +11,7 @@ safe_area(field1).
       !check_if_safe_to_disarm(RN,BombType);
       !attempt_disarm(RN,BombType).
 
-+bomb(RN, BombType) : ~skill(BombType)
++bomb(_RN, BombType) : ~skill(BombType)
    <- .broadcast(tell,security_alert).
 
 +bomb(RN, BombType) : not skill(BombType) & not ~skill(BombType)
@@ -20,7 +20,7 @@ safe_area(field1).
 +!attempt_disarm(RN,BombType) : safe_to_disarm(RN)
    <- !disarm(BombType).
 
-+!attempt_disarm(RN,BombType) : not safe_to_disarm(RN)
++!attempt_disarm(RN,_BombType) : not safe_to_disarm(RN)
    <- !move_to_safe_area(RN).
 
 +!move_to_safe_area(RN) : true
@@ -30,12 +30,12 @@ safe_area(field1).
 
 // temporary plans, not implemented
 
-+!go(T,G).
-+!go(P).
++!go(_,_).
++!go(_).
 
 +!discoverFreeCPH(cph1).
 
-+!check_if_safe_to_disarm(RN,BombType). // +safe_to_disarm(RN).
++!check_if_safe_to_disarm(_RN,_BombType). // +safe_to_disarm(RN).
 
 +!disarm(plasticBomb).
 +!disarm(bioBomb).
