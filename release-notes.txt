@@ -11,6 +11,10 @@ New features
 
 . Compiler warns about singleton variables in plans and rules
 
+. Terms can be logical expressions, as in the following
+  example of .findall use:
+     .findall(X, (a(X) & X > 10), L)
+
 
 -------------
 version 1.0.1
