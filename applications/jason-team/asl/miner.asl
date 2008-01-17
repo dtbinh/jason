@@ -7,11 +7,17 @@
 { include("goto_depot.asl") }           // plans for go to depot goal
 { include("allocation_protocol.asl") }  // plans for the gold allocation protocol
 
+/* functions */
+
+{ register_function("carrying_gold",0) }
+{ register_function("my_capacity",0) }
+{ register_function("jia.path_length",4) }
 
 /* beliefs */
 
 free.
 my_capacity(3).
+
 
 search_gold_strategy(near_unvisited). // initial strategy
 //search_gold_strategy(quadrant).
@@ -47,14 +53,14 @@ search_gold_strategy(near_unvisited). // initial strategy
     .findall(gold(X,Y),gold(X,Y),LG) &  // LG is all known golds
     evaluate_golds(LG,LD) &             // evaluate golds in LD
 	.print("All golds=",LG,", evaluation=",LD) &
-    .length(LD,LLD) & LLD > 0 &         // is there a gold to fetch?
+    .length(LD) > 0 &                   // is there a gold to fetch?
     .min(LD,d(D,NewG,_)) &              // get the near
     worthwhile(NewG)
  <- .print("Gold options are ",LD,". Next gold is ",NewG);
     !change_to_fetch(NewG).
 
 +!choose_goal // there is no worth gold
- :  carrying_gold(N) & N > 0
+ :  carrying_gold > 0
  <- !change_to_goto_depot.
 
 +!choose_goal // not carrying gold, be free and search gold
@@ -125,25 +131,22 @@ check_commit(G,_,not_committed) :- not committed_to(G,_,_).
 check_commit(gold(X,Y),MyD,committed_by(Ag,at(OtX,OtY),far(OtD))) 
   :- committed_to(gold(X,Y),_,Ag) &          // get the agent committed to the gold
      jia.ag_pos(Ag,OtX,OtY) &                // get its location
-     jia.path_length(OtX,OtY,X,Y,OtD) &      // calc its distance from the gold
-     MyD < OtD.                              // ok to consider the gold if I am near
+                                             // calc its distance from the gold
+     MyD < jia.path_length(OtX,OtY,X,Y).     // ok to consider the gold if I am near
 	 
 
 worthwhile(gold(_,_)) :- 
      carrying_gold(0).
 worthwhile(gold(GX,GY)) :-  
-     carrying_gold(NG) &
-     NG > 0 &
+     carrying_gold(NG) & NG > 0 &
      pos(AgX,AgY,Step) & 
      depot(_,DX,DY) &
      steps(_,TotalSteps) &
      AvailableSteps = TotalSteps - Step &
 
      // cost of fetching gold and after go to depot
-     jia.path_length(AgX,AgY,GX,GY,C4) & // ag to gold 
-     jia.add_fatigue(C4,NG,CN4) &
-     jia.path_length(GX,GY,DX,DY,C5) &  // go to depot
-     jia.add_fatigue(C5,NG+1,CN5) &
+     jia.add_fatigue(jia.path_length(AgX,AgY,GX,GY),NG,  CN4) & // ag to gold
+     jia.add_fatigue(jia.path_length(GX,  GY,DX,DY),NG+1,CN5) & // go to depot
      
      AvailableSteps > (CN4 + CN5) * 1.1.
 

@@ -40,7 +40,6 @@
   :  container_has_space 
   <- ?pos(AgX,AgY,_); 
 	 jia.path_length(AgX,AgY,GX,GY,GDist);  // my distance to gold
-     //!worthwhile(gold(GX,GY));
      jia.add_fatigue(GDist,Bid).
 	 
 // bid high otherwise (I do not have space)
