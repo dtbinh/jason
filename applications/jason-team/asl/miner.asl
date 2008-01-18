@@ -131,8 +131,8 @@ check_commit(G,_,not_committed) :- not committed_to(G,_,_).
 check_commit(gold(X,Y),MyD,committed_by(Ag,at(OtX,OtY),far(OtD))) 
   :- committed_to(gold(X,Y),_,Ag) &          // get the agent committed to the gold
      jia.ag_pos(Ag,OtX,OtY) &                // get its location
-                                             // calc its distance from the gold
-     MyD < jia.path_length(OtX,OtY,X,Y).     // ok to consider the gold if I am near
+     jia.path_length(OtX,OtY,X,Y,OtD) &      // calc its distance from the gold
+     MyD < Otd.                              // ok to consider the gold if I am near
 	 
 
 worthwhile(gold(_,_)) :- 

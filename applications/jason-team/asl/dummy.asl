@@ -1,7 +1,7 @@
-// Code of dummies agents (Blue team)
+// Code of dummy agents (Blue team)
 
-// the following plans (+pos....) reacts to the step starting
-// (since each new steps causes a new +pos perception)
+// the following plans (+pos....) react to the starting step
+// (since each new step causes a new +pos perception)
 
 /* -- Gold found! -- */
 
@@ -26,7 +26,7 @@
 +pos(X,Y,_) 
    : carrying_gold(N) & N > 0 &
      depot(_,X,Y)
-  <- .print("on depot");
+  <- .print("in depot");
      do(drop).
 
 // when still not in depot
@@ -39,7 +39,7 @@
 
 /* -- returns to the back pos -- */
 
-// in the back_pos
+// at the back_pos
 +pos(X,Y,_) 
    : back_pos(X,Y)
   <- -back_pos(X,Y);
