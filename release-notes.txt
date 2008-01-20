@@ -16,6 +16,10 @@ New features
      .findall(X, (a(X) & X > 10), L)
 
 
+New internal actions:
+. .reverse: reverse the order of lists or strings.
+
+
 -------------
 version 1.0.1
 -------------
