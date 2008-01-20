@@ -19,6 +19,9 @@ New features
 New internal actions:
 . .reverse: reverse the order of lists or strings.
 
+Bugs fixed:
+. the internal action .concat does not clone the lists properly
+
 
 -------------
 version 1.0.1
