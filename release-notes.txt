@@ -21,6 +21,8 @@ New internal actions:
 
 Bugs fixed:
 . the internal action .concat does not clone the lists properly
+. +?b(X) plans does not "return" the X value
+. +!A catch events like +p
 
 
 -------------
