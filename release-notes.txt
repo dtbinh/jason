@@ -18,6 +18,7 @@ New features
 
 New internal actions:
 . .reverse: reverse the order of lists or strings.
+. .union, .intersection and .difference of sets.
 
 Bugs fixed:
 . the internal action .concat does not clone the lists properly
