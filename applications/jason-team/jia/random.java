@@ -1,4 +1,4 @@
-package my;
+package jia;
 
 import jason.JasonException;
 import jason.asSemantics.DefaultInternalAction;
@@ -25,15 +25,19 @@ public class random extends DefaultInternalAction {
                 throw new JasonException("The second argument of the internal action 'random' is not a number.");                
             }
             final int max = (int)((NumberTerm)args[1]).solve();
+			
+			final int maxIter = args.length < 3 ? Integer.MAX_VALUE : (int)((NumberTerm)args[2]).solve();
 
 			return new Iterator<Unifier>() {
-                
+				int i = 0;                
+				
                 // we always have a next random number
                 public boolean hasNext() { 
-		    return ts.getUserAgArch().isRunning();  
-		}
+				    return i < maxIter && ts.getUserAgArch().isRunning(); 
+				}
 
                 public Unifier next() {
+					i++;
                     Unifier c = (Unifier)un.clone();
                     c.unifies(args[0], new NumberTermImpl(random.nextInt(max)));
                     return c;

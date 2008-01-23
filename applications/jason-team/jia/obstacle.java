@@ -17,9 +17,9 @@ public class obstacle extends DefaultInternalAction {
     public Object execute(TransitionSystem ts, Unifier un, Term[] terms) throws Exception {
     	try {
 	        WorldModel model = ((MinerArch)ts.getUserAgArch()).getModel();
-	        NumberTerm x = (NumberTerm)terms[0]; 
-	        NumberTerm y = (NumberTerm)terms[1];
-	        return model.hasObject(WorldModel.OBSTACLE, (int)x.solve(), (int)y.solve());
+	        int x = (int)((NumberTerm)terms[0]).solve(); 
+	        int y = (int)((NumberTerm)terms[1]).solve();
+	        return !model.inGrid(x,y) || model.hasObject(WorldModel.OBSTACLE, x, y);
 		} catch (Throwable e) {
 	        ts.getLogger().log(Level.SEVERE, "jia.obstacle error: "+e, e);    		
 		}
