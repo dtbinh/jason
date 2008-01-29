@@ -20,7 +20,7 @@ desired_mission(doAuction,mParticipant).
       (.my_name(I) & winner(_,I) & ally(A) & not alliance(I,A))
    <- !bid_normally.
 
-+!bid[scheme(Sch)] 
++!bid[scheme(_)] 
    : .my_name(I) & not winner(_,I) & ally(A) & not alliance(I,A)
    <- !alliance(A);
       !bid_normally.
@@ -28,7 +28,7 @@ desired_mission(doAuction,mParticipant).
 +!bid[scheme(Sch)] 
    :  goal_state(Sch, auction(N), _) &    // get the auction number
       commitment(Ag, mAuctioneer, Sch) &  // get the agent committed to mAuctineer
-      alliance(I,A)
+      alliance(_,A)
    <- ?default_bid_value(B);
       ?bid(A,C);
       .send(Ag, tell, place_bid(N,B+C));

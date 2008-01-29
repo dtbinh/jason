@@ -233,10 +233,7 @@ public class OrgManager extends AgArch {
             }
 
             // notify to the scheme players the new player
-            updateMembersOE(sch.getPlayers(), "commitment(" + sender + "," + misId + "," + sch.getId() + ")", false, true);
-
-            // send a message to generate new goals
-            updateMembersOE(sender, "update_goals", true, true);
+            updateMembersOE(sch.getPlayers(), "commitment(" + sender + "," + misId + "," + sch.getId() + ")", true, true);
 
             if (sch.getPlayersQty() > 1) {
                 updateMembersOE(sch.getOwner(), "sch_players(" + sch.getId() + ",NP)", false, false);

@@ -51,7 +51,7 @@ public class OrgAgent extends AgArch {
     @Override
     public void initAg(String agClass, ClassParameters bbPars, String asSrc, Settings stts) throws JasonException {
         super.initAg(agClass, bbPars, asSrc, stts);
-        logger = Logger.getLogger(OrgAgent.class.getName() + "." + getAgName());
+        logger = getTS().getLogger(); //Logger.getLogger(OrgAgent.class.getName() + "." + getAgName());
         introduceMySelf();
     }
 
@@ -94,21 +94,24 @@ public class OrgAgent extends AgArch {
                     final boolean isTell = m.getIlForce().equals("tell");
                     if (isTell && content.startsWith("scheme(")) {
                     	i.remove();
-                    	Literal l = Literal.parseLiteral(content);
+                    	Literal l = parseLiteral(content);
                         l.addAnnot(managerSource);
                     	getTS().getAg().addBel(l);
                     } else if (isTell && content.startsWith("scheme_group")) {
                     	i.remove();
                         // this message is generated when my group becomes
                         // responsible for a scheme
-                    	Literal l = Literal.parseLiteral(content);
+                    	Literal l = parseLiteral(content);
                         l.addAnnot(managerSource);
                     	getTS().getAg().addBel(l);
                         generateObligationPermissionEvents(l);  			
                     } else if (content.startsWith("update_goals")) { 
-                        // I need to generate AS Trigger like !<orggoal>
+                        // I need to generate AS Triggers like !<orggoal>
                         i.remove();
                         updateGoalBels();
+                        generateOrgGoalEvents();
+                    } else if (content.startsWith("commitment")) { 
+                        // I need to generate AS Triggers like !<orggoal> since some scheme becomes well formed
                         generateOrgGoalEvents();
                     } else if (content.startsWith("goal_state")) { 
                         // the state of a scheme i belong to has changed
@@ -166,7 +169,7 @@ public class OrgAgent extends AgArch {
             if (!alreadyGeneratedEvents.contains(gi)) {
                 alreadyGeneratedEvents.add(gi);
 
-                Literal l = Literal.parseLiteral(gi.getAsProlog());
+                Literal l = parseLiteral(gi.getAsProlog());
                 Literal giID = new Literal("scheme");
                 giID.addTerm(new Atom(gi.getScheme().getId()));
                 l.addAnnot(giID);
@@ -287,17 +290,23 @@ public class OrgAgent extends AgArch {
             // the agent believes in the goal, remove if different
         	// so that an event is produced
         	if (!u.get(S).equals(gState) || !gap.equals(gilInBB.getTerm(1))) { 
-                if (!getTS().getAg().delBel(gilInBB)) {
+                if (!getTS().getAg().delBel(gilInBB))
                 	logger.warning("Belief "+gilInBB+" should be deleted, but was not!");
-                } else if (logger.isLoggable(Level.FINE)) logger.fine("Remove goal belief: " + gil);
+                else if (logger.isLoggable(Level.FINE)) logger.fine("Remove goal belief: " + gil);
             }
         }
 
         gil = (Literal)gil.clone();
         gil.setTerm(2, gState);
         
-        if (getTS().getAg().addBel(gil)) {
+        if (getTS().getAg().addBel(gil))
         	if (logger.isLoggable(Level.FINE)) logger.fine("New goal belief: " + gil);
-        }
+    }
+    
+    private static Literal parseLiteral(String sl) {
+        Literal l = Literal.parseLiteral(sl);
+        if (l.isAtom())
+            l = new Literal(l.getFunctor());
+        return l;
     }
 }

@@ -41,7 +41,7 @@ desired_mission(writePaperSch,mManager).
 /* Functional events */
 
 // when a scheme has finished, start another
--scheme(writePaperSch,SId)
+-scheme(writePaperSch,_)
    :  group(wpgroup,GId)
    <- jmoise.create_scheme(writePaperSch, [GId]).
 
@@ -70,6 +70,6 @@ desired_mission(writePaperSch,mManager).
    <- .print("Writing conclusion!");
       jmoise.set_goal_state(Sch,wconc,satisfied).
 
-+!wpGoal[scheme(Sch)] : true 
++!wp[scheme(Sch)] : true 
    <- .print("***** FINISH! *****");
-      jmoise.set_goal_state(Sch,wpGoal,satisfied).
+      jmoise.set_goal_state(Sch,wp,satisfied).

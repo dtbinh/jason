@@ -46,7 +46,7 @@
 
     <functional-specification>
         <scheme id="writePaperSch" >
-            <goal id="wpGoal" >
+            <goal id="wp" >
                 <plan operator="sequence" >
                     <goal id="fdv" ds="First Draft Version">
                         <plan operator="sequence">
@@ -57,9 +57,13 @@
                     </goal>
                     <goal id="sv" ds="Submission Version">
                         <plan operator="sequence">
-                            <goal id="wsecs" ds="Write sections"/>
-                            <goal id="wconc" ds="Write a conclusion"/>
-                            <goal id="wrefs" ds="Complete references and link them to text"/>
+                            <goal id="wsecs"  ds="Write sections"/>
+                            <goal id="finish" ds="Finish paper">
+                                <plan operator="parallel">
+                                    <goal id="wconc"  ds="Write a conclusion"/>
+                                    <goal id="wrefs"  ds="Complete references and link them to text"/>
+                                </plan>
+                            </goal>
                         </plan>
                     </goal>
                 </plan>
@@ -71,14 +75,13 @@
 
             <mission id="mManager" min="1" max="1">
                 <goal id="wabs"/>
-                <goal id="wpGoal"/>
+                <goal id="wp"/>
                 <goal id="wtitle"/>
                 <goal id="wconc"/>
                 <goal id="wsectitles"/>
             </mission>
 
             <mission id="mBib" min="1" max="1">
-                <goal id="sv"/>
                 <goal id="wrefs"/>
                 <preferred mission="mColaborator"/>
                 <preferred mission="mManager"/>

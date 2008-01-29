@@ -24,14 +24,14 @@ desired_mission(writePaperSch,mBib).
 
 // a generic plan for organisational goals (they have scheme(_) annotation)
 +!X[scheme(Sch)] : true 
-   <- .print("doing organisational goal ",X);
+   <- .print("Doing organisational goal ",X, " in scheme ",Sch);
       jmoise.set_goal_state(Sch,X,satisfied).
 
 // when I receive a tell message from S and
 // S plays writer in a scheme, change the belief of
 // used refs
 +use_ref(NewRef)[source(S)] 
-   :  play(S, writer,Gr) & refs(R)
+   :  play(S, writer, _) & refs(R)
    <- .print("adding ref ",NewRef, " to ", R);
       -refs(R); +refs([NewRef|R]).
       

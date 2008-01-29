@@ -34,7 +34,7 @@ auction_id(0).
    <- jmoise.create_scheme(doAuction, [GId]).
 
 // when a scheme has finished, start another
--scheme(doAuction,SId) 
+-scheme(doAuction,_) 
    :  auction_id(N) & N < 7 & group(auctionGroup,GId)
    <- jmoise.create_scheme(doAuction, [GId]).
 //-scheme(doAuction,SId)
@@ -58,7 +58,7 @@ auction_id(0).
       jmoise.set_goal_state(Sch,start,satisfied).
       
 +!winner(W)[scheme(Sch)] 
-   :  auction_id(N) & winner(N,W,Vl) 
+   :  auction_id(N) & winner(N,W,_) 
    <- jmoise.set_goal_arg(Sch,winner,"W",W);
       jmoise.set_goal_state(Sch,winner,satisfied).
 
@@ -75,9 +75,9 @@ auction_id(0).
 // receive bid and check for new winner
 @pb1[atomic]
 +place_bid(N,V)[source(S)] 
-   :  auction_id(N) & winner(N,CurWin,CurVl) & V > CurVl
+   :  auction_id(N) & winner(N,_,CurVl) & V > CurVl
    <- .print("Bid from ", S, " is ", V);
       -+winner(N,S,V).
-+place_bid(N,V)[source(S)] 
++place_bid(_,V)[source(S)] 
    <- .print("Bid from ", S, " is ", V).
 
