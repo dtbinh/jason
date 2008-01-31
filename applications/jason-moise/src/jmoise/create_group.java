@@ -4,6 +4,44 @@ import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.Term;
 
+/** 
+
+<p>Organisational action: <b><code>jmoise.create_group( GrSpecId [, SuperGrId] )</code></b>: 
+   used by an agent to create a new group based on GrSpecId specification. 
+   GrSpecId is the name of the group in the structural specification, and
+   SuperGrId is the identification of the super group instance. The second parameter
+   is used in case a sub-groups is being created. 
+   
+<p>Conditions to succeed (just in case of creation of sub-groups):
+<ul>
+<li>the group GrSpecId must be a sub-group of the SuperGrId's type in the specification;</li>
+<li>the number of GrSpecId sub-groups of SuperGrId must be lesser than the
+  maximum number of GrSpecId sub-groups defined in the SuperGrId compositional
+  specification (i.e., cardinality check).</li>
+</ul>
+
+<p>Consequences:
+<ul>
+<li>the agent that performs the creation becomes the owner of the group.</li>
+</ul>
+
+<p>Examples:
+<ul>
+<li> <code>jmoise.create_group(team)</code>: 
+     creates a new root group based on specification of a team.</li>
+<li> <code>jmoise.create_group(defence, team0)</code>: 
+     creates a sub-group of group team0 based on specification defence.</li>
+</ul>
+ 
+@see jmoise.remove_group
+@see jmoise.adopt_role
+@see jmoise.remove_role
+@see jmoise.add_responsible_group
+@see <a href="http://moise.sourceforge.net/doc/tutorial.pdf">Moise+ Tutorial, chapter for J-Moise+</a> 
+ 
+@author Jomi 
+
+*/
 public class create_group extends MoiseBaseIA {
 
     @Override

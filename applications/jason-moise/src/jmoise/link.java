@@ -16,13 +16,31 @@ import moise.oe.OEAgent;
 import moise.oe.RolePlayer;
 import moise.os.ss.Link;
 import moise.os.ss.RoleRel.RoleRelScope;
+/** 
 
+<p>Internal action: <b><code>jmoise.link( LinkType, SourceAg, TargetAg )</code></b>: 
+   check whether there is a link of LinkType (communication, authority, acquaintance) 
+   from agent SourceAg to TargetAg. 
+   
+   This internal action backtrack on first and third arguments.
+   
+<p>Examples:
+<ul>
+<li> <code>jmoise.link(communication,bob,john)</code>: 
+     succeed if there is a communication link between bob and john.</li>
+<li> <code>jmoise.link(C,bob,john)</code>: 
+     unifies in C all types of link between bob and john.</li>
+<li> <code>jmoise.link(communication,bob,A)</code>: 
+     unifies in A all agents who bob has a communication link.</li>
+</ul>
+ 
+@author Jomi 
+
+*/
 public class link extends MoiseBaseIA {
 
     private static Logger logger = Logger.getLogger(link.class.getName());
 
-    // it backtracks on first and third args
-    
     @Override
     public Object execute(TransitionSystem ts, final Unifier un, final Term[] args) throws Exception {
         try {

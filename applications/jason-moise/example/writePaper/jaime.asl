@@ -1,6 +1,4 @@
-/* 
-   Beliefs
-*/
+/*  Beliefs */
 
 // I want to play "editor" in "wpgroups"
 // (this belief is used by the moise common plans included below) 
@@ -10,10 +8,7 @@ desired_role(wpgroup,editor).
 desired_mission(writePaperSch,mManager).
 
 
-/*
-   Initial goals
-*/
-
+/* Initial goals */
 
 !create_group. // initial goal
 
@@ -24,10 +19,7 @@ desired_mission(writePaperSch,mManager).
 
 
 
-/* 
-   Organisational Events
-   ---------------------
-*/
+/* Organisational Events  */
 
 /* Structural events */
 
@@ -49,10 +41,7 @@ desired_mission(writePaperSch,mManager).
 { include("moise-common.asl") }
 
 
-/*   
-   Organisational Goals' plans
-   ---------------------------
-*/
+/* Organisational Goals' plans */
 
 +!wtitle[scheme(Sch)] : true 
    <- .print("Writing title!");

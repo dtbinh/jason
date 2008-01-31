@@ -5,6 +5,7 @@ import jason.architecture.AgArch;
 import jason.asSemantics.Message;
 import jason.asSyntax.ListTerm;
 import jason.asSyntax.Pred;
+import jason.asSyntax.StringTerm;
 import jason.asSyntax.Term;
 import jason.mas2j.ClassParameters;
 import jason.runtime.Settings;
@@ -396,15 +397,15 @@ public class OrgManager extends AgArch {
                 return;
             }
 
-            if (!sender.equals(sch.getOwner())) {
-                sendReply(sender, mId, "error(\"you are not the owner of the scheme " + schId + ", so you can not change it\")");
-            }
-
             GroupInstance gr = currentOE.findGroup(grId);
             if (gr == null) {
                 sendReply(sender, mId, "error(\"the group " + grId + " does not exist\")");
                 return;
             }
+            if (!sender.equals(gr.getOwner())) {
+                sendReply(sender, mId, "error(\"you are not the owner of the group " + schId + ", so you can not add it as responsible for a scheme.\")");
+            }
+
             sch.addResponsibleGroup(gr);
 
             updateMembersOE(gr.getPlayers(), "scheme_group(" + schId + "," + grId + ")", true, true);
@@ -476,9 +477,12 @@ public class OrgManager extends AgArch {
             String schId  = command.getTerm(0).toString();
             String goalId = command.getTerm(1).toString();
             String arg    = command.getTerm(2).toString();
-            String value  = command.getTerm(3).toString();
             if (arg.startsWith("\"")) {
                 arg = arg.substring(1, arg.length() - 1);
+            }
+            String value  = command.getTerm(3).toString();
+            if (command.getTerm(3).isString()) {
+                value = ((StringTerm)command.getTerm(3)).getString();
             }
 
             SchemeInstance sch = currentOE.findScheme(schId);

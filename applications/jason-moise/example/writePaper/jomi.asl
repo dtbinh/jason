@@ -1,6 +1,4 @@
-/* 
-   Beliefs
-*/
+/* Beliefs */
 
 // I want to play "writer" in "wpgroups"
 desired_role(wpgroup,writer).
@@ -12,10 +10,7 @@ desired_mission(writePaperSch,mColaborator).
 { include("moise-common.asl") }
 
 
-/*   
-   Organisational Goals' plans
-   ---------------------------
-*/
+/* Organisational Goals' plans */
 
 +!wsecs[scheme(Sch)] 
    :   commitment(Ag, mBib, Sch) 
@@ -27,4 +22,3 @@ desired_mission(writePaperSch,mColaborator).
 // the plan to achieve the goal failed
 -!wsecs[scheme(Sch)] : true 
    <- jmoise.set_goal_state(Sch, wsecs, impossible).
-      

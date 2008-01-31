@@ -10,6 +10,12 @@ import jason.asSyntax.Term;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
+/**
+ * Common base code for all JMoise+ internal actions.
+ * 
+ * @author hubner
+ */
 public abstract class MoiseBaseIA extends DefaultInternalAction  {
 
 	private static Logger logger = Logger.getLogger(MoiseBaseIA.class.getName());

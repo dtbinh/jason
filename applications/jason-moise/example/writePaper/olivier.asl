@@ -1,6 +1,4 @@
-/* 
-   Beliefs
-*/
+/* Beliefs */
 
 refs([boissier04,sichman03]). // refs used in the paper
 
@@ -17,10 +15,7 @@ desired_mission(writePaperSch,mBib).
 { include("moise-common.asl") }
 
 
-/*   
-   Organisational Goals' plans
-   ---------------------------
-*/
+/* Organisational Goals' plans */
 
 // a generic plan for organisational goals (they have scheme(_) annotation)
 +!X[scheme(Sch)] : true 
@@ -34,4 +29,3 @@ desired_mission(writePaperSch,mBib).
    :  play(S, writer, _) & refs(R)
    <- .print("adding ref ",NewRef, " to ", R);
       -refs(R); +refs([NewRef|R]).
-      
