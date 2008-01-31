@@ -1,12 +1,12 @@
 This Jason application exemplifies how to develop agent in an organised
 society based on the Moise+ organisational model (http://moise.sf.net).
 
-To run the application using JasonIDE, open the project 
+To run the some applications using JasonIDE, open a project 
     example/writePaper/writePaper.mas2j
+or
+    example/auction/orgAuction.mas2j
+
 and start it. The chapter 4 of doc/tutorial.pdf explains in details 
-this example.
+the examples.
 
-Another example is the Auction, available and described in
-    example/auction
-
-Note: Jason 1.0 is required.
+Note: Jason 1.0.1 is required.

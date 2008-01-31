@@ -7,8 +7,8 @@
 
     <property environment="env"/>
 
-    <property name="version"         value="0"/>
-    <property name="release"         value="9.7"/>
+    <property name="version"         value="1"/>
+    <property name="release"         value="0.1"/>
     <property name="moiseDir"        value="${env.HOME}/Moise/Moise-svn" />
     <property name="distDir"         value="${env.HOME}/tmp/jmoise-${version}.${release}" />
     <property name="distFile"        value="${env.HOME}/jason-moise-${version}.${release}" />
@@ -95,11 +95,11 @@
           </copy>
 
           <copy todir="${distDir}/doc">
-            <fileset dir="${doc-src-dir}/web" includes="publications/**/*" />
-            <fileset dir="${doc-src-dir}/tutorial-1.4" includes="tutorial.pdf" />
+            <fileset dir="${moiseDir}/doc" includes="publications/**/*" />
+            <fileset dir="${moiseDir}/doc/tutorial" includes="tutorial.pdf" />
           </copy>
 
-          <tar compression="gzip" destfile="${distFile}.tgz">
+          <!--tar compression="gzip" destfile="${distFile}.tgz">
               <tarfileset dir="${distDir}/.." mode="755" >
                   <include name="jmoise*/**/*.sh"/>
               </tarfileset>
@@ -107,7 +107,10 @@
                  <include name="jmoise*/**/*"/>
                  <exclude name="jmoise*/**/*.sh"/>
               </tarfileset>
-          </tar>
+          </tar-->
+		  
+          <zip basedir="${distDir}/.." includes="jmoise*/**/*" zipfile="${distFile}.zip"/>
+		  
     </target>
 
 
@@ -117,11 +120,11 @@
 			<fileset dir="${basedir}" includes="**/*.class"/>
 		</delete>
 		<delete failonerror="no" includeEmptyDirs="true" verbose="true">
-			<fileset dir="${basedir}/examples" includes="**/classes/*" />
-			<fileset dir="${basedir}/examples" includes="**/classes" />
-			<fileset dir="${basedir}/examples" includes="**/*.class" />
-			<fileset dir="${basedir}/examples" includes="**/build.xml" />
-			<fileset dir="${basedir}/examples" includes="**/.stop___MAS" />
+			<fileset dir="${basedir}/example" includes="**/classes/*" />
+			<fileset dir="${basedir}/example" includes="**/classes" />
+			<fileset dir="${basedir}/example" includes="**/*.class" />
+			<fileset dir="${basedir}/example" includes="**/bin/**" />
+			<fileset dir="${basedir}/example" includes="**/.stop___MAS" />
 		</delete>
     </target>
 </project>
