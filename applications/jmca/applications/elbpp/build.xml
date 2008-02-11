@@ -1,0 +1,21 @@
+<project basedir="." default="jar" name="elbpp">
+	<property name="build.dir" value="${basedir}/bin" />
+
+	<path id="project.classpath">
+		<pathelement location="../../../../lib/jason.jar"/>
+		<pathelement location="../../lib/jmca.jar"/>
+	</path>
+
+	<target name="compile">
+		<javac srcdir="src" destdir="${build.dir}" debug="true" deprecation="true" optimize="true" nowarn="true" source="1.5" target="1.5">
+			<classpath refid="project.classpath" />
+		</javac>
+	</target>
+
+	<target name="jar" depends="compile">
+		<jar destfile="./lib/elbpp.jar"
+	     basedir="./bin"
+	     includes="**/*.class"
+	     />
+	</target>
+</project>

@@ -1,0 +1,30 @@
+JMCA: "Jason Module Composition Architecture"
+Copyright (C) 2008 Thomas Klapiscak (t.g.klapiscak@durham.ac.uk)
+JMCA is distributed under the LGPL license (see COPYING and COPYING.LESSER)
+
+A Jason agent using JMCA is capable of composing multiple selection functions
+for Options, Events, Intentions, Messages and ActionExecs ("aspects", collectively). 
+Each selection function is implemented in the form of an "AgentModule". A JMCA agent
+is associated with a list of AgentModules (composition chain). Each AgentModule
+submits a set of aspects representing those it deems acceptable. Because only one
+aspect may ultimately be selected and different modules may make conflicting choices,
+mediation is performed between modules by an extensible "selection policy" implementation.
+
+The following software is required to run this application:
+
+Java 1.5 (available at http://java.sun.com)
+Jason 1.0.1 (available at http://jason.sf.net)
+
+See ./applications/ for example AgentModule implementations:
+
+* elbpp: "Explicit Level-Based Plan Prioritisation". Orders options into levels according
+         to X in "pl(X)" plan label annotation. All plans from the highest level are chosen.
+
+* alpha: Orders options in ascending alphabetical order according to functor of the plan
+         label predicate and chooses first two from the head of the resulting list
+
+See ./examples/ for example usages of JMCA by a Jason agent
+
+* trivial: Simplistic composition of Alpha and Elbpp with OverrulingIntersection selection policy.
+
+Thank you for your interest in JMCA!
