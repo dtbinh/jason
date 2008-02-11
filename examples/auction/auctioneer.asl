@@ -3,7 +3,7 @@
 /* beliefs and rules */ 
 
 auction(1).
-all_bids_received(N) :- .count(place_bid(N,V1),3). 
+all_bids_received(N) :- .count(place_bid(N,_),3). 
 
 /* plans */
 
@@ -20,7 +20,7 @@ all_bids_received(N) :- .count(place_bid(N,V1),3).
       !check_end(N).
 
 @pb2[atomic]
-+place_bid(N,V) : true
++place_bid(N,_) : true
    <- !check_end(N).
 
 +!check_end(N) 
@@ -33,5 +33,5 @@ all_bids_received(N) :- .count(place_bid(N,V1),3).
       .abolish(place_bid(N,_));
       -winner(N,_,_);
       -+auction(N+1).
-+!check_end(N).
++!check_end(_).
 

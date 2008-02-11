@@ -12,18 +12,19 @@ New features
 . Compiler warns about singleton variables in plans and rules
 
 . Terms can be logical expressions, as in the following
-  example of .findall use:
+  example of .findall usage:
      .findall(X, (a(X) & X > 10), L)
 
 
 New internal actions:
-. .reverse: reverse the order of lists or strings.
+. .reverse: reverse the order of lists and strings.
 . .union, .intersection and .difference of sets.
 
 Bugs fixed:
 . the internal action .concat does not clone the lists properly
 . +?b(X) plans does not "return" the X value
 . +!A catch events like +p
+. JDBC belief base does not work with null values
 
 
 -------------
