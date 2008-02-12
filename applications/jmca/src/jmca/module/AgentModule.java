@@ -26,7 +26,7 @@ import java.util.List;
 import jmca.util.JmcaException;
 
 /**
- * One step in a Jmca composition chain. Generalised to cope with any type of aspect
+ * One step in a Jmca composition chain. Generalised to cope with any type of aspect.
  * @author Tom Klapiscak
  *
  */
