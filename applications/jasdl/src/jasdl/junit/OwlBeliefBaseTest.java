@@ -59,6 +59,7 @@ public class OwlBeliefBaseTest extends TestCase{
 	private OntologyManager manager;
 	
 	private String ontology_uri =  getClass().getResource("travel.owl").toExternalForm();
+	private String asl_file =  getClass().getResource("asl/exclude/blank.asl").toExternalForm();
 
 	/**
 	 * @throws java.lang.Exception
@@ -78,7 +79,7 @@ public class OwlBeliefBaseTest extends TestCase{
 				"jason.architecture.AgArch",
 				"jasdl.asSemantics.JasdlAgent",
 				new ClassParameters("jasdl.bb.OwlBeliefBase"),
-				"",
+				asl_file,
 				stts,
 				runner);	
 		
