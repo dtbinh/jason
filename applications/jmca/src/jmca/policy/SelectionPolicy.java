@@ -35,6 +35,22 @@ import jmca.util.JmcaException;
  */
 public interface SelectionPolicy<T> {
 	
+	/**
+	 * Initialisation specific to this selection policy must be performed here.
+	 * Passed the entire .mas2j settings instance, allowing for the specification
+	 * of selection policy specific parameters in the .mas2j file
+	 * @param stts		the mas2j settings object for the agent this selection policy instance applies to
+	 */
 	public void init(Settings stts);
+	
+	/**
+	 * Implementations of this method must apply the select method of each agent module in the composition chain in turn,
+	 * mediating between each. It must ultimately arrive upon an "agreed" set of aspect instances.
+	 * 
+	 * @param modules			a composition chain of agent modules dealing with the same aspect as this selection policy
+	 * @param elements			the list of aspect instances that each agent module must choose from
+	 * @return					the "agreed" set, influenced by each agent module, mediated by this selection policy
+	 * @throws JmcaException
+	 */
 	public List<T> apply(List<AgentModule<T>> modules, List<T> elements) throws JmcaException;
 }

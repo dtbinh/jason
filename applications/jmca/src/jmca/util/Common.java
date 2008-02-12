@@ -26,8 +26,17 @@ package jmca.util;
  *
  */
 public class Common {
+	/**
+	 * The delimiter used for JMCA .mas2j properties
+	 */
 	public static String DELIM=",";
 	
+	/**
+	 * Repeatedly strips all prefixes and suffixes from text that match remove 
+	 * @param text		the text to strip
+	 * @param remove	the prefix/suffix to match
+	 * @return			the stripped text
+	 */
 	public static String strip(String text, String remove){
 		if(text == null){ return null; }
 		if(surroundedBy(text, remove)){
@@ -37,6 +46,12 @@ public class Common {
 		}
 	}
 	
+	/**
+	 * Returns true if text starts and ends with match
+	 * @param text	the text to check
+	 * @param match	the string to look for
+	 * @return true if text starts and ends with match
+	 */
 	public static boolean surroundedBy(String text, String match){
 		return text.startsWith(match) && text.endsWith(match);
 	}

@@ -31,6 +31,9 @@ import jmca.util.JmcaException;
  *
  */
 public abstract class AgentModule<T>{
+	/**
+	 * The agent this AgentModule belongs to
+	 */
 	protected Agent master;
 	
 	
