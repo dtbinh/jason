@@ -1,0 +1,36 @@
+/* Jason Project */
+/* Note: Uses c-build.xml for two reasons:
+ * 1) to prevent need for large classpath specification in this file
+ * 2) to automatically run ant jar task for jasdl and jmca so up-to-date versions are used
+ */
+MAS dalt08 {
+
+    infrastructure: Centralised
+
+    agents:
+	       travel_agent 
+       	   travel_agent.asl
+	       [				
+		   // initial ontology setup
+	       		ontologies="travel",
+				travel_uri="http://www.dur.ac.uk/t.g.klapiscak/onts/travel.owl",
+				travel_automap_classes="jasdl.automap.uncapitalise_individuals, jasdl.automap.uncapitalise_concepts"
+	       ]
+	       agentArchClass jasdl.architecture.JasdlAgArch
+	       agentClass jasdl.asSemantics.JasdlAgent
+	       beliefBaseClass jasdl.bb.OwlBeliefBase	       
+	       #1;
+		   
+	       customer 
+       	   customer.asl
+	       [		   
+		   // initial ontology setup
+	       		ontologies="holidays",
+				holidays_uri="http://www.dur.ac.uk/t.g.klapiscak/onts/travel.owl"
+	       ]
+	       agentArchClass jasdl.architecture.JasdlAgArch
+	       agentClass jasdl.asSemantics.JasdlAgent
+	       beliefBaseClass jasdl.bb.OwlBeliefBase	       
+	       #1;		   
+}
+
