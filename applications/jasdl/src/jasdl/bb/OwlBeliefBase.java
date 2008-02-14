@@ -32,9 +32,15 @@ import java.util.List;
 import java.util.Vector;
 
 import com.hp.hpl.jena.ontology.Individual;
+import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.OntProperty;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Selector;
+import com.hp.hpl.jena.rdf.model.SimpleSelector;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 public class OwlBeliefBase extends DefaultBeliefBase{
 	
@@ -178,13 +184,39 @@ public class OwlBeliefBase extends DefaultBeliefBase{
 	
 
 	
-	
+	/**
+	 * Currently outputs all inferred information, not just asserted
+	 */
 	public Iterator<Literal> iterator(){
 		List<Literal> ls = new Vector<Literal>();
 		
 		// get all semantically-enriched literals
 		// this includes all ABox assertions from all loaded ontologies
-		for(JasdlOntology ont : manager.getLoadedOntologies()){
+		try {
+			for(JasdlOntology ont : manager.getLoadedOntologies()){
+				ExtendedIterator cIt = ont.getModel().listNamedClasses();
+				while(cIt.hasNext()){
+					OntClass c = (OntClass)cIt.next();
+					StmtIterator it = ont.getModel().listStatements(new SimpleSelector(null, RDF.type, c));					
+					while(it.hasNext()){
+						Statement s = it.nextStatement();				
+						ls.add(ont.fromStatement(s));				
+					}					
+				}
+				
+				ExtendedIterator pIt = ont.getModel().listOntProperties();
+				while(pIt.hasNext()){
+					OntProperty p = (OntProperty)pIt.next();
+					StmtIterator it = ont.getModel().listStatements(new SimpleSelector(null, p, (RDFNode)null));					
+					while(it.hasNext()){
+						Statement s = it.nextStatement();				
+						ls.add(ont.fromStatement(s));				
+					}					
+				}
+				
+			}
+		} catch (JasdlException e) {
+			manager.getLogger().warning("Error retrieving ABox state. Reason: "+e);
 		}
 		
 		// get all semantically-naive literals
