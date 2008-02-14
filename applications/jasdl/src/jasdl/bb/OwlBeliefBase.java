@@ -21,30 +21,20 @@ package jasdl.bb;
 
 import jasdl.ontology.JasdlOntology;
 import jasdl.ontology.OntologyManager;
-import jasdl.ontology.StatementTriple;
 import jasdl.util.JasdlException;
 import jason.asSemantics.Agent;
 import jason.asSyntax.Literal;
-import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Pred;
-import jason.asSyntax.StringTermImpl;
-import jason.asSyntax.Term;
 import jason.bb.DefaultBeliefBase;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import com.hp.hpl.jena.datatypes.RDFDatatype;
-import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.ontology.Individual;
-import com.hp.hpl.jena.ontology.ObjectProperty;
-import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.ontology.OntProperty;
-import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Selector;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.vocabulary.RDF;
 
 public class OwlBeliefBase extends DefaultBeliefBase{
 	
@@ -73,14 +63,13 @@ public class OwlBeliefBase extends DefaultBeliefBase{
 			if(ont == null){ // standard literal. proceed using Jason's standard belief base add mechanism
 				return super.add(l);
 			}else{ // semantically enriched literal, add to ABox
-				StatementTriple triple = ont.constructTripleFromPred(l);
-				Statement stmt = triple.toStatement(ont.getModel());
-				ont.getModel().add(stmt);				
+				Statement stmt = ont.toStatement(l);
+				ont.getModel().add(stmt);
 				if(!ont.isConsistent()){
 					manager.getLogger().info("** ABox inconsistency detected on literal "+l+": "+stmt);
 					ont.getModel().remove(stmt);
 					return false;
-				}				
+				}
 				return true;
 			}
 		} catch (JasdlException e) {
@@ -92,7 +81,7 @@ public class OwlBeliefBase extends DefaultBeliefBase{
 	/**
 	 * TODO: can only remove asserted information at the moment. Reasoner directly supports this only.
 	 * TODO: I don't think removals can result in inconsistencies - but I need to check this assumption 
-	 * TODO: bb.remove can currently only cope with ground literals
+	 * TODO: bb.remove can currently only cope with ground literals - NO? contains should be used to ground them
 	 */
 	@SuppressWarnings("unchecked")
 	public boolean remove(Literal l){
@@ -104,15 +93,14 @@ public class OwlBeliefBase extends DefaultBeliefBase{
 				if(contains(l) == null){ // should never happen since Jason checks existence - here for certainty (and unit tests for now)
 					return false;
 				}
-				StatementTriple triple = ont.constructTripleFromPred(l);
-				Statement stmt = triple.toStatement(ont.getModel());				
+				Statement s = ont.toStatement(l);				
 				// This ensures that notification of removal failure 
 				// if we try to remove information that has not been explicitly asserted
-				if(!ont.getModel().getRawModel().contains(stmt)){ // TODO: contains must used getRelevant (so variables are grounded and inferred statements are found)
-				//	return false;
+				if(!ont.getModel().getRawModel().contains(s)){
+					return false;
 				}				
 				//ont.getModel().remove(stmt);
-				Individual i = ont.getModel().getIndividual(stmt.getSubject().toString());
+				Individual i = ont.getModel().getIndividual(s.getSubject().toString());
 				manager.getLogger().finest("i: "+i);
 				i.remove();
 				return true;
@@ -142,16 +130,6 @@ public class OwlBeliefBase extends DefaultBeliefBase{
 				}else{
 					return null;
 				}
-				/*
-				StatementTriple triple = ont.constructTripleFromPred(l);
-				Statement stmt = triple.toStatement(ont.getModel());
-				if(ont.getModel().contains(stmt)){
-					return l;
-				}else{
-					return null;
-				}
-				*/
-						
 			}
 		} catch (JasdlException e) {
 			manager.getLogger().info("Error determining if "+l+" is contained in BeliefBase. Reason: "+e);
@@ -173,9 +151,7 @@ public class OwlBeliefBase extends DefaultBeliefBase{
 	 * literals are "artificially" grounded here
 	 */
 	@SuppressWarnings("unchecked")
-	public Iterator<Literal> getRelevant(Literal l){
-		manager.getLogger().finest("getRelevant: "+l);
-		
+	public Iterator<Literal> getRelevant(Literal l){	
 		Vector<Literal> relevant = new Vector<Literal>();
 		try {			
 			List<JasdlOntology> onts = manager.listJasdlOntologies(l); // (0)
@@ -183,98 +159,41 @@ public class OwlBeliefBase extends DefaultBeliefBase{
 				return super.getRelevant(l);
 			}else{// semantically-enriched literal, use ontological reasoning
 				for(JasdlOntology ont : onts){
-				
-					StatementTriple triple = ont.constructTripleFromPred(l); // (1)		
-					manager.getLogger().finest("Relevancy check: ("+triple+")");
-					//StmtIterator stmtIt = ont.getModel().listStatements(null, triple.getPredicate(), triple.getObject());
-					StmtIterator stmtIt = ont.getModel().listStatements(triple.getSubject(), triple.getPredicate(), triple.getObject());
-					while(stmtIt.hasNext()){ // (2)
-						Statement foundStmt = (Statement) stmtIt.nextStatement();
-						
-						// construct a new literal for this statement
-						Literal rl = null;						
-						if(foundStmt.getPredicate().equals(RDF.type)){ // concept assertion - unary literal	
-							rl = ont.constructLiteralFromResource( (OntClass)foundStmt.getObject().as(OntClass.class), l.negated());
-							Literal indLit = ont.constructLiteralFromResource ( (Individual)foundStmt.getSubject().as(Individual.class), false); // individuals are never negated
-							rl.addTerm(indLit);
-						}else{ // object/datatype property assertion - binary literal
-							
-							// left individual is always subject
-							Term l_term = ont.constructLiteralFromResource(((Individual)foundStmt.getSubject().as(Individual.class)), false); // left individual is always subject
-							Term r_term = null;						
-							
-							// o and p swap round when listing unground object property statements - bug in Jena?
-							OntProperty predicate;
-							RDFNode object;			
-							if(foundStmt.getObject().canAs(OntProperty.class)){ //if object is erroneously a property 
-								 object = foundStmt.getPredicate();
-								 predicate = (OntProperty)foundStmt.getObject().as(OntProperty.class);
-							}else{ // as normal
-								 predicate = (OntProperty)foundStmt.getPredicate().as(OntProperty.class);
-								 object = foundStmt.getObject();
-							}
-							
-							rl = ont.constructLiteralFromResource( predicate, l.negated());						
-							
-							if(predicate.canAs(ObjectProperty.class)){							
-								r_term = ont.constructLiteralFromResource(((Individual)object.as(Individual.class)), false);								
-							}else{								
-								r_term = transposeDatatypeLiteral((com.hp.hpl.jena.rdf.model.Literal)object.as(com.hp.hpl.jena.rdf.model.Literal.class));
-							}
-							rl.addTerm(l_term);
-							rl.addTerm(r_term);		
-							
-						}				
-						
-						// add back all (outside) annotations
-						rl.addAnnots(l.getAnnots());					
-
-						// copy across term annotations TODO: annotation copying correct behaviour in general? Also, need to recurse down terms for generality.						
-						for(int i=0; i<rl.getArity(); i++){
-							if(l.getTerm(i).isPred()){
-								((Pred)rl.getTerm(i)).addAnnots(((Pred)l.getTerm(i)).getAnnots());
-							}
-						}
-												
-						relevant.add(rl);				
+					Selector sel = ont.toSelector(l);
+					// below allows left-unground support, but beware of bug in Jena: p & o swap round in resulting statements.
+					// this suggests we shouldn't be making this type of query, so is disabled for now
+					//StmtIterator it = ont.getModel().listStatements(sel.getSubject(), sel.getPredicate(), sel.getObject());
+					StmtIterator it = ont.getModel().listStatements(sel);
+					while(it.hasNext()){
+						Literal rl = ont.fromStatement(it.nextStatement());
+						relevant.add(rl);
 					}
 				}
 			}			
 		} catch (JasdlException e) {
 			manager.getLogger().info("Error retrieving relevancies for "+l+". Reason: "+e);			
 		}
-		manager.getLogger().finest("Found: "+relevant);
 		return relevant.iterator(); // (4)
 	}
 	
-	/**
-	 * Transposes a RDF Datatype Literal to a Jason Term
-	 * 
-	 * @param literal
-	 * @return	either a number term or string term
-	 */
-	private Term transposeDatatypeLiteral(com.hp.hpl.jena.rdf.model.Literal literal){
-		RDFDatatype datatype = literal.getDatatype();
-		String value = literal.getValue().toString();				
+
+	
+	
+	public Iterator<Literal> iterator(){
+		List<Literal> ls = new Vector<Literal>();
 		
-		// surround with quotes if necessary for datatype representation in Jason
-		if(datatype == XSDDatatype.XSDstring || datatype == XSDDatatype.XSDdate || datatype == XSDDatatype.XSDdateTime || datatype == XSDDatatype.XSDtime){
-			//discard -T at start if time (not sure why Jena puts this in) //TODO: is this in fact the proper way of representing a time in owl?			
-			if(datatype == XSDDatatype.XSDtime){
-				value = value.replace("-T", "");
-			}
-			return new StringTermImpl(value);
+		// get all semantically-enriched literals
+		// this includes all ABox assertions from all loaded ontologies
+		for(JasdlOntology ont : manager.getLoadedOntologies()){
 		}
 		
-		if(datatype == XSDDatatype.XSDboolean){
-			if(Boolean.parseBoolean(value)){
-				return Literal.LTrue;
-			}else{
-				return Literal.LFalse;
-			}
+		// get all semantically-naive literals
+		Iterator<Literal> it = super.iterator();
+		while(it.hasNext()){
+			ls.add(it.next());
 		}
-				
-		return new NumberTermImpl(value);
+		
+		return ls.iterator();		
 	}
 
 }

@@ -27,7 +27,7 @@ import jasdl.util.JasdlException;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
-import jason.asSyntax.Pred;
+import jason.asSyntax.Literal;
 import jason.asSyntax.Term;
 
 import java.net.URI;
@@ -129,9 +129,9 @@ public class define_class extends DefaultInternalAction {
 		    		if(!keywords.contains(token)){ // a ontological entity of some kind
 		    			alreadyReplaced.add(token);
 		    			try {
-		    				Pred p = null;
-							p = Pred.parsePred(token);
-							URI real = ont.getRealFromPred(p);
+		    				Literal p = null;
+							p = Literal.parseLiteral(token);
+							URI real = ont.getReal(p);
 							newExpr = newExpr.replace(p.toString(), "|"+real.toString()+"|");
 						} catch (RuntimeException e) {
 							throw new JasdlException("Error precompiling expression "+newExpr+" on token "+token+". Reason: "+e);

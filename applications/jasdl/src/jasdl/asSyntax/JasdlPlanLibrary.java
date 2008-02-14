@@ -120,13 +120,13 @@ public class JasdlPlanLibrary extends PlanLibrary{
 		Vector<String> functors = new Vector<String>();
 		JasdlOntology ont = manager.getJasdlOntology(l);
 		if(ont != null){ // if we have a SE-literal
-			OntResource res = ont.getOntResourceFromPred(l);
+			OntResource res = ont.getModel().getOntResource(ont.getReal(l).toString());
 			List parents = ont.listOntResourceParents(res, false);
 			for(Object _parent : parents){
 				OntResource parent = (OntResource)_parent;
 				String parentURI = parent.getURI();
 				if(parentURI != null){ // in case of resources with no URI associated with it (anonymous?)
-					Alias alias = ont.transposeToAlias(URI.create(parentURI));
+					Alias alias = ont.toAlias(URI.create(parentURI));
 					functors.add(alias.getName());
 				}
 			}

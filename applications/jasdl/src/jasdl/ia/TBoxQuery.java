@@ -24,11 +24,13 @@ import jasdl.ontology.OntologyManager;
 import jasdl.util.JasdlException;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
+import jason.asSyntax.Atom;
 import jason.asSyntax.ListTerm;
 import jason.asSyntax.ListTermImpl;
-import jason.asSyntax.Pred;
+import jason.asSyntax.Literal;
 import jason.asSyntax.Term;
 
+import java.net.URI;
 import java.util.List;
 
 import com.hp.hpl.jena.ontology.OntResource;
@@ -65,11 +67,12 @@ class TBoxQuery {
     		throw new JasdlException("Unknown ontology alias: "+alias);
     	}
     	
-    	if(!resName.isPred()){
+    	if(!resName.isLiteral()){
     		throw new JasdlException("first argument must a predicate representing either a class or property in the ontology referred to by the second argument");
     	}
     	
-    	OntResource res = ont.getOntResourceFromPred((Pred)resName);
+    	//OntResource res = ont.getOntResourceFromPred((Pred)resName);
+    	OntResource res = ont.getModel().getOntResource(ont.getReal((Literal)resName).toString());
     	List result = null;
     	if(type == PARENTS){
     		result = ont.listOntResourceParents(res, direct);
@@ -78,9 +81,9 @@ class TBoxQuery {
     	}
     	
     	ListTerm list = new ListTermImpl();
-    	for(Object _parent : result){
-    		OntResource parent = (OntResource)_parent;
-    		list.add( ont.constructLiteralFromResource(parent, false) );
+    	for(Object _relative : result){
+    		OntResource relative = (OntResource)_relative;
+    		list.add( new Atom(ont.toAlias(URI.create(relative.getURI())).toString()) ); 
     	}
     	
     	un.unifies(args[0], list);		

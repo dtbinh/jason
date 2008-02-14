@@ -94,7 +94,7 @@ public class OntologyManager {
 		physicalNsToOntologyMap.put(physicalNs, ont);
 		logicalNsToOntologyMap.put(ont.getLogicalNs(), ont);
 		loadedOntologies.add(ont);
-		mapAliasToOntology(ont, ont.getAlias());
+		mapLabelToOntology(ont, ont.getLabel());
 		return ont;
 	}
 	
@@ -105,11 +105,11 @@ public class OntologyManager {
 	 * @param alias				the alias to map to the given ontology
 	 * @throws JasdlException	if alias already in use
 	 */
-	public void mapAliasToOntology(JasdlOntology ont, String alias) throws JasdlException{
+	public void mapLabelToOntology(JasdlOntology ont, String alias) throws JasdlException{
 		if(aliasToOntologyMap.containsKey(alias)){
 			throw new JasdlException("alias "+alias+"already in use");
 		}		
-		aliasToOntologyMap.remove(ont.getAlias());
+		aliasToOntologyMap.remove(ont.getLabel());
 		aliasToOntologyMap.put(alias, ont);
 		getLogger().finest("added: "+aliasToOntologyMap.get(alias)+" with key "+alias);	
 	}
@@ -192,6 +192,7 @@ public class OntologyManager {
 		}
 		return onts;		
 	}
+	
 	
 	public JasdlOntology getJasdlOntology(String alias) throws JasdlException{		
 		JasdlOntology ont = aliasToOntologyMap.get(alias);

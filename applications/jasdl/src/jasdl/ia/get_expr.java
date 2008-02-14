@@ -63,8 +63,8 @@ public class get_expr extends DefaultInternalAction {
         	OntologyManager manager = OntologyManager.getOntologyManager(ts.getAg());
         	JasdlOntology ont = manager.getJasdlOntology(label);
         	
-        	URI real = ont.transposeToReal(new DefinedAlias(alias, defined_by, ""));
-        	Alias _r = ont.transposeToAlias(real);
+        	URI real = ont.toReal(new DefinedAlias(alias, defined_by, ""));
+        	Alias _r = ont.toAlias(real);
         	
         	if(!(_r instanceof DefinedAlias)){
         		throw new JasdlException(alias+":"+defined_by+" does not refer to a runtime defined class");

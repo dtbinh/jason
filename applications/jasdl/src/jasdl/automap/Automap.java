@@ -48,7 +48,7 @@ public abstract class Automap {
 			}			
 			URI real = URI.create(ns+name);
 			Alias alias = new Alias(x.toLowerCase()+(name.substring(1)));			
-			ont.addTransposeMapping(alias, real);
+			ont.addAliasMapping(alias, real, true);// verbose
 		}
 	}
 }

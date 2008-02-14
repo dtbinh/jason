@@ -31,6 +31,10 @@ import java.net.URI;
 public class Alias {
 	protected String name;
 	
+	public void setName(String name){
+		this.name = name;
+	}
+	
 	/**
 	 * Takes the local name of the supplied uri (i.e. the bit after the #)
 	 * Used by entities with no alias->transposition
@@ -63,6 +67,10 @@ public class Alias {
 	
 	public String toString(){
 		return getName();
+	}
+	
+	public Object clone(){
+		return new Alias(getName());
 	}
 	
 }

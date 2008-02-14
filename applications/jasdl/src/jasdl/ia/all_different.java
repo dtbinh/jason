@@ -73,7 +73,7 @@ public class all_different extends DefaultInternalAction {
         	
         	List<Term> is = ((ListTerm)args[0]).getAsList();
         	for(Term i : is){
-        		assertion.addDistinctMember(ont.getIndividualFromPred((Pred)i));
+        		assertion.addDistinctMember(ont.toIndividual(i));
         	}
 
         	

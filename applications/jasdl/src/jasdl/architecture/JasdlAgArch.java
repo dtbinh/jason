@@ -19,11 +19,10 @@
  */
 package jasdl.architecture;
 
-import static jasdl.util.Common.DEFINED_BY_ANNOTATION;
 import static jasdl.util.Common.EXPR_ANNOTATION;
 import static jasdl.util.Common.ONTOLOGY_ANNOTATION;
 import static jasdl.util.Common.getAnnot;
-import static jasdl.util.Common.hasAnnot;
+import static jasdl.util.Common.getDefinedBy;
 import static jasdl.util.Common.strip;
 import jasdl.ontology.Alias;
 import jasdl.ontology.DefinedAlias;
@@ -170,16 +169,16 @@ public class JasdlAgArch extends AgArch {
 		ontologyAnnotation.setTerm(0, new StringTermImpl(ont.getPhysicalNs().toString()));
 		
 		// add expression annotation
-		Alias alias = ont.getAliasFromPred(literal);
+		Alias alias = ont.getAlias(literal);
 		String expr = null;
-		if(alias instanceof DefinedAlias){
+		if(!alias.isBase()){
 			// we have a runtime defined class: expression is full (postcompiled) class expression and we need to add defined_by annotation
 			expr = ((DefinedAlias)alias).getExpr();					
-			literal.addAnnot(Literal.parseLiteral(DEFINED_BY_ANNOTATION+"("+((DefinedAlias)alias).getDefinedBy()+")"));// need to check its present? nah			
+			literal.addAnnot(JasdlOntology.constructDefinedByAnnotation(((DefinedAlias)alias).getDefinedBy()));			
 		}else{
-			expr = ont.transposeToReal(alias).toString();
+			expr = ont.toReal(alias).toString();
 		}
-		literal.addAnnot(Literal.parseLiteral(EXPR_ANNOTATION+"(\""+expr+"\")"));
+		literal.addAnnot(JasdlOntology.constructExprAnnotation(expr));
 		
 		return literal;
 	}
@@ -281,7 +280,7 @@ public class JasdlAgArch extends AgArch {
 		
 		
 		// (2) substitute physical namespace for aliases
-		ontologyAnnotation.setTerm(0, new Atom(ont.getAlias()));
+		ontologyAnnotation.setTerm(0, new Atom(ont.getLabel()));
 		
 		// process expression annotation, instantating any new concepts and mapping predefined ones
 		if(exprAnnot==null){
@@ -299,14 +298,15 @@ public class JasdlAgArch extends AgArch {
 		
 		String entityAlias = null;
 		// just need to check for defined_by annotation!
-		// assume that defined_by term is truthful, or use sender name as defined_by?							
-		if(hasAnnot(literal, DEFINED_BY_ANNOTATION)){ // we have a runtime defined class expression
+		// assume that defined_by term is truthful, or use sender name as defined_by?		
+		// defined_by will always be set explicitly on incoming literals
+		if(getDefinedBy(literal) != null){ // we have a runtime defined class expression
 			entityAlias = literal.getFunctor();// take on their functor as alias
-			String definedBy = ont.getDefinedBy(literal);
+			String definedBy = getDefinedBy(literal);
 			ont.defineClass(entityAlias, expr, definedBy); // very trusting!								
 		}else{ // we have a base class reference in expression
 			// take on my alias as functor								
-			entityAlias = ont.transposeToAlias(URI.create(expr)).getName();
+			entityAlias = ont.toAlias(URI.create(expr)).getName();
 		}
 		
 		

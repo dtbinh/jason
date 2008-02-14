@@ -61,7 +61,7 @@ public class set_ontology_alias extends DefaultInternalAction {
         	OntologyManager manager = OntologyManager.getOntologyManager(ts.getAg());
             JasdlOntology ont = manager.getJasdlOntology(old_alias);
             
-            ont.setAlias(new_alias);
+            ont.setLabel(new_alias);
         	
             return true;
         } catch (Exception e) {

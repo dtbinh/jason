@@ -19,33 +19,38 @@
  */
 package jasdl.ontology;
 import static jasdl.util.Common.DEFINED_BY_ANNOTATION;
-import static jasdl.util.Common.DOMAIN;
+import static jasdl.util.Common.EXPR_ANNOTATION;
 import static jasdl.util.Common.ONTOLOGY_ANNOTATION;
-import static jasdl.util.Common.RANGE;
 import static jasdl.util.Common.getAnnot;
 import static jasdl.util.Common.getDatatypePropertyXSDDatatype;
-import static jasdl.util.Common.strip;
+import static jasdl.util.Common.getDefinedBy;
+import static jasdl.util.Common.stripAll;
 import static jasdl.util.Common.surroundedBy;
-import static jasdl.util.Common.termIsDirect;
 import jasdl.automap.AutomapUtils;
 import jasdl.util.JasdlException;
+import jason.asSyntax.Atom;
 import jason.asSyntax.Literal;
+import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Pred;
+import jason.asSyntax.StringTermImpl;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Vector;
 
 import joce.Joce;
 
 import org.antlr.runtime.RecognitionException;
 import org.mindswap.pellet.jena.PelletReasonerFactory;
 
-import com.hp.hpl.jena.datatypes.DatatypeFormatException;
+import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
+import com.hp.hpl.jena.ontology.DatatypeProperty;
 import com.hp.hpl.jena.ontology.Individual;
+import com.hp.hpl.jena.ontology.ObjectProperty;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
@@ -54,6 +59,9 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Selector;
+import com.hp.hpl.jena.rdf.model.SimpleSelector;
+import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.RDF;
 
 /**
@@ -85,17 +93,17 @@ public class JasdlOntology{
 	/**
 	 * The alias used to refer to this ontology from Jason
 	 */
-	private String alias;
+	private String label;
 	
 	/**
 	 * Transpose mappings from ontological entitiy 'real' (local) names in the ontology to their aliases
 	 */
-	private HashMap<URI, Alias> realToAliasTransposeMap;
+	private HashMap<URI, Alias> realToAliasMap;
 	
 	/**
 	 * Transpose mappings from ontological entity aliases to their 'real' (local) names in the ontology
 	 */
-	private HashMap<Alias, URI> aliasToRealTransposeMap;
+	private HashMap<Alias, URI> aliasToRealMap;
 
 	private OntologyManager manager;
 	
@@ -111,14 +119,14 @@ public class JasdlOntology{
 	 * @param alias
 	 * @see jasdl.ontology.OntologyManager#createJasdlOntology(URI, String)
 	 */
-	public JasdlOntology(URI physicalNs, String alias, OntologyManager manager) throws JasdlException{
+	public JasdlOntology(URI physicalNs, String label, OntologyManager manager) throws JasdlException{
 		this.physicalNs = physicalNs;
-		this.alias = alias;
+		this.label = label;
 		this.model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
 		this.manager = manager;
 		model.read(physicalNs.toString());
-		realToAliasTransposeMap = new HashMap<URI, Alias>();
-		aliasToRealTransposeMap = new HashMap<Alias, URI>();
+		realToAliasMap = new HashMap<URI, Alias>();
+		aliasToRealMap = new HashMap<Alias, URI>();
 		logicalNs = URI.create(getModel().getNsPrefixURI(""));
 	}
 	
@@ -130,9 +138,7 @@ public class JasdlOntology{
 	 * @param expr						a protege-style class expression to be parsed (precompiled - refers to |uris|)
 	 * @throws RecognitionException		if expression is invalid
 	 */
-	public void defineClass(String classname, String expr, String definedBy) throws JasdlException{
-		
-		
+	public void defineClass(String classname, String expr, String definedBy) throws JasdlException{	
 		
 		 // prevents undesirable (but not fatal) name overlaps with underlying ontology
 		if(model.containsResource(model.getResource(getLogicalNs()+classname))){
@@ -148,20 +154,17 @@ public class JasdlOntology{
 			OntClass cls = (OntClass)res.as(OntClass.class);
 			cls.remove();
 			
-//			 and remove alias definition
+			// and remove alias definition
 			Alias alias = new DefinedAlias(classname, definedBy, ""); // expr not important
 			
-			URI real = transposeToReal(alias);
-	    	removeTransposeMapping(alias, real);
+			URI real = toReal(alias);
+	    	removeAliasMapping(alias, real);
 			
-		}
-		
+		}		
 		
 		// we don't want pre compilation to happen here since incoming messages will already be precompiled
 		// in fact, the only place this should happen is within the define_class internal action
-		//expr = precompileExpression(expr);
-		
-		//logger.warn("Expression precompiled successfully to "+expr);
+
 		OntClass cls;
 		try {
 			cls = Joce.parse(expr, model);
@@ -180,17 +183,26 @@ public class JasdlOntology{
     	manager.getLogger().finest("Defining class: "+classname+" (defined by "+definedBy+") as "+expr+" with URI "+real);
     	
     	expr = postcompileExpression(expr); // post compilation won't hurt on incoming messages, and might help in future if 'correspodence' is created between two aquianted agents
-    	
-    	//logger.warn("Expression postcompiled successfully to "+expr);
+
     	
     	DefinedAlias alias = new DefinedAlias(classname, definedBy, expr);
-    	addTransposeMapping(alias, real);
-    	
+    	addAliasMapping(alias, real);    	
 	}
-    /**
+
+	/**
+	 * Transforms logical ns ...# to ...:agname# for referring to runtime-defined classes
+	 * Used only when defining classes to map its alias to its real
+	 * @param definedBy
+	 * @return
+	 */
+	private URI getLogicalNs(String definedBy){
+		String base = logicalNs.toString();
+		return URI.create(base.substring(0, base.length()-1)+":"+definedBy+"#");
+	}
+	
+	/**
      * Replace full uris referring to defined classes with their expressions
      * Prepares an expression for sharing with other agents that might not know the meaning of runtme-defined terms
-     * 
      * Split by |, take evens, tranpose uris to alias, if defined then replace with expression.
      * By induction, all expressions will be in postcompiled form
      * @param expr
@@ -201,7 +213,7 @@ public class JasdlOntology{
 		String[] tokens = expr.split("[|]");
 		for(int i=1; i<tokens.length; i+=2){
 			URI uri = URI.create(tokens[i]);			
-			Alias alias = transposeToAlias(uri);
+			Alias alias = toAlias(uri);
 			if(alias instanceof DefinedAlias){
 				newExpr = newExpr.replace("|"+uri.toString()+"|", "("+((DefinedAlias)alias).getExpr()+")");
 			}
@@ -234,32 +246,69 @@ public class JasdlOntology{
 	 */
 	public URI getLogicalNs(){
 		return logicalNs;
-	}
-	
-	/**
-	 * Transforms logical ns ...# to ...:agname# for referring to runtime-defined classes
-	 * @param definedBy
-	 * @return
-	 */
-	private URI getLogicalNs(String definedBy){
-		String base = logicalNs.toString();
-		return URI.create(base.substring(0, base.length()-1)+":"+definedBy+"#");
-	}
-	
+	}	
 		
 	public URI getPhysicalNs() {
 		return physicalNs;
 	}
+	
+
+	
+	public Alias unrename(Alias alias){
+		Alias clone = (Alias)alias.clone();
+		clone.setName(alias.getName().substring(0, alias.getName().lastIndexOf("_")));
+		return clone;
+	}
 
 	/**
-	 * Adds a tranpose mapping both ways (alias->real and real->alias)
+	 * Adds a tranpose mapping both ways (alias->real and real->alias).
+	 * If alias mapping clashes with a real, map to alias0. If some alias[0..n] already exists, map to alias[n+1]
 	 * @param alias		alias to map to real
 	 * @param real		real to map to alias
 	 */
-	public void addTransposeMapping(Alias alias, URI real){
-		aliasToRealTransposeMap.put(alias, real);
-		realToAliasTransposeMap.put(real, alias);
+	public void addAliasMapping(Alias alias, URI real, boolean verbose){
+		alias = ensureUnique(alias, verbose);
+		aliasToRealMap.put(alias, real);
+		realToAliasMap.put(real, alias);
 		manager.getLogger().finest("Adding mapping: "+alias+" <-> "+real);
+	}
+	
+	public void addAliasMapping(Alias alias, URI real){
+		addAliasMapping(alias, real, false);
+	}
+	
+	public Alias ensureUnique(Alias alias){
+		return ensureUnique(alias, false);
+	}
+	public Alias ensureUnique(Alias alias, boolean verbose){
+		String orig = alias.getName();
+		Alias clone = (Alias)alias.clone();
+		int n = 0;		
+		while(true){
+			if(!isAliasUnique(clone)){
+				if(verbose) manager.getLogger().warning("Name clash on alias "+clone+"...");			
+				clone.setName(orig+"_"+n);
+				n++;
+			}else{
+				break;
+			}
+		}
+		if(n>0 && verbose) manager.getLogger().warning("..."+clone+" now refers to "+toReal(alias));
+		return clone;
+	}
+	
+	/**
+	 * Unique iff not a key in alias map and there is no resource with the same local name present
+	 * @param alias
+	 * @return
+	 */
+	public boolean isAliasUnique(Alias alias){
+		// is mapped
+		if(aliasToRealMap.containsKey(alias)) return false;
+		// isn't mapped, but there is a resource of the same name present
+		URI real = toReal(alias);
+		if(model.containsResource(model.createResource(real.toString()))) return false;		
+		return true;
 	}
 	
 	/**
@@ -267,9 +316,9 @@ public class JasdlOntology{
 	 * @param alias		alias to map to real
 	 * @param real		real to map to alias
 	 */
-	public void removeTransposeMapping(Alias alias, URI real){
-		aliasToRealTransposeMap.remove(alias);
-		realToAliasTransposeMap.remove(real);
+	public void removeAliasMapping(Alias alias, URI real){
+		aliasToRealMap.remove(alias);
+		realToAliasMap.remove(real);
 		manager.getLogger().finest("Removing mapping: "+alias+" <-> "+real);
 	}	
 	
@@ -281,8 +330,8 @@ public class JasdlOntology{
 		return model;
 	}
 	
-	public String getAlias(){
-		return alias;
+	public String getLabel(){
+		return label;
 	}
 	
 	public OntologyManager getManager(){
@@ -292,12 +341,12 @@ public class JasdlOntology{
 	/**
 	 * Changes the alias associated with this ontology
 	 * 
-	 * @param alias				the alias to change to
+	 * @param label				the alias to change to
 	 * @throws JasdlException	if mapping fails (i.e. alias already in use)
 	 */
-	public void setAlias(String alias) throws JasdlException{
-		manager.mapAliasToOntology(this, alias);
-		this.alias = alias;
+	public void setLabel(String label) throws JasdlException{
+		manager.mapLabelToOntology(this, label);
+		this.label = label;
 	}
 	
 	/**
@@ -305,10 +354,10 @@ public class JasdlOntology{
 	 * @param real		real to transpose to alias
 	 * @return			tranpose mapping of given real (an alias)
 	 */
-	public Alias transposeToAlias(URI real){
-		Alias alias = realToAliasTransposeMap.get(real);
+	public Alias toAlias(URI real){
+		Alias alias = realToAliasMap.get(real);
 		if(alias == null){
-			alias = new Alias(real);
+			alias = new Alias(real); // will be set to equal just the part after the # in real
 		}
 		return alias;
 	}
@@ -318,59 +367,50 @@ public class JasdlOntology{
 	 * @param alias		alias to transpose to real
 	 * @return			tranpose mapping of given alias (real)
 	 */
-	public URI transposeToReal(Alias alias){
-		URI real = aliasToRealTransposeMap.get(alias);
+	public URI toReal(Alias alias){
+		URI real = aliasToRealMap.get(alias);
 		if(real == null){ // can't be a defined class !
 			real = URI.create(getLogicalNs()+alias.getName());
 		}
 		return real;
 	}
-
-	/**
-	 * Gets the contents of the defined_by annotation, or this agent's name if none present
-	 * @param p
-	 * @return
-	 * @throws JasdlException
-	 */
-	public String getDefinedBy(Pred p) throws JasdlException{
-		String definedBy = null;
-		Term _definedBy = getAnnot(p, DEFINED_BY_ANNOTATION);
-		if(_definedBy == null){
-			definedBy = manager.getAgentName();
-		}else{
-			definedBy = ((Structure)_definedBy).getTerm(0).toString();
-		}
-		return definedBy;
-	}	
 	
-	public Alias getAliasFromPred(Pred p) throws JasdlException{
+	public Alias getAlias(Term _p) throws JasdlException{
+		if(!(_p instanceof Structure)) throw new JasdlException("Cannot get alias of "+_p);
+		Structure p = (Structure)_p;
 		String classname = p.getFunctor();
 		
-		// check for defined by examining alias
-		String definedBy = getDefinedBy(p);
+		// check for defined by examining alias - needs to be done since defined_by annotation might be omitted on self defined class
+		String definedBy = getManager().getAgentName(); // might be implicitly intended to mean the class defined by myself
+		if(p.isPred()){
+			String df = getDefinedBy((Pred)p);
+			if(df != null){
+				definedBy = df;
+			}
+		}
 		Alias alias = new DefinedAlias(classname, definedBy);
 		
 		// check if such a thing exists
-		URI real = aliasToRealTransposeMap.get(alias); // if defined, then there will definitely be a mapping present
+		URI real = aliasToRealMap.get(alias); // if defined, then there will definitely be a mapping present
 		
 		if(real == null){ // can't be a defined class -- may or may not be a mapping
 			alias = new Alias(classname);
 		}else{
-			alias = realToAliasTransposeMap.get(real); // we need to get the actual instance now, since it is associated with expression
+			alias = realToAliasMap.get(real); // we need to get the actual instance now, since it is associated with expression
 		}
 		
 		return alias;
 	}
 	
-	public URI getRealFromPred(Pred p) throws JasdlException{
-		URI real = null;
-		if(termIsDirect(p)){ // direct, just ns:functor
-			real = URI.create(getLogicalNs() + p.getFunctor());
-		}else{
-			real = transposeToReal(getAliasFromPred(p));			
-		}	
-		return real;	
+	public URI getReal(Term _p) throws JasdlException{
+		if(!(_p instanceof Structure)) throw new JasdlException("Cannot get URI for "+_p);
+		Structure p = (Structure)_p;		
+		return toReal(getAlias(p));	
 	}
+	
+	public Alias getAlias(Resource r){
+		return toAlias(URI.create(r.getURI()));
+	}	
 	
 	/**
 	 * Convenience method for polymorphically returning the parents of a resource
@@ -407,242 +447,8 @@ public class JasdlOntology{
 			throw new JasdlException("Unable to list parents of resource "+res+" since it is of the wrong type");
 		}
 	}		
-	
-	/* Various methods for translating Jason entities to ontological entities*/
+		
 
-	/**
-	 * For Jason->Ontology translation
-	 * 
-	 * Must be a pred, since we need to check for defined_by annotation
-	 */
-	public OntResource getOntResourceFromPred(Pred s) throws JasdlException{	
-		URI real = getRealFromPred(s);	
-		return getModel().createOntResource(real.toString());		
-	}
-	
-	/**
-	 * Ensures p refers to an OntClass and is unary
-	 * Complements resultant if p is strongly negated.
-	 * 
-	 * 
-	 * TODO: what about unground defined_by annotations?
-	 * @param p
-	 * @return
-	 * @throws JasdlException
-	 */
-	public OntClass getOntClassFromPred(Pred p) throws JasdlException{
-		if(p.getArity()!=1){
-			throw new JasdlException(p+" cannot refer to a class since it is not unary");
-		}
-		OntResource res = getOntResourceFromPred(p);
-		if(!res.isClass()){
-			throw new JasdlException(res+" does not refer to a class");
-		}
-		OntClass c = res.asClass();
-		
-		// we need to generate a unique (for this complement class) uri that ends with transposed name
-		// TODO: best way for this is perhaps another type of Alias: ComplementAlias
-		Alias alias = transposeToAlias(URI.create(c.getURI()));
-		
-		String ns = c.getURI().toString();
-		ns = ns.substring(0, ns.lastIndexOf("#")); // trim to last #
-		ns += ":complement#"+alias.getName();
-		
-		
-		if(p.isLiteral() && ((Literal)p).negated()){
-			c = res.getOntModel().createComplementClass(ns, c);//TODO: not entirely sure why I require the tilde here. Where is the first character being stripped?!
-		}
-		return c;
-	}
-	
-	/**
-	 * Ensures p refers to an OntProperty and is binary
-	 * TODO: negated properties? - waiting for OWL 1.1 support in Jena
-	 * @param p
-	 * @return
-	 * @throws JasdlException
-	 */
-	public OntProperty getOntPropertyFromPred(Pred p) throws JasdlException{
-		if(p.getArity()!=2){
-			throw new JasdlException(p+" cannot refer to a class since it is not unary");
-		}
-		OntResource res = getOntResourceFromPred(p);
-		if(!res.canAs(OntProperty.class)){
-			throw new JasdlException(p+" does not refer to a property");
-		}
-		// property negation belongs here come OWL 1.1
-		return res.asProperty();
-	}
-	
-	/**
-	 * Like getOntResourceFromStructure except unground structure results in null and structure must have an arity 0 
-	 * Will return null (representing a wildcard for statement searching) if structure is not ground
-	 * Will create individual if doesn't exist.
-	 * For Jason->Ontology translation
-	 * 
-	 * @param s
-	 * @return an OntResource if s is ground, else null (representing a wildcard for statement searching)
-	 * @throws JasdlException
-	 */
-	public Resource getIndividualFromPred(Pred s) throws JasdlException{
-		if(!s.isGround()){
-			return null;
-		}
-		if(s.getArity()!=0){
-			throw new JasdlException(s+" cannot refer to an individual since individuals must be represented as structures of arity 0");
-		}
-		return getOntResourceFromPred(s);
-	}	
-	
-	/**
-	 * Retrieves a typed literal given a term and a type.
-	 * For Jason->Ontology translation
-	 * @param ont
-	 * @param term
-	 * @param type
-	 * @return
-	 * @throws JasdlException
-	 */
-	public com.hp.hpl.jena.rdf.model.Literal getTypedLiteralFromTerm(Term term, XSDDatatype type) throws JasdlException {
-		if(!term.isGround()){
-			return null;
-		}
-		try{
-			// force strings to be surrounded by quotes
-			if(type == XSDDatatype.XSDstring && !surroundedBy(term.toString(), "\"")){
-				throw new DatatypeFormatException("String literals must be surrounded by quotes");
-			}
-			return getModel().createTypedLiteral((Object)strip(term.toString(), "\""), type);
-		}catch(DatatypeFormatException e){
-			throw new JasdlException(term+" cannot refer to a typed literal of type "+type+". Reason: "+e);
-		}
-	}
-	
-	
-	
-	/**
-	 * Constructs a (subject, predicate, object) triple representing a statement that can be used to reference the resource referred to by the supplied predicate
-	 * For Jason-> Ontology translation
-	 * 
-	 * Behaviour branches based on arity of supplied literal
-	 * - arity 1 (unary/class assertion) results in triples of the form (base:individual, rdf:type, base:class)
-	 * - arity 2 (binary/object or datatype property assertion) results in triples of the form (base:individual, base:property, base:individual/xsd:literal)
-	 * 
-	 * Can't use Statement since it does not permit null values	 
-	 * Individuals created either side of Object/Datatype property if they don't exist
-	 * @param uri
-	 * @param l
-	 * @return
-	 * @throws JasdlException
-	 */	
-	public StatementTriple constructTripleFromPred(Pred p) throws JasdlException{		
-		int arity = p.getArity();				
-		Resource subject = getIndividualFromPred((Pred)p.getTerm(DOMAIN));// subject if always first argument regardless of whether this pred is a class, object property or datatype property assertion		
-		Property predicate;	
-		RDFNode object;
-		switch(arity){
-		case 1:			
-			predicate = RDF.type;
-			object = getOntClassFromPred(p);
-			if(object == null){				
-				throw new JasdlException("Undefined class: "+object); //TODO: perhaps just instantiate under owl:Thing?
-			}
-			break;			
-		case 2:
-			predicate = getOntPropertyFromPred(p);	
-			if(predicate == null){
-				throw new JasdlException("Undefined property: "+predicate);
-			}
-			object = null;
-			if(((OntProperty)predicate).isDatatypeProperty()){
-				XSDDatatype type = getDatatypePropertyXSDDatatype((OntProperty)predicate);
-				object = getTypedLiteralFromTerm(p.getTerm(RANGE), type);
-			}else{
-				object = getIndividualFromPred((Pred)p.getTerm(RANGE));
-			}
-			break;
-			
-		default:
-			throw new JasdlException("Invalid semantically-enriched predicate: "+p);//should never happen
-		}
-		return new StatementTriple(subject, predicate, object);
-	}
-	
-	/*
-	 * To correspond to exact semantics of Jason's bb.getRelevant method
-	public StatementTriple constructTripleFromPred2(Pred p) throws JasdlException{		
-		int arity = p.getArity();				
-		Resource subject = getIndividualFromPred((Pred)p.getTerm(DOMAIN));// subject if always first argument regardless of whether this pred is a class, object property or datatype property assertion		
-		Property predicate;	
-		RDFNode object;
-		switch(arity){
-		case 1:			
-			predicate = RDF.type;
-			object = getOntClassFromPred(p);
-			if(object == null){				
-				throw new JasdlException("Undefined class: "+object); //TODO: perhaps just instantiate under owl:Thing?
-			}
-			subject = null;
-			break;			
-		case 2:
-			predicate = getOntPropertyFromPred(p);	
-			if(predicate == null){
-				throw new JasdlException("Undefined property: "+predicate);
-			}
-			object = null;
-			if(((OntProperty)predicate).isDatatypeProperty()){
-				XSDDatatype type = getDatatypePropertyXSDDatatype((OntProperty)predicate);
-				object = getTypedLiteralFromTerm(p.getTerm(RANGE), type);
-			}else{
-				object = getIndividualFromPred((Pred)p.getTerm(RANGE));
-			}			
-			
-			subject = null;
-			object = null;
-			break;
-			
-		default:
-			throw new JasdlException("Invalid semantically-enriched predicate: "+p);//should never happen
-		}
-		return new StatementTriple(subject, predicate, object);
-	}
-	*/	
-	
-	/* Various methods for translating ontological entities to Jason entities*/
-	
-	/**
-	 * Create a 0-ary literal from a resource.
-	 * e.g. just the functor of a class assertion
-	 */
-	public Literal constructLiteralFromResource(OntResource res, boolean negated){
-		Literal l = null;
-		if(res instanceof OntClass || res instanceof OntProperty){
-			Alias alias = transposeToAlias(URI.create(res.getURI()));
-			l = new Literal(!negated, alias.getName());
-			if(!alias.isBase()){
-				l.addAnnot( Literal.parseLiteral(DEFINED_BY_ANNOTATION+"("+((DefinedAlias)alias).getDefinedBy()+")"));
-			}
-			
-			// add ontology annotation
-			((Pred)l).addAnnot( Literal.parseLiteral(constructAnnotation()) );
-		}else if(res instanceof Individual){
-			Alias alias = transposeToAlias(URI.create(res.getURI()));
-			l = Literal.parseLiteral(alias.getName());
-		}
-		//perhaps add direct annotation here?
-		return l;
-	}
-	
-	
-	
-	public String constructAnnotation(){
-		String annot = ONTOLOGY_ANNOTATION+"(";
-		annot+=getAlias();
-		annot+=")]";
-		return annot;
-	}
-	
-	
 	public Resource getNothing(){
 		return model.getResource(model.getNsPrefixURI("owl")+"Nothing");
 	}
@@ -650,10 +456,266 @@ public class JasdlOntology{
 	public Resource getThing(){
 		return model.getResource(model.getNsPrefixURI("owl")+"Thing");
 	}
-	
-	
+		
 	public String toString(){
-		return "Ont: "+alias;
+		return "Ont: "+label;
+	}
+	
+
+	
+	
+	
+	public Selector toSelector(Literal l) throws JasdlException{
+		Resource	s = toIndividual(l.getTerm(0));
+		Property	p = null;
+		RDFNode		o = null;		
+		if(isClassAssertion(l)){
+			p = RDF.type;
+			o = toOntClass(l);
+			if(o == null){
+				throw new JasdlException("Undefined class "+l.getFunctor());
+			}
+			if(l.negated()){				
+				// local name of complement class must equal the alias of its complement
+				// negation of literal will be dealt with by complement detection during statement->literal translation
+				// will this deal correctly with defined classes? NO, alias mapping is required for this to work
+				// Solution: rename local name to something guaranteed to be unique, map, and strip upon statement->literal translation
+				OntClass oc = (OntClass)o.as(OntClass.class);
+				Alias alias = getAlias(oc);
+				String real = oc.getNameSpace().substring(0, oc.getNameSpace().length()-1)+"_jasdl_complement_#"+alias.getName();
+				o = model.getComplementClass(real);				
+				if(o == null){ // we haven't yet created and mapped this complement class
+					o = model.createComplementClass(real, oc);
+					addAliasMapping(alias, URI.create(real)); // won't be unique
+				}
+			}			
+		}else if(isPropertyAssertion(l)){
+			if(l.negated()){
+				throw new JasdlException(l+" is a strongly-negated binary SE-literal. These should not be used as they cannot yet be handled correctly by JASDL");
+			}
+			if(!l.getTerm(0).isGround() && l.getTerm(1).isGround()){
+				throw new JasdlException("JASDL no longer supports left-unground right-ground property queries such as "+l);
+			}
+			p = toOntProperty(l);
+			if(p == null){
+				throw new JasdlException("Undefined property "+l.getFunctor());
+			}
+			if(p.canAs(ObjectProperty.class)){
+				o = toIndividual(l.getTerm(1));
+			}else if(p.canAs(DatatypeProperty.class)){
+				o = toDatatypeLiteral(l.getTerm(1), getDatatypePropertyXSDDatatype((DatatypeProperty)p.as(DatatypeProperty.class)));
+			}else{
+				throw new JasdlException("Invalid SELiteral "+l);
+			}
+		}else{
+			throw new JasdlException("Invalid SELiteral "+l);
+		}		
+		Selector sel = new SimpleSelector(s, p, o){
+			public String toString(){
+				return getSubject()+", "+getPredicate()+", "+getObject();
+			}
+		};
+		return sel;
+	}
+	
+	public Statement toStatement(Literal l) throws JasdlException{
+		// re-use getSelectorFromLiteral but ensure it is ground
+		Selector sel = toSelector(l);
+		if(sel.getSubject() == null || sel.getPredicate() == null || sel.getObject() == null){
+			throw new JasdlException("Statements must be ground. Supplied: "+sel);
+		}
+		return model.createStatement(sel.getSubject(), sel.getPredicate(), sel.getObject());
+	}
+
+	
+	public OntClass toOntClass(Literal l) throws JasdlException{
+		if(!isClassAssertion(l)) throw new JasdlException(l+" cannot be a class assertion");
+		return model.getOntClass(getReal(l).toString()); // initially just a member of owl:Thing	
+	}
+	
+	public OntProperty toOntProperty(Literal l) throws JasdlException{
+		if(!isPropertyAssertion(l)) throw new JasdlException(l+" cannot be a property assertion");
+		return model.getOntProperty(getReal(l).toString());	
+	}	
+
+	public Individual toIndividual(Term t) throws JasdlException{
+		if(t.isGround()){
+			return model.createIndividual(getReal(t).toString(), getThing()); // initially just a member of owl:Thing
+		}else{
+			return null;
+		}
+	}
+	
+	private com.hp.hpl.jena.rdf.model.Literal toDatatypeLiteral(Term t, XSDDatatype type) throws JasdlException{
+		if(t.isGround()){
+			// force strings to be surrounded by quotes
+			if(type == XSDDatatype.XSDstring && !surroundedBy(t.toString(), "\"")){
+				throw new JasdlException("String literals must be surrounded by quotes");
+			}
+			return model.createTypedLiteral(stripAll(t.toString(), "\""), type);
+		}else{
+			return null;
+		}
+	}
+	
+	
+	
+	
+
+	
+	/**
+	 * Note: Statements must be ground, accordingly, this cannot create an unground literal
+	 * @param s
+	 * @return
+	 */
+	public Literal fromStatement(Statement s) throws JasdlException{
+		Alias alias;
+		List<Term> terms = new Vector<Term>();
+		boolean sign = true;
+		
+		// first term will always be an individual
+		terms.add(fromIndividual(s.getSubject()));
+
+		if(isClassAssertion(s)){
+			OntClass c = (OntClass)s.getObject().as(OntClass.class);
+			alias = getAlias(c);			
+			// check if complement class (which will result in a strongly negated literal)
+			if(c.isComplementClass() && !c.equals(getThing())){ // since thing is ~nothing. Not a problem, since never retrieve ~thing since this is by definition empty (everything is a thing!)
+				sign = false;
+				// strip the renaming ending up with non-complemented class's alias
+				try{
+					alias = unrename(alias);
+				}catch(StringIndexOutOfBoundsException e){
+					throw new JasdlException("Mistakenly identified "+c+" as a complement class");
+				}
+			}
+		}else if(isPropertyAssertion(s)){			
+			OntProperty p = (OntProperty)s.getPredicate().as(OntProperty.class);
+			// add rhs -dependent on type of property (object/datatype)
+			if(isObjectPropertyAssertion(s)){				
+				terms.add(fromIndividual(s.getObject()));
+			}else if(isDatatypePropertyAssertion(s)){
+				terms.add(fromDatatypeLiteral(s.getObject()));
+			}else{
+				throw new JasdlException("Cannot construct SE-literal from statement "+s);
+			}
+			alias = getAlias(p);
+		}else{
+			throw new JasdlException("Cannot construct SE-literal from statement "+s);
+		}
+		
+		Literal l = new Literal(sign, alias.getName());
+		l.addTerms(terms);
+		
+		// add ontology annotation
+		l.addAnnot(constructOntologyAnnotation());
+		
+		// add defined_by annotation if necessary
+		if(!alias.isBase()){
+			l.addAnnot(constructDefinedByAnnotation(((DefinedAlias)alias).getDefinedBy()));
+		}
+		
+		return l;
+	}
+	
+	public Atom fromIndividual(RDFNode n){
+		return new Atom(getAlias((Individual)n.as(Individual.class)).getName());
+	}
+	
+	public Term fromDatatypeLiteral(RDFNode _l){
+		com.hp.hpl.jena.rdf.model.Literal l = (com.hp.hpl.jena.rdf.model.Literal)_l.as(com.hp.hpl.jena.rdf.model.Literal.class);
+		
+		RDFDatatype datatype = l.getDatatype();
+		String value = l.getValue().toString();				
+		
+		// surround with quotes if necessary for datatype representation in Jason
+		if(datatype == XSDDatatype.XSDstring || datatype == XSDDatatype.XSDdate || datatype == XSDDatatype.XSDdateTime || datatype == XSDDatatype.XSDtime){
+			//discard -T at start if time (not sure why Jena puts this in) //TODO: is this in fact the proper way of representing a time in owl?			
+			if(datatype == XSDDatatype.XSDtime){
+				value = value.replace("-T", "");
+			}
+			return new StringTermImpl(value);
+		}
+		
+		if(datatype == XSDDatatype.XSDboolean){
+			if(Boolean.parseBoolean(value)){
+				return Literal.LTrue;
+			}else{
+				return Literal.LFalse;
+			}
+		}
+				
+		return new NumberTermImpl(value);
+	}
+	
+
+	
+	
+	public static boolean isSELiteral(Literal l) throws JasdlException{
+		Term annot = getAnnot(l, ONTOLOGY_ANNOTATION);
+		if(annot == null) return false;
+		return true;
+	}
+	
+	public static boolean isClassAssertion(Literal l) throws JasdlException{
+		if(!isSELiteral(l)) return false;
+		if(l.getArity()!=1) return false;				// must be a unary literal
+		return true;
+	}
+	
+	public static boolean isClassAssertion(Statement s) throws JasdlException{
+		if(!s.getSubject().canAs(Individual.class)) return false;
+		if(!s.getPredicate().equals(RDF.type)) return false;
+		if(!s.getObject().canAs(OntClass.class)) return false;
+		return true;
+	}
+	
+	public static boolean isPropertyAssertion(Literal l) throws JasdlException{
+		if(!isSELiteral(l)) return false;
+		if(l.getArity()!=2) return false;				// must be a binary literals
+		return true;
+	}
+	
+	public static boolean isPropertyAssertion(Statement s) throws JasdlException{
+		if(!s.getPredicate().canAs(OntProperty.class)) return false;
+		return true;
+	}
+
+	public static boolean isObjectPropertyAssertion(Statement s) throws JasdlException{
+		if(!s.getSubject().canAs(Individual.class)) return false;
+		if(!s.getPredicate().canAs(ObjectProperty.class)) return false;
+		if(!s.getObject().canAs(Individual.class)) return false;
+		return true;
+	}
+	
+	public static boolean isDatatypePropertyAssertion(Statement s) throws JasdlException{
+		if(!s.getSubject().canAs(Individual.class)) return false;
+		if(!s.getPredicate().canAs(DatatypeProperty.class)) return false;
+		if(!s.getObject().isLiteral()) return false;
+		return true;
+	}	
+	
+	
+	/**
+	 * Because the ontology annotation is never stored
+	 * @return
+	 */
+	public Structure constructOntologyAnnotation(){
+		Structure s = new Structure(ONTOLOGY_ANNOTATION);
+		s.addTerm(new Atom(getLabel()));
+		return s;
+	}
+	
+	public static Structure constructDefinedByAnnotation(String definedBy){
+		Structure s = new Structure(DEFINED_BY_ANNOTATION);
+		s.addTerm(new Atom(definedBy));
+		return s;
+	}
+	
+	public static Structure constructExprAnnotation(String expr){
+		Structure s = new Structure(EXPR_ANNOTATION);
+		s.addTerm(new StringTermImpl(expr));
+		return s;
 	}
 	
 }

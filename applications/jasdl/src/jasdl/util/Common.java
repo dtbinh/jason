@@ -30,13 +30,12 @@ import java.util.Vector;
 
 import com.hp.hpl.jena.datatypes.TypeMapper;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
-import com.hp.hpl.jena.ontology.OntProperty;
+import com.hp.hpl.jena.ontology.DatatypeProperty;
 
 public class Common {
 	public static String DELIM=",";
 	
 	public static String ONTOLOGY_ANNOTATION = "o";
-	public static String DIRECT_ANNOTATION = "direct";
 	
 	public static String EXPR_ANNOTATION = "expr";
 	public static String DEFINED_BY_ANNOTATION = "defined_by";
@@ -45,16 +44,6 @@ public class Common {
 	
 	public static int DOMAIN = 0;
 	public static int RANGE = 1;
-	
-	/**
-	 * Searches for [direct] annotation and returns true if present, else false
-	 * 
-	 * @param l
-	 * @return
-	 */
-	public static boolean termIsDirect(Term term) throws JasdlException{
-		return hasAnnot(term, DIRECT_ANNOTATION);
-	}	
 	
 	/**
 	 * Returns all annotation terms with the given functor
@@ -143,10 +132,18 @@ public class Common {
 		}
 	}
 	
-	public static XSDDatatype getDatatypePropertyXSDDatatype(OntProperty prop){
+	public static XSDDatatype getDatatypePropertyXSDDatatype(DatatypeProperty prop){
 		return (XSDDatatype)TypeMapper.getInstance().getTypeByName(prop.getRange().getURI());
 	}
 	
+	public static String getDefinedBy(Pred p) throws JasdlException{
+		Term _definedBy = getAnnot(p, DEFINED_BY_ANNOTATION);
+		if(_definedBy == null){
+			return null;
+		}else{
+			return ((Structure)_definedBy).getTerm(0).toString();
+		}
+	}		
 	
 
 }

@@ -66,4 +66,8 @@ public class DefinedAlias extends Alias {
 	public String toString(){
 		return definedBy+":"+name;
 	}
+	
+	public Object clone(){
+		return new DefinedAlias(getName(), getDefinedBy(), getExpr());
+	}
 }
