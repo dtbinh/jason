@@ -28,7 +28,10 @@ import static jasdl.util.Common.stripAll;
 import static jasdl.util.Common.surroundedBy;
 import jasdl.automap.AutomapUtils;
 import jasdl.util.JasdlException;
+import jasdl.util.NotABoxAssertionException;
 import jason.asSyntax.Atom;
+import jason.asSyntax.ListTerm;
+import jason.asSyntax.ListTermImpl;
 import jason.asSyntax.Literal;
 import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Pred;
@@ -44,7 +47,13 @@ import java.util.Vector;
 import joce.Joce;
 
 import org.antlr.runtime.RecognitionException;
+import org.mindswap.pellet.PelletOptions;
+import org.mindswap.pellet.jena.OWLReasoner;
+import org.mindswap.pellet.jena.PelletInfGraph;
 import org.mindswap.pellet.jena.PelletReasonerFactory;
+
+import aterm.ATerm;
+import aterm.ATermAppl;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
@@ -67,7 +76,6 @@ import com.hp.hpl.jena.vocabulary.RDF;
 /**
  * Wraps around OntModel adding additional Jasdl specific information and functionality
  * 
- * Defined classes cannot have [direct] annotation - wouldn't make sense since they are implicitly direct
  * 
  * @author Tom Klapiscak
  *
@@ -106,6 +114,13 @@ public class JasdlOntology{
 	private HashMap<Alias, URI> aliasToRealMap;
 
 	private OntologyManager manager;
+
+	private OWLReasoner pellet;
+	
+	/**
+	 * Maps EXPLICITLY ASSERTED individuals to all annotations
+	 */
+	private HashMap<Literal, ListTerm> annotationMap;	
 	
 	/**
 	 * Maps classes defined at runtime (using jasdl.ia.define_class) to their class expression
@@ -119,15 +134,29 @@ public class JasdlOntology{
 	 * @param alias
 	 * @see jasdl.ontology.OntologyManager#createJasdlOntology(URI, String)
 	 */
-	public JasdlOntology(URI physicalNs, String label, OntologyManager manager) throws JasdlException{
+	public JasdlOntology(URI physicalNs, String label, OntologyManager manager) throws JasdlException{		
 		this.physicalNs = physicalNs;
-		this.label = label;
-		this.model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
+		this.label = label;		
 		this.manager = manager;
+		
+		annotationMap = new HashMap<Literal, ListTerm>();
+		
+		// Reasoner (Pellet) set up
+		PelletOptions.USE_TRACING = true;		
+		this.model = ModelFactory.createOntologyModel(PelletReasonerFactory.THE_SPEC);
+		
+		((PelletInfGraph)model.getGraph()).setDerivationLogging(true);
+		pellet = ((PelletInfGraph)model.getGraph()).getOWLReasoner();
+		pellet.getKB().setDoExplanation(true);
+		
 		model.read(physicalNs.toString());
 		realToAliasMap = new HashMap<URI, Alias>();
 		aliasToRealMap = new HashMap<Alias, URI>();
 		logicalNs = URI.create(getModel().getNsPrefixURI(""));
+	}
+	
+	public OWLReasoner getPellet(){
+		return pellet;
 	}
 	
 	/**
@@ -464,7 +493,12 @@ public class JasdlOntology{
 
 	
 	
-	
+	/**
+	 * Constructs a selector (s,p,o triple, possibly unground) from a SE-Literal
+	 * @param l
+	 * @return
+	 * @throws JasdlException
+	 */
 	public Selector toSelector(Literal l) throws JasdlException{
 		Resource	s = toIndividual(l.getTerm(0));
 		Property	p = null;
@@ -476,10 +510,9 @@ public class JasdlOntology{
 				throw new JasdlException("Undefined class "+l.getFunctor());
 			}
 			if(l.negated()){				
-				// local name of complement class must equal the alias of its complement
 				// negation of literal will be dealt with by complement detection during statement->literal translation
 				// will this deal correctly with defined classes? NO, alias mapping is required for this to work
-				// Solution: rename local name to something guaranteed to be unique, map, and strip upon statement->literal translation
+				// Solution: rename local name to something guaranteed to be unique, map, and strip upon statement->literal translation to get "original" functor
 				OntClass oc = (OntClass)o.as(OntClass.class);
 				Alias alias = getAlias(oc);
 				String real = oc.getNameSpace().substring(0, oc.getNameSpace().length()-1)+"_jasdl_complement_#"+alias.getName();
@@ -518,34 +551,98 @@ public class JasdlOntology{
 		return sel;
 	}
 	
+	/**
+	 * Constructs a Statement from a SE-literal.
+	 * Simply constructs a selector, ensures it is ground, and inserts s,p,o into a statement
+	 * @param l
+	 * @return
+	 * @throws JasdlException
+	 */
 	public Statement toStatement(Literal l) throws JasdlException{
 		// re-use getSelectorFromLiteral but ensure it is ground
 		Selector sel = toSelector(l);
-		if(sel.getSubject() == null || sel.getPredicate() == null || sel.getObject() == null){
+		if(!isGround(sel)){
 			throw new JasdlException("Statements must be ground. Supplied: "+sel);
 		}
 		return model.createStatement(sel.getSubject(), sel.getPredicate(), sel.getObject());
+	}
+	
+	/**
+	 * Returns true if subject, predicate and object of supplied selector is ground
+	 * @param s
+	 * @return
+	 */
+	public boolean isGround(Selector s){
+		return s.getSubject() != null && s.getPredicate() != null && s.getObject() != null;
 	}
 
 	
 	public OntClass toOntClass(Literal l) throws JasdlException{
 		if(!isClassAssertion(l)) throw new JasdlException(l+" cannot be a class assertion");
-		return model.getOntClass(getReal(l).toString()); // initially just a member of owl:Thing	
+		return toOntClass(getReal(l)); // initially just a member of owl:Thing	
 	}
 	
 	public OntProperty toOntProperty(Literal l) throws JasdlException{
 		if(!isPropertyAssertion(l)) throw new JasdlException(l+" cannot be a property assertion");
-		return model.getOntProperty(getReal(l).toString());	
+		return toOntProperty(getReal(l));	
 	}	
 
 	public Individual toIndividual(Term t) throws JasdlException{
 		if(t.isGround()){
-			return model.createIndividual(getReal(t).toString(), getThing()); // initially just a member of owl:Thing
+			return toIndividual(getReal(t));
 		}else{
 			return null;
 		}
 	}
+
+	public Individual toIndividual(URI real){
+		return toIndividual(real.toString());
+	}
 	
+	public OntClass toOntClass(URI real){
+		return toOntClass(real.toString());
+	}
+	
+	public OntProperty toOntProperty(URI real){
+		return toOntProperty(real.toString());
+	}
+	
+	
+	
+	public Individual toIndividual(ATerm real){
+		return toIndividual(real.toString());
+	}
+	
+	public OntClass toOntClass(ATerm real){
+		return toOntClass(real.toString());
+	}
+	
+	public OntProperty toOntProperty(ATerm real){
+		return toOntProperty(real.toString());
+	}	
+	
+	
+	
+	public Individual toIndividual(String real){
+		return model.createIndividual(real, getThing());
+	}
+	
+	public OntClass toOntClass(String real){
+		return model.getOntClass(real);
+	}
+	
+	public OntProperty toOntProperty(String real){
+		return model.getOntProperty(real);
+	}
+	
+	
+	/**
+	 * Constructs a Datatype Literal from a Term and XSDDatatype
+	 * @param t
+	 * @param type
+	 * @return
+	 * @throws JasdlException
+	 */
 	private com.hp.hpl.jena.rdf.model.Literal toDatatypeLiteral(Term t, XSDDatatype type) throws JasdlException{
 		if(t.isGround()){
 			// force strings to be surrounded by quotes
@@ -564,6 +661,7 @@ public class JasdlOntology{
 
 	
 	/**
+	 * Constructs a SE-Literal from a statement
 	 * Note: Statements must be ground, accordingly, this cannot create an unground literal
 	 * @param s
 	 * @return
@@ -615,13 +713,26 @@ public class JasdlOntology{
 			l.addAnnot(constructDefinedByAnnotation(((DefinedAlias)alias).getDefinedBy()));
 		}
 		
+		// add other annotations
+		l.addAnnots(retrieveAnnotations(l));
+		
 		return l;
 	}
 	
+	/**
+	 * Constructs an Atom (0-ary structure) from an RDFNode (Individual)
+	 * @param n
+	 * @return
+	 */
 	public Atom fromIndividual(RDFNode n){
 		return new Atom(getAlias((Individual)n.as(Individual.class)).getName());
 	}
 	
+	/**
+	 * Constructs a String, Boolean or Numeric Term from an RDFNode (Datatype Literal)
+	 * @param _l
+	 * @return
+	 */
 	public Term fromDatatypeLiteral(RDFNode _l){
 		com.hp.hpl.jena.rdf.model.Literal l = (com.hp.hpl.jena.rdf.model.Literal)_l.as(com.hp.hpl.jena.rdf.model.Literal.class);
 		
@@ -718,4 +829,70 @@ public class JasdlOntology{
 		return s;
 	}
 	
+	/**
+	 * Assumption: Aterms are always ground (notice lack of toSelector method for ATerms)
+	 * @param at
+	 * @return
+	 */
+	public Statement toStatement(ATermAppl at) throws JasdlException{
+		Resource	s;
+		Property	p;
+		RDFNode		o;
+		if(isClassAssertion(at)){
+			s = toIndividual(at.getArgument(0));
+			p = RDF.type;
+			o = toOntClass(at.getArgument(1));
+			//TODO: Complement class detection
+		}else if(isPropertyAssertion(at)){
+			s = toIndividual(at.getArgument(1));
+			p = toOntProperty(at.getArgument(0));
+			o = toIndividual(at.getArgument(2));			
+		}else{
+			throw new NotABoxAssertionException("ATerm "+at+" does not represent an ABox assertion");
+		}
+		return model.createStatement(s, p, o);
+	}
+	
+	public Literal fromATerm(ATermAppl at) throws JasdlException{
+		return fromStatement( toStatement(at) );
+	}
+	
+	public boolean isClassAssertion(ATermAppl at){
+		return at.getName().equals("type");
+	}
+	
+	public boolean isPropertyAssertion(ATermAppl at){
+		return at.getName().equals("prop");
+	}
+	
+	
+	
+	
+	
+	/**
+	 * Currently only retrieves explicitly asserted annotations.
+	 * Implied annotation retrieval requires axiom pinpointing functionality.
+	 * 
+	 * @param l
+	 * @return
+	 */
+	public ListTerm retrieveAnnotations(Literal l){
+		Literal clone = (Literal)l.clone();
+		clone.clearAnnots(); // because our hashcode mustn't rely on annotations
+		
+		return annotationMap.get(clone);
+		// TODO: pinpoint axioms of the assertion made by l and and all all inplied annotations
+	}
+	
+	public void storeAnnotations(Literal l, ListTerm annotations){
+		Literal clone = (Literal)l.clone();
+		clone.clearAnnots(); // because our hashcode mustn't rely on annotations
+		
+		ListTerm all = retrieveAnnotations(l);
+		if(all == null){
+			all = new ListTermImpl();
+		}
+		all.addAll(annotations);
+		annotationMap.put(clone, annotations);
+	}	
 }

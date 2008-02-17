@@ -22,14 +22,21 @@ package jasdl.bb;
 import jasdl.ontology.JasdlOntology;
 import jasdl.ontology.OntologyManager;
 import jasdl.util.JasdlException;
+import jasdl.util.NotABoxAssertionException;
 import jason.asSemantics.Agent;
+import jason.asSyntax.ListTerm;
+import jason.asSyntax.ListTermImpl;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Pred;
 import jason.bb.DefaultBeliefBase;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
+
+import aterm.ATermAppl;
 
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
@@ -44,6 +51,8 @@ import com.hp.hpl.jena.vocabulary.RDF;
 
 public class OwlBeliefBase extends DefaultBeliefBase{
 	
+
+	
 	/**
 	 * Required for performing ontological manipulation and reasoning
 	 */
@@ -51,11 +60,16 @@ public class OwlBeliefBase extends DefaultBeliefBase{
 	
 	public void init(Agent agent, String[] args){
 		super.init(agent, args);
+		
 	}
 	
 	public void setOntologyManager(OntologyManager manager){
 		this.manager = manager;
-	}	
+	}
+	
+
+	
+	
 	/**
 	 * Assumption: l is ground - valid?
 	 * 
@@ -71,11 +85,29 @@ public class OwlBeliefBase extends DefaultBeliefBase{
 			}else{ // semantically enriched literal, add to ABox
 				Statement stmt = ont.toStatement(l);
 				ont.getModel().add(stmt);
+				
+				manager.getLogger().info("Adding "+stmt);
 				if(!ont.isConsistent()){
-					manager.getLogger().info("** ABox inconsistency detected on literal "+l+": "+stmt);
-					ont.getModel().remove(stmt);
-					return false;
+					
+					ont.getModel().remove(stmt); // remove for now, we might add this back if existing justification is less authoritative
+					
+					
+					manager.getLogger().info("** ABox inconsistency detected on literal "+l+": "+stmt);					
+					Set<ATermAppl> exp = ont.getPellet().getKB().getExplanationSet();
+					
+					
+					for(ATermAppl at : exp){
+						try{
+							Literal expL = ont.fromATerm(at);
+							manager.getLogger().info("Justifying assertion: "+expL);
+						}catch(NotABoxAssertionException e){}// not a abox assertion
+					}					
+					return false; // only return false if we end up rejecting l
 				}
+				
+				// store annotations
+				ont.storeAnnotations(l, l.getAnnots());
+				
 				return true;
 			}
 		} catch (JasdlException e) {
@@ -83,6 +115,8 @@ public class OwlBeliefBase extends DefaultBeliefBase{
 			return false;
 		}	
 	}
+	
+	
 
 	/**
 	 * TODO: can only remove asserted information at the moment. Reasoner directly supports this only.
@@ -120,6 +154,8 @@ public class OwlBeliefBase extends DefaultBeliefBase{
 	/**
 	 * Question: bb.contains() currently simply uses getRelevant(). Is this OK? Could it be made more efficient by using less expensive reasoning mechanisms? Do we need to unify l?
 	 * Answer: using model.contains. Not suitable however if we do in fact need to unify an unground l
+	 * 
+	 * Ignores annotations
 	 * 
 	 * TODO BB.contains is not strictly correct - it should ground an unground literal - might be wise to go back to using getRelevant! (remember, the behaviour of getRelevant is different for JASDL)
 	 */
@@ -169,9 +205,11 @@ public class OwlBeliefBase extends DefaultBeliefBase{
 					// below allows left-unground support, but beware of bug in Jena: p & o swap round in resulting statements.
 					// this suggests we shouldn't be making this type of query, so is disabled for now
 					//StmtIterator it = ont.getModel().listStatements(sel.getSubject(), sel.getPredicate(), sel.getObject());
-					StmtIterator it = ont.getModel().listStatements(sel);
+					StmtIterator it = ont.getModel().listStatements(sel);					
+					
 					while(it.hasNext()){
-						Literal rl = ont.fromStatement(it.nextStatement());
+						Statement s = it.nextStatement();						
+						Literal rl = ont.fromStatement(s);					
 						relevant.add(rl);
 					}
 				}
@@ -181,7 +219,6 @@ public class OwlBeliefBase extends DefaultBeliefBase{
 		}
 		return relevant.iterator(); // (4)
 	}
-	
 
 	
 	/**
@@ -191,16 +228,19 @@ public class OwlBeliefBase extends DefaultBeliefBase{
 		List<Literal> ls = new Vector<Literal>();
 		
 		// get all semantically-enriched literals
-		// this includes all ABox assertions from all loaded ontologies
+		// this includes all ABox inferences from all loaded ontologies
 		try {
 			for(JasdlOntology ont : manager.getLoadedOntologies()){
+				
 				ExtendedIterator cIt = ont.getModel().listNamedClasses();
 				while(cIt.hasNext()){
 					OntClass c = (OntClass)cIt.next();
 					StmtIterator it = ont.getModel().listStatements(new SimpleSelector(null, RDF.type, c));					
 					while(it.hasNext()){
-						Statement s = it.nextStatement();				
-						ls.add(ont.fromStatement(s));				
+						Statement s = it.nextStatement();
+						if(ont.getModel().isInBaseModel(s) || manager.getAgent().getShowInferred()){
+							ls.add(ont.fromStatement(s));
+						}
 					}					
 				}
 				
@@ -209,8 +249,10 @@ public class OwlBeliefBase extends DefaultBeliefBase{
 					OntProperty p = (OntProperty)pIt.next();
 					StmtIterator it = ont.getModel().listStatements(new SimpleSelector(null, p, (RDFNode)null));					
 					while(it.hasNext()){
-						Statement s = it.nextStatement();				
-						ls.add(ont.fromStatement(s));				
+						Statement s = it.nextStatement();
+						if(ont.getModel().isInBaseModel(s) || manager.getAgent().getShowInferred()){
+							ls.add(ont.fromStatement(s));
+						}									
 					}					
 				}
 				

@@ -71,7 +71,7 @@ public class JasdlPlanLibrary extends PlanLibrary{
 	 * Could store as part of plan, but wouldn't work correctly for run-time defined class
 	 */
 	public List<Plan> getAllRelevant(Trigger te){
-		manager.getLogger().fine("Get relevant to: "+te);		
+		manager.getLogger().finest("Get relevant to: "+te);		
 		List<Plan> relevant = super.getAllRelevant(te);		
 		try {
 			List<Plan> moreGeneral = getMoreGeneralPlans(te);
@@ -90,7 +90,7 @@ public class JasdlPlanLibrary extends PlanLibrary{
 	
 	/**
 	 * Return a list of plans that are relevant for this event in a more general sense (according to subsumption relationship)
-	 * Note: hashMap is still used - no unification need be performed!
+	 * Note: hashMap is still used - no unification need be performed (yet)!
 	 * Plans are ordered by increasing generality
 	 * @param tes
 	 * @return

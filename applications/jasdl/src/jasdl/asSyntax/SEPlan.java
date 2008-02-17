@@ -49,6 +49,7 @@ public class SEPlan extends Plan {
 			return un;
 		}					
 		try {
+			// add te of result_of(te) as an annotation?
 			List<Trigger> moreGeneralTriggers = JasdlPlanLibrary.getMoreGeneralTriggers(manager, te);
 			for(Trigger moreGeneralTrigger : moreGeneralTriggers){
 				un = super.isRelevant(moreGeneralTrigger);

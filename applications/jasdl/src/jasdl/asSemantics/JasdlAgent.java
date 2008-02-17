@@ -48,12 +48,19 @@ public class JasdlAgent extends JmcaAgent {
 	public static String ONTOLOGY_ALIASES_PARAMETER = "ontologies";
 	public static String ONTOLOGY_URI_PARAMETER = "_uri";
 	public static String ONTOLOGY_AUTOMAP_CLASSES_PARAMETER = "_automap_classes";
-	public static String DEFAULT_AUTOMAP_CLASSES_PARAMETER = "jasdl.automap.uncapitalise_individuals, jasdl.automap.uncapitalise_concepts";
+	public static String DEFAULT_AUTOMAP_CLASSES_PARAMETER = "jasdl.automap.uncapitalise_individuals, jasdl.automap.uncapitalise_concepts";	
+	public static String SHOW_INFERRED_PARAMETER = "show_inferred";
 	
+	/**
+	 * If true, all inferred ABox statements are displayed in mind inspector
+	 */
+	private boolean showInferred;
+	
+	public static boolean DEFAULT_SHOW_INFERRED = false;
 	
 	private OntologyManager manager;
 	
-	public JasdlAgent(){
+	public JasdlAgent() throws JasdlException{
 		super();
 		PropertyConfigurator.configure(System.getProperty("user.dir")+"/log4j.properties");
 		this.manager = OntologyManager.getOntologyManager(this);
@@ -101,7 +108,22 @@ public class JasdlAgent extends JmcaAgent {
 			
 		}
 		
+		String showInferredParam = strip(stts.getUserParameter(SHOW_INFERRED_PARAMETER));
+		if(showInferredParam == null){
+			showInferred = DEFAULT_SHOW_INFERRED;
+		}else{
+			setShowInferred(Boolean.parseBoolean(showInferredParam));
+		}
+		
 		return super.initAg(arch, bb, asSrc, stts);
+	}
+	
+	public boolean getShowInferred(){
+		return showInferred;
+	}
+	
+	public void setShowInferred(boolean showInferred){
+		this.showInferred = showInferred;
 	}
 
 }

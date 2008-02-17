@@ -21,6 +21,7 @@ package jasdl.ontology;
 
 import static jasdl.util.Common.ONTOLOGY_ANNOTATION;
 import static jasdl.util.Common.getAnnot;
+import jasdl.asSemantics.JasdlAgent;
 import jasdl.util.JasdlException;
 import jason.asSemantics.Agent;
 import jason.asSyntax.Pred;
@@ -58,10 +59,10 @@ public class OntologyManager {
 	/**
 	 * The agent this manager is serving
 	 */
-	private Agent agent;
+	private JasdlAgent agent;
 	
 	
-	public OntologyManager(Agent agent){
+	public OntologyManager(JasdlAgent agent){
 		this.agent = agent;
 		agentToOntologyManagerMap.put(agent, this);
 		aliasToOntologyMap = new HashMap<String, JasdlOntology>();
@@ -132,10 +133,14 @@ public class OntologyManager {
 	 * @param agent		the agent whose ontology manager is required
 	 * @return			the ontology manager associated with the supplied agent
 	 */
-	public static OntologyManager getOntologyManager(Agent agent){
+	public static OntologyManager getOntologyManager(Agent agent) throws JasdlException{
+		if(!(agent instanceof JasdlAgent)){
+			throw new JasdlException("When using JASDL, the agentClass must be (an extension of) jasdl.asSemantics.JasdlAgent ");
+		}
+		
 		OntologyManager instance =  agentToOntologyManagerMap.get(agent);
 		if(instance == null){
-			instance = new OntologyManager(agent);
+			instance = new OntologyManager((JasdlAgent)agent);
 		}
 		return instance;
 	}
@@ -194,10 +199,10 @@ public class OntologyManager {
 	}
 	
 	
-	public JasdlOntology getJasdlOntology(String alias) throws JasdlException{		
-		JasdlOntology ont = aliasToOntologyMap.get(alias);
+	public JasdlOntology getJasdlOntology(String label) throws JasdlException{		
+		JasdlOntology ont = aliasToOntologyMap.get(label);
 		if(ont == null){
-			throw new JasdlException("Unknown ontology alias: "+alias);
+			throw new JasdlException("Unknown ontology label: "+label);
 		}
 		return ont;
 	}
@@ -216,7 +221,7 @@ public class OntologyManager {
 	 * Return the agent this manager is serving
 	 * @return
 	 */
-	public Agent getAgent() {
+	public JasdlAgent getAgent() {
 		return agent;
 	}
 	
