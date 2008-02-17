@@ -26,13 +26,13 @@ import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.ListTerm;
-import jason.asSyntax.Pred;
 import jason.asSyntax.Term;
 
 import java.util.List;
 import java.util.logging.Logger;
 
 import com.hp.hpl.jena.ontology.AllDifferent;
+import com.hp.hpl.jena.rdf.model.Statement;
 
 /**
  * Accepts a list of atoms representing a set of individuals and an string representing an ontology alias
@@ -53,7 +53,7 @@ public class all_different extends DefaultInternalAction {
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
         try {
         	if(args.length != 2){
-        		throw new JasdlException("Requires two arguments, a list of Atoms and a String");
+        		throw new JasdlException("Requires two arguments, a list of Atoms and an atom");
         	}
         	
         	if(!args[0].isList()){
@@ -75,7 +75,7 @@ public class all_different extends DefaultInternalAction {
         	for(Term i : is){
         		assertion.addDistinctMember(ont.toIndividual(i));
         	}
-
+        	
         	
             return true;
         } catch (Exception e) {
