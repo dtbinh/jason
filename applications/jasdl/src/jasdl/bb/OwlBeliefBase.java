@@ -86,7 +86,7 @@ public class OwlBeliefBase extends DefaultBeliefBase{
 				Statement stmt = ont.toStatement(l);
 				ont.getModel().add(stmt);
 				
-				manager.getLogger().info("Adding "+stmt);
+				manager.getLogger().finest("Adding "+stmt);
 				if(!ont.isConsistent()){
 					
 					ont.getModel().remove(stmt); // remove for now, we might add this back if existing justification is less authoritative
