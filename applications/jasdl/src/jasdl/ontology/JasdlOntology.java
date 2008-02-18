@@ -28,6 +28,7 @@ import static jasdl.util.Common.stripAll;
 import static jasdl.util.Common.surroundedBy;
 import jasdl.automap.AutomapUtils;
 import jasdl.util.JasdlException;
+import jasdl.util.MappingException;
 import jasdl.util.NotABoxAssertionException;
 import jason.asSyntax.Atom;
 import jason.asSyntax.ListTerm;
@@ -250,13 +251,41 @@ public class JasdlOntology{
 		return newExpr;
     }	
 	
+	
+	public List<Resource> getAllUnmappedResources(){
+		List is = getModel().listIndividuals().toList();
+		List cs = getModel().listNamedClasses().toList();
+		List ps = getModel().listOntProperties().toList();
+		List rs = is; rs.addAll(cs); rs.addAll(ps);
+		List<Resource> unmapped = new Vector<Resource>();
+		for(Object _r : rs){
+			Resource r = (Resource)_r;
+			if(!isResourceMapped(r)){
+				unmapped.add(r);
+			}
+		}
+		return unmapped;
+	}
+	
 	/**
-	 * Convenience method to perform automaps on this ontology. Simply calls Automap.performAutomaps on itself.
-	 * @param list
-	 * @throws JasdlException
+	 * Check if this alias participates in a mapping
+	 * Note: not the same as being unique, since there may be clashes from unmapped resources
+	 * @param alias
+	 * @return
 	 */
-	public void performAutomaps(String list) throws JasdlException{
-		AutomapUtils.performAutomaps(this, list);
+	public boolean isAliasMapped(Alias alias){
+		return aliasToRealMap.containsKey(alias);
+	}
+	
+	/**
+	 * Returns true iff there is an alias<->real mapping for this resource
+	 * (simply checks membership of real in realToAliasMap)
+	 * 
+	 * @param r		the resource to check mapping status of
+	 * @return		true iff there is an alias<->real mapping for r
+	 */
+	public boolean isResourceMapped(Resource r){
+		return realToAliasMap.containsKey(URI.create(r.getURI()));
 	}
 	
 	
@@ -290,39 +319,43 @@ public class JasdlOntology{
 	}
 
 	/**
-	 * Adds a tranpose mapping both ways (alias->real and real->alias).
-	 * If alias mapping clashes with a real, map to alias0. If some alias[0..n] already exists, map to alias[n+1]
+	 * Adds a transpose mapping both ways (alias->real and real->alias).
+	 * 
 	 * @param alias		alias to map to real
 	 * @param real		real to map to alias
 	 */
-	public void addAliasMapping(Alias alias, URI real, boolean verbose){
-		alias = ensureUnique(alias, verbose);
+	public void addAliasMapping(Alias alias, URI real) throws JasdlException{
+		if(isAliasMapped(alias)){
+			throw new MappingException("Alias "+alias+" already exists. This must be rectified before JASDL agent execution.");
+		}
+		if(!model.containsResource(model.createResource(real.toString())) && !real.equals(URI.create(getNothing().getURI()))){ // make an exception for Nothing (since ontology doesn't seem to actually contain it)
+			throw new MappingException(real+" does not exist, mapping to alias "+alias+" cancelled");
+		}
 		aliasToRealMap.put(alias, real);
 		realToAliasMap.put(real, alias);
 		manager.getLogger().finest("Adding mapping: "+alias+" <-> "+real);
 	}
-	
-	public void addAliasMapping(Alias alias, URI real){
-		addAliasMapping(alias, real, false);
-	}
-	
+
+	/**
+	 * If alias is not unique, map to alias0. If some alias[0..n] already exists, map to alias[n+1]
+	 * 
+	 * @param alias
+	 * @return
+	 */
 	public Alias ensureUnique(Alias alias){
-		return ensureUnique(alias, false);
-	}
-	public Alias ensureUnique(Alias alias, boolean verbose){
 		String orig = alias.getName();
 		Alias clone = (Alias)alias.clone();
 		int n = 0;		
 		while(true){
 			if(!isAliasUnique(clone)){
-				if(verbose) manager.getLogger().warning("Name clash on alias "+clone+"...");			
+				manager.getLogger().fine("Name clash on alias "+clone+"...");			
 				clone.setName(orig+"_"+n);
 				n++;
 			}else{
 				break;
 			}
 		}
-		if(n>0 && verbose) manager.getLogger().warning("..."+clone+" now refers to "+toReal(alias));
+		if(n>0) manager.getLogger().fine("..."+clone+" now refers to "+toReal(alias));
 		return clone;
 	}
 	
@@ -333,7 +366,7 @@ public class JasdlOntology{
 	 */
 	public boolean isAliasUnique(Alias alias){
 		// is mapped
-		if(aliasToRealMap.containsKey(alias)) return false;
+		if(isAliasMapped(alias)) return false;
 		// isn't mapped, but there is a resource of the same name present
 		URI real = toReal(alias);
 		if(model.containsResource(model.createResource(real.toString()))) return false;		
@@ -519,7 +552,7 @@ public class JasdlOntology{
 				o = model.getComplementClass(real);				
 				if(o == null){ // we haven't yet created and mapped this complement class
 					o = model.createComplementClass(real, oc);
-					addAliasMapping(alias, URI.create(real)); // won't be unique
+					addAliasMapping(ensureUnique(alias), URI.create(real)); // alias must be made unique
 				}
 			}			
 		}else if(isPropertyAssertion(l)){

@@ -38,7 +38,7 @@ public abstract class Automap {
 	abstract void map(JasdlOntology ont) throws JasdlException;
 	
 	/* Common automapping utility methods */
-	protected static void uncapitaliseAndMap(String name, JasdlOntology ont){
+	protected static void uncapitaliseAndMap(String name, JasdlOntology ont) throws JasdlException{
 		String x = name.substring(0, 1);
 		if(x.equals(x.toUpperCase())){//if first letter is upper case
 			// check for Thing and Nothing, change ns accordingly
@@ -48,7 +48,7 @@ public abstract class Automap {
 			}			
 			URI real = URI.create(ns+name);
 			Alias alias = new Alias(x.toLowerCase()+(name.substring(1)));			
-			ont.addAliasMapping(alias, real, true);// verbose
+			ont.addAliasMapping(alias, real);
 		}
 	}
 }

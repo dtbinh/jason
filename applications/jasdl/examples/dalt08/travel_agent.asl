@@ -8,7 +8,8 @@
 +!example_UBB_1
 	<-
 	.print("Example: Updating Belief Base 1");
-	+hotel(hilton)[o(travel)];						// hilton is a hotel
+	+xzxxxxx(ssds)[whatever];
+	+hotel(hilton)[o(travel), whatever];						// hilton is a hotel
 	+hasRating(hilton, threeStarRating)[o(travel)];	// hilton has three-star rating
 	+city(london)[o(travel)];						// london is a city
 	+hasAccommodation(london, hilton)[o(travel)];	// hilton is in london

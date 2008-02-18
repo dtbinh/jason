@@ -11,22 +11,23 @@ MAS dalt08 {
 	       travel_agent 
        	   travel_agent.asl
 	       [				
-		   // initial ontology setup
-	       		ontologies="travel",
-				travel_uri="http://www.dur.ac.uk/t.g.klapiscak/onts/travel.owl",
-				travel_automap_classes="jasdl.automap.uncapitalise_individuals, jasdl.automap.uncapitalise_concepts"
+	       	ontologies="travel",
+			travel_uri="http://www.dur.ac.uk/t.g.klapiscak/onts/travel.owl",
+			travel_automap_classes="jasdl.automap.uncapitalise_individuals, jasdl.automap.uncapitalise_concepts",
+			travel_mappings="small_beach=beach"
 	       ]
 	       agentArchClass jasdl.architecture.JasdlAgArch
 	       agentClass jasdl.asSemantics.JasdlAgent
 	       beliefBaseClass jasdl.bb.OwlBeliefBase	       
-	       #1;
+	       #01;
 		   
 	       customer 
        	   customer.asl
 	       [		   
-		   // initial ontology setup
-	       		ontologies="holidays",
-				holidays_uri="http://www.dur.ac.uk/t.g.klapiscak/onts/travel.owl"
+	       	ontologies="holidays",
+			holidays_uri="http://www.dur.ac.uk/t.g.klapiscak/onts/travel.owl",
+			holidays_mappings="small_beach=beach",
+			show_inferred="true"
 	       ]
 	       agentArchClass jasdl.architecture.JasdlAgArch
 	       agentClass jasdl.asSemantics.JasdlAgent

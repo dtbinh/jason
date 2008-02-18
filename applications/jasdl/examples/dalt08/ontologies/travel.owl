@@ -323,6 +323,9 @@
         <rdfs:subClassOf rdf:resource="#Destination"/>
     </owl:Class>
     
+    <owl:Class rdf:about="#beach">
+        <rdfs:subClassOf rdf:resource="#Destination"/>
+    </owl:Class>
 
 
     <!-- http://www.owl-ontologies.com/travel.owl#BedAndBreakfast -->
