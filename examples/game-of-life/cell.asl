@@ -11,4 +11,3 @@
 // If there are less than two alive neighbors, then the cell dies.
 // If there are more than three alive neighbors, the cell dies.
 +step(_) <- die.
-

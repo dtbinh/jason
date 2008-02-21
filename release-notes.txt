@@ -15,6 +15,12 @@ New features
   example of .findall usage:
      .findall(X, (a(X) & X > 10), L)
 
+New demo:
+. java-object-terms show how to assign java objects to AgentSpeak
+  variables, e.g.:
+     ...
+     date.today(T); // Create a term T that is a java Calendar
+     date.add_days(T,10,T2); // change the java object 
 
 New internal actions:
 . .reverse: reverse the order of lists and strings.

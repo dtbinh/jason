@@ -1,0 +1,15 @@
+/*
+    Jason Project
+    
+    Shows how to create terms that encapsulates Java Objects.
+    See sample.asl for more details.
+
+    -- create on February 21, 2008
+*/
+
+MAS java_object_term {
+
+   agents:
+      sample;
+
+}
