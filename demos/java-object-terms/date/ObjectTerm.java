@@ -29,7 +29,13 @@ public class ObjectTerm extends DefaultTerm {
     
     @Override
     public Object clone() {
-        return this; // TODO: discover a way to clone o
+        try {
+            return new ObjectTerm(o.getClass().getMethod("clone", (Class[])null).invoke(o, (Object[])null));
+        } catch (Exception e) {
+            System.err.println("The object inside ObjectTerm should be clonable!");
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
