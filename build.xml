@@ -112,14 +112,6 @@
 
 
 	<target name="jar" depends="compile">
-		<propertyfile file="${dist.properties}">
-			<entry key="version" value="${version}" />
-			<entry key="release" value="${release}" />
-			<entry default="0" key="build" operation="+" type="int" />
-			<entry key="build.date" type="date" value="now" />
-		</propertyfile>
-		<property file="${dist.properties}" />
-
 		<jar jarfile="${jasonJar}" >
 			<fileset dir="${build.dir}">
 				<include name="jason/**/*.class" />
@@ -138,7 +130,7 @@
 			      <attribute name="Main-Class" value="jason.infra.centralised.RunCentralisedMAS"/>
                         </manifest>
 		</jar>
-                <copy file="${jasonJar}" todir="applications/jason-eclipse-plugin/lib" />
+        <copy file="${jasonJar}" todir="applications/jason-eclipse-plugin/lib" />
 	</target>
 
 	<target name="signjar" depends="jar">
@@ -205,14 +197,30 @@
 	</target>
 
 	<target name="apidoc" depends="compile">
-		<javadoc author="true" destdir="${basedir}/doc/api" packagenames="jason.*" excludepackagenames="jason.asSyntax.parser,jason.mas2j.parser" sourcepath="${basedir}/src" use="true" version="true" windowtitle="Jason - AgentSpeak Java Interpreter">
-			<classpath refid="project.classpath" />
+		<javadoc 
+			destdir="${basedir}/doc/api" 
+			packagenames="jason.*" 
+			sourcepath="${basedir}/src" 
+			excludepackagenames="jason.asSyntax.parser,jason.mas2j.parser" 
+			use="true" 
+			version="true" 
+			author="true" 
+			windowtitle="Jason - AgentSpeak Java Interpreter">
+				<classpath refid="project.classpath" />
 		</javadoc>
 	</target>
 
 	<target name="dist" depends="cleanExamples,plugin" description="Build distribution.">
 
 		<echo message="Generating Jason ${version}.${release}" />
+
+		<propertyfile file="${dist.properties}">
+			<entry key="version" value="${version}" />
+			<entry key="release" value="${release}" />
+			<!-- entry default="0" key="build" operation="+" type="int" /-->
+			<entry key="build.date" type="date" value="now" />
+		</propertyfile>
+		<property file="${dist.properties}" />
 
 		<fixcrlf eol="crlf" includes="**/*.txt,**/*.bat" srcdir="${basedir}" />
 
