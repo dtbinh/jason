@@ -101,5 +101,35 @@
          point="org.eclipse.core.runtime.preferences">
       <initializer class="net.sourceforge.jasonide.editors.cbg.prefs.PreferenceInitializer"/>
    </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            id="jasonide.objectContribution1"
+            nameFilter="*.mas2j"
+            objectClass="org.eclipse.core.resources.IFile">
+         <action
+               class="net.sourceforge.jasonide.popup.actions.RunJason"
+               definitionId="run"
+               icon="icons/execute.gif"
+               id="jasonide.popup.actions.NewAction"
+               label="Run in Jason"
+               menubarPath="additions"/>
+      </objectContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            id="net.sourceforge.jasonide.objectContribution1"
+            nameFilter="*.mas2j"
+            objectClass="org.eclipse.core.resources.IFile">
+         <action
+               class="net.sourceforge.jasonide.popup.actions.RunJason"
+               definitionId="debug"
+               icon="icons/debug.gif"
+               id="net.sourceforge.jasonide.action1"
+               label="Debug In Jason"
+               menubarPath="additions"/>
+      </objectContribution>
+   </extension>
 
 </plugin>
