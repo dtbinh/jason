@@ -15,6 +15,10 @@ New features
   example of .findall usage:
      .findall(X, (a(X) & X > 10), L)
 
+New example:
+. the Jason team used in the Agent Contest 2007 was added in the
+  examples (directory gold-miners-II)
+
 New demo:
 . java-object-terms show how to assign java objects to AgentSpeak
   variables, e.g.:
