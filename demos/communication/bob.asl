@@ -14,15 +14,15 @@
       .println("Answer from ask is: ", X, " (should be 10)");
 
       .println("Sending assynchronous ask ");
-      .send(maria, askOne, vl(X4)); // assync ask has no fourth argument
+      .send(maria, askOne, vl(_)); // assync ask has no fourth argument
 	  // the answer is received as an event +vl(X)
 
       .println("Sending ask for something Maria does not know, but can handle by +? ");
-      .send(maria, askOne, t2(X3), Ans2);
+      .send(maria, askOne, t2(_), Ans2);
       .println("Answer from ask is: ", Ans2, " (should be t2(20))");
       
       .println("Sending ask for something Maria does not know ");
-      .send(maria, askOne, t1(X2), Ans1);
+      .send(maria, askOne, t1(_), Ans1);
       .println("Answer from ask is: ", Ans1, " (should be false)");
       
       .println("Sending askAll values");

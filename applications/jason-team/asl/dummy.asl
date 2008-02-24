@@ -3,6 +3,20 @@
 // the following plans (+pos....) react to the starting step
 // (since each new step causes a new +pos perception)
 
+/* -- useful rules */ 
+
+// whether to go to depot
+go_depot :- carrying_gold(3).
+go_depot :- carrying_gold(N) & N > 0 & pos(_,_,Step) & steps(_,NSteps) & Step+200 > NSteps.
+
+// find a free random location	  
+random_pos(X,Y) :- 
+   pos(AgX,AgY,_) &
+   jia.random(RX,20)   & X = (RX-10)+AgX & X > 0 &
+   jia.random(RY,20,5) & Y = (RY-10)+AgY &
+   not jia.obstacle(X,Y).  
+   
+
 /* -- Gold found! -- */
 
 // in the positon of the agent
@@ -60,17 +74,4 @@
 	  jia.direction(X, Y, NX, NY, D);
       do(D).
 
-/* -- useful rules */ 
-
-// whether to go to depot
-go_depot :- carrying_gold(3).
-go_depot :- carrying_gold(N) & N > 0 & pos(_,_,Step) & steps(_,NSteps) & Step+200 > NSteps.
-
-// find a free random location	  
-random_pos(X,Y) :- 
-   pos(AgX,AgY,_) &
-   jia.random(RX,20)   & X = (RX-10)+AgX & X > 0 &
-   jia.random(RY,20,5) & Y = (RY-10)+AgY &
-   not jia.obstacle(X,Y).  
-   
  

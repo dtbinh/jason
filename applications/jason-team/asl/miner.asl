@@ -124,7 +124,7 @@ evaluate_gold(gold(X,Y),Utility,Annot)
      check_commit(gold(X,Y),Utility,Annot).
 
 // distance 0, always consider
-check_commit(_,0,in_my_place).
+check_commit(_,0,in_my_place)   :- true.
 // if no other is committed to the gold, OK.
 check_commit(G,_,not_committed) :- not committed_to(G,_,_).
 // if someone else if committed, check who is nearer  
@@ -132,7 +132,7 @@ check_commit(gold(X,Y),MyD,committed_by(Ag,at(OtX,OtY),far(OtD)))
   :- committed_to(gold(X,Y),_,Ag) &          // get the agent committed to the gold
      jia.ag_pos(Ag,OtX,OtY) &                // get its location
      jia.path_length(OtX,OtY,X,Y,OtD) &      // calc its distance from the gold
-     MyD < Otd.                              // ok to consider the gold if I am near
+     MyD < OtD.                              // ok to consider the gold if I am near
 	 
 
 worthwhile(gold(_,_)) :- 

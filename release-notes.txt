@@ -74,6 +74,8 @@ Bugs fixed
 . clone example
 . use-only-jason-bdi example
 . the save files when opening a new project locks the jEdit
+. parser accepts initial goals and beliefs mixed with plans
+
 
 -------------
 version 1.0
