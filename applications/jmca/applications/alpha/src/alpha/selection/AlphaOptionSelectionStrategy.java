@@ -36,14 +36,14 @@ import jmca.selection.SelectionStrategy;
  * @author Tom Klapiscak
  *
  */
-public class AlphaSelectionStrategyModule extends SelectionStrategy<Option>{
+public class AlphaOptionSelectionStrategy extends SelectionStrategy<Option>{
 	
 	/**
 	 * How many Options should be taken from head of (ordered) Option list
 	 */
 	private static int choose = 2;
 	
-	public AlphaSelectionStrategyModule(Agent master){
+	public AlphaOptionSelectionStrategy(Agent master){
 		super(master);
 	}
 	

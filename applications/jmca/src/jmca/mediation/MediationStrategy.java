@@ -17,13 +17,13 @@
  *  along with JMCA.  If not, see <http://www.gnu.org/licenses/>.
  *  
  */
-package jmca.policy;
+package jmca.mediation;
 
 import jason.runtime.Settings;
 
 import java.util.List;
 
-import jmca.module.AgentModule;
+import jmca.selection.SelectionStrategy;
 import jmca.util.JmcaException;
 
 /**
@@ -33,7 +33,7 @@ import jmca.util.JmcaException;
  *
  * @param <T> The type of aspect this selection policy instance deals with
  */
-public interface SelectionPolicy<T> {
+public interface MediationStrategy<T> {
 	
 	/**
 	 * Initialisation specific to this selection policy must be performed here.
@@ -47,10 +47,10 @@ public interface SelectionPolicy<T> {
 	 * Implementations of this method must apply the select method of each agent module in the composition chain in turn,
 	 * mediating between each. It must ultimately arrive upon an "agreed" set of aspect instances.
 	 * 
-	 * @param modules			a composition chain of agent modules dealing with the same aspect as this selection policy
+	 * @param selectionStrategies			a composition chain of selection strategies dealing with the same aspect as this selection policy
 	 * @param elements			the list of aspect instances that each agent module must choose from
 	 * @return					the "agreed" set, influenced by each agent module, mediated by this selection policy
 	 * @throws JmcaException
 	 */
-	public List<T> apply(List<AgentModule<T>> modules, List<T> elements) throws JmcaException;
+	public List<T> apply(List<SelectionStrategy<T>> selectionStrategies, List<T> elements) throws JmcaException;
 }

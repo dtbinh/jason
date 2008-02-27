@@ -30,14 +30,14 @@ import jmca.util.JmcaException;
  * @author Tom Klapiscak
  *
  */
-public abstract class AgentModule<T>{
+public abstract class SelectionStrategy<T>{
 	/**
 	 * The agent this AgentModule belongs to
 	 */
 	protected Agent master;
 	
 	
-	public AgentModule(Agent master){
+	public SelectionStrategy(Agent master){
 		this.master = master;
 	}
 	

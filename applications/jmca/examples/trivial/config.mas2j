@@ -46,14 +46,14 @@ MAS mas {
 	       [
 		   /* JMCA Configuration */
 			// Our composition chain for the Option aspect as described above
-			jmca_Option_module_classes="alpha.module.AlphaOptionModule, elbpp.module.ElbppOptionModule",
+			jmca_Option_selection_strategies="alpha.selection.AlphaOptionSelectionStrategy, elbpp.selection.ElbppOptionSelectionStrategy",
 			// The selection policy we are using for the Option aspect. Defaults to this if omitted
-			jmca_Option_policy_class="jmca.policy.OverrulingIntersection"
+			jmca_Option_mediation_strategy="jmca.mediation.OverrulingIntersection"
 				
 			/* Here we show composition for the Option aspect only. Selection functions for other aspects (Event, Message, Intention, ActionExec)
 			 * can be set here in a similar way. For example:
-			 * jmca_Event_module_classes="somemodule.SomeEventModule"
-			 * jmca_Event_policy_class="somemodule.policy.SomePolicy" // <- notice we are using a non-default selection policy implementation here
+			 * jmca_Event_selection_strategies="somemodule.SomeEventModule"
+			 * jmca_Event_mediation_strategy="somemodule.policy.SomePolicy" // <- notice we are using a non-default selection policy implementation here
 			 */
 	       ]
 		   

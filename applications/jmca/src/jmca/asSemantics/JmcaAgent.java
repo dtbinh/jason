@@ -41,8 +41,8 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Vector;
 
-import jmca.module.AgentModule;
-import jmca.policy.SelectionPolicy;
+import jmca.mediation.MediationStrategy;
+import jmca.selection.SelectionStrategy;
 import jmca.util.Common;
 import jmca.util.JmcaException;
 
@@ -67,19 +67,19 @@ import jmca.util.JmcaException;
  */
 public class JmcaAgent extends jason.asSemantics.Agent {
 	
-	private static String DEFAULT_SELECTION_POLICY_CLASS = "jmca.policy.OverrulingIntersection";	
+	private static String DEFAULT_MEDIATION_STRATEGY_CLASS = "jmca.mediation.OverrulingIntersection";	
 	private static String PARAM_DELIM = "_";
 	private static String PARAM_PREFIX = "jmca"+PARAM_DELIM;		
 	
 	/**
 	 * Maps aspect type to the list of AgentModules instantiated for it
 	 */
-	private HashMap<Class, List<AgentModule>> aspectModulesMap;
+	private HashMap<Class, List<SelectionStrategy>> aspectSelectionStrategyMap;
 	
 	/**
 	 * Maps aspect type to its selection policy
 	 */
-	private HashMap<Class, SelectionPolicy> aspectSelectionPolicyMap;
+	private HashMap<Class, MediationStrategy> aspectMediationStrategyMap;
 	
 	/**
 	 * A static list of aspect types (classes) this Jmca supports (current Option, Message, Intention, Event, ActionExec)
@@ -95,11 +95,11 @@ public class JmcaAgent extends jason.asSemantics.Agent {
 	 */
 	@SuppressWarnings("unchecked")
 	public TransitionSystem initAg(AgArch arch, BeliefBase bb, java.lang.String asSrc, Settings stts) throws JasonException{
-		aspectModulesMap = new HashMap<Class, List<AgentModule>>();
-		aspectSelectionPolicyMap = new HashMap<Class, SelectionPolicy>();
+		aspectSelectionStrategyMap = new HashMap<Class, List<SelectionStrategy>>();
+		aspectMediationStrategyMap = new HashMap<Class, MediationStrategy>();
 		for(Class aspect : aspects){
-			aspectModulesMap.put(aspect, getAgentModuleClasses(this, arch, bb, asSrc, stts, aspect));
-			aspectSelectionPolicyMap.put(aspect, getSelectionPolicyClass(stts, aspect));
+			aspectSelectionStrategyMap.put(aspect, getSelectionStrategyClasses(this, arch, bb, asSrc, stts, aspect));
+			aspectMediationStrategyMap.put(aspect, getMediationStrategyClass(stts, aspect));
 		}
 		return super.initAg(arch, bb, asSrc, stts);		
 	}
@@ -158,12 +158,12 @@ public class JmcaAgent extends jason.asSemantics.Agent {
 	 */
 	@SuppressWarnings("unchecked")
 	private Object apply(Class aspect, Collection aspects){
-		SelectionPolicy selectionPolicy = aspectSelectionPolicyMap.get(aspect);
-		List<AgentModule> modules = aspectModulesMap.get(aspect);	
+		MediationStrategy strategy = aspectMediationStrategyMap.get(aspect);
+		List<SelectionStrategy> modules = aspectSelectionStrategyMap.get(aspect);	
 		List asList = new Vector(); // auxilliary list required since aspects could be a queue or a list
 		asList.addAll(aspects);
 		try{
-			asList = selectionPolicy.apply(modules, asList);
+			asList = strategy.apply(modules, asList);
 		}catch(JmcaException e){
 			getLogger().severe("Error in jmca "+getUCN(aspect)+" selection. Reason: "+e);
 			return null;
@@ -186,25 +186,25 @@ public class JmcaAgent extends jason.asSemantics.Agent {
 	 * @return					the selection policy instance
 	 * @throws JmcaException	if instantiation fails
 	 */
-	private static SelectionPolicy getSelectionPolicyClass(Settings stts, Class aspect) throws JmcaException{
-		SelectionPolicy policy;
-		String paramName = PARAM_PREFIX+getUCN(aspect)+PARAM_DELIM+"policy"+PARAM_DELIM+"class";
+	private static MediationStrategy getMediationStrategyClass(Settings stts, Class aspect) throws JmcaException{
+		MediationStrategy strategy;
+		String paramName = PARAM_PREFIX+getUCN(aspect)+PARAM_DELIM+"mediation"+PARAM_DELIM+"strategy";
 		String param = stts.getUserParameter(paramName);
 		if(param == null){ // if none specified, use default
-			param = DEFAULT_SELECTION_POLICY_CLASS;
+			param = DEFAULT_MEDIATION_STRATEGY_CLASS;
 		}else{
 			param = strip(param, "\"");
 		}
 		try {
 			Class cls = Class.forName(param);
 			Constructor ct = cls.getConstructor(new Class[] {});
-			policy = (SelectionPolicy)ct.newInstance();		
-			policy.init(stts);
+			strategy = (MediationStrategy)ct.newInstance();		
+			strategy.init(stts);
 		}
 		catch (Throwable e) {
-			throw new JmcaException("Error instantiating option generation policy class. Reason: "+e);
+			throw new JmcaException("Error instantiating "+getUCN(aspect)+" mediation strategy class. Reason: "+e);
 		}			
-		return policy;
+		return strategy;
 	}
 	
 	/**
@@ -220,27 +220,27 @@ public class JmcaAgent extends jason.asSemantics.Agent {
 	 * @throws JmcaException	if AgentModule instantiation fails
 	 * @throws JasonException	if AgentModule initialisation fails
 	 */
-	private static List<AgentModule> getAgentModuleClasses(Agent agent, AgArch arch, BeliefBase bb, String asSrc, Settings stts, Class aspect) throws JmcaException, JasonException{		
-		List<AgentModule> modules = new Vector<AgentModule>();
-		String paramName = PARAM_PREFIX+getUCN(aspect)+PARAM_DELIM+"module"+PARAM_DELIM+"classes";
+	private static List<SelectionStrategy> getSelectionStrategyClasses(Agent agent, AgArch arch, BeliefBase bb, String asSrc, Settings stts, Class aspect) throws JmcaException, JasonException{		
+		List<SelectionStrategy> strategies = new Vector<SelectionStrategy>();
+		String paramName = PARAM_PREFIX+getUCN(aspect)+PARAM_DELIM+"selection"+PARAM_DELIM+"strategies";
 		String param = stts.getUserParameter(paramName);
 		if(param != null){ // no AgentModules specific for this aspect
-			for(String moduleClassName : Common.strip(param, "\"").split(DELIM)){
-				moduleClassName = moduleClassName.trim();
-				AgentModule module = null;
+			for(String strategyClassName : Common.strip(param, "\"").split(DELIM)){
+				strategyClassName = strategyClassName.trim();
+				SelectionStrategy strategy = null;
 				// use java reflect to instantiate agent module class
 				try {
-					Class cls = Class.forName(moduleClassName);
+					Class cls = Class.forName(strategyClassName);
 					Constructor ct = cls.getConstructor(new Class[] {Agent.class});
-					module = (AgentModule)ct.newInstance(new Object[] {agent});
+					strategy = (SelectionStrategy)ct.newInstance(new Object[] {agent});
 				}
 				catch (Throwable e) {
-					throw new JmcaException("Error instantiating "+getUCN(aspect)+" module class "+moduleClassName+". Reason: "+e);
+					throw new JmcaException("Error instantiating "+getUCN(aspect)+" selection strategy class "+strategyClassName+". Reason: "+e);
 				}
-				modules.add(module);
+				strategies.add(strategy);
 			}
 		}
-		return modules;
+		return strategies;
 	}
 	
 	/**

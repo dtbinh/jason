@@ -17,14 +17,14 @@
  *  along with JMCA.  If not, see <http://www.gnu.org/licenses/>.
  *  
  */
-package jmca.policy;
+package jmca.mediation;
 
 import jason.runtime.Settings;
 
 import java.util.List;
 import java.util.Vector;
 
-import jmca.module.AgentModule;
+import jmca.selection.SelectionStrategy;
 import jmca.util.JmcaException;
 
 /**
@@ -39,17 +39,17 @@ import jmca.util.JmcaException;
  *
  * @param <T>	The type of aspect this instance of ContingencyCheck deals with
  */
-public class OverrulingIntersection<T> implements SelectionPolicy<T>{
+public class OverrulingIntersection<T> implements MediationStrategy<T>{
 	public void init(Settings stts){
 		// do nothing
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<T> apply(List<AgentModule<T>> modules, List<T> elements) throws JmcaException{
+	public List<T> apply(List<SelectionStrategy<T>> selectionStrategies, List<T> elements) throws JmcaException{
 		List<T> intersection = new Vector<T>();
 		intersection.addAll(elements);
-		for(AgentModule module : modules){
-			List<T> chosen = module.select(elements);		
+		for(SelectionStrategy selectionStrategy : selectionStrategies){
+			List<T> chosen = selectionStrategy.select(elements);		
 			intersection.retainAll(chosen);
 			if(intersection.isEmpty()){ // no agreement, override earlier selections
 				intersection = chosen;

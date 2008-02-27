@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Vector;
 import java.util.logging.Logger;
 
-import jmca.module.AgentModule;
+import jmca.selection.SelectionStrategy;
 
 /**
  * "Explicit Level-Based Plan Prioritisation". Orders options into levels according to X in "pl(X)" plan
