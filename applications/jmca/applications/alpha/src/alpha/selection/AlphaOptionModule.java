@@ -17,7 +17,7 @@
  *  along with JMCA.  If not, see <http://www.gnu.org/licenses/>.
  *  
  */
-package alpha.module;
+package alpha.selection;
 
 import jason.asSemantics.Agent;
 import jason.asSemantics.Option;
@@ -27,7 +27,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Vector;
 
-import jmca.module.AgentModule;
+import jmca.selection.SelectionStrategy;
 
 /**
  * Orders options in ascending alphabetical order according to functor of the plan label predicate
@@ -36,14 +36,14 @@ import jmca.module.AgentModule;
  * @author Tom Klapiscak
  *
  */
-public class AlphaOptionModule extends AgentModule<Option>{
+public class AlphaSelectionStrategyModule extends SelectionStrategy<Option>{
 	
 	/**
 	 * How many Options should be taken from head of (ordered) Option list
 	 */
 	private static int choose = 2;
 	
-	public AlphaOptionModule(Agent master){
+	public AlphaSelectionStrategyModule(Agent master){
 		super(master);
 	}
 	

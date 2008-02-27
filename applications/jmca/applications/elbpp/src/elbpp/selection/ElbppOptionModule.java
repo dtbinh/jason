@@ -17,7 +17,7 @@
  *  along with JMCA.  If not, see <http://www.gnu.org/licenses/>.
  *  
  */
-package elbpp.module;
+package elbpp.selection;
 
 import jason.asSemantics.Agent;
 import jason.asSemantics.Option;
@@ -39,13 +39,13 @@ import jmca.module.AgentModule;
  * @author Tom Klapiscak
  *
  */
-public class ElbppOptionModule extends AgentModule<Option>{
+public class ElbppOptionSelectionStrategy extends SelectionStrategy<Option>{
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 	
 	public static String PRIORITY_LEVEL_ANNOT = "pl";
 	public static int DEFAULT_PRIORITY_LEVEL = 0;
 	
-	public ElbppOptionModule(Agent master){
+	public ElbppOptionSelectionStrategy(Agent master){
 		super(master);
 	}
 
