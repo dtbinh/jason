@@ -19,12 +19,7 @@ New example:
 . the Jason team used in the Agent Contest 2007 was added in the
   examples (directory gold-miners-II)
 
-New demos:
-. java-object-terms shows how to assign java objects to AgentSpeak
-  variables, e.g.:
-     ...
-     date.today(T); // Create a term T that is a java Calendar
-     date.add_days(T,10,T2); // change the java object 
+New demo:
 . function: shows how to create new arithmetic functions.
 
 New internal actions:
