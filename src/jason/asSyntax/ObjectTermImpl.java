@@ -1,15 +1,14 @@
-package date;
-
-import jason.asSyntax.DefaultTerm;
+package jason.asSyntax;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-public class ObjectTerm extends DefaultTerm {
+public class ObjectTermImpl extends DefaultTerm implements ObjectTerm {
 
     private final Object o;
     
-    public ObjectTerm(Object o) {
+    /** Creates a new Term Wrapper for java object */
+    public ObjectTermImpl(Object o) {
         this.o = o;
     }
     
@@ -30,7 +29,7 @@ public class ObjectTerm extends DefaultTerm {
     @Override
     public Object clone() {
         try {
-            return new ObjectTerm(o.getClass().getMethod("clone", (Class[])null).invoke(o, (Object[])null));
+            return new ObjectTermImpl(o.getClass().getMethod("clone", (Class[])null).invoke(o, (Object[])null));
         } catch (Exception e) {
             System.err.println("The object inside ObjectTerm should be clonable!");
             e.printStackTrace();
