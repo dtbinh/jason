@@ -19,12 +19,13 @@ New example:
 . the Jason team used in the Agent Contest 2007 was added in the
   examples (directory gold-miners-II)
 
-New demo:
-. java-object-terms show how to assign java objects to AgentSpeak
+New demos:
+. java-object-terms shows how to assign java objects to AgentSpeak
   variables, e.g.:
      ...
      date.today(T); // Create a term T that is a java Calendar
      date.add_days(T,10,T2); // change the java object 
+. function: shows how to create new arithmetic functions.
 
 New internal actions:
 . .reverse: reverse the order of lists and strings.
@@ -35,6 +36,7 @@ Bugs fixed:
 . +?b(X) plans does not "return" the X value
 . +!A catch events like +p
 . JDBC belief base does not work with null values
+. The MAS does not stop running when the "stop" button is pressed
 
 
 -------------
