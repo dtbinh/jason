@@ -32,6 +32,7 @@ Bugs fixed:
 . +!A catch events like +p
 . JDBC belief base does not work with null values
 . The MAS does not stop running when the "stop" button is pressed
+. The parser allows to mix initial beliefs and goals with plans.
 
 
 -------------
