@@ -11,6 +11,7 @@ import jason.asSyntax.Term;
 import java.util.Random;
 import java.util.Iterator;
 
+/** backtrack version of random */
 public class random extends DefaultInternalAction {
     
     private Random random = new Random();    
@@ -30,8 +31,8 @@ public class random extends DefaultInternalAction {
                 
                 // we always have a next random number
                 public boolean hasNext() { 
-		    return ts.getUserAgArch().isRunning();  
-		}
+                    return ts.getUserAgArch().isRunning();  
+                }
 
                 public Unifier next() {
                     Unifier c = (Unifier)un.clone();

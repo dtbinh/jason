@@ -1,7 +1,7 @@
 /* initial beliefs */
 
 time(0).
-num_rounds(500).
+num_rounds(2000).
 
 // Knowledge of the PD, shared by all agents
 { include("pd_payoffs.asl") }
