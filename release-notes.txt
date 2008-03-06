@@ -15,9 +15,13 @@ New features
   example of .findall usage:
      .findall(X, (a(X) & X > 10), L)
 
+. A list of goals can be sent by achieve performative:
+     .send(bob,achieve,[g1,g2,g3])
+
 New example:
 . the Jason team used in the Agent Contest 2007 was added in the
   examples (directory gold-miners-II)
+. a GUI is added in the IPD example
 
 New demo:
 . function: shows how to create new arithmetic functions.
