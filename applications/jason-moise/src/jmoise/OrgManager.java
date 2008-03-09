@@ -190,15 +190,15 @@ public class OrgManager extends AgArch {
                 updateMembersOE(sender, "scheme_group(" + sch.getId() + "," + grId + ")", true, true);
             }
 
+            // notify others in the group about this new player
+            updateMembersOE(gr.getAgents(), "play(" + sender + "," + roleId + "," + grId + ")", true, true);
+
             // send players of this group to sender
             for (RolePlayer rp : gr.getPlayers()) {
                 if (!rp.getPlayer().getId().equals(sender)) {
                     updateMembersOE(sender, "play(" + rp.getPlayer().getId() + "," + rp.getRole().getId() + "," + grId + ")", false, true);
                 }
             }
-
-            // notify others in the group about this new player
-            updateMembersOE(gr.getAgents(), "play(" + sender + "," + roleId + "," + grId + ")", true, true);
         }        
     }
     
@@ -228,13 +228,15 @@ public class OrgManager extends AgArch {
 
             SchemeInstance sch = currentOE.findScheme(schId);
 
-            // notify to the sender the current commitments of the scheme
-            for (MissionPlayer mp : sch.getPlayers()) {
-                updateMembersOE(sender, "commitment(" + mp.getPlayer().getId() + "," + mp.getMission().getId() + "," + sch.getId() + ")", false, true);
-            }
-
             // notify to the scheme players the new player
             updateMembersOE(sch.getPlayers(), "commitment(" + sender + "," + misId + "," + sch.getId() + ")", true, true);
+
+            // notify to the sender the other commitments of the scheme
+            for (MissionPlayer mp : sch.getPlayers()) {
+                if (!mp.getPlayer().getId().equals(sender)) {
+                    updateMembersOE(sender, "commitment(" + mp.getPlayer().getId() + "," + mp.getMission().getId() + "," + sch.getId() + ")", false, true);
+                }
+            }
 
             if (sch.getPlayersQty() > 1) {
                 updateMembersOE(sch.getOwner(), "sch_players(" + sch.getId() + ",NP)", false, false);

@@ -1,5 +1,6 @@
 package jmoise;
 
+import jason.JasonException;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.Message;
 import jason.asSemantics.TransitionSystem;
@@ -35,6 +36,8 @@ public abstract class MoiseBaseIA extends DefaultInternalAction  {
 	        Message m = new Message("achieve", null, oag.getOrgManagerName(), acTerm);
             oag.sendMsg(m);
             return true;
+		} catch (JasonException e) {
+		    throw e;
     	} catch (Exception e) {
     		logger.log(Level.SEVERE, "Error sending "+acTerm+" to OrgManager.",e);
     	}

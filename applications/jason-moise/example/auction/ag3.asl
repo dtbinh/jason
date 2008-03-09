@@ -49,4 +49,4 @@ desired_mission(doAuction,mParticipant).
 +goal_state(Sch, winner(W), satisfied) 
    :  goal_state(Sch, auction(N), _)
    <- +winner(N,W).
- 
+  

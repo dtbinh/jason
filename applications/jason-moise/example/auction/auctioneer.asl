@@ -52,14 +52,14 @@ auction_id(0).
 +!start[scheme(Sch)] 
    :  auction_id(N)
    <- .print("Start scheme for ",auction_id(N+1));
-      -+auction_id(N+1);
+      -+auction_id(N+1); 
       -+winner(N+1,no,0);
       jmoise.set_goal_arg(Sch,auction,"N",N+1);
       jmoise.set_goal_state(Sch,start,satisfied).
       
 +!winner(W)[scheme(Sch)] 
    :  auction_id(N) & winner(N,W,_) 
-   <- jmoise.set_goal_arg(Sch,winner,"W",W);
+   <- jmoise.set_goal_arg(Sch,winner,"W",W); 
       jmoise.set_goal_state(Sch,winner,satisfied).
 
 // the root goal is permitted (it means that all sub-gols was achieved)

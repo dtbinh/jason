@@ -1,7 +1,7 @@
 MAS write_paper {
    infrastructure: Centralised
    agents:
-       orgManager [osfile="wp-os.xml",gui=yes] 
+       orgManager [osfile="wp-os.xml",gui=no] 
                   agentArchClass jmoise.OrgManager;
 
        jaime      agentArchClass jmoise.OrgAgent;
