@@ -95,7 +95,9 @@ public class define_class extends DefaultInternalAction {
         	
         	logger.finest("... result: "+expr);
         	
-        	ont.defineClass(classname, expr, new Atom(agent.getAgentName()));       	
+        	logger.finest("Compiled to: "+ont.defineClass(classname, expr, new Atom(agent.getAgentName())));   
+        	
+    
         	
             return true;
         } catch (Exception e) {

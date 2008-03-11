@@ -22,7 +22,9 @@
 !example_UBB_2.
 !example_QBB.
 !example_RPP.
+!example_all_different.
 !example_KSAA.
+
 
 @example_ubb_1[atomic]
 +!example_UBB_1
@@ -87,20 +89,46 @@
 	.send(customer, tell, luxuryHotel(hilton)[o(travel)]).
 
 // for dealing with bundled queries - see customer.asl
+@bundle_1[atomic]
 +?bundle(Hs)
 	<-
-	?bundle(Hs, 0).	
+	?bundle(Hs, 0).
+	
+@bundle_2[atomic]
 +?bundle(Hs, N) : .length(Hs,L) & N<L
 	<-
 	.nth(N, Hs, H);
 	?H;
 	?bundle(Hs, N+1).
-+?bundle(Hs, N) : .length(Hs,L) & N==L.
 	
+@bundle_3[atomic]
++?bundle(Hs, N) : .length(Hs,L) & N==L.
+
+@example_KSAA_complete[atomic]
 +example_KSAA_complete
 	<-
 	.print("Completed: Knowledge Sharing Among Agents").
 	
+	
+/**
+ * Demonstrates use of jasdl.ia.all_different internal action
+ */
+@example_all_different[atomic]
++!example_all_different
+	<-
+	.print("Example: all_different internal action");	
+	+destination(butlins)[o(travel)];
+	+hotel(butlins_hotel)[o(travel)];
+	+hasAccommodation(butlins, butlins_hotel)[o(travel)];	
+	+yoga(butlins_yoga)[o(travel)];
+	+sunbathing(butlins_sunbathing)[o(travel)];		
+	+hasActivity(butlins, butlins_yoga)[o(travel)];
+	+hasActivity(butlins, butlins_sunbathing)[o(travel)];	
+	// Query below will not succeed unless butlins_yoga and butlins_sunbathing are different individuals since family destination requires min 2 *different* activities.
+	// Note: OWL doesn't make UNA and since these individuals do not belong to disjoint classes, therefore they must be explicitly asserted as different.
+	jasdl.ia.all_different([butlins_yoga, butlins_sunbathing], travel);
+	?familyDestination(butlins)[o(travel)];
+	.print("Completed: all_different internal action").
 	
 
 	
