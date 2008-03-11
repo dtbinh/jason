@@ -9,13 +9,19 @@
 
 /* define a new function in AgentSpeak */
 
-{ register_function("sum",2) }   // Register an user defined function
+{ register_function("myf.sum",2,"sum") } 
+                                 // Register an user defined function
+								 // myf.sum is the name of the function
+								 // 2 is its arity
+								 // sum is the name of predicate, that
+								 // should have arity = 3
+								 //
                                  // the code of this function is in the
 								 // rule sum below, the last argument
 								 // is the return of the function
 sum(X,Y,S) :- S = X + Y.								 
 								 
-{ register_function("limit", 0) } // example of constant function
+{ register_function("myf.limit", 0,"limit") } // example of constant function
 limit(10).
 
 								 
@@ -39,6 +45,7 @@ t(x).
 
 +!show_userdef_funtion
    <- .print("Sin of 90   =", myf.sin(90));
-      .print("limit       =", limit);
-      .print("5+(2+limit) =", sum(5,sum(2,limit))).
+      .print("1+2         =", myf.sum(1,2));
+      .print("limit       =", myf.limit);
+      .print("5+(2+limit) =", myf.sum(5,myf.sum(2,myf.limit))).
    

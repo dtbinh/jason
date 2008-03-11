@@ -69,7 +69,6 @@ public class broadcast extends DefaultInternalAction {
                 if (sch != null) {
                     for (OEAgent ag: sch.getAgents()) {
                         if (!ag.getId().equals(oag.getAgName())) {
-                            System.out.println("*"+ag.getId());
                             oag.sendMsg(new Message(ilf.toString(), null, ag.getId(), pcnt));
                         }
                     }                    
