@@ -296,7 +296,9 @@ There are three ways to set the classpath of a project:
 \begin{verbatim}
 MAS masid {
    agents: .......
-   classpath: "../../jdom.jar"; "../../otherproject/classes";
+   classpath: "../../jdom.jar"; 
+              "../../otherproject/classes";
+              "/apache/**/*.jar; // all jar files below /apache
 }
 \end{verbatim}
   Several items can be added as strings separated by ";". This

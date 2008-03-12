@@ -119,6 +119,7 @@
 			</fileset>
 			<fileset dir="${build.dir}">
 				<include name="jason/jeditplugin/Config.class" />
+				<include name="jason/jeditplugin/MASLauncherInfraTier*" />
 			</fileset>
 			<fileset dir="${basedir}/src">
 				<include name="images/**/*" />
