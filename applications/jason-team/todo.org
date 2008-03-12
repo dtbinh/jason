@@ -1,0 +1,15 @@
+* develop a team of dummies to play against
+** what is a dummy strategy?
+* base components
+** A* (update previous to new directions)
+** Vectors (operations)
+* Team formations (moise+ representation of the team)
+** Structure (we have something from the proposal)
+** Functioning (we have noting, but I not sure we need...)
+** computation of ideal locations of an agent to maintain a formation (can we use maintainance goal pattern?)
+* Protocols
+* exploration strategy
+  details
+
+* herding strategy
+  details

@@ -1,12 +1,12 @@
 /* 
  * Jason Team for the
- * Multi-Agent Programming Contest 2007
- * (http://cig.in.tu-clausthal.de/AgentContest)
+ * Multi-Agent Programming Contest 2008
+ * (http://cig.in.tu-clausthal.de/agentcontest2008)
  * 
- * By Jomi & Rafael
+ * By Jomi & Rafael & Gauthier
  */
 
-Our team can run in three configurations (Jason 1.0.1 is required):
+Our team can run in three configurations (Jason 1.0.2 is required):
 
 1. With a local simulator developed by us to test the team. 
 
@@ -20,5 +20,6 @@ Our team can run in three configurations (Jason 1.0.1 is required):
 
 3. With the competition simulator (during the tournament)
 
-   ant -f build-competition.xml
+   Using JasonIDE, open the project AC-JasonTeam.mas2j 
+   and run it.
 
