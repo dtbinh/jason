@@ -29,15 +29,15 @@ import jmca.util.JmcaException;
 
 /**
  * <pre>
- * The default (and currently only) selection policy bundled with JMCA
- * Ultimately results in the intersection of the acceptable sets chosen by each AgentModule being returned to the JmcaAgent
- * If at any point in the composition chain, this intersection is empty (i.e. no agreement exists between this, and previous modules)
- * then this module's whole acceptable set is passed on to subsequent modules. In this way, later modules take precedence over earlier
+ * The default (and currently only) mediation strategy bundled with JMCA
+ * Ultimately results in the intersection of the acceptable sets chosen by each selection strategy being returned to the JmcaAgent
+ * If at any point in the composition chain, this intersection is empty (i.e. no agreement exists between this, and previous strategies)
+ * then this module's whole acceptable set is passed on to subsequent strategies. In this way, later strategies take precedence over earlier
  * ones under circumstances where no mutually-agreed upon decision can be made.
  * </pre>
  * @author Tom Klapiscak
  *
- * @param <T>	The type of aspect this instance of ContingencyCheck deals with
+ * @param <T>	The type of aspect this instance of OverrulingIntersection deals with
  */
 public class OverrulingIntersection<T> implements MediationStrategy<T>{
 	public void init(Settings stts){

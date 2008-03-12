@@ -54,12 +54,12 @@ import jmca.util.JmcaException;
  * Overrides Jason Agent selection functions to provide modular composition services.
  * An aspect is (currently) one of: Option, Message, Intention, Event, ActionExec.
  * Aspect types are identified by their Java class.
- * Each step in a composition chain is known as an "AgentModule".
- * AgentModules select an "agreed" set of aspects, mediated by the "SelectionPolicy".
- * Each aspect type has its own composition chain and selection policy.
+ * Each step in a composition chain is known as an "selection strategy".
+ * AgentModules select an "agreed" set of aspects, mediated by the "mediation strategy".
+ * Each aspect type has its own composition chain and mediation strategy.
  * 
  * This class is responsible for:
- *  - initialising and managing AgentModules and SelectionPolicies
+ *  - initialising and managing selection and mediation strategies
  *  - overriding key Jason Agent methods to interface with JMCA
  * </pre>
  * @author Tom Klapiscak
@@ -72,12 +72,12 @@ public class JmcaAgent extends jason.asSemantics.Agent {
 	private static String PARAM_PREFIX = "jmca"+PARAM_DELIM;		
 	
 	/**
-	 * Maps aspect type to the list of AgentModules instantiated for it
+	 * Maps aspect type to the list of selection strategies instantiated for it
 	 */
 	private HashMap<Class, List<SelectionStrategy>> aspectSelectionStrategyMap;
 	
 	/**
-	 * Maps aspect type to its selection policy
+	 * Maps aspect type to its mediation strategy
 	 */
 	private HashMap<Class, MediationStrategy> aspectMediationStrategyMap;
 	
@@ -91,7 +91,7 @@ public class JmcaAgent extends jason.asSemantics.Agent {
 	
 	
 	/**
-	 * Instantiates AgentModules and SelectionPolicies for this JmcaAgent, then calls Jason's default initAg method
+	 * Instantiates selection and mediation strategies for this JmcaAgent, then calls Jason's default initAg method
 	 */
 	@SuppressWarnings("unchecked")
 	public TransitionSystem initAg(AgArch arch, BeliefBase bb, java.lang.String asSrc, Settings stts) throws JasonException{
@@ -150,10 +150,10 @@ public class JmcaAgent extends jason.asSemantics.Agent {
 	}
 	
 	/**
-     * Applies selection policy for all AgentModules of this aspect and returns the first aspect from the "agreed" set
+     * Applies mediation strategies for all selection strategies of this aspect and returns the first aspect from the "agreed" set
 	 * 
-	 * @param aspect		the aspect type we are applying selection/generation policies to
-	 * @param aspects		a collection of aspects to apply selection/generation policies to - collection allows lists and queues to be passed
+	 * @param aspect		the aspect type we are applying a mediation strategy to
+	 * @param aspects		a collection of aspects we are applingy a mediation strategy to - collection allows lists and queues to be passed
 	 * @return				the first aspect present within the "agreed" set.
 	 */
 	@SuppressWarnings("unchecked")
@@ -178,12 +178,12 @@ public class JmcaAgent extends jason.asSemantics.Agent {
 	}
 
 	/**
-	 * Instantiates (using Java Reflect) the selection policy implementation class speficied in the JmcaAgent's .mas2j file.
-	 * If none present, the default selection policy class is used.
+	 * Instantiates (using Java Reflect) the mediation strategy implementation class speficied in the JmcaAgent's .mas2j file.
+	 * If none present, the defaultmediation strategy class is used.
 	 * 
 	 * @param stts				.mas2j settings of this JmcaAgent
-	 * @param aspect			the type of aspect we are instantiating this selection policy for
-	 * @return					the selection policy instance
+	 * @param aspect			the type of aspect we are instantiating this mediation strategy for
+	 * @return					the mediation strategy instance
 	 * @throws JmcaException	if instantiation fails
 	 */
 	private static MediationStrategy getMediationStrategyClass(Settings stts, Class aspect) throws JmcaException{
@@ -208,17 +208,17 @@ public class JmcaAgent extends jason.asSemantics.Agent {
 	}
 	
 	/**
-	 * Instantiates (using Java Reflect), based on .mas2j parameters, the AgentModule composition chain for a particular type of aspect
+	 * Instantiates (using Java Reflect), based on .mas2j parameters, the selection strategy composition chain for a particular type of aspect
 	 * 
-	 * @param agent				the JmcaAgent these AgentModules are to be associated with (passed to module for later use)
-	 * @param arch				the AgArch of the JmcaAgent (used for module initialisation)
-	 * @param bb				the BeliefBase of the JmcaAgent (used for module initialisation)
-	 * @param asSrc				the AgentSpeak source of the JmcaAgent (used for module initialisation)
-	 * @param stts				the .mas2j settings of the JmcaAgent (used for module initialisation)
-	 * @param aspect			the type of aspect for which we are instantiating this AgentModule composition chain
-	 * @return					a list of AgentModules representing the composition chain for this type of aspect
-	 * @throws JmcaException	if AgentModule instantiation fails
-	 * @throws JasonException	if AgentModule initialisation fails
+	 * @param agent				the JmcaAgent these selection strategies are to be associated with (passed to module for later use)
+	 * @param arch				the AgArch of the JmcaAgent (used for strategy initialisation)
+	 * @param bb				the BeliefBase of the JmcaAgent (used for strategy initialisation)
+	 * @param asSrc				the AgentSpeak source of the JmcaAgent (used for strategy initialisation)
+	 * @param stts				the .mas2j settings of the JmcaAgent (used for strategy initialisation)
+	 * @param aspect			the type of aspect for which we are instantiating this selection strategy composition chain
+	 * @return					a list of selection strategies representing the composition chain for this type of aspect
+	 * @throws JmcaException	if selection strategies instantiation fails
+	 * @throws JasonException	if selection strategies initialisation fails
 	 */
 	private static List<SelectionStrategy> getSelectionStrategyClasses(Agent agent, AgArch arch, BeliefBase bb, String asSrc, Settings stts, Class aspect) throws JmcaException, JasonException{		
 		List<SelectionStrategy> strategies = new Vector<SelectionStrategy>();

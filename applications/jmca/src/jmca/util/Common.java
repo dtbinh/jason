@@ -32,7 +32,7 @@ public class Common {
 	public static String DELIM=",";
 	
 	/**
-	 * Repeatedly strips all prefixes and suffixes from text that match remove 
+	 * Strips all prefixes and suffixes from text that match remove 
 	 * @param text		the text to strip
 	 * @param remove	the prefix/suffix to match
 	 * @return			the stripped text

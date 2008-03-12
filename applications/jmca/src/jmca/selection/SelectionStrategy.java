@@ -32,7 +32,7 @@ import jmca.util.JmcaException;
  */
 public abstract class SelectionStrategy<T>{
 	/**
-	 * The agent this AgentModule belongs to
+	 * The agent this selection strategy belongs to
 	 */
 	protected Agent master;
 	
@@ -42,10 +42,10 @@ public abstract class SelectionStrategy<T>{
 	}
 	
 	/**
-	 * Choose, from those provided, a set of aspects that this AgentModule deems acceptable
+	 * Choose, from those provided, a set of aspects that this selection strategy deems acceptable
 	 * @param from				the aspects to choose from
 	 * @return					a set of acceptable aspects
-	 * @throws JmcaExceptio
+	 * @throws JmcaException
 	 */
 	public abstract List<T> select(List<T> from) throws JmcaException;
 	
