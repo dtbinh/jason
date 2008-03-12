@@ -48,20 +48,22 @@ import jmca.util.JmcaException;
 
 
 /**
- * <pre>
- * "Jason Module Composition Architecture"
+ * "Jason Module Composition Architecture"<p>
  * 
  * Overrides Jason Agent selection functions to provide modular composition services.
- * An aspect is (currently) one of: Option, Message, Intention, Event, ActionExec.
- * Aspect types are identified by their Java class.
- * Each step in a composition chain is known as an "selection strategy".
- * AgentModules select an "agreed" set of aspects, mediated by the "mediation strategy".
- * Each aspect type has its own composition chain and mediation strategy.
+ * Agents wishing to make use of JMCA should extend this class<p>
  * 
+ * An aspect is (currently) one of: Option, Message, Intention, Event, ActionExec and are identified by their Java class.<p>
+ * 
+ * Each step in a composition chain is known as an "selection strategy". AgentModules select an "agreed" set of aspects, mediated 
+ * by the "mediation strategy". Each aspect type has its own composition chain and mediation strategy.<p>
+ * <p>
  * This class is responsible for:
- *  - initialising and managing selection and mediation strategies
- *  - overriding key Jason Agent methods to interface with JMCA
- * </pre>
+ * <ul>
+ *  <li>initialising and managing selection and mediation strategies</li>
+ *  <li>overriding key Jason Agent methods to interface with JMCA</li>
+ * </ul>
+ * 
  * @author Tom Klapiscak
  *
  */

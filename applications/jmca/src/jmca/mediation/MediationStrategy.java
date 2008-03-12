@@ -27,7 +27,7 @@ import jmca.selection.SelectionStrategy;
 import jmca.util.JmcaException;
 
 /**
- * Implementations of this are responsible for mediating the selection process between AgentModules
+ * Implementations of this are responsible for mediating the selection process between selection strategies
  *  
  * @author Tom Klapiscak
  *

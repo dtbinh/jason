@@ -28,13 +28,11 @@ import jmca.selection.SelectionStrategy;
 import jmca.util.JmcaException;
 
 /**
- * <pre>
- * The default (and currently only) mediation strategy bundled with JMCA
- * Ultimately results in the intersection of the acceptable sets chosen by each selection strategy being returned to the JmcaAgent
+ * The default (and currently only) mediation strategy bundled with JMCA.<p>
+ * Ultimately results in the intersection of the acceptable sets chosen by each selection strategy being returned to the JmcaAgent.<p>
  * If at any point in the composition chain, this intersection is empty (i.e. no agreement exists between this, and previous strategies)
  * then this module's whole acceptable set is passed on to subsequent strategies. In this way, later strategies take precedence over earlier
- * ones under circumstances where no mutually-agreed upon decision can be made.
- * </pre>
+ * ones under circumstances where no mutually-agreed upon decision can be made.<p>
  * @author Tom Klapiscak
  *
  * @param <T>	The type of aspect this instance of OverrulingIntersection deals with
