@@ -117,6 +117,9 @@
 				<include name="jason/**/*.class" />
 				<exclude name="jason/jeditplugin/**/*.class" />
 			</fileset>
+			<fileset dir="${build.dir}">
+				<include name="jason/jeditplugin/Config.class" />
+			</fileset>
 			<fileset dir="${basedir}/src">
 				<include name="images/**/*" />
 				<include name="asl/**/*" />
