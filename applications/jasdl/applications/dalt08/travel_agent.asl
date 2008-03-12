@@ -23,6 +23,7 @@
 !example_QBB.
 !example_RPP.
 !example_all_different.
+!example_annotation_gathering.
 !example_KSAA.
 
 
@@ -130,6 +131,20 @@
 	?familyDestination(butlins)[o(travel)];
 	.print("Completed: all_different internal action").
 	
+	
+@example_annotation_gathering[atomic]
++!example_annotation_gathering
+	<-
+	.print("Example: annotation gathering");
+	+ruralArea(kingsworthy)[o(travel), annotation];
+	?destination(kingsworthy)[o(travel), annotation];
+	
+	+hotel(bennys)[o(travel), hotel_annotation];
+	+hasRating(bennys, threeStarRating)[o(travel), hasRating_annotation];
+	+luxuryHotel(bennys)[o(travel), luxuryHotel_annotation];
+	?luxuryHotel(bennys)[o(travel), hotel_annotation, hasRating_annotation, luxuryHotel_annotation];
+	
+	.print("Complete: annotation gathering").
 
 	
 

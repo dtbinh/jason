@@ -106,7 +106,7 @@ public class JasdlBeliefBase extends DefaultBeliefBase{
 				List<OWLIndividualAxiom> axioms = ont.getAxiomFactory().get(l);			
 				for(OWLIndividualAxiom axiom : axioms){
 					Literal found = ont.getLiteralFactory().toLiteral(axiom);
-					found.addAnnots(ont.retrieveAnnotations(found));
+					ont.addAnnotations(found); // add all (asserted and inferred) non-JASDL annotations to l
 					relevant.add(found);
 				}
 			}

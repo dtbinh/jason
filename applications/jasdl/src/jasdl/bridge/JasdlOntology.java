@@ -31,7 +31,6 @@ import jasdl.util.JasdlException;
 import jasdl.util.UnknownReferenceException;
 import jason.asSyntax.Atom;
 import jason.asSyntax.ListTerm;
-import jason.asSyntax.ListTermImpl;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Structure;
 
@@ -416,7 +415,7 @@ public class JasdlOntology {
 		for(OWLIndividualAxiom axiom : owl.getIndividualAxioms()){				
 			try {
 				Literal l = getLiteralFactory().toLiteral(axiom);
-				l.addAnnots(retrieveAnnotations(l));				
+				addAnnotations(l);				
 				bels.add(l);	
 			} catch (InvalidSELiteralAxiomException e) {
 				// do nothing, this just means axiom is not a class or property axiom
@@ -462,42 +461,70 @@ public class JasdlOntology {
 		return agent;
 	}
 	
-	
-	public ListTerm retrieveAnnotations(Literal l) throws JasdlException{
-		ListTerm annotations = retrieveAssertedAnnotations(l);
-		annotations.addAll(retrieveInferredAnnotations(l));
-		return annotations;
-	}
-	
-	public ListTerm retrieveAssertedAnnotations(Literal l) throws JasdlException{
-		Literal clone = (Literal)l.clone();
-		clone.clearAnnots(); // because our hashcode mustn't rely on annotations
-		ListTerm annotations = annotationMap.get(clone);
-		if(annotations == null){
-			annotations = new ListTermImpl();
-		}
-		return annotations;
+	public Logger getLogger(){
+		return getAgent().getLogger();
 	}	
 	
 	
 	/**
-	 * Currently only retrieves explicitly asserted annotations.
-	 * Implied annotation retrieval requires axiom pinpointing functionality.
-	 * 
-	 * @param l
-	 * @return
+	 * Adds all (asserted and inferred) non-JASDL annotations to supplied literal
+	 * @param l		literal to which we are adding all non-JASDL annotations
+	 * @throws JasdlException
 	 */
-	public ListTerm retrieveInferredAnnotations(Literal l) throws JasdlException{
-		ListTerm annotations = new ListTermImpl();
-		Set<Literal> explanations = explain(l);
-		for(Literal explanation : explanations){
-			annotations.addAll(retrieveAssertedAnnotations(explanation));
-		}
-		return annotations;
-		
+	public void addAnnotations(Literal l) throws JasdlException{
+		addAssertedAnnotations(l);
+		addInferredAnnotations(l);
 	}
 	
+	/**
+	 * Adds asserted annotations to the supplied literal (therefore, l must have been asserted for this to have any effect)
+	 * @param l		literal to which we are adding asserted non-JASDL annotations
+	 * @throws JasdlException
+	 */
+	public void addAssertedAnnotations(Literal l) throws JasdlException{
+		Literal clone = (Literal)l.clone();
+		clone.clearAnnots(); // because our hashcode mustn't rely on annotations
+		ListTerm annotations = annotationMap.get(clone);
+		if(annotations != null){
+			l.addAnnots(annotations);
+		}
+	}	
 	
+	
+	/**
+	 * Adds annotations associated with all assertions that entail the axiom associated with this SE-Literal
+	 * @param l	the SE-Literal which to add annotations of all entailing assertions to
+	 */
+	public void addInferredAnnotations(Literal l) throws JasdlException{
+		Set<Literal> explanations = explain(l);
+		for(Literal explanation : explanations){
+			addAssertedAnnotations(explanation);
+			l.importAnnots(explanation);
+		}
+	}
+		
+	/**
+	 * Update the explicit annotations associated with an assertion
+	 * @param l		literal to update explicit (asserted) annotations for 
+	 * @throws JasdlException
+	 */
+	public void storeAnnotations(Literal l) throws JasdlException{
+		addAssertedAnnotations(l); // make sure asserted annotations of literal are complete
+		Literal clone = (Literal)l.clone();
+		clone.clearAnnots(); // because our hashcode mustn't rely on annotations
+		annotationMap.remove(clone);
+		annotationMap.put(clone, l.getAnnots());
+	}	
+	
+	
+	
+	/**
+	 * Return the set all of SE-Literal representations of those (asserted) axioms that entail the axiom corresponding to the SE-Literal l.
+	 * Doesn't use HSTExplantationGenerator's set of minimal explanation sets generation functionality - it is very slow (however, will probably be required for BRF!)
+	 * @param l		the SE-Literal of which to return all entailing assertions
+	 * @return		the set all of SE-Literal representations of those (asserted) axioms that entail the axiom corresponding to the SE-Literal l
+	 * @throws JasdlException
+	 */
 	public Set<Literal> explain(Literal l) throws JasdlException{
 		Set<Literal> explanationSet = new HashSet<Literal>();		
 		List<OWLIndividualAxiom> axioms = getAxiomFactory().get(l);		
@@ -511,7 +538,8 @@ public class JasdlOntology {
 	        bbexp.setReasoner(reasoner);		       
 	        bbexp.setReasonerFactory(reasonerFactory);	
 	        HSTExplanationGenerator hstGen = new HSTExplanationGenerator(bbexp);	        
-	        Set<OWLAxiom> explanation = bbexp.getExplanation(desc);	        
+	        //Set<OWLAxiom> explanation = OWLReasonerAdapter.flattenSetOfSets(hstGen.getExplanations(desc));
+	        Set<OWLAxiom> explanation = hstGen.getExplanation(desc);
 	        for(OWLAxiom expAxiom : explanation){
 	        	if(expAxiom instanceof OWLClassAssertionAxiom || expAxiom instanceof OWLPropertyAssertionAxiom){
 	        		// we are only interested in explanations that can be converted to se-literals
@@ -526,18 +554,7 @@ public class JasdlOntology {
 		return explanationSet;
 	}
 	
-	public Logger getLogger(){
-		return getAgent().getLogger();
-	}
 	
-	public void storeAnnotations(Literal l) throws JasdlException{
-		ListTerm annotations =  retrieveAssertedAnnotations(l);
-		annotations.addAll(l.getAnnots());
-		Literal clone = (Literal)l.clone();
-		clone.clearAnnots(); // because our hashcode mustn't rely on annotations
-		annotationMap.remove(clone);
-		annotationMap.put(clone, annotations);
-	}		
 	
 	
 }
