@@ -77,15 +77,6 @@ public class JasdlAgent extends JmcaAgent {
 		manager = OWLManager.createOWLOntologyManager();
 		setPL( new JasdlPlanLibrary(this) );
 	}
-	
-	public String getAgentName(){
-		String name = getTS().getUserAgArch().getAgName();
-		// hack, unable to set name in bb testing
-		if(name.length() == 0){
-			name = "undefined";
-		}
-		return name;
-	}
 
 		
 	@Override
@@ -356,7 +347,6 @@ public class JasdlAgent extends JmcaAgent {
 	
 	
 	
-	
 	public Collection<JasdlOntology> getLoadedOntologies(){
 		return labelToOntologyMap.values();
 	}	
@@ -365,7 +355,15 @@ public class JasdlAgent extends JmcaAgent {
 		return manager;
 	}	
 	
-
+	public String getAgentName(){
+		String name = getTS().getUserAgArch().getAgName();
+		// hack, unable to set name in bb testing
+		if(name.length() == 0){
+			name = "undefined";
+		}
+		return name;
+	}
+	
 	
 	public List<Literal> getABoxState() throws JasdlException{
 		List<Literal> bels = new Vector<Literal>();

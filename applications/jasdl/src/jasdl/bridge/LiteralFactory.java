@@ -103,7 +103,8 @@ public class LiteralFactory {
 		//	l.setNegated(false);
 		//}
 		
-		//TODO: add other annotations
+		//add other annotations
+		// l.addAnnots(ont.retrieveAnnotations(l));
 		
 		addOntologyAnnotation( l );
 		
@@ -129,7 +130,8 @@ public class LiteralFactory {
 		Atom l_1 = new Atom( ont.toAlias(o).getName() );		
 		l.addTerm(l_1);
 		
-		//TODO: add other annotations
+		//add other annotations
+		//l.addAnnots(ont.retrieveAnnotations(l));
 		
 		addOntologyAnnotation( l );
 		return l;
@@ -170,7 +172,8 @@ public class LiteralFactory {
 		
 		l.addTerm(l_1);
 		
-		//TODO: add other annotations
+		// add other annotations
+		//l.addAnnots(ont.retrieveAnnotations(l));
 		
 		addOntologyAnnotation( l );
 		return l;

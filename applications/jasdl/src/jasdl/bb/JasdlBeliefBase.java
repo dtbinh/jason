@@ -23,9 +23,11 @@ import jasdl.asSemantics.JasdlAgent;
 import jasdl.bridge.JasdlOntology;
 import jasdl.util.InvalidSELiteralException;
 import jasdl.util.JasdlException;
+import jason.asSyntax.ListTerm;
 import jason.asSyntax.Literal;
 import jason.bb.DefaultBeliefBase;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -58,8 +60,12 @@ public class JasdlBeliefBase extends DefaultBeliefBase{
 			for(JasdlOntology ont : onts){
 				OWLIndividualAxiom axiom = ont.getAxiomFactory().create(l);
 				getLogger().finest("Adding axiom: "+axiom);
-				result &= ont.addAxiom(axiom);
-			}
+				boolean thisResult = ont.addAxiom(axiom);
+				if(thisResult){
+					ont.storeAnnotations(l);
+				}
+				result &= thisResult;
+			}			
 			return result;
 		}catch(InvalidSELiteralException e){
 			//agent.getLogger().finest("Adding SN-literal "+l+". Reason: "+e);
@@ -99,7 +105,9 @@ public class JasdlBeliefBase extends DefaultBeliefBase{
 			for(JasdlOntology ont : onts){
 				List<OWLIndividualAxiom> axioms = ont.getAxiomFactory().get(l);			
 				for(OWLIndividualAxiom axiom : axioms){
-					relevant.add(ont.getLiteralFactory().toLiteral(axiom));
+					Literal found = ont.getLiteralFactory().toLiteral(axiom);
+					found.addAnnots(ont.retrieveAnnotations(found));
+					relevant.add(found);
 				}
 			}
 			getLogger().finest("...found: "+relevant);

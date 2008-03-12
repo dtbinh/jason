@@ -30,21 +30,28 @@ import jasdl.util.InvalidSELiteralAxiomException;
 import jasdl.util.JasdlException;
 import jasdl.util.UnknownReferenceException;
 import jason.asSyntax.Atom;
+import jason.asSyntax.ListTerm;
+import jason.asSyntax.ListTermImpl;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Structure;
 
 import java.net.URI;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 import org.antlr.runtime.RecognitionException;
 import org.mindswap.pellet.PelletOptions;
 import org.mindswap.pellet.owlapi.Reasoner;
+import org.semanticweb.owl.debugging.DebuggerDescriptionGenerator;
 import org.semanticweb.owl.inference.OWLReasonerAdapter;
 import org.semanticweb.owl.model.AddAxiom;
+import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owl.model.OWLClassAssertionAxiom;
 import org.semanticweb.owl.model.OWLDataProperty;
 import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLEntity;
@@ -55,9 +62,14 @@ import org.semanticweb.owl.model.OWLObjectProperty;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyChangeException;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
+import org.semanticweb.owl.model.OWLPropertyAssertionAxiom;
 import org.semanticweb.owl.model.RemoveAxiom;
 
 import clexer.owlapi.Clexer;
+
+import com.clarkparsia.explanation.BlackBoxExplanation;
+import com.clarkparsia.explanation.HSTExplanationGenerator;
+import com.clarkparsia.explanation.SatisfiabilityConverter;
 
 
 /**
@@ -71,30 +83,66 @@ import clexer.owlapi.Clexer;
  */
 public class JasdlOntology {	
 
-	
 	private OWLOntology owl;
 	
-	private Reasoner reasoner;	
+	/**
+	 * Reasoner instantiation used to reason over this ontology
+	 */
+	private Reasoner reasoner;
+	
+	/**
+	 * Agent this ontology is associated with
+	 */
 	private JasdlAgent agent;
 	
+	/**
+	 * Atomic label associated with this ontology (used in ontology annotation of se-literals)
+	 */
 	private Atom label;
 	
+	/**
+	 * Instantiation of literal factory used to convert axioms into equivalent se-literal representation
+	 */
 	private LiteralFactory literalFactory;
+	
+	/**
+	 * Instantiation of axiom factory used to convert se-literals into equivalent axiomatic representation
+	 */
 	private AxiomFactory axiomFactory;
 	
-	
+	/**
+	 * Maps aliases to OWLObjects
+	 */
 	private HashMap<Alias, OWLObject> aliasToObjectMap;	
+	
+	/**
+	 * Maps OWLObjects to aliases
+	 */
 	private HashMap<OWLObject, Alias> objectToAliasMap;
+	
+	/**
+	 * Maps aliases to previously-compiled class expressions
+	 */
 	private HashMap<Alias, String> aliasToExprMap;
 	
 	/**
-	 * Maps previously compiled class expressions to their alias, to prevent unecessary class expression parsing
+	 * Maps previously compiled class expressions to their alias
 	 */
 	private HashMap<String, Alias> exprToAliasMap;
 	
+	/**
+	 * The physical URI this ontology was loaded from
+	 */
 	private URI physicalURI;
-
 	
+	/**
+	 * Maps (asserted) SE-literals to annotations
+	 */
+	private HashMap<Literal, ListTerm> annotationMap;
+	
+	
+	
+	private JasdlReasonerFactory reasonerFactory;
 
 	public JasdlOntology(JasdlAgent agent, Atom label, URI physicalURI) throws OWLOntologyCreationException{
 		this.agent = agent;
@@ -103,69 +151,44 @@ public class JasdlOntology {
 		this.owl = getAgent().getManager().loadOntologyFromPhysicalURI( physicalURI );	
 		this.axiomFactory = new AxiomFactory(this);
 		this.literalFactory = new LiteralFactory(this);
+		this.reasonerFactory = new JasdlReasonerFactory(new Reasoner(agent.getManager()));
 		aliasToObjectMap = new HashMap<Alias, OWLObject>();
 		objectToAliasMap = new HashMap<OWLObject, Alias>();
 		aliasToExprMap = new HashMap<Alias, String>();
 		exprToAliasMap = new HashMap<String, Alias>();
+		annotationMap = new HashMap<Literal, ListTerm>();
 		
 		PelletOptions.USE_TRACING = true;
 		reasoner = new Reasoner(agent.getManager());
+		
 		Set<OWLOntology> importsClosure = getAgent().getManager().getImportsClosure(owl);
 		reasoner.loadOntologies(importsClosure);
 		reasoner.classify();		
 		reasoner.getKB().setDoExplanation( true );
-	}
-	
-	public URI getPhysicalURI(){
-		return physicalURI;
-	}
-	
-	public LiteralFactory getLiteralFactory(){
-		return literalFactory;
-	}
-	
-	public AxiomFactory getAxiomFactory(){
-		return axiomFactory;
-	}
-	
-	public JasdlAgent getAgent(){
-		return agent;
+		
+		
 	}
 	
 	/**
-	 * Create OWLObject from a resource URI and map to local alias
-	 * @param real
-	 * @return
-	 * @throws UnknownReferenceException
+	 * Returns the alias associated with an ontological resource identified by uri (if known).
+	 * @param uri	URI of ontological resource to map to alias
+	 * @return		alias mapped to ontological resource referred to by uri
+	 * @throws UnknownReferenceException	if uri refers to an unknown ontological resource
 	 */
-	public Alias toAlias(URI real) throws UnknownReferenceException{		
-		return toAlias(toObject(real));
-	}
+	public Alias toAlias(URI uri) throws UnknownReferenceException{	
+		// Create OWLObject from a resource URI and map to local alias
+		return toAlias(toObject(uri));
+	}	
 	
 	/**
-	 * (Polymorphically) create an OWLObject from resource URI
-	 * @param real
-	 * @return
-	 * @throws UnknownReferenceException
+	 * Returns the alias mapped to the resource referred to by a SE-literal.
+	 * <p> Negated literal aliases are prefixed with "~"
+	 * <p> If literal has origin annotation, a defined alias is created
+	 * <p> If literal lacks origin annotation but cannot be found, self-defined alias is returned if it can be found
+	 * <p> Otherwise, primitive alias with functor of literal is returned
+	 * @param l		literal to map to alias
+	 * @return		alias mapped to literal
 	 */
-	public OWLObject toObject(URI real) throws UnknownReferenceException{
-//		 clumsy approach, but I can't find any way of achieving this polymorphically (i.e. retrieve an OWLObject from a URI) using OWL-API
-		OWLObject obj;
-		if(getOwl().containsClassReference(real)){
-			obj = getAgent().getManager().getOWLDataFactory().getOWLClass(real);
-		}else if (getOwl().containsObjectPropertyReference(real)){	
-			obj = getAgent().getManager().getOWLDataFactory().getOWLObjectProperty(real);
-		}else if (getOwl().containsDataPropertyReference(real)){	
-			obj = getAgent().getManager().getOWLDataFactory().getOWLDataProperty(real);
-		}else if (getOwl().containsIndividualReference(real)){
-			obj = getAgent().getManager().getOWLDataFactory().getOWLIndividual(real);
-		}else{
-			throw new UnknownReferenceException("Unknown ontology resource URI: "+real);
-		}
-		return obj;
-	}
-	
-	
 	public Alias toAlias(Literal l){
 		Alias alias;
 		String name = l.getFunctor();
@@ -188,7 +211,12 @@ public class JasdlOntology {
 		return alias;
 	}
 	
-	
+	/**
+	 * Returns the alias mapped to an OWLObject (if known).
+	 * @param object	OWLObject to map to alias
+	 * @return			alias mapped to object
+	 * @throws UnknownReferenceException	if object is not known
+	 */
 	public Alias toAlias(OWLObject object) throws UnknownReferenceException{
 		Alias a = objectToAliasMap.get(object);
 		if(a == null){
@@ -197,6 +225,12 @@ public class JasdlOntology {
 		return a;
 	}
 	
+	/**
+	 * Returns the alias associated with a previously compiled class-expression (if known).
+	 * @param expr	class-expression to map to alias
+	 * @return		alias mapped to class-expression
+	 * @throws UnknownReferenceException	if class-expression is not known (i.e. not previously compiled)
+	 */
 	public Alias toAlias(String expr) throws UnknownReferenceException{
 		Alias a = exprToAliasMap.get(expr);
 		if(a == null){
@@ -205,21 +239,64 @@ public class JasdlOntology {
 		return a;
 	}
 	
+	/**
+	 * Returns the OWLObject associated with an alias (if known).
+	 * @param alias		alias to map to OWLObject
+	 * @return			OWLObject mapped to alias
+	 * @throws UnknownReferenceException	if OWLObject is not known
+	 */
 	public OWLObject toObject(Alias alias) throws UnknownReferenceException{
 		OWLObject obj = aliasToObjectMap.get(alias);
 		if(obj == null){
-			// might be an unmarked (with origin) self-defined class
-			//obj = aliasToObjectMap.get(new DefinedAlias(alias.getName(), new Atom(agent.getAgentName())));
-			//if(obj == null){
-				throw new UnknownReferenceException("Unknown alias "+alias);
-			//}
+			throw new UnknownReferenceException("Unknown alias "+alias);
 		}
 		return obj;
-	}	
+	}		
+	
+	/**
+	 * (Polymorphically) create an OWLObject from resource URI (if known).
+	 * @param uri	URI of resource to create OWLObject from
+	 * @return		OWLObject identified by URI
+	 * @throws UnknownReferenceException	if OWLObject not known
+	 */
+	public OWLObject toObject(URI uri) throws UnknownReferenceException{
+		// clumsy approach, but I can't find any way of achieving this polymorphically (i.e. retrieve an OWLObject from a URI) using OWL-API
+		OWLObject obj;
+		if(getOwl().containsClassReference(uri)){
+			obj = getAgent().getManager().getOWLDataFactory().getOWLClass(uri);
+		}else if (getOwl().containsObjectPropertyReference(uri)){	
+			obj = getAgent().getManager().getOWLDataFactory().getOWLObjectProperty(uri);
+		}else if (getOwl().containsDataPropertyReference(uri)){	
+			obj = getAgent().getManager().getOWLDataFactory().getOWLDataProperty(uri);
+		}else if (getOwl().containsIndividualReference(uri)){
+			obj = getAgent().getManager().getOWLDataFactory().getOWLIndividual(uri);
+		}else{
+			throw new UnknownReferenceException("Unknown ontology resource URI: "+uri);
+		}
+		return obj;
+	}
 	
 	public OWLObject toObject(String expr) throws UnknownReferenceException{
 		return toObject(toAlias(expr));
 	}
+	
+	public String toExpr(Alias alias) throws UnknownReferenceException{
+		if(alias.defined()){
+			return aliasToExprMap.get((DefinedAlias)alias);
+		}else{
+			//throw new UnknownReferenceException("Alias "+alias+" does not refer to a defined class");
+			// below is allowed, to allow us to polymorphically (defined or primitive) get an expression describing a class (resource?)
+			return "|"+((OWLNamedObject)toObject(alias)).getURI()+"|"; // guaranteed to be named?
+		}
+	}
+	
+	public URI toURI(Alias alias) throws UnknownReferenceException{
+		if(alias.defined()){
+			throw new UnknownReferenceException("Alias "+alias+" does not refer to a primitive class");
+		}else{
+			return ((OWLNamedObject)toObject(alias)).getURI(); // guaranteed to be named?
+		}
+	}	
 	
 	public void addMapping(Alias alias, OWLObject o) throws JasdlException{
 		// No! there is no reason to enforce this, and causes problems with classes defined at run time
@@ -269,45 +346,7 @@ public class JasdlOntology {
 			}
 		}
 	}
-	
-	public Atom getLabel(){
-		return label;
-	}
-	
-	public OWLOntology getOwl(){
-		return owl;
-	}
-	
-	public boolean isMapped(OWLObject o){
-		return objectToAliasMap.containsKey(o);
-	}
-	
-	public boolean isMapped(Alias alias){
-		return aliasToObjectMap.containsKey(alias);
-	}	
-
-	public Reasoner getReasoner() {
-		return reasoner;
-	}
-
-	public String toExpr(Alias alias) throws UnknownReferenceException{
-		if(alias.defined()){
-			return aliasToExprMap.get((DefinedAlias)alias);
-		}else{
-			//throw new UnknownReferenceException("Alias "+alias+" does not refer to a defined class");
-			// below is allowed, to allow us to polymorphically (defined or primitive) get an expression describing a class (resource?)
-			return "|"+((OWLNamedObject)toObject(alias)).getURI()+"|"; // guaranteed to be named?
-		}
-	}
-	
-	public URI toURI(Alias alias) throws UnknownReferenceException{
-		if(alias.defined()){
-			throw new UnknownReferenceException("Alias "+alias+" does not refer to a primitive class");
-		}else{
-			return ((OWLNamedObject)toObject(alias)).getURI(); // guaranteed to be named?
-		}
-	}
-	
+		
 	public OWLDescription defineClass(Atom className, String expr, Atom origin) throws JasdlException{
 		OWLDescription c;
 		try {
@@ -376,7 +415,9 @@ public class JasdlOntology {
 		List<Literal> bels = new Vector<Literal>();
 		for(OWLIndividualAxiom axiom : owl.getIndividualAxioms()){				
 			try {
-				bels.add(getLiteralFactory().toLiteral(axiom));	
+				Literal l = getLiteralFactory().toLiteral(axiom);
+				l.addAnnots(retrieveAnnotations(l));				
+				bels.add(l);	
 			} catch (InvalidSELiteralAxiomException e) {
 				// do nothing, this just means axiom is not a class or property axiom
 			}
@@ -385,10 +426,118 @@ public class JasdlOntology {
 	}
 	
 	
+	public Atom getLabel(){
+		return label;
+	}
 	
+	public OWLOntology getOwl(){
+		return owl;
+	}
 	
+	public boolean isMapped(OWLObject o){
+		return objectToAliasMap.containsKey(o);
+	}
+	
+	public boolean isMapped(Alias alias){
+		return aliasToObjectMap.containsKey(alias);
+	}	
 
+	public Reasoner getReasoner() {
+		return reasoner;
+	}
 	
+	public URI getPhysicalURI(){
+		return physicalURI;
+	}
+	
+	public LiteralFactory getLiteralFactory(){
+		return literalFactory;
+	}
+	
+	public AxiomFactory getAxiomFactory(){
+		return axiomFactory;
+	}
+	
+	public JasdlAgent getAgent(){
+		return agent;
+	}
+	
+	
+	public ListTerm retrieveAnnotations(Literal l) throws JasdlException{
+		ListTerm annotations = retrieveAssertedAnnotations(l);
+		annotations.addAll(retrieveInferredAnnotations(l));
+		return annotations;
+	}
+	
+	public ListTerm retrieveAssertedAnnotations(Literal l) throws JasdlException{
+		Literal clone = (Literal)l.clone();
+		clone.clearAnnots(); // because our hashcode mustn't rely on annotations
+		ListTerm annotations = annotationMap.get(clone);
+		if(annotations == null){
+			annotations = new ListTermImpl();
+		}
+		return annotations;
+	}	
+	
+	
+	/**
+	 * Currently only retrieves explicitly asserted annotations.
+	 * Implied annotation retrieval requires axiom pinpointing functionality.
+	 * 
+	 * @param l
+	 * @return
+	 */
+	public ListTerm retrieveInferredAnnotations(Literal l) throws JasdlException{
+		ListTerm annotations = new ListTermImpl();
+		Set<Literal> explanations = explain(l);
+		for(Literal explanation : explanations){
+			annotations.addAll(retrieveAssertedAnnotations(explanation));
+		}
+		return annotations;
+		
+	}
+	
+	
+	public Set<Literal> explain(Literal l) throws JasdlException{
+		Set<Literal> explanationSet = new HashSet<Literal>();		
+		List<OWLIndividualAxiom> axioms = getAxiomFactory().get(l);		
+		for(OWLIndividualAxiom axiom : axioms){			
+	        DebuggerDescriptionGenerator gen = new DebuggerDescriptionGenerator(agent.getManager().getOWLDataFactory());
+	        axiom.accept(gen);	
+	        SatisfiabilityConverter satCon = new SatisfiabilityConverter(agent.getManager().getOWLDataFactory());	        
+	        OWLDescription desc = satCon.convert(axiom);	
+	        BlackBoxExplanation bbexp = new BlackBoxExplanation(getAgent().getManager());	       	        
+	        bbexp.setOntology(owl);
+	        bbexp.setReasoner(reasoner);		       
+	        bbexp.setReasonerFactory(reasonerFactory);	
+	        HSTExplanationGenerator hstGen = new HSTExplanationGenerator(bbexp);	        
+	        Set<OWLAxiom> explanation = bbexp.getExplanation(desc);	        
+	        for(OWLAxiom expAxiom : explanation){
+	        	if(expAxiom instanceof OWLClassAssertionAxiom || expAxiom instanceof OWLPropertyAssertionAxiom){
+	        		// we are only interested in explanations that can be converted to se-literals
+	        		//TODO: are we not interested in all-different assertions? represent these as se-literals rather than internal action?
+	        		Literal expL = getLiteralFactory().toLiteral((OWLIndividualAxiom)expAxiom);
+	        		explanationSet.add(expL);
+	        	}
+	        }
+	        
+		}
+		
+		return explanationSet;
+	}
+	
+	public Logger getLogger(){
+		return getAgent().getLogger();
+	}
+	
+	public void storeAnnotations(Literal l) throws JasdlException{
+		ListTerm annotations =  retrieveAssertedAnnotations(l);
+		annotations.addAll(l.getAnnots());
+		Literal clone = (Literal)l.clone();
+		clone.clearAnnots(); // because our hashcode mustn't rely on annotations
+		annotationMap.remove(clone);
+		annotationMap.put(clone, annotations);
+	}		
 	
 	
 }
