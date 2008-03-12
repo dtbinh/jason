@@ -9,9 +9,8 @@
 
 /* functions */
 
-{ register_function("carrying_gold",0) }
-{ register_function("my_capacity",0) }
-{ register_function("jia.path_length",4) }
+{ register_function("carrying.gold",0,"carrying_gold") }
+{ register_function("jia.path_length",4,"jia.path_length") }
 
 /* beliefs */
 
@@ -60,7 +59,7 @@ search_gold_strategy(near_unvisited). // initial strategy
     !change_to_fetch(NewG).
 
 +!choose_goal // there is no worth gold
- :  carrying_gold > 0
+ :  carrying.gold > 0
  <- !change_to_goto_depot.
 
 +!choose_goal // not carrying gold, be free and search gold
