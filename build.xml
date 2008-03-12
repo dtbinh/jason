@@ -115,6 +115,7 @@
 		<jar jarfile="${jasonJar}" >
 			<fileset dir="${build.dir}">
 				<include name="jason/**/*.class" />
+				<exclude name="jason/jeditplugin/**/*.class" />
 			</fileset>
 			<fileset dir="${basedir}/src">
 				<include name="images/**/*" />

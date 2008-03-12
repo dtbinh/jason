@@ -10,6 +10,7 @@ New features
   see doc/index.html and demo/function for more information
 
 . Compiler warns about singleton variables in plans and rules
+  (see plugin options to disable this feature)
 
 . Terms can be logical expressions, as in the following
   example of .findall usage:
