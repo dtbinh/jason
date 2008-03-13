@@ -18,7 +18,7 @@
  *  
  */
 
- +luxuriousHotel(L)[o(holidays), source(Source)]
++luxuriousHotel(L)[o(holidays), source(Source)]
 	<-
 	/* 1 */ .print("The ", L, " luxurious hotel is available");
 	/* 2 */ jasdl.ia.define_class(query, "city and hasAccommodation value ", L, holidays);
@@ -36,4 +36,9 @@
 	.print("Bundled query response: ", Response);	
 	
 	.send(Source, tell, example_KSAA_complete).
+
++all_different(XS)[o(holidays), source(Source)]
+	<-
+	.print(XS, " are mutually distinct individuals, according to ", Source).
+	
 	

@@ -1,7 +1,7 @@
 package jasdl.bridge;
 
-import org.mindswap.pellet.owlapi.Reasoner;
 import org.semanticweb.owl.inference.OWLReasoner;
+import org.mindswap.pellet.owlapi.Reasoner;
 import org.semanticweb.owl.model.OWLOntologyManager;
 
 import com.clarkparsia.explanation.ReasonerFactory;

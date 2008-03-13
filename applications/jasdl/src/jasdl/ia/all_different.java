@@ -49,13 +49,17 @@ import org.semanticweb.owl.model.OWLObject;
  * @author Tom Klapiscak
  *
  */
+@Deprecated
 public class all_different extends DefaultInternalAction {
 
     private Logger logger = Logger.getLogger("jasdl."+all_different.class.getName());
 
     @Override
+    @Deprecated
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
-        try {
+    	throw new JasdlException("The jasdl.ia.all_different internal action has been deprecated. Use +all_different([x,y,...])[o(...)] SE-Literal addition instead.");
+        /*
+    	try {
         	if(args.length != 2){
         		throw new JasdlException("Requires two arguments, a list of Atoms and an atom");
         	}
@@ -94,5 +98,6 @@ public class all_different extends DefaultInternalAction {
             logger.warning("Error in internal action 'jasdl.ia.all_different'! "+e);
         }
         return false;
+        */
     }
 }

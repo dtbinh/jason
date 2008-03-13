@@ -25,6 +25,7 @@ import jasdl.asSemantics.JasdlAgent;
 import jasdl.bridge.JasdlOntology;
 import jasdl.util.InvalidSELiteralException;
 import jasdl.util.JasdlException;
+import jasdl.util.UnknownReferenceException;
 import jason.JasonException;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Plan;
@@ -72,6 +73,8 @@ public class JasdlPlanLibrary extends PlanLibrary{
 				}		
 			} catch(InvalidSELiteralException e){
 				// do nothing, we have a SN literal
+			} catch(UnknownReferenceException e){
+				// do nothing, might be a reserved keyword
 			} catch (JasdlException e) {
 				agent.getLogger().warning("JASDL plan relevancy check failed. Reason: "+e);
 			}

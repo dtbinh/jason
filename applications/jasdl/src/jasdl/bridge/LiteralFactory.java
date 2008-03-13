@@ -19,6 +19,7 @@
  */
 package jasdl.bridge;
 
+import static jasdl.util.Common.ALL_DIFFERENT_FUNCTOR;
 import static jasdl.util.Common.ONTOLOGY_ANNOTATION;
 import static jasdl.util.Common.ORIGIN_ANNOTATION;
 import jasdl.bridge.alias.Alias;
@@ -29,6 +30,8 @@ import jasdl.util.InvalidSELiteralAxiomException;
 import jasdl.util.JasdlException;
 import jason.asSyntax.Atom;
 import jason.asSyntax.DefaultTerm;
+import jason.asSyntax.ListTerm;
+import jason.asSyntax.ListTermImpl;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
@@ -38,6 +41,7 @@ import org.semanticweb.owl.model.OWLConstant;
 import org.semanticweb.owl.model.OWLDataProperty;
 import org.semanticweb.owl.model.OWLDataPropertyAssertionAxiom;
 import org.semanticweb.owl.model.OWLDescription;
+import org.semanticweb.owl.model.OWLDifferentIndividualsAxiom;
 import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLIndividualAxiom;
 import org.semanticweb.owl.model.OWLObjectProperty;
@@ -60,14 +64,13 @@ public class LiteralFactory {
 	 */
 	public Literal toLiteral(OWLIndividualAxiom axiom) throws JasdlException{
 		if(axiom instanceof OWLClassAssertionAxiom){
-			return toLiteral((OWLClassAssertionAxiom)axiom);
-			
+			return toLiteral((OWLClassAssertionAxiom)axiom);			
 		}else if(axiom instanceof OWLObjectPropertyAssertionAxiom){
-			return toLiteral((OWLObjectPropertyAssertionAxiom)axiom);
-			
+			return toLiteral((OWLObjectPropertyAssertionAxiom)axiom);			
 		}else if(axiom instanceof OWLDataPropertyAssertionAxiom){
 			return toLiteral((OWLDataPropertyAssertionAxiom)axiom);	
-			
+		}else if(axiom instanceof OWLDifferentIndividualsAxiom){
+			return toLiteral((OWLDifferentIndividualsAxiom) axiom);
 		}else{
 			throw new InvalidSELiteralAxiomException(axiom+" is not of an appropriate type for conversion to a SE-Literal");
 		}
@@ -134,6 +137,22 @@ public class LiteralFactory {
 		//l.addAnnots(ont.retrieveAnnotations(l));
 		
 		addOntologyAnnotation( l );
+		return l;
+	}
+	
+	public Literal toLiteral(OWLDifferentIndividualsAxiom axiom) throws JasdlException{
+		Literal l = new Literal(ALL_DIFFERENT_FUNCTOR);
+		ListTerm is = new ListTermImpl();
+		
+		for(OWLIndividual i : axiom.getIndividuals()){
+			Atom atom = new Atom( ont.toAlias(i).getName() );
+			is.add(atom);
+		}
+		
+		l.addTerm(is);
+		
+		addOntologyAnnotation(l);
+		
 		return l;
 	}
 	

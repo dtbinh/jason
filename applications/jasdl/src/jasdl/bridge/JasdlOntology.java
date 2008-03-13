@@ -21,6 +21,7 @@ package jasdl.bridge;
 
 import static jasdl.util.Common.ORIGIN_ANNOTATION;
 import static jasdl.util.Common.getAnnot;
+import static jasdl.util.Common.isReservedKeyword;
 import static jasdl.util.Common.localName;
 import jasdl.asSemantics.JasdlAgent;
 import jasdl.bridge.alias.Alias;
@@ -302,6 +303,9 @@ public class JasdlOntology {
 		//if(isMapped(o)){ // can only map an entity once
 		//	throw new JasdlException("Duplicate mapping on entity \""+o+"\"");
 		//}
+		if(isReservedKeyword(alias.getName())){
+			throw new JasdlException("Cannot use reserved keyword "+alias.getName()+" as an alias");
+		}		
 		if(aliasToObjectMap.containsKey(alias)){
 			throw new JasdlException("Ambiguous alias: "+alias);
 		}
@@ -311,6 +315,9 @@ public class JasdlOntology {
 	}
 	
 	public void addMapping(Alias alias, String expr) throws JasdlException{
+		if(isReservedKeyword(alias.getName())){
+			throw new JasdlException("Cannot use reserved keyword "+alias.getName()+" as an alias");
+		}
 		if(aliasToExprMap.containsKey(alias)){
 			throw new JasdlException("Ambiguous defined alias: "+alias);
 		}

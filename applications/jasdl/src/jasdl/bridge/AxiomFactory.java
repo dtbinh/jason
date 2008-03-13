@@ -21,6 +21,7 @@ package jasdl.bridge;
 
 import static jasdl.util.Common.DOMAIN;
 import static jasdl.util.Common.RANGE;
+import static jasdl.util.Common.isAllDifferentAssertion;
 import static jasdl.util.Common.isClassAssertion;
 import static jasdl.util.Common.isDataPropertyAssertion;
 import static jasdl.util.Common.isObjectPropertyAssertion;
@@ -31,17 +32,21 @@ import jasdl.bridge.xsd.XSDDataType;
 import jasdl.bridge.xsd.XSDDataTypeUtils;
 import jasdl.util.JasdlException;
 import jasdl.util.UnknownReferenceException;
+import jason.asSyntax.ListTerm;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Term;
 
 import java.net.URI;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import org.semanticweb.owl.model.OWLConstant;
 import org.semanticweb.owl.model.OWLDataProperty;
 import org.semanticweb.owl.model.OWLDataType;
 import org.semanticweb.owl.model.OWLDescription;
+import org.semanticweb.owl.model.OWLDifferentIndividualsAxiom;
 import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLIndividualAxiom;
 import org.semanticweb.owl.model.OWLObject;
@@ -66,7 +71,40 @@ public class AxiomFactory {
 	 */
 	private List<OWLIndividualAxiom> get(Literal l, boolean mustExist) throws JasdlException{
 		List<OWLIndividualAxiom> axioms = new Vector<OWLIndividualAxiom>();
-		if(isClassAssertion(l, ont)){			
+		if(isAllDifferentAssertion(l, ont)){ // needs to take precedence over class expression checking
+			
+			if(l.negated()){
+				throw new JasdlException("JASDL does not currently support negated all_different assertions such as "+l+", since OWL makes the UNA by default and JASDL doesn't allow this to be overridden");
+			}
+			
+			Set<OWLIndividual> different = new HashSet<OWLIndividual>();
+        	List<Term> is = ((ListTerm)l.getTerm(0)).getAsList();
+        	
+        	// check they are mutually distinct (if it must exist)
+        	boolean distinct = true;
+        	if(mustExist){	        	
+	        	for(int i=0; i<is.size(); i++){ 		       		
+	        		OWLIndividual x = toIndividual(ont, new Alias(is.get(i).toString()));  
+	        		for(int j=i+1; j<is.size(); j++){
+	        			OWLIndividual y = toIndividual(ont, new Alias(is.get(j).toString()));  
+	        			if(!ont.getReasoner().isDifferentFrom(x, y)){
+	        				distinct = false;
+	        				break;
+	        			}
+	        		}
+	        		if(!distinct) break;	        		
+	        	}   
+        	}        	
+        	if(distinct || !mustExist){
+	        	for(Term i : is){
+	        		OWLIndividual x = toIndividual(ont, new Alias(i.toString())); 
+	        		different.add(x);
+	        	}
+	        	OWLDifferentIndividualsAxiom axiom = ont.getAgent().getManager().getOWLDataFactory().getOWLDifferentIndividualsAxiom(different);        	
+	        	axioms.add(axiom);
+        	}       	
+				
+		}else if(isClassAssertion(l, ont)){
 			OWLDescription o;
 			Alias alias = ont.toAlias(l);
 			try{
@@ -94,7 +132,8 @@ public class AxiomFactory {
 			}
 			for(OWLIndividual s : ss){
 				axioms.add( ont.getAgent().getManager().getOWLDataFactory().getOWLClassAssertionAxiom(s, o));
-			}		
+			}
+			
 		}else if(isObjectPropertyAssertion(l, ont)){
 			if(l.negated()){
 				throw new JasdlException("JASDL does not currently support negated object property assertions such as "+l);

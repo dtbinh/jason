@@ -54,5 +54,8 @@ MAS dalt08 {
 	       agentClass jasdl.asSemantics.JasdlAgent
 	       beliefBaseClass jasdl.bb.JasdlBeliefBase	       
 	       #1;		   
+		   
+		   
+		 classpath: "../../lib/**/*.jar";"../../../jmca/lib/jmca.jar";
 }
 

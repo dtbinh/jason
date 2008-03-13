@@ -20,6 +20,11 @@
 package jasdl.util;
 
 import jasdl.bridge.JasdlOntology;
+import jason.asSemantics.ActionExec;
+import jason.asSemantics.Event;
+import jason.asSemantics.Intention;
+import jason.asSemantics.Message;
+import jason.asSemantics.Option;
 import jason.asSyntax.ListTerm;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Pred;
@@ -28,6 +33,7 @@ import jason.asSyntax.Term;
 import jason.asSyntax.Trigger;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 
@@ -40,10 +46,21 @@ public class Common {
 	public static String ORIGIN_ANNOTATION = "origin";
 	public static String URI_ANNOTATION = "uri";
 	
+	public static String ALL_DIFFERENT_FUNCTOR = "all_different";
+	private static Vector<String> JASDL_RESERVED_KEYWORDS = new Vector<String>();
+	static{
+		JASDL_RESERVED_KEYWORDS.addAll(Arrays.asList(new String[] {ALL_DIFFERENT_FUNCTOR}));
+	}
+	
 	
 	public static String DELIM=",";
 	public static int DOMAIN = 0;
 	public static int RANGE = 1;
+	
+	
+	public static boolean isReservedKeyword(String token){
+		return JASDL_RESERVED_KEYWORDS.contains(token);
+	}
 	
 	
 	/**
@@ -158,6 +175,14 @@ public class Common {
 	public static boolean isDataPropertyAssertion(Literal l, JasdlOntology ont) throws JasdlException{
 		if(!isPropertyAssertion(l, ont)) return false;
 		if(!( ont.toObject(ont.toAlias(l)) instanceof OWLDataProperty )) return false;
+		return true;
+	}
+	
+	public static boolean isAllDifferentAssertion(Literal l, JasdlOntology ont) throws JasdlException{
+		if(!(l.getFunctor().equals(ALL_DIFFERENT_FUNCTOR))) return false;
+		if(!(l.getArity()==1 && l.getTerm(0) instanceof ListTerm)){
+			throw new JasdlException("all_different assertions must have a single list argument");
+		}
 		return true;
 	}
 	

@@ -23,6 +23,7 @@ import static jasdl.util.Common.EXPR_ANNOTATION;
 import static jasdl.util.Common.URI_ANNOTATION;
 import static jasdl.util.Common.getAnnot;
 import static jasdl.util.Common.getOntologyAnnotation;
+import static jasdl.util.Common.isReservedKeyword;
 import static jasdl.util.Common.mutateLiteral;
 import static jasdl.util.Common.strip;
 import jasdl.asSemantics.JasdlAgent;
@@ -79,61 +80,63 @@ public class IncomingPropContProcessingStrategy implements PropContProcessingStr
 		// replace uri with label
 		o.setTerm(0, ont.getLabel());
 		
-		// translate primitive alias mappings, instantiating unknown defined classes as required
-		Alias alias = ont.toAlias(l);
-		if(alias.defined()){
-			// defined class
-			Term _expr;
-			try{
-				_expr = getAnnot(l, EXPR_ANNOTATION).getTerm(0);
-			}catch(NullPointerException e){
-				throw new JasdlMessageFormatException("No expr annotation associated with defined class alias "+alias);
+		if(!isReservedKeyword(l.getFunctor())){ // avoid parsing, e.g. all_different
+			// translate primitive alias mappings, instantiating unknown defined classes as required
+			Alias alias = ont.toAlias(l);
+			if(alias.defined()){
+				// defined class
+				Term _expr;
+				try{
+					_expr = getAnnot(l, EXPR_ANNOTATION).getTerm(0);
+				}catch(NullPointerException e){
+					throw new JasdlMessageFormatException("No expr annotation associated with defined class alias "+alias);
+				}
+				
+				if(!_expr.isString()){
+					throw new JasdlMessageFormatException("expr annotation must have a String term. Supplied: "+_expr);
+				}
+				String expr = strip(_expr.toString(), "\""); // quotes stripped
+				OWLObject obj;
+				try{
+					// known class expression, just map its compilation to this alias
+					// must remove any previous mappings, since origin's meaning of alias may have changed
+					ont.removeMappings(alias); // remember: defined class mappings can be overwritten				
+					obj = ont.toObject(expr);
+					ont.addMapping(alias, obj);
+					ont.addMapping(alias, expr);
+				}catch(UnknownReferenceException e){
+					// we need to compile this class expression, mapping is performed implicitly
+					ont.defineClass(new Atom(alias.getName()), expr, ((DefinedAlias)alias).getOrigin());
+				}
+				
+				// drop expr annotation, it's not needed anymore and shouldn't be exposed to user
+				l.delAnnot(getAnnot(l, EXPR_ANNOTATION));
+			}else{			
+				// primitive resource
+				Term _real;
+				try{
+					 _real = getAnnot(l, URI_ANNOTATION).getTerm(0);
+				}catch(NullPointerException e){
+					throw new JasdlMessageFormatException("No uri annotation associated with primitive resource alias "+alias);
+				}			
+				
+				if(!_real.isString()){
+					throw new JasdlMessageFormatException("uri annotation must have a String term. Supplied: "+_real);
+				}			
+				URI real;
+				try {
+					real = new URI(strip(_real.toString(), "\"")); // quotes stripped
+				} catch (URISyntaxException e) {
+					throw new JasdlException("Invalid ontology resource URI supplied. Reason: "+e);
+				}
+				
+				// translate literal alias
+				String newFunctor = ont.toAlias(real).getName();
+				l = mutateLiteral(l, newFunctor);
+				
+				// drop uri annotation, it's not needed anymore and shouldn't be exposed to user
+				l.delAnnot(getAnnot(l, URI_ANNOTATION));
 			}
-			
-			if(!_expr.isString()){
-				throw new JasdlMessageFormatException("expr annotation must have a String term. Supplied: "+_expr);
-			}
-			String expr = strip(_expr.toString(), "\""); // quotes stripped
-			OWLObject obj;
-			try{
-				// known class expression, just map its compilation to this alias
-				// must remove any previous mappings, since origin's meaning of alias may have changed
-				ont.removeMappings(alias); // remember: defined class mappings can be overwritten				
-				obj = ont.toObject(expr);
-				ont.addMapping(alias, obj);
-				ont.addMapping(alias, expr);
-			}catch(UnknownReferenceException e){
-				// we need to compile this class expression, mapping is performed implicitly
-				ont.defineClass(new Atom(alias.getName()), expr, ((DefinedAlias)alias).getOrigin());
-			}
-			
-			// drop expr annotation, it's not needed anymore and shouldn't be exposed to user
-			l.delAnnot(getAnnot(l, EXPR_ANNOTATION));
-		}else{			
-			// primitive resource
-			Term _real;
-			try{
-				 _real = getAnnot(l, URI_ANNOTATION).getTerm(0);
-			}catch(NullPointerException e){
-				throw new JasdlMessageFormatException("No uri annotation associated with primitive resource alias "+alias);
-			}			
-			
-			if(!_real.isString()){
-				throw new JasdlMessageFormatException("uri annotation must have a String term. Supplied: "+_real);
-			}			
-			URI real;
-			try {
-				real = new URI(strip(_real.toString(), "\"")); // quotes stripped
-			} catch (URISyntaxException e) {
-				throw new JasdlException("Invalid ontology resource URI supplied. Reason: "+e);
-			}
-			
-			// translate literal alias
-			String newFunctor = ont.toAlias(real).getName();
-			l = mutateLiteral(l, newFunctor);
-			
-			// drop uri annotation, it's not needed anymore and shouldn't be exposed to user
-			l.delAnnot(getAnnot(l, URI_ANNOTATION));
 		}
 		
 		

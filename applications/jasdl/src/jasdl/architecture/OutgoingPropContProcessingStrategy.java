@@ -24,6 +24,7 @@ import static jasdl.util.Common.ORIGIN_ANNOTATION;
 import static jasdl.util.Common.URI_ANNOTATION;
 import static jasdl.util.Common.getAnnot;
 import static jasdl.util.Common.getOntologyAnnotation;
+import static jasdl.util.Common.isReservedKeyword;
 import jasdl.asSemantics.JasdlAgent;
 import jasdl.bridge.JasdlOntology;
 import jasdl.bridge.alias.Alias;
@@ -54,29 +55,32 @@ public class OutgoingPropContProcessingStrategy implements PropContProcessingStr
 			JasdlOntology ont = agent.getOntology((Atom)o.getTerm(0));		
 			o.setTerm(0, new StringTermImpl(ont.getPhysicalURI().toString()));	
 		
-			Alias alias = ont.toAlias(l);
+			if(!isReservedKeyword(l.getFunctor())){ // avoid parsing, e.g. all_different
 			
-			if(alias.defined()){ // defined class, add expr,origin pair
-				Term existing = getAnnot(l, EXPR_ANNOTATION);
-				if(existing!=null) l.delAnnot(existing);
+				Alias alias = ont.toAlias(l);
 				
-				existing = getAnnot(l, ORIGIN_ANNOTATION);
-				if(existing!=null) l.delAnnot(existing);
+				if(alias.defined()){ // defined class, add expr,origin pair
+					Term existing = getAnnot(l, EXPR_ANNOTATION);
+					if(existing!=null) l.delAnnot(existing);
+					
+					existing = getAnnot(l, ORIGIN_ANNOTATION);
+					if(existing!=null) l.delAnnot(existing);
+					
+					// add expr annotation			
+					Structure expr = new Structure(EXPR_ANNOTATION);
+					expr.addTerm(new StringTermImpl(ont.toExpr(alias)));
+					l.addAnnot(expr);
 				
-				// add expr annotation			
-				Structure expr = new Structure(EXPR_ANNOTATION);
-				expr.addTerm(new StringTermImpl(ont.toExpr(alias)));
-				l.addAnnot(expr);
-			
-				// add origin annotation		
-				Structure origin = new Structure(ORIGIN_ANNOTATION);
-				origin.addTerm(((DefinedAlias)alias).getOrigin());
-				l.addAnnot(origin);
-			}else{	// primitive class, add uri
-				// add uri expression
-				Structure uri = new Structure(URI_ANNOTATION);
-				uri.addTerm(new StringTermImpl(ont.toURI(alias).toString()));
-				l.addAnnot(uri);
+					// add origin annotation		
+					Structure origin = new Structure(ORIGIN_ANNOTATION);
+					origin.addTerm(((DefinedAlias)alias).getOrigin());
+					l.addAnnot(origin);
+				}else{	// primitive class, add uri
+					// add uri expression
+					Structure uri = new Structure(URI_ANNOTATION);
+					uri.addTerm(new StringTermImpl(ont.toURI(alias).toString()));
+					l.addAnnot(uri);
+				}
 			}
 		}
 		
