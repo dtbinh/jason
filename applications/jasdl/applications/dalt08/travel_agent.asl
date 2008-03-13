@@ -120,15 +120,15 @@
 	+sunbathing(butlins_sunbathing)[o(travel)];		
 	+hasActivity(butlins, butlins_yoga)[o(travel)];
 	+hasActivity(butlins, butlins_sunbathing)[o(travel)];	
-	//jasdl.ia.all_different([butlins_yoga, butlins_sunbathing], travel);	
-	+all_different([butlins_yoga, butlins_sunbathing])[o(travel)]; // all_different now represented as an se-literal. We can now query, inspect and send these assertions
+	//jasdl.ia.all_different([butlins_yoga, butlins_sunbathing], travel);	- DEPRECATED (see below)
+	+all_different([butlins_yoga, butlins_sunbathing])[o(travel), something]; // all_different now represented as an se-literal. We can now query, inspect and send these assertions
 	// Query below will not succeed unless butlins_yoga and butlins_sunbathing are different individuals since family destination requires min 2 *different* activities.
 	// Note: OWL doesn't make UNA and since these individuals do not belong to disjoint classes, therefore they must be explicitly asserted as different.
-	?familyDestination(butlins)[o(travel)];
+	?familyDestination(butlins)[o(travel), something]; // notice "something" annotations is gathered here since it all_different assertion contributes to this inference
 	?all_different([butlins_yoga, butlins_sunbathing, hilton])[o(travel)];
 	/* ?all_different([hilton, fourSeasons])[o(travel)]; */  // Will fail, since hilton and fourSeasons cannot be established as distinct
 	.print("Completed: all_different assertion").
-	
+		
 	
 @example_annotation_gathering[atomic]
 +!example_annotation_gathering
@@ -140,7 +140,11 @@
 	+hotel(bennys)[o(travel), hotel_annotation];
 	+hasRating(bennys, threeStarRating)[o(travel), hasRating_annotation];
 	+luxuryHotel(bennys)[o(travel), luxuryHotel_annotation];
-	?luxuryHotel(bennys)[o(travel), hotel_annotation, hasRating_annotation, luxuryHotel_annotation];
+	?luxuryHotel(bennys)[o(travel), hotel_annotation, hasRating_annotation, luxuryHotel_annotation];	
+	
+	+urbanArea(x)[o(travel), source(tom)];
+	+ruralArea(y)[o(travel), source(ben)];
+	?all_different([x,y])[o(travel), source(tom), source(ben)]; // because knowledge from tom and ben contributed to the inference that x and y are distinct
 	
 	.print("Complete: annotation gathering").
 

@@ -36,6 +36,8 @@ import jason.asSyntax.Literal;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 
+import java.util.logging.Logger;
+
 import org.semanticweb.owl.model.OWLClassAssertionAxiom;
 import org.semanticweb.owl.model.OWLConstant;
 import org.semanticweb.owl.model.OWLDataProperty;
@@ -151,7 +153,7 @@ public class LiteralFactory {
 		
 		l.addTerm(is);
 		
-		addOntologyAnnotation(l);
+		addOntologyAnnotation(l);	
 		
 		return l;
 	}
@@ -198,6 +200,10 @@ public class LiteralFactory {
 		return l;
 	}
 	
+	
+	private Logger getLogger(){
+		return ont.getAgent().getLogger();
+	}
 	
 	
 	public void addOntologyAnnotation(Literal l){

@@ -54,6 +54,7 @@ import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLClassAssertionAxiom;
 import org.semanticweb.owl.model.OWLDataProperty;
 import org.semanticweb.owl.model.OWLDescription;
+import org.semanticweb.owl.model.OWLDifferentIndividualsAxiom;
 import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.model.OWLIndividualAxiom;
 import org.semanticweb.owl.model.OWLNamedObject;
@@ -77,6 +78,8 @@ import com.clarkparsia.explanation.SatisfiabilityConverter;
  * Maintains:
  * - alias mappings
  * - annotations
+ * 
+ * TODO: Annotation gathering for all_different assertions should be independent of argument ordering (because it is a *set*, not a *list*!)
  * 
  * @author tom
  *
@@ -548,7 +551,7 @@ public class JasdlOntology {
 	        //Set<OWLAxiom> explanation = OWLReasonerAdapter.flattenSetOfSets(hstGen.getExplanations(desc));
 	        Set<OWLAxiom> explanation = hstGen.getExplanation(desc);
 	        for(OWLAxiom expAxiom : explanation){
-	        	if(expAxiom instanceof OWLClassAssertionAxiom || expAxiom instanceof OWLPropertyAssertionAxiom){
+	        	if(expAxiom instanceof OWLClassAssertionAxiom || expAxiom instanceof OWLPropertyAssertionAxiom || expAxiom instanceof OWLDifferentIndividualsAxiom){
 	        		// we are only interested in explanations that can be converted to se-literals
 	        		//TODO: are we not interested in all-different assertions? represent these as se-literals rather than internal action?
 	        		Literal expL = getLiteralFactory().toLiteral((OWLIndividualAxiom)expAxiom);

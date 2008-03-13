@@ -21,18 +21,23 @@ package jasdl.bb;
 
 import jasdl.asSemantics.JasdlAgent;
 import jasdl.bridge.JasdlOntology;
+import jasdl.bridge.alias.Alias;
 import jasdl.util.InvalidSELiteralException;
 import jasdl.util.JasdlException;
 import jason.asSyntax.ListTerm;
 import jason.asSyntax.Literal;
+import jason.asSyntax.Term;
 import jason.bb.DefaultBeliefBase;
 
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 import java.util.logging.Logger;
 
+import org.semanticweb.owl.model.OWLDifferentIndividualsAxiom;
+import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLIndividualAxiom;
 
 public class JasdlBeliefBase extends DefaultBeliefBase{
@@ -103,9 +108,23 @@ public class JasdlBeliefBase extends DefaultBeliefBase{
 		try{						
 			List<JasdlOntology> onts = agent.getOntologies(l);
 			for(JasdlOntology ont : onts){
-				List<OWLIndividualAxiom> axioms = ont.getAxiomFactory().get(l);			
-				for(OWLIndividualAxiom axiom : axioms){
+				List<OWLIndividualAxiom> axioms = ont.getAxiomFactory().get(l);					
+				
+				for(OWLIndividualAxiom axiom : axioms){					
 					Literal found = ont.getLiteralFactory().toLiteral(axiom);
+					
+					// hack, gets around random ordering of OWLDifferentIndividualAxiom individuals
+					// -- just check list membership is equivalent (i.e. treat as sets)
+					if(axiom instanceof OWLDifferentIndividualsAxiom){
+						Set<OWLIndividual> is = new HashSet<OWLIndividual>();
+						for(Term i : ((ListTerm)l.getTerm(0)).getAsList()){
+							is.add(ont.getAxiomFactory().toIndividual(ont, new Alias(i.toString())));
+						}
+						Set<OWLIndividual> js = ((OWLDifferentIndividualsAxiom)axiom).getIndividuals();
+						if(is.containsAll(js)){
+							found.setTerm(0, l.getTerm(0)); // Sets are equivalent, we change to original ordering
+						}
+					}					
 					ont.addAnnotations(found); // add all (asserted and inferred) non-JASDL annotations to l
 					relevant.add(found);
 				}

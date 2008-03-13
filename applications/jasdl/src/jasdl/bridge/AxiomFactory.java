@@ -37,7 +37,7 @@ import jason.asSyntax.Literal;
 import jason.asSyntax.Term;
 
 import java.net.URI;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -77,7 +77,7 @@ public class AxiomFactory {
 				throw new JasdlException("JASDL does not currently support negated all_different assertions such as "+l+", since OWL makes the UNA by default and JASDL doesn't allow this to be overridden");
 			}
 			
-			Set<OWLIndividual> different = new HashSet<OWLIndividual>();
+			Set<OWLIndividual> different = new LinkedHashSet<OWLIndividual>(); // must be ordered! (for ListTerm unification)
         	List<Term> is = ((ListTerm)l.getTerm(0)).getAsList();
         	
         	// check they are mutually distinct (if it must exist)
@@ -86,7 +86,7 @@ public class AxiomFactory {
 	        	for(int i=0; i<is.size(); i++){ 		       		
 	        		OWLIndividual x = toIndividual(ont, new Alias(is.get(i).toString()));  
 	        		for(int j=i+1; j<is.size(); j++){
-	        			OWLIndividual y = toIndividual(ont, new Alias(is.get(j).toString()));  
+	        			OWLIndividual y = toIndividual(ont, new Alias(is.get(j).toString())); 
 	        			if(!ont.getReasoner().isDifferentFrom(x, y)){
 	        				distinct = false;
 	        				break;
@@ -96,8 +96,8 @@ public class AxiomFactory {
 	        	}   
         	}        	
         	if(distinct || !mustExist){
-	        	for(Term i : is){
-	        		OWLIndividual x = toIndividual(ont, new Alias(i.toString())); 
+        		for(int i=0; i<is.size(); i++){ 
+	        		OWLIndividual x = toIndividual(ont, new Alias(is.get(i).toString())); 
 	        		different.add(x);
 	        	}
 	        	OWLDifferentIndividualsAxiom axiom = ont.getAgent().getManager().getOWLDataFactory().getOWLDifferentIndividualsAxiom(different);        	
