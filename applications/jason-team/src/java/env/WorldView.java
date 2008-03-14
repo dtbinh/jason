@@ -33,14 +33,14 @@ public class WorldView extends GridWorldView {
 
 	private static final long serialVersionUID = 1L;
 
-    MiningEnvironment env = null;
+    //MiningEnvironment env = null;
     
 	JLabel     jCycle;
     JLabel     jGoldsC;
 
     JLabel     jlMouseLoc;
-    JComboBox  scenarios;
-    JSlider    jSpeed;
+    //JComboBox  scenarios;
+    //JSlider    jSpeed;
 
 
     public void destroy() {
@@ -64,12 +64,16 @@ public class WorldView extends GridWorldView {
     @Override
     public void initComponents(int width) {
         super.initComponents(width);
+        
+        
+        JPanel args = new JPanel();
+        args.setLayout(new BoxLayout(args, BoxLayout.Y_AXIS));
+
+        /*
         scenarios = new JComboBox();
         for (int i=1; i<=13; i++) {
             scenarios.addItem(i);
         }
-        JPanel args = new JPanel();
-        args.setLayout(new BoxLayout(args, BoxLayout.Y_AXIS));
 
         JPanel sp = new JPanel(new FlowLayout(FlowLayout.LEFT));
         sp.setBorder(BorderFactory.createEtchedBorder());
@@ -96,12 +100,13 @@ public class WorldView extends GridWorldView {
         
         args.add(sp);
         args.add(p);
+        */
 
         JPanel msg = new JPanel();
         msg.setLayout(new BoxLayout(msg, BoxLayout.Y_AXIS));
         msg.setBorder(BorderFactory.createEtchedBorder());
         
-        p = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER));
         p.add(new JLabel("Click on the cells to add new pieces of gold."));
         p.add(new JLabel("  (mouse at:"));
         jlMouseLoc = new JLabel("0,0)");
@@ -123,11 +128,12 @@ public class WorldView extends GridWorldView {
         getContentPane().add(BorderLayout.SOUTH, s);        
 
         // Events handling
+        /*
         jSpeed.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
-                if (env != null) {
-                    env.setSleep((int)jSpeed.getValue());
-                }
+                //if (env != null) {
+                //    env.setSleep((int)jSpeed.getValue());
+                //}
             }
         });
 
@@ -139,6 +145,7 @@ public class WorldView extends GridWorldView {
                 }
             }            
         });
+        */
         
         getCanvas().addMouseListener(new MouseListener() {
             public void mouseClicked(MouseEvent e) {
@@ -169,10 +176,12 @@ public class WorldView extends GridWorldView {
         });
     }
     
+    /*
     public void setEnv(MiningEnvironment env) {
         this.env = env;
         scenarios.setSelectedIndex(env.getSimId()-1);
     }
+    */
     
     public void setCycle(int c) {
     	if (jCycle != null) {

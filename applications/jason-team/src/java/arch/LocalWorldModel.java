@@ -8,7 +8,7 @@ import env.WorldModel;
 
 
 /**
- * Class used to model the scenario (for an agent local view)
+ * Class used to model the scenario (for an agent view)
  * 
  * @author jomi
  */

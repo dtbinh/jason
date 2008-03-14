@@ -16,8 +16,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import env.MiningEnvironment;
-
 
 /**  
  * Handle the (XML) communication with contest simulator. 
@@ -125,9 +123,9 @@ public class ACProxy extends ACAgent {
             cg.addTerm(new NumberTermImpl(items));
             percepts.add(cg);
         
-            if (arq.model.mayCarryMoreGold(arq.getMyId())) {
-                percepts.add(MiningEnvironment.aCAP);
-            }
+            //if (arq.model.mayCarryMoreGold(arq.getMyId())) {
+            //    percepts.add(MiningEnvironment.aCAP);
+            //}
             
 			// add in perception what is around
 			NodeList nl = perception.getElementsByTagName("cell");
@@ -161,6 +159,7 @@ public class ACProxy extends ACAgent {
 
 						Element type = (Element)cnl.item(j);
 						
+						/*
 						if (type.getNodeName().equals("agent")) {
 							if (type.getAttribute("type").equals("ally")) {
 								//arq.allyPerceived(cx, cy);
@@ -180,12 +179,11 @@ public class ACProxy extends ACAgent {
                         } else if (type.getNodeName().equals("empty")) {
                             percepts.add(MiningEnvironment.createCellPerception(cx, cy, MiningEnvironment.aEMPTY));
 						
-						/*
 						} else if (type.getNodeName().equals("mark")) {
 						} else if (type.getNodeName().equals("unknown")) {
 						} else if (type.getNodeName().equals("depot")) {
-						*/
 						}
+                        */
 
 					}
 				}
