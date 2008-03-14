@@ -124,7 +124,7 @@
 	+all_different([butlins_yoga, butlins_sunbathing])[o(travel), something]; // all_different now represented as an se-literal. We can now query, inspect and send these assertions
 	// Query below will not succeed unless butlins_yoga and butlins_sunbathing are different individuals since family destination requires min 2 *different* activities.
 	// Note: OWL doesn't make UNA and since these individuals do not belong to disjoint classes, therefore they must be explicitly asserted as different.
-	?familyDestination(butlins)[o(travel), something]; // notice "something" annotations is gathered here since it all_different assertion contributes to this inference
+	?familyDestination(butlins)[o(travel), something]; // notice "something" annotation is gathered here since it all_different assertion contributes to this inference
 	?all_different([butlins_yoga, butlins_sunbathing, hilton])[o(travel)];
 	/* ?all_different([hilton, fourSeasons])[o(travel)]; */  // Will fail, since hilton and fourSeasons cannot be established as distinct
 	.print("Completed: all_different assertion").

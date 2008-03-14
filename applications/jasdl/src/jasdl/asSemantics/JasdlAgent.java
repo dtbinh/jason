@@ -41,12 +41,17 @@ import jason.asSyntax.Term;
 import jason.bb.BeliefBase;
 import jason.runtime.Settings;
 
+import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.net.Socket;
 import java.net.URI;
+import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
+
+import javax.net.SocketFactory;
 
 import jmca.asSemantics.JmcaAgent;
 
@@ -66,6 +71,10 @@ public class JasdlAgent extends JmcaAgent {
 	private static String MAS2J_URI						= "_uri";
 	private static String MAS2J_MAPPING_STRATEGIES		= "_mapping_strategies";
 	private static String MAS2J_MANUAL_CLASS_MAPPINGS	= "_manual_class_mappings";
+	private static String MAS2J_PROXIES					= "_proxy";
+	private static String[] PROXY_PROTOCOLS				= new String[] {"http.", "https.", "ftp.", "socks"}; // no . after socks deliberate
+	
+	private static List<InnerProxy> proxies;
 	
 	private OWLOntologyManager manager;	
 	private HashMap<Atom, JasdlOntology> labelToOntologyMap;
@@ -74,6 +83,7 @@ public class JasdlAgent extends JmcaAgent {
 	public JasdlAgent(){
 		labelToOntologyMap = new HashMap<Atom, JasdlOntology>();
 		uriToOntologyMap = new HashMap<URI, JasdlOntology>();
+		proxies = new Vector<InnerProxy>();
 		manager = OWLManager.createOWLOntologyManager();
 		setPL( new JasdlPlanLibrary(this) );
 	}
@@ -90,13 +100,42 @@ public class JasdlAgent extends JmcaAgent {
 		// setup log4j properties
 		PropertyConfigurator.configure(System.getProperty("user.dir")+"/log4j.properties");
 		
-		loadOntologies( stts );	
+		loadProxies( stts );		
+		loadOntologies( stts );
 		applyManualMappings( stts );
 		applyMappingStrategies( stts );	
 		applyMiscMappings();
 		
+		
 		return super.initAg(arch, bb, src, stts);
 	}
+	
+	private void loadProxies(Settings stts) throws JasdlException{
+		//TODO: use a more flexible approach for proxy specification (e.g. ProxySelector)
+		for(String protocol : PROXY_PROTOCOLS){
+			// strip . if present (i.e. not socks)
+			String cleanProtocol = protocol.replace(".", "");
+			
+			String proxy = prepareUserParameter(stts, MAS2J_PREFIX + "_" + cleanProtocol + MAS2J_PROXIES);
+			if(proxy.length() > 0){
+				String[] triple = proxy.split(":");
+				if(triple.length != 2){
+					throw new JasdlException("Invalid proxy triple "+proxy);
+				}				
+				String ip		= triple[0].trim();
+				String port		= triple[1].trim();			
+				int portno;
+				try {
+					portno = Integer.parseInt(port);
+				} catch (NumberFormatException e1) {
+					throw new JasdlException("Invalid proxy port number "+port);
+				}
+
+				addProxy(protocol, ip, portno);
+			}
+		}
+				
+	}	
 	
 	/**
 	 * Load ontologies as specified in .mas2j settings
@@ -114,7 +153,9 @@ public class JasdlAgent extends JmcaAgent {
 				throw new JasdlException("Unable to instantiate ontology \""+label+"\". Reason: "+e.getMessage());
 			}			
 		}
-	}
+	}	
+	
+
 
 	private void applyManualMappings(Settings stts) throws JasdlException{
 		for(JasdlOntology ont : getLoadedOntologies()){
@@ -301,13 +342,22 @@ public class JasdlAgent extends JmcaAgent {
 	
 
 	/**
-	 * Instantiate a new Jasdl Ontology with a supplied atomic label and physical URI
+	 * Instantiate a new Jasdl Ontology with a supplied atomic label and physical URI.
+	 * Sets System proxies to agent proxies before ontology instantiation
 	 * @param label
 	 * @param physicalURI
 	 * @return
 	 * @throws OWLOntologyCreationException
 	 */
 	public JasdlOntology createJasdlOntology(Atom label, URI physicalURI) throws OWLOntologyCreationException{
+		// set proxies
+		for(InnerProxy proxy : proxies){
+			try {
+				proxy.set();
+			} catch (JasdlException e) {
+				getLogger().warning("Error setting proxies. Reason: "+e);
+			}
+		}
 		JasdlOntology ont = new JasdlOntology(this, label, physicalURI);
 		labelToOntologyMap.put(label, ont);
 		uriToOntologyMap.put(physicalURI, ont);
@@ -371,6 +421,43 @@ public class JasdlAgent extends JmcaAgent {
 			bels.addAll(ont.getABoxState());
 		}
 		return bels;
+	}
+	
+	public InnerProxy addProxy(String protocol, String ip, int portno){
+		return addProxy( new InnerProxy(protocol, ip, portno) );
+	}
+	
+	public InnerProxy addProxy(InnerProxy proxy){
+		proxies.add(proxy);
+		return proxy;
+	}
+	
+	private class InnerProxy{
+		private String protocol;
+		private String ip;
+		private int portno;
+		
+		InnerProxy(String protocol, String ip, int portno){
+			this.protocol = protocol;
+			this.ip = ip;
+			this.portno = portno;
+		}
+		
+		public void set() throws JasdlException{
+			String cleanProtocol = protocol.replace(".", "");
+			String name = ip+":"+portno;
+			
+			System.setProperty(protocol+"proxyHost", ip);
+			System.setProperty(protocol+"proxyPort", ""+portno);
+			
+			try {
+				Socket sock = SocketFactory.getDefault().createSocket(ip, portno);
+			} catch (IOException e) {
+				throw new JasdlException("Unable to connect to "+cleanProtocol+" proxy "+name+". Reason: "+e);
+			}
+			
+			getLogger().info("Using "+cleanProtocol+" proxy "+name);
+		}
 	}
 
 }
