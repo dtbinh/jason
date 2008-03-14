@@ -85,7 +85,7 @@ public class MinerArch extends AgArch {
 		}
         model = new LocalWorldModel(w, h);
         if (gui) {
-        	view = new WorldView("Herding (view of miner "+(getMyId()+1)+") -- against "+opponent,model);
+        	view = new WorldView("Herding (view of cowboy "+(getMyId()+1)+") -- against "+opponent,model);
         }
         getTS().getAg().addBel(Literal.parseLiteral("gsize("+w+","+h+")"));
         playing = true;

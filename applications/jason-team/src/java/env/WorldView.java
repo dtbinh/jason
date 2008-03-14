@@ -39,7 +39,7 @@ public class WorldView extends GridWorldView {
     }
 
     public WorldView(WorldModel model, int windowSize) {
-        this("Mining World", model, windowSize);
+        this("Herding World", model, windowSize);
     }
     
     public WorldView(String title, WorldModel model) {
@@ -223,17 +223,17 @@ public class WorldView extends GridWorldView {
     public void drawAgent(Graphics g, int x, int y, Color c, int id) {
         int gw = 1;
         if (id < 6) {
-        	// red team
+        	// blue team
             //int gw = (WorldModel.AG_CAPACITY - golds) + 1;
-            g.setColor(Color.red);
+            g.setColor(Color.blue);
             g.fillOval(x * cellSizeW + gw, y * cellSizeH + gw, cellSizeW - gw*2, cellSizeH - gw*2);
             if (id >= 0) {
                 g.setColor(Color.black);
                 drawString(g, x, y, defaultFont, String.valueOf(id+1));
             }
         } else {
-        	// blue team
-            g.setColor(Color.blue);
+        	// red team
+            g.setColor(Color.red);
             g.fillOval(x * cellSizeW + gw, y * cellSizeH + gw, cellSizeW - gw*2, cellSizeH - gw*2);
             if (id >= 0) {
                 g.setColor(Color.white);

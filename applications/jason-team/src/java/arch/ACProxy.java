@@ -152,9 +152,9 @@ public class ACProxy extends ACAgent {
                             arq.cowPerceived(absx, absy);
                             
                         } else if (type.getNodeName().equals("obstacle")) { 
-							arq.obstaclePerceived(absx, absy, MinerArch.createCellPerception(cellx, celly, MinerArch.aOBSTACLE));
+							arq.obstaclePerceived(absx, absy, MinerArch.createCellPerception(absx, absy, MinerArch.aOBSTACLE));
                         } else if (type.getNodeName().equals("corral") && type.getAttribute("type").equals("enemy")) { 
-                            arq.obstaclePerceived(absx, absy, MinerArch.createCellPerception(cellx, celly, MinerArch.aOBSTACLE));
+                            arq.obstaclePerceived(absx, absy, MinerArch.createCellPerception(absx, absy, MinerArch.aOBSTACLE));
                             
                         } else if (type.getNodeName().equals("empty")) {
                             percepts.add(MinerArch.createCellPerception(cellx, celly, MinerArch.aEMPTY));
