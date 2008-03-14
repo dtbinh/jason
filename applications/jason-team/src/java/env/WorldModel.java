@@ -5,39 +5,41 @@ import jason.environment.grid.Location;
 
 import java.util.logging.Logger;
 
+import org.apache.tools.ant.taskdefs.UpToDate;
+
 
 /**
- * Class used to model the scenario (for an global view -- used by environment simulator)
+ * Class used to model the scenario
  * 
  * @author Jomi
  */
 public class WorldModel extends GridWorldModel {
 
-    public static final int   GOLD  = 16;
-    public static final int   DEPOT = 32;
-    public static final int   ENEMY = 64;
+    public static final int   COW    = 16;
+    public static final int   CORRAL = 32;
+    public static final int   ENEMY  = 64;
     public static final int   TARGET = 128; // one agent target location
 
-    public static final int   AG_CAPACITY = 3; // how many golds an agent can carry
+    public static final int   nbActions = 8;
 
+    
     double                    PSim = 0.1; // probability of action/information failure
     double                    PMax = 0.5; // maximal value for action/information failure
     
-    Location                  depot;
-    int[]                     goldsWithAg;  // how many golds each agent is carrying
+    Location                  corralUL, corralDR;
 
-    int                       goldsInDepotRed  = 0; // #golds the red team puts in the depot
-    int                       goldsInDepotBlue = 0; // #golds the blue team puts in the depot
-    int 					  initialNbGolds = 0;
+    int                       cowsRed  = 0; // #cows the red team puts in the corral
+    int                       cowsBlue = 0; // #cows the blue team puts in the corral
+    int 					  initialNbCows = 0;
     
     int	                      maxSteps = 0; // number of steps of the simulation
     
     private Logger            logger   = Logger.getLogger("jasonTeamSimLocal.mas2j." + WorldModel.class.getName());
 
-    int agsByTeam = 6;
-    
+    int agsByTeam = 6;    
+
     public enum Move {
-        UP, DOWN, RIGHT, LEFT
+        north, south, east, west, northeast, southeast, northwest, southwest, skip 
     };
 
 
@@ -47,9 +49,6 @@ public class WorldModel extends GridWorldModel {
     
     public WorldModel(int w, int h, int nbAg) {
         super(w, h, nbAg);
-        
-        goldsWithAg = new int[nbAg];
-        for (int i=0; i< goldsWithAg.length; i++) goldsWithAg[i] = 0;
     }
 
     public int getAgsByTeam() {
@@ -58,22 +57,28 @@ public class WorldModel extends GridWorldModel {
     
     @Override 
     public boolean isFree(int x, int y) {
-        return super.isFree(x,y) && !hasObject(ENEMY, x, y);
+        return super.isFree(x,y) && !hasObject(ENEMY, x, y) && !hasObject(COW, x, y);
     }
 
     public WorldView getView() {
     	return (WorldView)view;
     }
     
-    public void setDepot(int x, int y) {
-    	if (depot != null) {
-    		data[depot.x][depot.y]    = CLEAN;
-    	}
-        depot = new Location(x, y);
-        data[x][y] = DEPOT;
+    // upper 
+    public void setCorral(Location upperLeft, Location downRight) {
+	    for (int l=upperLeft.y; l<downRight.y; l++)
+            for (int c=upperLeft.x; c<downRight.x; c++)
+                data[c][l] = CORRAL;
+	    corralUL = upperLeft;
+	    corralDR = downRight;
     }
     
+    public boolean inCorral(Location l) {
+        return l.x >= corralUL.x && l.x <= corralDR.x &&
+               l.y >= corralUL.y && l.y <= corralDR.y;
+    }
 
+    /*
     public Location getDepot() {
         return depot;
     }
@@ -87,19 +92,19 @@ public class WorldModel extends GridWorldModel {
     }
     
     public boolean hasGold() {
-    	return countObjects(GOLD) > 0;
+    	return countObjects(COW) > 0;
     }
     
     public boolean isAllGoldsCollected() {
-    	return goldsInDepotRed + goldsInDepotBlue == initialNbGolds;
+    	return goldsInDepotRed + goldsInDepotBlue == initialNbCows;
     }
     
     public void setInitialNbGolds(int i) {
-    	initialNbGolds = i;
+    	initialNbCows = i;
     }
     
     public int getInitialNbGolds() {
-    	return initialNbGolds;
+    	return initialNbCows;
     }
 
     public boolean isCarryingGold(int ag) {
@@ -116,6 +121,7 @@ public class WorldModel extends GridWorldModel {
     public void setGoldsWithAg(int ag, int n) {
     	goldsWithAg[ag] = n;
     }
+    */
     
     public void setPSim(double psim) {
         PSim = psim;
@@ -126,7 +132,8 @@ public class WorldModel extends GridWorldModel {
     
     /** returns the probability of action/perception failure for an agent
         based on the number of golds it is carrying 
-    */ 
+    */
+    /*
     public double getAgFatigue(int ag) {
         return getAgFatigue(ag, goldsWithAg[ag]); 
     }
@@ -134,6 +141,7 @@ public class WorldModel extends GridWorldModel {
     public double getAgFatigue(int ag, int golds) {
         return PSim + ((PMax - PSim)/AG_CAPACITY) * golds; 
     }
+    */
     
     public void setMaxSteps(int s) {
     	maxSteps = s;
@@ -157,10 +165,10 @@ public class WorldModel extends GridWorldModel {
         }
         Location n = null;
         switch (dir) {
-        case UP:    n =  new Location(l.x, l.y - 1); break;
-        case DOWN:  n =  new Location(l.x, l.y + 1); break;
-        case RIGHT: n =  new Location(l.x + 1, l.y); break;
-        case LEFT:  n =  new Location(l.x - 1, l.y); break;
+        case north:    n =  new Location(l.x, l.y - 1); break;
+        case south:  n =  new Location(l.x, l.y + 1); break;
+        case east: n =  new Location(l.x + 1, l.y); break;
+        case west:  n =  new Location(l.x - 1, l.y); break;
         }
         if (n != null && canMoveTo(ag, n)) {
             // if there is an agent there, move that agent
@@ -173,50 +181,9 @@ public class WorldModel extends GridWorldModel {
     }
 
     private boolean canMoveTo(int ag, Location l) {
-    	if (isFreeOfObstacle(l)) {
-    		if (!l.equals(getDepot()) || isCarryingGold(ag)) { // if depot, the must be carrying gold
-    			return true;
-    		}
-    	}
-    	return false;
+        return isFreeOfObstacle(l);
     }
     
-    public boolean pick(int ag) {
-        Location l = getAgPos(ag);
-        if (hasObject(WorldModel.GOLD, l.x, l.y)) {
-            if (getGoldsWithAg(ag) < AG_CAPACITY) {
-                remove(WorldModel.GOLD, l.x, l.y);
-                goldsWithAg[ag]++;
-                return true;
-            } else {
-                logger.warning("Agent " + (ag + 1) + " is trying the pick gold, but it is already carrying "+(AG_CAPACITY)+" golds!");
-            }
-        } else {
-            logger.warning("Agent " + (ag + 1) + " is trying the pick gold, but there is no gold at " + l.x + "x" + l.y + "!");
-        }
-        return false;
-    }
-
-    public boolean drop(int ag) {
-        Location l = getAgPos(ag);
-        if (isCarryingGold(ag)) {
-            if (l.equals(getDepot())) {
-                logger.info("Agent " + (ag + 1) + " carried "+goldsWithAg[ag]+" golds to depot!");
-                if (ag < agsByTeam)
-                	goldsInDepotRed += goldsWithAg[ag];
-                else
-                	goldsInDepotBlue += goldsWithAg[ag];
-                goldsWithAg[ag] = 0;
-            } else {
-                add(WorldModel.GOLD, l.x, l.y);
-                goldsWithAg[ag]--;
-            }
-            return true;
-        }
-        return false;
-    }
-
-
     public void wall(int x1, int y1, int x2, int y2) {
     	for (int i=x1; i<=x2; i++) {
     		for (int j=y1; j<=y2; j++) {
@@ -233,12 +200,12 @@ public class WorldModel extends GridWorldModel {
     		for (int i = 0; i < getWidth(); i++) {
             	if (hasObject(OBSTACLE, i, j)) {
             		s.append('X');
-            	} else if (hasObject(DEPOT, i, j)) {
+            	} else if (hasObject(CORRAL, i, j)) {
             		s.append('O');
             	} else if (hasObject(AGENT, i, j)) {
             		s.append((getAgAtPos(i, j)+1)+"");
-            	} else if (hasObject(GOLD, i, j)) {
-            		s.append('G');
+            	} else if (hasObject(COW, i, j)) {
+            		s.append('C');
             	} else if (hasObject(ENEMY, i, j)) {
             		s.append('E');
             	} else {

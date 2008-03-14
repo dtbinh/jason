@@ -12,6 +12,7 @@ import java.util.Map;
 
 /**
  * Customised version of Belief Base where some beliefs are unique (with primary keys).
+ * 
  * <p>E.g.:<br/>
  * <code>beliefBaseClass agent.UniqueBelsBB("student(key,_)", "depot(_,_,_)")</code>
  * <br/>

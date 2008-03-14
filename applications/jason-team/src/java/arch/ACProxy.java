@@ -2,6 +2,7 @@ package arch;
 
 import jason.asSyntax.Literal;
 import jason.asSyntax.NumberTermImpl;
+import jason.environment.grid.Location;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,14 +65,16 @@ public class ACProxy extends ACAgent {
 			//opponent = simulation.getAttribute("opponent");
 			//arq.addBel(Literal.parseLiteral("opponent("+simulationID+","+opponent+")"));
             arq.setSimId(simulation.getAttribute("id"));
-			
+
 			int gsizex = Integer.parseInt(simulation.getAttribute("gsizex"));
 			int gsizey = Integer.parseInt(simulation.getAttribute("gsizey"));
-            arq.gsizePerceived(gsizex,gsizey);
+            arq.gsizePerceived(gsizex,gsizey, simulation.getAttribute("opponent"));
 
-			int depotx = Integer.parseInt(simulation.getAttribute("depotx"));
-			int depoty = Integer.parseInt(simulation.getAttribute("depoty"));			
-            arq.depotPerceived(depotx, depoty);
+			int corralx0 = Integer.parseInt(simulation.getAttribute("corralx0"));
+            int corralx1 = Integer.parseInt(simulation.getAttribute("corralx1"));
+            int corraly0 = Integer.parseInt(simulation.getAttribute("corraly0"));
+            int corraly1 = Integer.parseInt(simulation.getAttribute("corraly1"));
+            arq.corralPerceived(new Location(corralx0, corraly0), new Location(corralx1, corraly1));
 
 			int steps  = Integer.parseInt(simulation.getAttribute("steps"));
             arq.stepsPerceived(steps);
@@ -79,7 +82,7 @@ public class ACProxy extends ACAgent {
 			logger.info("Start simulation processed ok!");
 
 			rid = simulation.getAttribute("id");
-			sendAction(null); // the start requires an answer!
+			sendAction(null); // TODO: check is still needed. the start requires an answer!
 			
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "error processing start",e);
@@ -102,89 +105,60 @@ public class ACProxy extends ACAgent {
 			List<Literal> percepts = new ArrayList<Literal>();
 			
 			rid = perception.getAttribute("id");
-			int agX   = Integer.parseInt(perception.getAttribute("posx"));
-			int agY   = Integer.parseInt(perception.getAttribute("posy"));
-            int items = Integer.parseInt(perception.getAttribute("items"));
+			int agx   = Integer.parseInt(perception.getAttribute("posx"));
+			int agy   = Integer.parseInt(perception.getAttribute("posy"));
 			int step  = Integer.parseInt(perception.getAttribute("step"));
+            int score = Integer.parseInt(perception.getAttribute("score"));
 
             // update model
-			arq.locationPerceived(agX, agY);
-            arq.carriedGoldsPerceived(items);
+			arq.locationPerceived(agx, agy);
+			// TODO: udpate my score (show in the interface)
 
             // add location in perception
 			Literal lpos = new Literal("pos");
-			lpos.addTerm(new NumberTermImpl(agX));
-			lpos.addTerm(new NumberTermImpl(agY));
+			lpos.addTerm(new NumberTermImpl(agx));
+			lpos.addTerm(new NumberTermImpl(agy));
     		lpos.addTerm(new NumberTermImpl(step));
 			percepts.add(lpos);
 
-            // add carrying gold in perception
-            Literal cg = new Literal("carrying_gold");
-            cg.addTerm(new NumberTermImpl(items));
-            percepts.add(cg);
-        
-            //if (arq.model.mayCarryMoreGold(arq.getMyId())) {
-            //    percepts.add(MiningEnvironment.aCAP);
-            //}
-            
 			// add in perception what is around
 			NodeList nl = perception.getElementsByTagName("cell");
 			for (int i=0; i < nl.getLength(); i++) {
 				Element cell = (Element)nl.item(i);
-				String relPos = cell.getAttribute("id");
-				int cx=0, cy=0;
-				if (relPos.equals("nw")) {
-					cx=agX-1; cy=agY-1;
-				} else if (relPos.equals("n")) {
-					cx=agX; cy=agY-1;
-				} else if (relPos.equals("ne")) {
-					cx=agX+1; cy=agY-1;
-				} else if (relPos.equals("w")) {
-					cx=agX-1; cy=agY;
-				} else if (relPos.equals("cur")) {
-					cx=agX; cy=agY;
-				} else if (relPos.equals("e")) {
-					cx=agX+1; cy=agY;
-				} else if (relPos.equals("sw")) {
-					cx=agX-1; cy=agY+1;
-				} else if (relPos.equals("s")) {
-					cx=agX; cy=agY+1;
-				} else if (relPos.equals("se")) {
-					cx=agX+1; cy=agY+1;
-				}
-
+				int cellx = Integer.parseInt(cell.getAttribute("x"));
+                int celly = Integer.parseInt(cell.getAttribute("y"));
+				int absx  = agx - cellx;
+				int absy  = agy - celly;
+				
 				NodeList cnl = cell.getChildNodes();
 				for (int j=0; j < cnl.getLength(); j++) {
 					if (cnl.item(j).getNodeType() == Element.ELEMENT_NODE) {
 
 						Element type = (Element)cnl.item(j);
 						
-						/*
 						if (type.getNodeName().equals("agent")) {
 							if (type.getAttribute("type").equals("ally")) {
-								//arq.allyPerceived(cx, cy);
-								percepts.add(MiningEnvironment.createCellPerception(cx, cy, MiningEnvironment.aALLY));
+								percepts.add(MinerArch.createCellPerception(cellx, celly, MinerArch.aALLY));
 							} else if (type.getAttribute("type").equals("enemy")) {
-								arq.enemyPerceived(cx, cy);
-								percepts.add(MiningEnvironment.createCellPerception(cx, cy, MiningEnvironment.aENEMY));
+								arq.enemyPerceived(absx, absy);
+								percepts.add(MinerArch.createCellPerception(cellx, celly, MinerArch.aENEMY));
 							}
                             
-						} else if (type.getNodeName().equals("obstacle")) { 
-							arq.obstaclePerceived(cx, cy, MiningEnvironment.createCellPerception(cx, cy, MiningEnvironment.aOBSTACLE));
+                        } else if (type.getNodeName().equals("cow")) {
+                            int cowId = Integer.parseInt(type.getAttribute("ID"));
+                            Literal lc = new Literal("cow");
+                            lc.addTerm(new NumberTermImpl( cowId ));
+                            percepts.add(MinerArch.createCellPerception(cellx, celly, lc));
+                            arq.cowPerceived(absx, absy);
                             
-						} else if (type.getNodeName().equals("gold")) {
-							percepts.add(MiningEnvironment.createCellPerception(cx, cy, MiningEnvironment.aGOLD));
-							arq.goldPerceived(cx, cy);
-							
+                        } else if (type.getNodeName().equals("obstacle")) { 
+							arq.obstaclePerceived(absx, absy, MinerArch.createCellPerception(cellx, celly, MinerArch.aOBSTACLE));
+                        } else if (type.getNodeName().equals("corral") && type.getAttribute("type").equals("enemy")) { 
+                            arq.obstaclePerceived(absx, absy, MinerArch.createCellPerception(cellx, celly, MinerArch.aOBSTACLE));
+                            
                         } else if (type.getNodeName().equals("empty")) {
-                            percepts.add(MiningEnvironment.createCellPerception(cx, cy, MiningEnvironment.aEMPTY));
-						
-						} else if (type.getNodeName().equals("mark")) {
-						} else if (type.getNodeName().equals("unknown")) {
-						} else if (type.getNodeName().equals("depot")) {
+                            percepts.add(MinerArch.createCellPerception(cellx, celly, MinerArch.aEMPTY));
 						}
-                        */
-
 					}
 				}
 			}
@@ -234,8 +208,8 @@ public class ACProxy extends ACAgent {
 		
 		public void run() {
 			int d = new Random().nextInt(10000);
-			while (true) {
-				try {
+            try {
+                while (true) {
 					sleep(20000+d);
 					count++;
 					ok = false;
@@ -249,10 +223,10 @@ public class ACProxy extends ACAgent {
 						//reconnect();
 						connect();
 					}
-				} catch (Exception e) {
-					logger.log(Level.WARNING,"Error in communication ",e);
-				}
-			}
+			    }
+            } catch (Exception e) {
+                logger.log(Level.WARNING,"Error in communication ",e);
+            }
 		}
 		
 		synchronized void waitPong() throws Exception {

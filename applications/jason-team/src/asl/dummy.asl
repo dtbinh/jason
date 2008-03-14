@@ -1,55 +1,35 @@
-// Code of dummy agents (Blue team)
+// Code of dummy agents 
+
+/* 
+   Perceptions
+      Begin:
+        gsize(Weight,Height)
+        steps(MaxSteps)
+        corral(UpperLeft.x,UpperLeft.y,DownRight.x,DownRight.y)
+
+      Step:
+        pos(X,Y,Step)
+        cell(X,Y,Type) 
+           Type in { cow(Id), ally(Name), enemy, empty }
+
+      End:
+        end_of_simulation(Result)
+
+*/
 
 // the following plans (+pos....) react to the starting step
 // (since each new step causes a new +pos perception)
 
 /* -- useful rules */ 
 
-// whether to go to depot
-go_depot :- carrying_gold(3).
-go_depot :- carrying_gold(N) & N > 0 & pos(_,_,Step) & steps(_,NSteps) & Step+200 > NSteps.
-
 // find a free random location	  
 random_pos(X,Y) :- 
    pos(AgX,AgY,_) &
    jia.random(RX,20)   & X = (RX-10)+AgX & X > 0 &
    jia.random(RY,20,5) & Y = (RY-10)+AgY &
-   not jia.obstacle(X,Y).  
+   not jia.obstacle(X,Y) &
+   jia.set_target(X,Y).  
    
-
-/* -- Gold found! -- */
-
-// in the positon of the agent
-+pos(X,Y,_) 
-   : cell(X,Y,gold) &
-     carrying_gold(N) & N < 3 // container has space 
-  <- do(pick);
-     .print("picked gold!");
-     -+back_pos(X,Y). // remembers a place to return 
-
-// in a cell besides
-+pos(X,Y,_) 
-   : cell(GX,GY,gold) &
-     carrying_gold(N) & N < 3 // container has space 
-  <- jia.direction(X, Y, GX, GY, D);
-     do(D).
-  
-/* -- has gold, carry it/them to depot -- */
-
-// when arrive on depot
-+pos(X,Y,_) 
-   : go_depot &
-     depot(_,X,Y)
-  <- .print("in depot");
-     do(drop).
-
-// when still not in depot
-+pos(X,Y,_) 
-   : go_depot & 
-     depot(_,DX,DY)
-  <- jia.direction(X, Y, DX, DY, D); // uses A* to find a path to the depot
-     //.print("from ",X,"x",Y," to ",DX,"x",DY," -> ",D);
-     do(D).
 
 /* -- go to the back pos -- */
 
@@ -68,10 +48,17 @@ random_pos(X,Y) :-
 	  
 +!define_new_pos
    <- ?pos(X,Y,_);
-	  ?random_pos(NX,NY);
+      ?random_pos(NX,NY);
      //.print("New point ",NX,",",NY);
-	  -+back_pos(NX,NY);
-	  jia.direction(X, Y, NX, NY, D);
-      do(D).
+     -+back_pos(NX,NY);
+     jia.direction(X, Y, NX, NY, D);
+     do(D).
 
- 
+
+/* -- tests -- */
+
++gsize(Weight,Height) <- .println("gsize  = ",Weight,",",Height).
++steps(MaxSteps)      <- .println("steps  = ",MaxSteps).
++corral(X1,Y1,X2,Y2)  <- .println("corral = ",X1,",",Y1," -- ",X2,",",Y2).
+
++cell(X,Y,Type)       <- .println("cell   = ",X,",",Y," = ",Type).

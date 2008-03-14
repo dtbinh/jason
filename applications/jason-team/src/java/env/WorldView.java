@@ -4,24 +4,15 @@ import jason.environment.grid.GridWorldView;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.util.Hashtable;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSlider;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 
 /** 
@@ -36,9 +27,9 @@ public class WorldView extends GridWorldView {
     //MiningEnvironment env = null;
     
 	JLabel     jCycle;
-    JLabel     jGoldsC;
+    //JLabel     jGoldsC;
 
-    JLabel     jlMouseLoc;
+    //JLabel     jlMouseLoc;
     //JComboBox  scenarios;
     //JSlider    jSpeed;
 
@@ -106,22 +97,28 @@ public class WorldView extends GridWorldView {
         msg.setLayout(new BoxLayout(msg, BoxLayout.Y_AXIS));
         msg.setBorder(BorderFactory.createEtchedBorder());
         
+        
         JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        /*
         p.add(new JLabel("Click on the cells to add new pieces of gold."));
         p.add(new JLabel("  (mouse at:"));
         jlMouseLoc = new JLabel("0,0)");
         p.add(jlMouseLoc);
         msg.add(p);
+        */
         
         p = new JPanel(new FlowLayout(FlowLayout.CENTER));
         p.add(new JLabel("Cycle:"));
         jCycle = new JLabel("0");
         p.add(jCycle);
+        
+        /*
         p.add(new JLabel("        Collected golds (red x blue / total):"));
         jGoldsC = new JLabel("0");
         p.add(jGoldsC);
+        */
         msg.add(p);
-
+        
         JPanel s = new JPanel(new BorderLayout());
         s.add(BorderLayout.WEST, args);
         s.add(BorderLayout.CENTER, msg);
@@ -147,14 +144,15 @@ public class WorldView extends GridWorldView {
         });
         */
         
+        /*
         getCanvas().addMouseListener(new MouseListener() {
             public void mouseClicked(MouseEvent e) {
                 int col = e.getX() / cellSizeW;
                 int lin = e.getY() / cellSizeH;
                 if (col >= 0 && lin >= 0 && col < getModel().getWidth() && lin < getModel().getHeight()) {
                     WorldModel wm = (WorldModel)model;
-                    wm.add(WorldModel.GOLD, col, lin);
-                    wm.setInitialNbGolds(wm.getInitialNbGolds()+1);
+                    wm.add(WorldModel.COW, col, lin);
+                    //wm.setInitialNbGolds(wm.getInitialNbGolds()+1);
                     update(col, lin);
                 }
             }
@@ -163,7 +161,9 @@ public class WorldView extends GridWorldView {
             public void mousePressed(MouseEvent e) {}
             public void mouseReleased(MouseEvent e) {}
         });
+        */
 
+        /*
         getCanvas().addMouseMotionListener(new MouseMotionListener() {
             public void mouseDragged(MouseEvent e) { }
             public void mouseMoved(MouseEvent e) {
@@ -174,6 +174,7 @@ public class WorldView extends GridWorldView {
                 }
             }            
         });
+        */
     }
     
     /*
@@ -193,15 +194,15 @@ public class WorldView extends GridWorldView {
     		}
     		jCycle.setText(c+steps);
             
-            jGoldsC.setText(wm.getGoldsInDepotRed() + " x " + wm.getGoldsInDepotBlue() + "/" + wm.getInitialNbGolds());    
+            //jGoldsC.setText(wm.getGoldsInDepotRed() + " x " + wm.getGoldsInDepotBlue() + "/" + wm.getInitialNbGolds());    
     	}
     }
     
     @Override
     public void draw(Graphics g, int x, int y, int object) {
         switch (object) {
-        case WorldModel.DEPOT:   drawDepot(g, x, y);  break;
-        case WorldModel.GOLD:    drawGold(g, x, y);  break;
+        case WorldModel.CORRAL:   drawCorral(g, x, y);  break;
+        case WorldModel.COW:    drawCow(g, x, y);  break;
         case WorldModel.ENEMY:   drawEnemy(g, x, y);  break;
         case WorldModel.TARGET:  drawTarget(g, x, y);  break;
         }
@@ -220,10 +221,10 @@ public class WorldView extends GridWorldView {
     
     @Override
     public void drawAgent(Graphics g, int x, int y, Color c, int id) {
-        int golds = ((WorldModel)model).getGoldsWithAg(id);
+        int gw = 1;
         if (id < 6) {
         	// red team
-        	int gw = (WorldModel.AG_CAPACITY - golds) + 1;
+            //int gw = (WorldModel.AG_CAPACITY - golds) + 1;
             g.setColor(Color.red);
             g.fillOval(x * cellSizeW + gw, y * cellSizeH + gw, cellSizeW - gw*2, cellSizeH - gw*2);
             if (id >= 0) {
@@ -232,7 +233,6 @@ public class WorldView extends GridWorldView {
             }
         } else {
         	// blue team
-        	int gw = (WorldModel.AG_CAPACITY - golds) + 1;
             g.setColor(Color.blue);
             g.fillOval(x * cellSizeW + gw, y * cellSizeH + gw, cellSizeW - gw*2, cellSizeH - gw*2);
             if (id >= 0) {
@@ -240,13 +240,9 @@ public class WorldView extends GridWorldView {
                 drawString(g, x, y, defaultFont, String.valueOf(id-5));
             }
         }
-        if (golds > 0) {
-            g.setColor(Color.darkGray);
-            g.fillRect(x*cellSizeW+3, (y+1)*cellSizeH-3, (cellSizeW-6)/(WorldModel.AG_CAPACITY+1-golds), 2);
-        }
     }
 
-    public void drawDepot(Graphics g, int x, int y) {
+    public void drawCorral(Graphics g, int x, int y) {
         g.setColor(Color.gray);
         g.fillRect(x * cellSizeW, y * cellSizeH, cellSizeW, cellSizeH);
         g.setColor(Color.pink);
@@ -264,8 +260,8 @@ public class WorldView extends GridWorldView {
         g.drawRect(x * cellSizeW + 4, y * cellSizeH + 4, cellSizeW - 8, cellSizeH - 8);
     }
 
-    public void drawGold(Graphics g, int x, int y) {
-        g.setColor(Color.yellow);
+    public void drawCow(Graphics g, int x, int y) {
+        g.setColor(Color.green);
         g.drawRect(x * cellSizeW + 2, y * cellSizeH + 2, cellSizeW - 4, cellSizeH - 4);
         int[] vx = new int[4];
         int[] vy = new int[4];

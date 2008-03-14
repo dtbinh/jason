@@ -40,19 +40,6 @@ public class LocalWorldModel extends WorldModel {
         }
     }
 
-    @Override 
-    public boolean isFree(int x, int y) {
-        return super.isFree(x,y) && !hasObject(ENEMY, x, y);
-    }
-
-    public void setDepot(int x, int y) {
-    	if (getDepot() != null) {
-    		visited[getDepot().x][getDepot().y] = 0;
-    	}
-    	visited[x][y] = 10000;
-    	super.setDepot(x, y);
-    }
-    
     public int getVisited(Location l) {
     	return visited[l.x][l.y];
     }
@@ -62,7 +49,8 @@ public class LocalWorldModel extends WorldModel {
     }
     public void incVisited(int x, int y) {
     	visited[x][y] += 2;
-    	
+
+    	// TODO: review this
     	if (x > 0) visited[x-1][y]++;
     	if (y > 0) visited[x][y-1]++;
     	if (y > 0 && x > 0) visited[x-1][y-1]++;
@@ -162,8 +150,9 @@ public class LocalWorldModel extends WorldModel {
 
     /** removes enemies/gold around x,y */
     public void clearAgView(int x, int y) {
-        int e1 = ~(ENEMY + GOLD);
+        int e1 = ~(ENEMY + COW);
         
+        // TODO: review this
         // nw
         if (x > 0 && y > 0) {
             data[x - 1][y - 1] &= e1;

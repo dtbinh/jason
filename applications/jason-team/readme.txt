@@ -3,7 +3,10 @@
  * Multi-Agent Programming Contest 2008
  * (http://cig.in.tu-clausthal.de/agentcontest2008)
  * 
- * By Jomi & Rafael & Gauthier
+ * By 
+ *   Jomi F. Hubner     (EMSE, France) 
+ *   Rafael  H. Bordini (Durhma, UK)
+ *   Gauthier Picard    (EMSE, France)
  */
 
 Our team can run in three configurations (Jason 1.0.2 is required):

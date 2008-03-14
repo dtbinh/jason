@@ -6,7 +6,8 @@ import jason.asSemantics.Message;
 import jason.asSyntax.Atom;
 import jason.asSyntax.Literal;
 import jason.asSyntax.NumberTerm;
-import jason.asSyntax.PredicateIndicator;
+import jason.asSyntax.NumberTermImpl;
+import jason.asSyntax.Term;
 import jason.environment.grid.Location;
 import jason.mas2j.ClassParameters;
 import jason.runtime.Settings;
@@ -19,7 +20,7 @@ import java.util.logging.Logger;
 import env.WorldModel;
 import env.WorldView;
 
-/** Common arch for local and contest architectures */
+/** Common arch for both local and contest architectures */
 public class MinerArch extends AgArch {
 
 	LocalWorldModel model = null;
@@ -36,6 +37,11 @@ public class MinerArch extends AgArch {
 	WriteModelThread writeModelT = null;
 	protected Logger logger = Logger.getLogger(MinerArch.class.getName());
 
+	public static Atom aOBSTACLE = new Atom("obstacle");
+	public static Atom aENEMY    = new Atom("enemy");
+	public static Atom aALLY     = new Atom("ally");
+	public static Atom aEMPTY    = new Atom("empty");
+	
 	
 	@Override
     public void initAg(String agClass, ClassParameters bbPars, String asSrc, Settings stts) throws JasonException {
@@ -73,29 +79,29 @@ public class MinerArch extends AgArch {
 
     /** The perception of the grid size is removed from the percepts list 
         and "directly" added as a belief */
-    void gsizePerceived(int w, int h) {
+    void gsizePerceived(int w, int h, String opponent) {
 		if (view != null) {
 			view.dispose();
 		}
         model = new LocalWorldModel(w, h);
         if (gui) {
-        	view = new WorldView("Mining (view of miner "+(getMyId()+1)+")",model);
+        	view = new WorldView("Herding (view of miner "+(getMyId()+1)+") -- against "+opponent,model);
         }
-        getTS().getAg().addBel(Literal.parseLiteral("gsize("+simId+","+w+","+h+")"));
+        getTS().getAg().addBel(Literal.parseLiteral("gsize("+w+","+h+")"));
         playing = true;
     }
     
-    /** The perception of the depot location is removed from the percepts list 
+    /** The perception of the corral location is removed from the percepts list 
         and "directly" added as a belief */
-    void depotPerceived(int x, int y) {
-        model.setDepot(x, y);
-        getTS().getAg().addBel(Literal.parseLiteral("depot("+simId+","+x+","+y+")"));
+    void corralPerceived(Location upperLeft, Location downRight) {
+        model.setCorral(upperLeft, downRight);
+        getTS().getAg().addBel(Literal.parseLiteral("corral("+upperLeft.x+","+upperLeft.y+","+downRight.x+","+downRight.y+")"));
     }
 
     /** The number of steps of the simulation is removed from the percepts list 
         and "directly" added as a belief */
     void stepsPerceived(int s) {
-    	getTS().getAg().addBel(Literal.parseLiteral("steps("+simId+","+s+")"));
+    	getTS().getAg().addBel(Literal.parseLiteral("steps("+s+")"));
         model.setMaxSteps(s);
     }
     
@@ -132,7 +138,7 @@ public class MinerArch extends AgArch {
 				model.setAgPos(getMyId(), x, y);
 				model.incVisited(x, y);
 			
-				Message m = new Message("tell", null, null, "my_status("+x+","+y+","+model.getGoldsWithAg(getMyId())+")");
+				Message m = new Message("tell", null, null, "my_status("+x+","+y+")");
 				broadcast(m);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -148,11 +154,10 @@ public class MinerArch extends AgArch {
 
         if (isRobotFrozen()) {
         	try {
-	        	//logger.info("** Arch adding restart for "+getAgName()+", TS="+getTS().getCurrentTask()+", "+getTS().getC());
-	        	getTS().getC().create();
+	        	logger.info("** Arch adding restart for "+getAgName());
+        	    getTS().getC().create();
         		
 	        	getTS().getAg().getBB().abolish(new Atom("restart").getPredicateIndicator());
-	        	getTS().getAg().getBB().abolish(new PredicateIndicator("gold",2)); // tira os ouros
 	        	getTS().getAg().addBel(new Atom("restart"));
 	        	lo2 = new Location(-1,-1); // to not restart again in the next cycle
 	     
@@ -168,13 +173,17 @@ public class MinerArch extends AgArch {
 		return lo1.equals(lo2) && lo2.equals(lo3) && lo3.equals(lo4) && lo4.equals(lo5) && lo5.equals(lo6);
 	}
 	
-    /** update the number of golds the agent is carrying */
-    void carriedGoldsPerceived(int n) {
-        model.setGoldsWithAg(getMyId(), n);
+    public static Literal createCellPerception(int x, int y, Term obj) {
+        Literal l = new Literal("cell");
+        l.addTerm(new NumberTermImpl(x));
+        l.addTerm(new NumberTermImpl(y));
+        l.addTerm(obj); 
+        return l;
     }
-    
-    void goldPerceived(int x, int y) {
-    	model.add(WorldModel.GOLD, x, y);
+
+	
+    void cowPerceived(int x, int y) {
+    	model.add(WorldModel.COW, x, y);
     }
 
     // not used, the allies send messages with their location    
@@ -187,7 +196,7 @@ public class MinerArch extends AgArch {
     }
 
     void simulationEndPerceived(String result) {
-    	getTS().getAg().addBel(Literal.parseLiteral("end_of_simulation("+simId+","+result+")"));
+    	getTS().getAg().addBel(Literal.parseLiteral("end_of_simulation("+result+")"));
         playing = false;
     }
 	
@@ -233,16 +242,16 @@ public class MinerArch extends AgArch {
     				//getTS().getAg().getLogger().info("received obs="+p);
     				
     			} else if (ms.startsWith("my_status") && model != null) {
+    			    // TODO: add perception cell(X,Y,ally(Name))
+    			    
     				// update others location
     				Literal p = Literal.parseLiteral(m.getPropCont().toString());
     				int x = (int)((NumberTerm)p.getTerm(0)).solve();
     				int y = (int)((NumberTerm)p.getTerm(1)).solve();
     				if (model.inGrid(x,y)) {
-    					int g = (int)((NumberTerm)p.getTerm(2)).solve();
     					try {
     						int agid = getAgId(m.getSender());
     						model.setAgPos(agid, x, y);
-    						model.setGoldsWithAg(agid, g);
     						model.incVisited(x, y);
     						//getTS().getAg().getLogger().info("ag pos "+getMinerId(m.getSender())+" = "+x+","+y);
     					} catch (Exception e) {
@@ -272,9 +281,9 @@ public class MinerArch extends AgArch {
 					waitSomeTime();
 					if (model != null && playing) {
 						out.println("\n\n** Agent "+getAgName()+" in cycle "+cycle+"\n");
-						for (int i=0; i<model.getNbOfAgs(); i++) {
-							out.println("miner"+(i+1)+" is carrying "+model.getGoldsWithAg(i)+" gold(s), at "+model.getAgPos(i));
-						}
+						//for (int i=0; i<model.getNbOfAgs(); i++) {
+							// TODO: out.println("miner"+(i+1)+" is carrying "+model.getGoldsWithAg(i)+" gold(s), at "+model.getAgPos(i));
+						//}
 						out.println(model.toString());
 						out.flush();
 					}
