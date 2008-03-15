@@ -89,6 +89,9 @@ public class WorldModel extends GridWorldModel {
     public void setCowsBlue(int c) {
         cowsBlue = c;
     }
+    public void setCowsRed(int c) {
+        cowsRed = c;
+    }
     
     public void setPerceptionRatio(int r) {
         pratio = r;

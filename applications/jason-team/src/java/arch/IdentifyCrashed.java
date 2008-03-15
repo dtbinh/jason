@@ -16,7 +16,7 @@ import jason.runtime.Settings;
 public class IdentifyCrashed extends AgArch {
 
     private boolean didPercept = true;
-    private int     maxCycleTime = 2000;
+    private int     maxCycleTime = 3000;
     private boolean dead = false;
     private Thread  agThread = null;
     private Thread  checkThread = null;

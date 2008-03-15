@@ -216,6 +216,7 @@ public class WorldView extends GridWorldView {
                         Color.red } ;
     */
     
+    /*
     @Override
     public void drawAgent(Graphics g, int x, int y, Color c, int id) {
         int gw = 1;
@@ -237,6 +238,7 @@ public class WorldView extends GridWorldView {
             }
         }
     }
+    */
 
     public void drawCorral(Graphics g, int x, int y) {
         g.setColor(Color.gray);
@@ -257,8 +259,29 @@ public class WorldView extends GridWorldView {
     }
 
     public void drawCow(Graphics g, int x, int y) {
-        g.setColor(Color.green);
+        g.setColor(Color.black);
         g.drawRect(x * cellSizeW + 2, y * cellSizeH + 2, cellSizeW - 4, cellSizeH - 4);
+        g.setColor(Color.darkGray);
+        g.drawRect(x * cellSizeW + 3, y * cellSizeH + 3, cellSizeW - 6, cellSizeH - 6);
+        g.setColor(Color.yellow);
+        g.fillRect(x * cellSizeW + 4, y * cellSizeH + 4, cellSizeW - 8, cellSizeH - 8);
+
+        /*
+        g.setColor(Color.black);
+        g.drawRect(x * cellSizeW + 2, y * cellSizeH + 2, cellSizeW - 4, cellSizeH - 4);        
+        boolean black = true;
+        final int end = (y+1)*cellSizeH;
+        for (int l = (y*cellSizeH)+1; l < end; l += 3) {
+            if (black)
+                g.setColor(Color.black);
+            else
+                g.setColor(Color.yellow);
+            black = !black;
+            g.fillRect(x * cellSizeW + 2, l, cellSizeW - 4, 2);        
+
+        }
+        */
+        /*
         int[] vx = new int[4];
         int[] vy = new int[4];
         vx[0] = x * cellSizeW + (cellSizeW / 2);
@@ -269,7 +292,9 @@ public class WorldView extends GridWorldView {
         vy[2] = (y + 1) * cellSizeH;
         vx[3] = x * cellSizeW;
         vy[3] = y * cellSizeH + (cellSizeH / 2);
+        g.setColor(Color.white);
         g.fillPolygon(vx, vy, 4);
+        */
     }
 
     public void drawEnemy(Graphics g, int x, int y) {
