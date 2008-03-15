@@ -6,8 +6,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -27,7 +25,7 @@ public class WorldView extends GridWorldView {
     //MiningEnvironment env = null;
     
 	JLabel     jCycle;
-    //JLabel     jGoldsC;
+	JLabel     jCowsC;
 
     //JLabel     jlMouseLoc;
     //JComboBox  scenarios;
@@ -112,11 +110,10 @@ public class WorldView extends GridWorldView {
         jCycle = new JLabel("0");
         p.add(jCycle);
         
-        /*
-        p.add(new JLabel("        Collected golds (red x blue / total):"));
-        jGoldsC = new JLabel("0");
-        p.add(jGoldsC);
-        */
+        p.add(new JLabel("        Cows in corral (blue x red):"));
+        jCowsC = new JLabel("0");
+        p.add(jCowsC);
+
         msg.add(p);
         
         JPanel s = new JPanel(new BorderLayout());
@@ -194,7 +191,7 @@ public class WorldView extends GridWorldView {
     		}
     		jCycle.setText(c+steps);
             
-            //jGoldsC.setText(wm.getGoldsInDepotRed() + " x " + wm.getGoldsInDepotBlue() + "/" + wm.getInitialNbGolds());    
+            jCowsC.setText(wm.getCowsBlue() + " x " + wm.getCowsRed()); // + "/" + wm.getInitialNbGolds());    
     	}
     }
     
@@ -224,7 +221,6 @@ public class WorldView extends GridWorldView {
         int gw = 1;
         if (id < 6) {
         	// blue team
-            //int gw = (WorldModel.AG_CAPACITY - golds) + 1;
             g.setColor(Color.blue);
             g.fillOval(x * cellSizeW + gw, y * cellSizeH + gw, cellSizeW - gw*2, cellSizeH - gw*2);
             if (id >= 0) {
@@ -277,7 +273,8 @@ public class WorldView extends GridWorldView {
     }
 
     public void drawEnemy(Graphics g, int x, int y) {
+        int gw = 1;
         g.setColor(Color.red);
-        g.fillOval(x * cellSizeW + 7, y * cellSizeH + 7, cellSizeW - 8, cellSizeH - 8);
+        g.fillOval(x * cellSizeW + gw, y * cellSizeH + gw, cellSizeW - gw*2, cellSizeH - gw*2);
     }
 }

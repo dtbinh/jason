@@ -5,8 +5,6 @@ import jason.environment.grid.Location;
 
 import java.util.logging.Logger;
 
-import org.apache.tools.ant.taskdefs.UpToDate;
-
 
 /**
  * Class used to model the scenario
@@ -28,11 +26,13 @@ public class WorldModel extends GridWorldModel {
     
     Location                  corralUL, corralDR;
 
-    int                       cowsRed  = 0; // #cows the red team puts in the corral
     int                       cowsBlue = 0; // #cows the blue team puts in the corral
+    int                       cowsRed  = 0; // #cows the red team puts in the corral
     int 					  initialNbCows = 0;
     
     int	                      maxSteps = 0; // number of steps of the simulation
+
+    int                       pratio = -1; // perception ratio
     
     private Logger            logger   = Logger.getLogger("jasonTeamSimLocal.mas2j." + WorldModel.class.getName());
 
@@ -57,7 +57,7 @@ public class WorldModel extends GridWorldModel {
     
     @Override 
     public boolean isFree(int x, int y) {
-        return super.isFree(x,y) && !hasObject(ENEMY, x, y) && !hasObject(COW, x, y);
+        return super.isFree(x,y) && !hasObject(ENEMY, x, y) && !hasObject(COW, x, y) && !hasObject(CORRAL, x, y);
     }
 
     public WorldView getView() {
@@ -66,8 +66,8 @@ public class WorldModel extends GridWorldModel {
     
     // upper 
     public void setCorral(Location upperLeft, Location downRight) {
-	    for (int l=upperLeft.y; l<downRight.y; l++)
-            for (int c=upperLeft.x; c<downRight.x; c++)
+	    for (int l=upperLeft.y; l<=downRight.y; l++)
+            for (int c=upperLeft.x; c<=downRight.x; c++)
                 data[c][l] = CORRAL;
 	    corralUL = upperLeft;
 	    corralDR = downRight;
@@ -78,19 +78,26 @@ public class WorldModel extends GridWorldModel {
                l.y >= corralUL.y && l.y <= corralDR.y;
     }
 
-    /*
-    public Location getDepot() {
-        return depot;
-    }
-    
-    public int getGoldsInDepotBlue() {
-    	return goldsInDepotBlue;
+    public int getCowsBlue() {
+    	return cowsBlue;
     }
 
-    public int getGoldsInDepotRed() {
-    	return goldsInDepotRed;
+    public int getCowsRed() {
+    	return cowsRed;
     }
     
+    public void setCowsBlue(int c) {
+        cowsBlue = c;
+    }
+    
+    public void setPerceptionRatio(int r) {
+        pratio = r;
+    }
+    public int getPerceptionRatio() {
+        return pratio;
+    }
+    
+    /*
     public boolean hasGold() {
     	return countObjects(COW) > 0;
     }
@@ -201,11 +208,11 @@ public class WorldModel extends GridWorldModel {
             	if (hasObject(OBSTACLE, i, j)) {
             		s.append('X');
             	} else if (hasObject(CORRAL, i, j)) {
-            		s.append('O');
+            		s.append('-');
             	} else if (hasObject(AGENT, i, j)) {
             		s.append((getAgAtPos(i, j)+1)+"");
             	} else if (hasObject(COW, i, j)) {
-            		s.append('C');
+            		s.append('c');
             	} else if (hasObject(ENEMY, i, j)) {
             		s.append('E');
             	} else {

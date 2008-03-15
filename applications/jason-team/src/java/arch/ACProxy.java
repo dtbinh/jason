@@ -112,7 +112,7 @@ public class ACProxy extends ACAgent {
 
             // update model
 			arq.locationPerceived(agx, agy);
-			// TODO: udpate my score (show in the interface)
+            arq.setScore(score);
 
             // add location in perception
 			Literal lpos = new Literal("pos");
@@ -142,26 +142,26 @@ public class ACProxy extends ACAgent {
 						
 						if (type.getNodeName().equals("agent")) {
 							if (type.getAttribute("type").equals("ally")) {
-								percepts.add(MinerArch.createCellPerception(cellx, celly, MinerArch.aALLY));
+								percepts.add(CowboyArch.createCellPerception(cellx, celly, CowboyArch.aALLY));
 							} else if (type.getAttribute("type").equals("enemy")) {
 								arq.enemyPerceived(absx, absy);
-								percepts.add(MinerArch.createCellPerception(cellx, celly, MinerArch.aENEMY));
+								percepts.add(CowboyArch.createCellPerception(cellx, celly, CowboyArch.aENEMY));
 							}
                             
                         } else if (type.getNodeName().equals("cow")) {
                             int cowId = Integer.parseInt(type.getAttribute("ID"));
                             Literal lc = new Literal("cow");
                             lc.addTerm(new NumberTermImpl( cowId ));
-                            percepts.add(MinerArch.createCellPerception(cellx, celly, lc));
+                            percepts.add(CowboyArch.createCellPerception(cellx, celly, lc));
                             arq.cowPerceived(absx, absy);
                             
                         } else if (type.getNodeName().equals("obstacle")) { 
-							arq.obstaclePerceived(absx, absy, MinerArch.createCellPerception(absx, absy, MinerArch.aOBSTACLE));
+							arq.obstaclePerceived(absx, absy, CowboyArch.createCellPerception(absx, absy, CowboyArch.aOBSTACLE));
                         } else if (type.getNodeName().equals("corral") && type.getAttribute("type").equals("enemy")) { 
-                            arq.obstaclePerceived(absx, absy, MinerArch.createCellPerception(absx, absy, MinerArch.aOBSTACLE));
+                            arq.obstaclePerceived(absx, absy, CowboyArch.createCellPerception(absx, absy, CowboyArch.aOBSTACLE));
                             
                         } else if (type.getNodeName().equals("empty")) {
-                            percepts.add(MinerArch.createCellPerception(cellx, celly, MinerArch.aEMPTY));
+                            percepts.add(CowboyArch.createCellPerception(cellx, celly, CowboyArch.aEMPTY));
 						}
 					}
 				}
@@ -170,7 +170,7 @@ public class ACProxy extends ACAgent {
 			//if (logger.isLoggable(Level.FINE)) 
 			logger.info("Request action for "+lpos+" / "+rid + " percepts: "+percepts);
 			
-			arq.startNextStep(step,percepts);
+			arq.startNextStep(step, percepts);
 			arq.perceptionRatioPerceived(maxx);
 			
 		} catch (Exception e) {

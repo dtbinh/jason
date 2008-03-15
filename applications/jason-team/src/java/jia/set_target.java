@@ -9,9 +9,8 @@ import jason.environment.grid.Location;
 
 import java.util.logging.Level;
 
+import arch.CowboyArch;
 import env.WorldModel;
-
-import arch.MinerArch;
 
 public class set_target extends DefaultInternalAction {
     
@@ -20,7 +19,7 @@ public class set_target extends DefaultInternalAction {
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] terms) throws Exception {
     	try {
-	        WorldModel model = ((MinerArch)ts.getUserAgArch()).getModel();
+	        WorldModel model = ((CowboyArch)ts.getUserAgArch()).getModel();
 	        if (model == null) {
 	            ts.getLogger().log(Level.SEVERE, "no model to get near_least_visited!");
 	        } else {

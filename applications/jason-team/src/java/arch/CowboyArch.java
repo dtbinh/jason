@@ -1,7 +1,6 @@
 package arch;
 
 import jason.JasonException;
-import jason.architecture.AgArch;
 import jason.asSemantics.Message;
 import jason.asSyntax.Atom;
 import jason.asSyntax.Literal;
@@ -20,11 +19,12 @@ import java.util.logging.Logger;
 import env.WorldModel;
 import env.WorldView;
 
-// TODO: rename to CowboyArch
-// TODO: add identify crash
-
-/** Common arch for both local and contest architectures */
-public class MinerArch extends AgArch {
+/** 
+ *  Common arch for both local and contest architectures.
+ *  
+ *   @author Jomi
+ */
+public class CowboyArch extends IdentifyCrashed {
 
 	LocalWorldModel model = null;
 	WorldView  view  = null;
@@ -38,7 +38,7 @@ public class MinerArch extends AgArch {
 	int        cycle  = 0;
 	
 	WriteModelThread writeModelT = null;
-	protected Logger logger = Logger.getLogger(MinerArch.class.getName());
+	protected Logger logger = Logger.getLogger(CowboyArch.class.getName());
 
 	public static Atom aOBSTACLE = new Atom("obstacle");
 	public static Atom aENEMY    = new Atom("enemy");
@@ -63,6 +63,11 @@ public class MinerArch extends AgArch {
 			view.dispose();
 		}
 		super.stopAg();
+	}
+	
+	@Override
+	public boolean isCrashed() {
+	    return playing && super.isCrashed();
 	}
 	
     void setSimId(String id) {
@@ -108,12 +113,10 @@ public class MinerArch extends AgArch {
         model.setMaxSteps(s);
     }
 
-    private int pratio = -1;
-    
     /** The perception ratio is discovered */
 	void perceptionRatioPerceived(int s) {
-		if (s != pratio) {
-			pratio = s;
+		if (s != model.getPerceptionRatio()) {
+			model.setPerceptionRatio(s);
 			getTS().getAg().addBel(Literal.parseLiteral("pratio("+s+")"));
 		}
 	}
@@ -217,6 +220,10 @@ public class MinerArch extends AgArch {
     	cycle = s;
 		if (view != null) view.setCycle(cycle);
         //if (writeModelT != null) writeModelT.writeModel();
+    }
+    
+    void setScore(int s) {
+        model.setCowsBlue(s);
     }
     
     /** change broadcast to send messages to only my team mates */

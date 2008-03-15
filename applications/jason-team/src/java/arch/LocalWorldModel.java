@@ -148,53 +148,18 @@ public class LocalWorldModel extends WorldModel {
     	clearAgView(l.x, l.y);
     }
 
+    private static final int cleanPerception = ~(ENEMY + COW);
+
     /** removes enemies/gold around x,y */
     public void clearAgView(int x, int y) {
-        int e1 = ~(ENEMY + COW);
-        
-        // TODO: review this
-        // nw
-        if (x > 0 && y > 0) {
-            data[x - 1][y - 1] &= e1;
-            if (view != null) view.update(x-1,y-1);
-        } 
-        // n
-        if (y > 0) {
-            data[x][y - 1] &= e1;
-            if (view != null) view.update(x,y-1);
-        } 
-        // ne
-        if (x < (getWidth() - 1) && y > 0) {
-            data[x + 1][y - 1] &= e1;
-            if (view != null) view.update(x+1,y-1);
-        } 
-        // w
-        if (x > 0) {
-            data[x - 1][y] &= e1;
-            if (view != null) view.update(x-1,y);
-        } 
-        // cur
-        data[x][y] &= e1;
-        
-        // e
-        if (x < (getWidth() - 1)) {
-            data[x + 1][y] &= e1;
-            if (view != null) view.update(x+1,y);
-        } 
-        // sw
-        if (x > 0 && y < (getHeight() - 1)) {
-            data[x - 1][y + 1] &= e1;
-            if (view != null) view.update(x-1,y+1);
-        } 
-        // s
-        if (y < (getHeight() - 1)) {
-            data[x][y + 1] &= e1;
-            if (view != null) view.update(x,y+1);
-        } 
-        // se
-        if (x < (getWidth() - 1) && y < (getHeight() - 1)) {
-            data[x + 1][y + 1] &= e1;
-            if (view != null) view.update(x+1,y+1);
+        int r = getPerceptionRatio();
+        for (int c=x-r; c<=x+r; c++) {
+            for (int l=y-r; l<=y+r; l++) {
+                if (inGrid(c, l)) {
+                    data[c][l] &= cleanPerception;
+                    if (view != null) view.update(c,l);                    
+                }
+            }
         }
     }
 

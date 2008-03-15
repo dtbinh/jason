@@ -21,7 +21,7 @@ import java.util.logging.Logger;
  * @author Jomi
  *
  */
-public class ACArchitecture extends MinerArch {
+public class ACArchitecture extends CowboyArch {
 
 	private Logger logger;	
 
@@ -85,5 +85,35 @@ public class ACArchitecture extends MinerArch {
         } else {
         	logger.info("ignoring action "+acTerm+", it is not a 'do'.");
         }
-	}	
+	}
+	
+	
+	/** this method is called when the agent crashes and other approaches to fix it (fix1 and fix2) does not worked */
+	@Override
+    protected boolean fix3() throws Exception {
+        // TODO: create a new agent and plug it on the connection
+        /*
+        getTS().getLogger().warning("Cloning!");
+        
+        RuntimeServicesInfraTier services = getArchInfraTier().getRuntimeServices();
+
+        // really stops the agent (since stop can block, use a thread to run it)
+        new Thread() {   public void run() {
+            getArchInfraTier().stopAg();
+        }}.start();
+        
+        // create a new overall agent (arch, thread, etc.)
+        ChangeArchFixer arch = (ChangeArchFixer)services.clone(getTS().getAg(), this.getClass().getName(), getTS().getUserAgArch().getAgName()+"_clone");
+        arch.processParameters();
+        arch.createCheckThread();
+        arch.getTS().getC().create(); // use a new C.
+        
+        //arch.getTS().getLogger().info("Cloned!");
+        
+        // just to test, add !start
+        arch.getTS().getC().addAchvGoal(Literal.parseLiteral("start"), Intention.EmptyInt);
+        */
+        return false;
+    }
+
 }

@@ -11,11 +11,10 @@ import jason.environment.grid.Location;
 import java.util.Random;
 import java.util.logging.Level;
 
-import env.WorldModel;
-
+import arch.CowboyArch;
 import arch.LocalWorldModel;
-import arch.MinerArch;
 import busca.Nodo;
+import env.WorldModel;
 
 /** 
  * Gives the direction (up, down, left, right) towards some location.
@@ -33,7 +32,7 @@ public class direction extends DefaultInternalAction {
         try {
             String sAction = "skip";
 
-            LocalWorldModel model = ((MinerArch)ts.getUserAgArch()).getModel();
+            LocalWorldModel model = ((CowboyArch)ts.getUserAgArch()).getModel();
     
             int iagx = (int)((NumberTerm)terms[0]).solve();
             int iagy = (int)((NumberTerm)terms[1]).solve();
@@ -55,7 +54,7 @@ public class direction extends DefaultInternalAction {
                 actionsOrder[i2] = actionsOrder[i1];
                 actionsOrder[i1] = temp;
                 
-                Search astar    = new Search(model, from, to, actionsOrder, true);
+                Search astar    = new Search(model, from, to, actionsOrder, true, ts.getUserAgArch());
                 Nodo   solution = astar.search();
                 if (solution != null) {
                 	WorldModel.Move m = astar.firstAction(solution);

@@ -1,5 +1,6 @@
 package jia;
 
+import jason.architecture.AgArch;
 import jason.environment.grid.Location;
 
 import java.util.ArrayList;
@@ -24,16 +25,18 @@ public class Search {
 	final boolean         corralIsTarget; 
     int[]                 actionsOrder;    
     int                   nbStates = 0;
+    AgArch                agArch;
     
     static final int[] defaultActions = { 1, 2, 3, 4, 5, 6, 7, 8 }; // initial order of actions
 
     Logger logger = Logger.getLogger(Search.class.getName());
     
-    Search(LocalWorldModel m, Location from, Location to, int[] actions, boolean considerAgentsAsObstacles) {
+    Search(LocalWorldModel m, Location from, Location to, int[] actions, boolean considerAgentsAsObstacles, AgArch agArch) {
     	this.model = m;
     	this.from  = from;
     	this.to    = to;
     	this.considerAgentsAsObstacles = considerAgentsAsObstacles;
+    	this.agArch = agArch;
     	if (actions != null) {
     		this.actionsOrder = actions;
     	} else {
@@ -43,8 +46,8 @@ public class Search {
     }
 
     /** used normally to discover the distance from 'from' to 'to' */
-    Search(LocalWorldModel m, Location from, Location to) {
-    	this(m,from,to,null,false);
+    Search(LocalWorldModel m, Location from, Location to, AgArch agArch) {
+    	this(m,from,to,null,false, agArch);
     }
     
     public Nodo search() throws Exception { 
@@ -147,6 +150,8 @@ final class GridState implements Estado, Heuristica {
         if (ia.nbStates > 50000) {
         	ia.logger.info("*** It seems I am in a loop!");
         	return s; 
+        } else if (!ia.agArch.isRunning()) {
+            return s;
         }
                 
         // all directions

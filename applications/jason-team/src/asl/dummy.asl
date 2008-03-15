@@ -26,8 +26,8 @@
 // find a free random location	  
 random_pos(X,Y) :- 
    pos(AgX,AgY,_) &
-   jia.random(RX,20)   & X = (RX-10)+AgX & X > 0 &
-   jia.random(RY,20,5) & Y = (RY-10)+AgY &
+   jia.random(RX,40)   & X = (RX-20)+AgX & X > 0 &
+   jia.random(RY,40,5) & Y = (RY-20)+AgY &
    not jia.obstacle(X,Y) &
    jia.set_target(X,Y).  
    
@@ -55,6 +55,8 @@ random_pos(X,Y) :-
      jia.direction(X, Y, NX, NY, D);
      do(D).
 
+
++restart <- .drop_all_desires; !define_new_pos.
 
 /* -- tests -- */
 
