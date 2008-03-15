@@ -5,7 +5,6 @@ import jasdl.bridge.alias.Alias;
 import jasdl.bridge.seliteral.SELiteral;
 import jasdl.bridge.xsd.XSDDataType;
 import jasdl.bridge.xsd.XSDDataTypeUtils;
-import jasdl.util.InvalidSELiteralException;
 import jasdl.util.JasdlException;
 import jason.asSyntax.Atom;
 import jason.asSyntax.DefaultTerm;
@@ -115,6 +114,7 @@ public class SELiteralConverter {
 		return agent.getSELiteralFactory().create(l);
 	}
 	
+
 	
 	private Literal construct(Alias alias){
 		// construct a new literal (with no terms) based on alias

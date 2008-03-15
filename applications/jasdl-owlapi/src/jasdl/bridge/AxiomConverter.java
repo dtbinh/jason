@@ -29,6 +29,7 @@ import jasdl.bridge.seliteral.SELiteralObjectPropertyAssertion;
 import jasdl.util.InvalidSELiteralException;
 import jasdl.util.JasdlException;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -112,13 +113,13 @@ public class AxiomConverter {
 	}	
 	
 	public Set<OWLIndividualAxiom> create(SELiteralAllDifferentAssertion sl, boolean checkForExistence) throws JasdlException{
-		OWLIndividual[] is = (OWLIndividual[])sl.getOWLIndividuals().toArray();		
+		Object[] is = sl.getOWLIndividuals().toArray();	
     	// check they are mutually distinct (if we are checking for existence)
     	boolean distinct = true;
     	if(checkForExistence){	        	
         	for(int i=0; i<is.length; i++){ 		       		
         		for(int j=i+1; j<is.length; j++){
-        			if(!agent.getReasoner().isDifferentFrom(is[i], is[j])){
+        			if(!agent.getReasoner().isDifferentFrom((OWLIndividual)is[i], (OWLIndividual)is[j])){
         				distinct = false;
         				break;
         			}
@@ -130,7 +131,7 @@ public class AxiomConverter {
     	Set<OWLIndividual> different = new HashSet<OWLIndividual>();
     	if(!checkForExistence || distinct){
     		for(int i=0; i<is.length; i++){ 
-        		different.add(is[i]);
+        		different.add((OWLIndividual)is[i]);
         	}
         	OWLDifferentIndividualsAxiom axiom = agent.getOntologyManager().getOWLDataFactory().getOWLDifferentIndividualsAxiom(different);        	
         	axioms.add(axiom);
