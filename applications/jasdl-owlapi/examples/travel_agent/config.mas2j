@@ -1,0 +1,68 @@
+/* 
+ *  Copyright (C) 2008 Thomas Klapiscak (t.g.klapiscak@durham.ac.uk)
+ *  
+ *  This file is part of JASDL.
+ *
+ *  JASDL is free software: you can redistribute it and/or modify
+ *  it under the terms of the Lesser GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  JASDL is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  Lesser GNU General Public License for more details.
+ *
+ *  You should have received a copy of the Lesser GNU General Public License
+ *  along with JASDL.  If not, see <http://www.gnu.org/licenses/>.
+ *  
+ */
+
+
+/* Jason Project */
+/* Note: Uses c-build.xml for two reasons:
+ * 1) to prevent need for large classpath specification in this file
+ * 2) to automatically run ant jar task for jasdl and jmca so up-to-date versions are used
+ */
+MAS dalt08 {
+
+    infrastructure: Centralised
+
+    agents:
+	       travel_agent 
+       	   travel_agent.asl
+	       [				
+	       	jasdl_ontologies="travel",
+			jasdl_travel_uri="http://www.dur.ac.uk/t.g.klapiscak/onts/travel.owl",
+			jasdl_travel_mapping_strategies="jasdl.bridge.alias.DecapitaliseMappingStrategy",
+			jasdl_travel_mapping_manual="small_beach=beach"
+	       ]
+	       agentArchClass jasdl.architecture.JasdlAgArch
+	       agentClass jasdl.asSemantics.JasdlAgent
+	       beliefBaseClass jasdl.bb.JasdlBeliefBase	       
+	       #1;
+		   
+	       customer 
+       	   customer.asl
+	       [		   
+	       	jasdl_ontologies="holidays",
+			jasdl_holidays_uri="http://www.dur.ac.uk/t.g.klapiscak/onts/travel.owl",
+			//jasdl_holidays_uri="file:///home/tom/Desktop/Project/workspace/jason/applications/jasdl/applications/dalt08/ontologies/travel.owl",
+			jasdl_holidays_mapping_strategies="jasdl.bridge.alias.DecapitaliseMappingStrategy",
+			jasdl_holidays_mapping_manual="small_beach=beach, luxuriousHotel=LuxuryHotel" // arbitrary primitive mappings handled correctly
+			
+			/* Example per-agent proxy settings used for ontology instantiation */
+			//jasdl_http_proxy="127.0.0.1:3128"
+			//jasdl_https_proxy="127.0.0.1:8080"
+			//jasdl_ftp_proxy="127.0.0.1:8080"
+			//jasdl_socks_proxy="127.0.0.1:1080"
+			]
+	       agentArchClass jasdl.architecture.JasdlAgArch
+	       agentClass jasdl.asSemantics.JasdlAgent
+	       beliefBaseClass jasdl.bb.JasdlBeliefBase	       
+	       #1;		   
+		   
+		   
+		 classpath: "../../lib/**/*.jar";"../../../jmca/lib/jmca.jar";
+}
+

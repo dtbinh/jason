@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<project name ="custombuild" basedir="..">
+	<import file="build.xml"/>
+	<target name="user-init">
+		<ant dir="../.." inheritAll="false"/>
+		<ant dir="../../../jmca" inheritAll="false"/>
+	</target>
+	<target name="user-end">
+		<echo message="JASDL end"/>
+	</target>
+</project>
