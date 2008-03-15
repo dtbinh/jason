@@ -1,4 +1,4 @@
-package jasdl.asSyntax;
+package jasdl.bridge.seliteral;
 
 import jasdl.asSemantics.JasdlAgent;
 import jasdl.bridge.alias.Alias;
@@ -26,9 +26,11 @@ public class SELiteral extends Literal{
 	
 	protected JasdlAgent agent;
 	
-	private static String ONTOLOGY_ANNOTATION_FUNCTOR = "o";
+	public static String ONTOLOGY_ANNOTATION_FUNCTOR = "o";
 	
 	protected Atom ontologyLabel;
+
+	
 
 	/**
 	 * Construct an SELiteral from an existing Literal possesing valid constructs required for semantic enrichment
@@ -158,6 +160,7 @@ public class SELiteral extends Literal{
 			//TODO: what about clashes with individuals (different alias, same uri)
 			URI uri = URI.create(ontology.getURI() + "#" + atom);
 			i = agent.getOntologyManager().getOWLDataFactory().getOWLIndividual(uri);
+			agent.getAliasManager().put(alias, i);
 		} catch(ClassCastException e){
 			throw new InvalidSELiteralException(atom+" does not refer to an individual");
 		}

@@ -1,4 +1,4 @@
-package jasdl.asSyntax;
+package jasdl.bridge.seliteral;
 
 import static jasdl.util.Common.RANGE;
 import static jasdl.util.Common.strip;
@@ -33,7 +33,7 @@ public class SELiteralDataPropertyAssertion extends SELiteralPropertyAssertion{
 	public OWLTypedConstant getObject() throws JasdlException{		
 		OWLOntology ontology = agent.getLabelManager().get(ontologyLabel);		
 		OWLDataType typ = (OWLDataType)getPredicate().getRanges(ontology).toArray()[0];// will this always return exactly 1 range? If not, how should I deal with it
-		XSDDataType wrapper = XSDDataType.valueOf(typ.toString());
+		XSDDataType wrapper = XSDDataTypeUtils.get(typ.toString());
 		Term o = getTerm(RANGE);
 		if(XSDDataTypeUtils.isStringType(wrapper)){
 			if(!surroundedBy(o.toString(), "\"")){

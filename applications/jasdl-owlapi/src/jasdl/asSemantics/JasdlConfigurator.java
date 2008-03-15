@@ -144,7 +144,7 @@ public class JasdlConfigurator {
 		for(Atom label : agent.getLabelManager().getLabels()){
 			agent.getAliasManager().put( AliasFactory.INSTANCE.thing(label), agent.getOntologyManager().getOWLDataFactory().getOWLThing());
 			agent.getAliasManager().put( AliasFactory.INSTANCE.nothing(label), agent.getOntologyManager().getOWLDataFactory().getOWLNothing());
-			agent.getAliasManager().put( AliasFactory.INSTANCE.all_different(label), new AllDifferentPlaceholder());
+			agent.getAliasManager().put( AliasFactory.INSTANCE.all_different(label), AllDifferentPlaceholder.INSTANCE);
 		}
 	}	
 	

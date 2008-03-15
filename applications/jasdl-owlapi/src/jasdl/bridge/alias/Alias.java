@@ -38,6 +38,15 @@ public class Alias {
 	public boolean isAllDifferent(){
 		return functor.equals(AliasFactory.OWL_ALL_DIFFERENT_FUNCTOR);
 	}
+
+	public Atom getFunctor() {
+		return functor;
+	}
+
+	public Atom getLabel() {
+		return label;
+	}
+	
 	
 	
 }

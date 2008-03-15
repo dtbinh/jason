@@ -1,4 +1,4 @@
-package jasdl.asSyntax;
+package jasdl.bridge.seliteral;
 
 import static jasdl.util.Common.DOMAIN;
 import jasdl.asSemantics.JasdlAgent;
@@ -8,6 +8,7 @@ import jasdl.util.JasdlException;
 import jason.asSyntax.Literal;
 
 import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owl.model.OWLDataProperty;
 import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.model.OWLObjectProperty;
 
@@ -43,7 +44,7 @@ public class SELiteralFactory {
 			if(!sl.getTerm(DOMAIN).isGround()) throw new JasdlException("JASDL cannot handle left-unground property assertions such as "+sl);
 			if(entity instanceof OWLObjectProperty){
 				return new SELiteralObjectPropertyAssertion(sl);
-			}else if(entity instanceof OWLObjectProperty){
+			}else if(entity instanceof OWLDataProperty){
 				return new SELiteralDataPropertyAssertion(sl);
 			}else{
 				throw new InvalidSELiteralException(sl+" does not refer to a known object or data property");

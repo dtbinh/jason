@@ -21,11 +21,11 @@ package jasdl.bridge;
 
 import static jasdl.util.Common.RANGE;
 import jasdl.asSemantics.JasdlAgent;
-import jasdl.asSyntax.SELiteral;
-import jasdl.asSyntax.SELiteralAllDifferentAssertion;
-import jasdl.asSyntax.SELiteralClassAssertion;
-import jasdl.asSyntax.SELiteralDataPropertyAssertion;
-import jasdl.asSyntax.SELiteralObjectPropertyAssertion;
+import jasdl.bridge.seliteral.SELiteral;
+import jasdl.bridge.seliteral.SELiteralAllDifferentAssertion;
+import jasdl.bridge.seliteral.SELiteralClassAssertion;
+import jasdl.bridge.seliteral.SELiteralDataPropertyAssertion;
+import jasdl.bridge.seliteral.SELiteralObjectPropertyAssertion;
 import jasdl.util.InvalidSELiteralException;
 import jasdl.util.JasdlException;
 

@@ -1,10 +1,11 @@
 package jasdl.asSemantics;
 
-import jasdl.asSyntax.SELiteralFactory;
 import jasdl.bb.JasdlBeliefBase;
 import jasdl.bridge.AxiomConverter;
+import jasdl.bridge.SELiteralConverter;
 import jasdl.bridge.alias.AliasManager;
 import jasdl.bridge.label.LabelManager;
+import jasdl.bridge.seliteral.SELiteralFactory;
 import jasdl.util.JasdlException;
 import jasdl.util.UnknownMappingException;
 import jason.JasonException;
@@ -33,6 +34,7 @@ public class JasdlAgent extends JmcaAgent {
 	private AliasManager aliasManager;
 	private LabelManager labelManager;
 	private SELiteralFactory seLiteralFactory;
+	private SELiteralConverter seLiteralConverter;
 	
 	private AxiomConverter axiomConverter;
 	
@@ -44,6 +46,7 @@ public class JasdlAgent extends JmcaAgent {
 		ontologyManager = OWLManager.createOWLOntologyManager();
 		seLiteralFactory = new SELiteralFactory(this);
 		axiomConverter = new AxiomConverter(this);
+		seLiteralConverter = new SELiteralConverter(this);
 		
 		// instantiate (Pellet) reasoner
 		PelletOptions.USE_TRACING = true;
@@ -127,6 +130,14 @@ public class JasdlAgent extends JmcaAgent {
 
 	public AxiomConverter getAxiomConverter() {
 		return axiomConverter;
+	}
+	
+	
+
+
+
+	public SELiteralConverter getSELiteralConverter() {
+		return seLiteralConverter;
 	}
 
 

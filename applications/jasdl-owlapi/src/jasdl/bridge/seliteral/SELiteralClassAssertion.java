@@ -1,4 +1,4 @@
-package jasdl.asSyntax;
+package jasdl.bridge.seliteral;
 
 import static jasdl.util.Common.DOMAIN;
 import jasdl.asSemantics.JasdlAgent;

@@ -1,6 +1,6 @@
 package jasdl.bridge.alias;
 
-import jasdl.asSyntax.SELiteral;
+import jasdl.bridge.seliteral.SELiteral;
 import jason.asSyntax.Atom;
 
 public class AliasFactory {

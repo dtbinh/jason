@@ -12,7 +12,14 @@ import org.semanticweb.owl.model.OWLNamedObjectVisitor;
 import org.semanticweb.owl.model.OWLObjectVisitor;
 import org.semanticweb.owl.model.OWLOntology;
 
+/**
+ * Since the all_different has no concrete entity associated with it, we create a "placeholder" so that it remains consistent with
+ * JASDL's mapping mechanisms. Entities of this type will be intercepted and dealt with differently.
+ * @author tom
+ *
+ */
 public class AllDifferentPlaceholder implements OWLEntity {
+	public static AllDifferentPlaceholder INSTANCE = new AllDifferentPlaceholder();
 
 	public void accept(OWLEntityVisitor visitor) {		
 	}

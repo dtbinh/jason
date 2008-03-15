@@ -1,4 +1,4 @@
-package jasdl.asSyntax;
+package jasdl.bridge.seliteral;
 
 import jasdl.asSemantics.JasdlAgent;
 import jasdl.util.InvalidSELiteralException;
