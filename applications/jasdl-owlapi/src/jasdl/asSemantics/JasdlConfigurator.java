@@ -66,10 +66,10 @@ public class JasdlConfigurator {
 	}
 	
 	private void applyManualMappings(Settings stts) throws JasdlException{
-		for(Atom label : agent.getLabelManager().getLabels()){
+		for(Atom label : agent.getLabelManager().getLefts()){
 			String[] mappings = splitUserParameter(stts, MAS2J_PREFIX + "_" + label + MAS2J_MAPPING_MANUAL);
 			for(String mapping : mappings){
-				OWLOntology ontology = agent.getLabelManager().get(label);
+				OWLOntology ontology = agent.getLabelManager().getRight(label);
 				String[] split = mapping.split("=");
 				if(split.length == 2){
 					Alias alias = AliasFactory.INSTANCE.create(new Atom(split[0].trim()), label);
@@ -88,7 +88,7 @@ public class JasdlConfigurator {
 	 * @param stts	.mas2j settings
 	 */
 	private void applyMappingStrategies(Settings stts) throws JasdlException{
-		for(Atom label : agent.getLabelManager().getLabels()){
+		for(Atom label : agent.getLabelManager().getLefts()){
 			List<MappingStrategy> strategies = new Vector<MappingStrategy>();
 			String[] strategyNames = splitUserParameter(stts, MAS2J_PREFIX + "_" + label + MAS2J_MAPPING_STRATEGIES);
 			for(String strategyName : strategyNames){
@@ -106,7 +106,7 @@ public class JasdlConfigurator {
 				}
 			}
 			
-			OWLOntology ontology = agent.getLabelManager().get(label);
+			OWLOntology ontology = agent.getLabelManager().getRight(label);
 			
 			// we need to construct a reasoner specifically for this to isolate entities from just one ontology
 			Reasoner reasoner = new Reasoner(agent.getOntologyManager());			
@@ -144,7 +144,7 @@ public class JasdlConfigurator {
 		agent.getAliasManager().put( AliasFactory.INSTANCE.thing(), agent.getOntologyManager().getOWLDataFactory().getOWLThing());
 		agent.getAliasManager().put( AliasFactory.INSTANCE.nothing(), agent.getOntologyManager().getOWLDataFactory().getOWLNothing());
 		
-		for(Atom label : agent.getLabelManager().getLabels()){
+		for(Atom label : agent.getLabelManager().getLefts()){
 			agent.getAliasManager().put( AliasFactory.INSTANCE.all_different(label), new AllDifferentPlaceholder(label)); // must be new instance to avoid duplicate mapping exceptions
 		}
 	}	

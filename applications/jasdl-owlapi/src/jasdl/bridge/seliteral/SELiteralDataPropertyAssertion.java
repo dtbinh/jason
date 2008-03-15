@@ -27,11 +27,11 @@ public class SELiteralDataPropertyAssertion extends SELiteralPropertyAssertion{
 	}
 	
 	public OWLDataProperty getPredicate() throws JasdlException{
-		return (OWLDataProperty)toEntity();
+		return (OWLDataProperty)toOWLObject();
 	}
 	
 	public OWLTypedConstant getObject() throws JasdlException{		
-		OWLOntology ontology = agent.getLabelManager().get(ontologyLabel);		
+		OWLOntology ontology = agent.getLabelManager().getRight(ontologyLabel);		
 		OWLDataType typ = (OWLDataType)getPredicate().getRanges(ontology).toArray()[0];// will this always return exactly 1 range? If not, how should I deal with it
 		XSDDataType wrapper = XSDDataTypeUtils.get(typ.toString());
 		Term o = getTerm(RANGE);

@@ -34,8 +34,7 @@ public class JasdlAgent extends JmcaAgent {
 	private AliasManager aliasManager;
 	private LabelManager labelManager;
 	private SELiteralFactory seLiteralFactory;
-	private SELiteralConverter seLiteralConverter;
-	
+	private SELiteralConverter seLiteralConverter;	
 	private AxiomConverter axiomConverter;
 	
 	public JasdlAgent(){

@@ -7,9 +7,9 @@ import jasdl.util.InvalidSELiteralException;
 import jasdl.util.JasdlException;
 import jason.asSyntax.Literal;
 
-import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDataProperty;
-import org.semanticweb.owl.model.OWLEntity;
+import org.semanticweb.owl.model.OWLDescription;
+import org.semanticweb.owl.model.OWLObject;
 import org.semanticweb.owl.model.OWLObjectProperty;
 
 public class SELiteralFactory {
@@ -28,9 +28,9 @@ public class SELiteralFactory {
 	 */
 	public SELiteral create(Literal l) throws JasdlException{
 		SELiteral sl = new SELiteral(l, agent); // so we can use convenience methods on a processed seliteral
-		OWLEntity entity = sl.toEntity();
+		OWLObject entity = sl.toOWLObject();
 		if(sl.getArity() == 1){
-			if(entity instanceof OWLClass){
+			if(entity instanceof OWLDescription){
 				return new SELiteralClassAssertion(sl);
 			}else if(entity instanceof AllDifferentPlaceholder){
 				if(!l.isGround()) throw new JasdlException("JASDL does not currently support unground all_different assertions such as "+l);

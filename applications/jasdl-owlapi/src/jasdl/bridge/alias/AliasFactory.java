@@ -13,15 +13,14 @@ public class AliasFactory {
 	public static AliasFactory INSTANCE = new AliasFactory();
 	
 	public Alias create(SELiteral l){
-		return new Alias(l.getFunctor(), l.getOntologyLabel());
+		return new Alias( (l.negated()?"~":"") + l.getFunctor(), l.getOntologyLabel());
 	}
 	
 	public Alias create(Atom functor, Atom label){
 		return new Alias(functor, label);
 	}
 	
-	public Alias thing(){
-		
+	public Alias thing(){		
 		return new Alias(OWL_THING_FUNCTOR, OWL_NAMESPACE_LABEL);
 	}
 	

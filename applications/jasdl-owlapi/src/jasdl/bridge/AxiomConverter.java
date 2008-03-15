@@ -29,7 +29,6 @@ import jasdl.bridge.seliteral.SELiteralObjectPropertyAssertion;
 import jasdl.util.InvalidSELiteralException;
 import jasdl.util.JasdlException;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -96,7 +95,10 @@ public class AxiomConverter {
 	private Set<OWLIndividualAxiom> convert(SELiteralClassAssertion sl, boolean checkForExistence) throws JasdlException{
 		// TODO: Negated classes
 		Set<OWLIndividual> is = new HashSet<OWLIndividual>();
-		OWLDescription desc = sl.getOWLDescription();		
+		
+		OWLDescription desc = sl.getOWLDescription();
+		
+		
 		if(sl.isGround()){
 			OWLIndividual i = sl.getOWLIndividual();
 			if(!checkForExistence || agent.getReasoner().hasType(i, desc)){

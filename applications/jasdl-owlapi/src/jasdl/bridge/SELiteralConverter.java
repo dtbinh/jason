@@ -54,27 +54,27 @@ public class SELiteralConverter {
 	}	
 	
 	public SELiteral convert(OWLClassAssertionAxiom axiom) throws JasdlException{		
-		Alias alias = agent.getAliasManager().get(axiom.getDescription().asOWLClass());
+		Alias alias = agent.getAliasManager().getLeft(axiom.getDescription());
 		Literal l = construct(alias);
-		Atom i = agent.getAliasManager().get(axiom.getIndividual()).getFunctor(); // TODO: what if individual is previously undefined? possible?
+		Atom i = agent.getAliasManager().getLeft(axiom.getIndividual()).getFunctor(); // TODO: what if individual is previously undefined? possible?
 		l.addTerm(i);		
 		return agent.getSELiteralFactory().create(l);		
 	}
 	
 	public SELiteral convert(OWLObjectPropertyAssertionAxiom axiom) throws JasdlException{		
-		Alias alias = agent.getAliasManager().get(axiom.getProperty().asOWLObjectProperty());
+		Alias alias = agent.getAliasManager().getLeft(axiom.getProperty().asOWLObjectProperty());
 		Literal l = construct(alias);
-		Atom s = agent.getAliasManager().get(axiom.getSubject()).getFunctor();
+		Atom s = agent.getAliasManager().getLeft(axiom.getSubject()).getFunctor();
 		l.addTerm(s);	
-		Atom o = agent.getAliasManager().get(axiom.getObject()).getFunctor();
+		Atom o = agent.getAliasManager().getLeft(axiom.getObject()).getFunctor();
 		l.addTerm(o);
 		return agent.getSELiteralFactory().create(l);		
 	}
 	
 	public SELiteral convert(OWLDataPropertyAssertionAxiom axiom) throws JasdlException{		
-		Alias alias = agent.getAliasManager().get(axiom.getProperty().asOWLDataProperty());
+		Alias alias = agent.getAliasManager().getLeft(axiom.getProperty().asOWLDataProperty());
 		Literal l = construct(alias);
-		Atom s = agent.getAliasManager().get(axiom.getSubject()).getFunctor();
+		Atom s = agent.getAliasManager().getLeft(axiom.getSubject()).getFunctor();
 		l.addTerm(s);
 		
 		Term o;
@@ -110,11 +110,11 @@ public class SELiteralConverter {
 		}
 		Alias iAlias = null;
 		for(OWLIndividual i : is){
-			iAlias = agent.getAliasManager().get(i);
+			iAlias = agent.getAliasManager().getLeft(i);
 			list.add(iAlias.getFunctor());
 		}
 		// hack, get a reference back to ontology by examining one of the individuals		
-		Alias alias = agent.getAliasManager().get(new AllDifferentPlaceholder(iAlias.getLabel()));
+		Alias alias = agent.getAliasManager().getLeft(new AllDifferentPlaceholder(iAlias.getLabel()));
 		Literal l = construct(alias);		
 		
 		l.addTerm(list);

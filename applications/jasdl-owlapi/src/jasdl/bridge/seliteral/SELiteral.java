@@ -16,12 +16,18 @@ import jason.asSyntax.Term;
 import java.net.URI;
 import java.util.Set;
 
-import org.semanticweb.owl.model.OWLEntity;
+import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLIndividualAxiom;
+import org.semanticweb.owl.model.OWLObject;
 import org.semanticweb.owl.model.OWLOntology;
 
-
+/**
+ * Extends a Jason literal to provide ontology-related functionality 
+ * @author Tom Klapiscak
+ *
+ */
 public class SELiteral extends Literal{
 	
 	protected JasdlAgent agent;
@@ -34,7 +40,7 @@ public class SELiteral extends Literal{
 
 	/**
 	 * Construct an SELiteral from an existing Literal possesing valid constructs required for semantic enrichment
-	 * Existence of referenced ontological entities IS checked.
+	 * Existence of referenced ontological entities IS NOT checked.
 	 * @param l		a Literal possesing valid constructs required for semantic enrichment
 	 * @throws JasdlException	if the literal does not possess valid constructs required for semantic enrichment
 	 */
@@ -60,14 +66,13 @@ public class SELiteral extends Literal{
 		if(!s.getTerm(0).isAtom()){
 			throw invalid;
 		}
-		ontologyLabel = (Atom)s.getTerm(0);
+		ontologyLabel = (Atom)s.getTerm(0);		
 		
 		
 		
-		
-		if(!agent.getAliasManager().isKnown( toAlias() )){
-			throw new UnknownMappingException(l+" refers to an unknown resource");
-		}
+		//if(!agent.getAliasManager().isKnownLeft( toAlias() )){
+		//	throw new UnknownMappingException(l+" refers to an unknown resource");
+		//}
 
 	}
 	
@@ -92,12 +97,27 @@ public class SELiteral extends Literal{
 	}
 	
 	/**
-	 * Convenience method, calls AliasManager
+	 * Convenience method, calls AliasManager.
 	 * @return
 	 * @throws UnknownMappingException
 	 */
-	public OWLEntity toEntity() throws UnknownMappingException{
-		return agent.getAliasManager().get(this.toAlias());
+	public OWLObject toOWLObject() throws JasdlException{
+		try{
+			return agent.getAliasManager().getRight(this.toAlias());
+		}catch(UnknownMappingException e){
+			Alias alias = toAlias();
+			if(alias.getFunctor().toString().startsWith("~")){
+				Atom negatedFunctor = new Atom(alias.getFunctor().toString().substring(1));
+				Alias negatedAlias = AliasFactory.INSTANCE.create( negatedFunctor, alias.getLabel());
+				agent.getLogger().info("negated functor: "+negatedFunctor+" negated alias: "+negatedAlias);
+				OWLDescription negated = agent.getOntologyManager().getOWLDataFactory().getOWLObjectComplementOf(
+						(OWLClass)agent.getAliasManager().getRight(negatedAlias));
+				agent.getAliasManager().put(alias, negated);
+				return negated;
+			}else{
+				throw e;
+			}
+		}		
 	}
 	
 	/**
@@ -124,7 +144,7 @@ public class SELiteral extends Literal{
 	 * @return
 	 */
 	public OWLOntology getOntology() throws UnknownMappingException{
-		return agent.getLabelManager().get(ontologyLabel);
+		return agent.getLabelManager().getRight(ontologyLabel);
 	}
 	
 	
@@ -152,10 +172,10 @@ public class SELiteral extends Literal{
 		Alias alias = AliasFactory.INSTANCE.create(atom, ontologyLabel);
 		OWLIndividual i;
 		try {
-			i = (OWLIndividual)agent.getAliasManager().get(alias);
+			i = (OWLIndividual)agent.getAliasManager().getRight(alias);
 		} catch (UnknownMappingException e) {
 			// Instantiate and map the individual if not known
-			OWLOntology ontology = agent.getLabelManager().get(ontologyLabel);
+			OWLOntology ontology = getOntology();
 			// Clashes (with different types of resource) don't matter thanks to OWL1.1's punning features
 			//TODO: what about clashes with individuals (different alias, same uri)
 			URI uri = URI.create(ontology.getURI() + "#" + atom);

@@ -20,4 +20,12 @@ all_different([hilton, fourSeasons])[o(travel)].
 	.print(Z);
 	
 	?thing(A)[o(owl)];
-	.print(A).
+	.print(A);
+	
+	?~hotel(B)[o(travel)];
+	?~hotel(B)[o(travel)];
+	.print(B);
+	
+	+~activity(fourSeasons)[o(travel)];
+	?~activity(fourSeasons)[o(travel)];
+	.print("Completed").

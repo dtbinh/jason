@@ -20,7 +20,7 @@ public class SELiteralObjectPropertyAssertion extends SELiteralPropertyAssertion
 	}
 	
 	public OWLObjectProperty getPredicate() throws JasdlException{
-		return (OWLObjectProperty)toEntity();
+		return (OWLObjectProperty)toOWLObject();
 	}
 
 	
