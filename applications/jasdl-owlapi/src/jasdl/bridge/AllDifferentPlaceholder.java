@@ -1,5 +1,7 @@
 package jasdl.bridge;
 
+import jason.asSyntax.Atom;
+
 import java.net.URI;
 import java.util.Set;
 
@@ -15,12 +17,17 @@ import org.semanticweb.owl.model.OWLOntology;
 /**
  * Since the all_different has no concrete entity associated with it, we create a "placeholder" so that it remains consistent with
  * JASDL's mapping mechanisms. Entities of this type will be intercepted and dealt with differently.
+ * Associated with an ontology label which determines hash-code - required since each ontology must have its own placeholder to reference
  * @author tom
  *
  */
 public class AllDifferentPlaceholder implements OWLEntity {
-	public static AllDifferentPlaceholder INSTANCE = new AllDifferentPlaceholder();
-
+	private Atom label;
+	
+	public AllDifferentPlaceholder(Atom label){
+		this.label = label;
+	}
+	
 	public void accept(OWLEntityVisitor visitor) {		
 	}
 
@@ -45,6 +52,17 @@ public class AllDifferentPlaceholder implements OWLEntity {
 
 	public URI getURI() {
 		return null;
+	}
+	
+	public boolean equals(Object other){
+		if(!(other instanceof AllDifferentPlaceholder)){
+			return false;
+		}
+		return label.equals(((AllDifferentPlaceholder)other).label);
+	}
+	
+	public int hashCode(){
+		return label.hashCode();
 	}
 
 }

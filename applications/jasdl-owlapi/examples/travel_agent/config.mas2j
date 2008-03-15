@@ -33,10 +33,13 @@ MAS dalt08 {
 	       travel_agent 
        	   travel_agent.asl
 	       [				
-	       	jasdl_ontologies="travel",
+	       	jasdl_ontologies="travel,aktors",
 			jasdl_travel_uri="http://www.dur.ac.uk/t.g.klapiscak/onts/travel.owl",
 			jasdl_travel_mapping_strategies="jasdl.bridge.alias.DecapitaliseMappingStrategy",
-			jasdl_travel_mapping_manual="small_beach=beach"
+			jasdl_travel_mapping_manual="small_beach=beach",
+			
+			jasdl_aktors_uri="http://www.aktors.org/ontology/portal.owl",
+			jasdl_aktors_mapping_strategies="jasdl.bridge.alias.DecapitaliseMappingStrategy"
 	       ]
 	       agentArchClass jasdl.architecture.JasdlAgArch
 	       agentClass jasdl.asSemantics.JasdlAgent

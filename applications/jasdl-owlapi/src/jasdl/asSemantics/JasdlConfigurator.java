@@ -60,7 +60,7 @@ public class JasdlConfigurator {
 				physicalURI = new URI(prepareUserParameter( stts, MAS2J_PREFIX + "_" + label + MAS2J_URI ));
 				agent.loadOntology(new Atom(label), physicalURI);
 			} catch (Exception e) {
-				throw new JasdlException("Unable to instantiate ontology \""+label+"\". Reason: ");
+				throw new JasdlException("Unable to instantiate ontology \""+label+"\". Reason: "+e);
 			}			
 		}
 	}
@@ -135,16 +135,17 @@ public class JasdlConfigurator {
 	}	
 	
 	/**
-	 * Maps thing and nothing. Each ontology has its own thing and nothing alias mappings, but they all map to owl:thing or owl:nothing respectively.
-	 * This prevents us from needing to use a special label to refer to owl's concept of thing (e.g. thing(x)[o(owl)]).
+	 * Maps thing and nothing. Must use "owl" label to refer to these, e.g. thing(x)[o(owl)]
 	 * 
 	 * @throws JasdlException
 	 */
 	private void applyMiscMappings() throws JasdlException{
+		
+		agent.getAliasManager().put( AliasFactory.INSTANCE.thing(), agent.getOntologyManager().getOWLDataFactory().getOWLThing());
+		agent.getAliasManager().put( AliasFactory.INSTANCE.nothing(), agent.getOntologyManager().getOWLDataFactory().getOWLNothing());
+		
 		for(Atom label : agent.getLabelManager().getLabels()){
-			agent.getAliasManager().put( AliasFactory.INSTANCE.thing(label), agent.getOntologyManager().getOWLDataFactory().getOWLThing());
-			agent.getAliasManager().put( AliasFactory.INSTANCE.nothing(label), agent.getOntologyManager().getOWLDataFactory().getOWLNothing());
-			agent.getAliasManager().put( AliasFactory.INSTANCE.all_different(label), AllDifferentPlaceholder.INSTANCE);
+			agent.getAliasManager().put( AliasFactory.INSTANCE.all_different(label), new AllDifferentPlaceholder(label)); // must be new instance to avoid duplicate mapping exceptions
 		}
 	}	
 	

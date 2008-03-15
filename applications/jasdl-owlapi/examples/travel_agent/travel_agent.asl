@@ -7,7 +7,6 @@ all_different([hilton, fourSeasons])[o(travel)].
 +!start
 	<-
 	?all_different([hilton, fourSeasons])[o(travel)];
-	
 	?hotel(X)[o(travel)];
 	?hotel(X)[o(travel)];
 	.print(X);
@@ -18,4 +17,7 @@ all_different([hilton, fourSeasons])[o(travel)].
 	
 	?hasPricePerNight(hilton, Z)[o(travel)];
 	?hasPricePerNight(hilton, Z)[o(travel)];	
-	.print(Z).
+	.print(Z);
+	
+	?thing(A)[o(owl)];
+	.print(A).

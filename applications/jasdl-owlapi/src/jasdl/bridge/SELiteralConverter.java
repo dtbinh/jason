@@ -103,13 +103,20 @@ public class SELiteralConverter {
 	}
 	
 	public SELiteral convert(OWLDifferentIndividualsAxiom axiom) throws JasdlException{
-		Alias alias = agent.getAliasManager().get(AllDifferentPlaceholder.INSTANCE);
-		Literal l = construct(alias);
-		ListTerm list = new ListTermImpl(); // TODO: override this object's unify method to perform set, not list, unification?
-		Set<OWLIndividual> is = axiom.getIndividuals();		
-		for(OWLIndividual i : is){
-			list.add(agent.getAliasManager().get(i).getFunctor());
+		ListTerm list = new ListTermImpl(); // TODO: override this object's unify method to perform set, not list, unification?		
+		Set<OWLIndividual> is = axiom.getIndividuals();
+		if(is.size() == 0){
+			throw new JasdlException("All different assertion must contain some individuals! "+axiom);
 		}
+		Alias iAlias = null;
+		for(OWLIndividual i : is){
+			iAlias = agent.getAliasManager().get(i);
+			list.add(iAlias.getFunctor());
+		}
+		// hack, get a reference back to ontology by examining one of the individuals		
+		Alias alias = agent.getAliasManager().get(new AllDifferentPlaceholder(iAlias.getLabel()));
+		Literal l = construct(alias);		
+		
 		l.addTerm(list);
 		return agent.getSELiteralFactory().create(l);
 	}

@@ -114,6 +114,9 @@ public class AxiomConverter {
 	
 	public Set<OWLIndividualAxiom> create(SELiteralAllDifferentAssertion sl, boolean checkForExistence) throws JasdlException{
 		Object[] is = sl.getOWLIndividuals().toArray();	
+		if(is.length == 0){
+			throw new JasdlException("All different assertion must contain some individuals! "+sl);
+		}
     	// check they are mutually distinct (if we are checking for existence)
     	boolean distinct = true;
     	if(checkForExistence){	        	
