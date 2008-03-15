@@ -58,6 +58,7 @@ public class ACArchitecture extends MinerArch {
 	public void startNextStep(int step, List<Literal> p) {
 		percepts = p;
 
+		// set all actions as successfully executed
 		List<ActionExec> feedback = getTS().getC().getFeedbackActions();
 		while (!toExecute.isEmpty()) {
     		ActionExec action = toExecute.poll();
@@ -74,6 +75,7 @@ public class ACArchitecture extends MinerArch {
         final Structure acTerm = act.getActionTerm();
         if (acTerm.getFunctor().equals("do")){
         	// (to not block the TS)
+        	// TODO: use a thread pool
         	new Thread() {
         		public void run() {
                     proxy.sendAction(acTerm.getTerm(0).toString());

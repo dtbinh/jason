@@ -121,14 +121,18 @@ public class ACProxy extends ACAgent {
     		lpos.addTerm(new NumberTermImpl(step));
 			percepts.add(lpos);
 
+			int maxx = 0; // max value of some cell'x
 			// add in perception what is around
 			NodeList nl = perception.getElementsByTagName("cell");
 			for (int i=0; i < nl.getLength(); i++) {
 				Element cell = (Element)nl.item(i);
 				int cellx = Integer.parseInt(cell.getAttribute("x"));
                 int celly = Integer.parseInt(cell.getAttribute("y"));
-				int absx  = agx - cellx;
-				int absy  = agy - celly;
+				int absx  = agx + cellx;
+				int absy  = agy + celly;
+				
+				if (cellx > maxx)
+					maxx = cellx;
 				
 				NodeList cnl = cell.getChildNodes();
 				for (int j=0; j < cnl.getLength(); j++) {
@@ -167,6 +171,7 @@ public class ACProxy extends ACAgent {
 			logger.info("Request action for "+lpos+" / "+rid + " percepts: "+percepts);
 			
 			arq.startNextStep(step,percepts);
+			arq.perceptionRatioPerceived(maxx);
 			
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "error processing request",e);

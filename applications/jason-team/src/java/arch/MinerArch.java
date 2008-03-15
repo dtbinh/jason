@@ -20,6 +20,9 @@ import java.util.logging.Logger;
 import env.WorldModel;
 import env.WorldView;
 
+// TODO: rename to CowboyArch
+// TODO: add identify crash
+
 /** Common arch for both local and contest architectures */
 public class MinerArch extends AgArch {
 
@@ -104,6 +107,16 @@ public class MinerArch extends AgArch {
     	getTS().getAg().addBel(Literal.parseLiteral("steps("+s+")"));
         model.setMaxSteps(s);
     }
+
+    private int pratio = -1;
+    
+    /** The perception ratio is discovered */
+	void perceptionRatioPerceived(int s) {
+		if (s != pratio) {
+			pratio = s;
+			getTS().getAg().addBel(Literal.parseLiteral("pratio("+s+")"));
+		}
+	}
     
 	/** update the model with obstacle and share them with the team mates */
 	void obstaclePerceived(int x, int y, Literal p) {
