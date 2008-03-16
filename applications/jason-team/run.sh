@@ -1,5 +1,5 @@
 #!/bin/sh
 
-java -cp lib/jason.jar:lib/search.jar:. \
+java -cp ../../lib/jason.jar:lib/search.jar:bin/classes \
   jason.infra.centralised.RunCentralisedMAS \
-  Local-JasonTeam.mas2j
+  AC-Local-JasonTeam.mas2j

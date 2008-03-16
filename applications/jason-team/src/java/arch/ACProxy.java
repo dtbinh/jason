@@ -5,6 +5,7 @@ import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Structure;
 import jason.environment.grid.Location;
 
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -68,29 +69,26 @@ public class ACProxy extends ACAgent implements Runnable {
             try {
                 if (isConnected()) {
                     Document doc = receiveDocument();
-                    Element el_root = doc.getDocumentElement();
-    
-                    if (el_root != null) {
-                        if (el_root.getNodeName().equals("message")) {
-                            processMessage(el_root);
+                    if (doc != null) {
+                        Element el_root = doc.getDocumentElement();
+        
+                        if (el_root != null) {
+                            if (el_root.getNodeName().equals("message")) {
+                                processMessage(el_root);
+                            } else {
+                                logger.log(Level.SEVERE,"unknown document received");
+                            }
                         } else {
-                            logger.log(Level.SEVERE,"unknown document received");
+                            logger.log(Level.SEVERE, "no document element found");
                         }
-                    } else {
-                        logger.log(Level.SEVERE, "no document element found");
                     }
                 } else {
                     // wait auto-reconnect
                     logger.info("waiting reconnection...");
                     try { Thread.sleep(2000); } catch (InterruptedException e1) {}
                 }
-            /*} catch (SocketClosedException e) {
-                logger.log(Level.SEVERE, "Socket was closed:"+e);
-                connected = false;
-            } catch (SocketException e) {
-                logger.log(Level.SEVERE, "Socket exception:"+e); */
             } catch (Exception e) {
-                logger.log(Level.SEVERE, "Exception", e);
+                logger.log(Level.SEVERE, "ACProxy run exception", e);
             }
         }
     }

@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -100,14 +101,8 @@ public abstract class ACAgent {
 			auth.setAttribute("password",password);
 			root.appendChild(auth);
 			this.sendDocument(doc);
-			//transformerfactory.newTransformer().transform(new DOMSource(doc),new StreamResult(outputstream));
-			//outputstream.write(0);
 		} catch (ParserConfigurationException e) {
 			logger.log(Level.SEVERE, "unable to create new document for authentication.", e);
-		//} catch (TransformerConfigurationException e) {
-		//	logger.log(Level.SEVERE,"unable to configure transformer", e);
-		//} catch (TransformerException e) {
-		//	logger.log(Level.SEVERE,"unable to transform document", e);
 		}
 	}
 
@@ -116,7 +111,8 @@ public abstract class ACAgent {
 			Document doc = receiveDocument();
 			Element root = doc.getDocumentElement();
 			if (root==null) return false;
-			if (!root.getAttribute("type").equalsIgnoreCase("auth-response")) return false;
+			if (!root.getAttribute("type").equalsIgnoreCase("auth-response")) 
+			    return false;
 			
 			NodeList nl = root.getChildNodes();
 			Element authresult = null;
@@ -127,19 +123,12 @@ public abstract class ACAgent {
 					break;
 				}
 			}
-			if (!authresult.getAttribute("result").equalsIgnoreCase("ok")) return false;
-		} catch (SAXException e) {
+			if (authresult.getAttribute("result").equalsIgnoreCase("ok"))
+                return true;
+		} catch (Exception e) {
 			e.printStackTrace();
-			return false;
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-			return false;
-		} catch (SocketClosedException e) {
-			e.printStackTrace();
-			return false;
 		}
-		
-		return true;
+        return false;
 	}
 	
 	public boolean doAuthentication(String username, String password) throws IOException {
@@ -160,9 +149,19 @@ public abstract class ACAgent {
 		return buffer.toByteArray();
 	}
 	
-	public Document receiveDocument() throws SAXException, IOException, ParserConfigurationException, SocketClosedException {
-		byte[] raw = receivePacket();
-		Document doc = documentbuilderfactory.newDocumentBuilder().parse(new ByteArrayInputStream(raw));
+	public Document receiveDocument() throws SAXException { // , IOException, ParserConfigurationException, SocketClosedException {
+	    try {
+    		byte[] raw = receivePacket();
+    		Document doc = documentbuilderfactory.newDocumentBuilder().parse(new ByteArrayInputStream(raw));
+    		return doc;
+        } catch (SocketClosedException e) {
+            logger.log(Level.SEVERE, "Socket was closed:"+e);
+            connected = false;
+        } catch (SocketException e) {
+            logger.log(Level.SEVERE, "Socket exception:"+e);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "ACAgent receiveDocument exception", e);
+        }
 		/*
 		try {
 			if (logger.isLoggable(Level.FINE)) {
@@ -172,7 +171,7 @@ public abstract class ACAgent {
 			}
 		} catch (Exception e) {}
 		*/
-		return doc;
+		return null;
 	}
 
 	protected boolean connect() {
@@ -190,7 +189,7 @@ public abstract class ACAgent {
 				logger.log(Level.SEVERE, "authentication failed");
             }                   
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Exception", e);
+			logger.log(Level.SEVERE, "Connection exception "+e);
 		}			
         return connected;
     }
@@ -198,15 +197,6 @@ public abstract class ACAgent {
     public boolean isConnected() {
     	return connected;
     }
-    
-    /*
-    protected void reconnect() throws Exception {
-    	if (socket != null) {
-    		socket.close();
-    	}
-    	connect();
-    }
-    */
     
 	public boolean processMessage(Element el_message) {
 		String type = el_message.getAttribute("type");
