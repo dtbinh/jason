@@ -24,7 +24,7 @@
 !example_RPP.
 !example_all_different.
 //!example_annotation_gathering.
-//!example_KSAA.
+!example_KSAA.
 
 
 @example_ubb_1[atomic]

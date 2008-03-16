@@ -7,10 +7,16 @@ import java.util.Set;
 
 import org.semanticweb.owl.model.OWLAnnotation;
 import org.semanticweb.owl.model.OWLAnnotationAxiom;
+import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owl.model.OWLDataProperty;
+import org.semanticweb.owl.model.OWLDataType;
 import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.model.OWLEntityVisitor;
 import org.semanticweb.owl.model.OWLException;
+import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLNamedObjectVisitor;
+import org.semanticweb.owl.model.OWLObject;
+import org.semanticweb.owl.model.OWLObjectProperty;
 import org.semanticweb.owl.model.OWLObjectVisitor;
 import org.semanticweb.owl.model.OWLOntology;
 
@@ -47,7 +53,7 @@ public class AllDifferentPlaceholder implements OWLEntity {
 		
 	}
 
-	public void accept(OWLNamedObjectVisitor visitor) throws OWLException {		
+	public void accept(OWLNamedObjectVisitor visitor) {		
 	}
 
 	public URI getURI() {
@@ -63,6 +69,50 @@ public class AllDifferentPlaceholder implements OWLEntity {
 	
 	public int hashCode(){
 		return label.hashCode();
+	}
+
+	public OWLClass asOWLClass() {
+		return null;
+	}
+
+	public OWLDataProperty asOWLDataProperty() {
+		return null;
+	}
+
+	public OWLDataType asOWLDataType() {
+		return null;
+	}
+
+	public OWLIndividual asOWLIndividual() {
+		return null;
+	}
+
+	public OWLObjectProperty asOWLObjectProperty() {
+		return null;
+	}
+
+	public boolean isOWLClass() {
+		return false;
+	}
+
+	public boolean isOWLDataProperty() {
+		return false;
+	}
+
+	public boolean isOWLDataType() {
+		return false;
+	}
+
+	public boolean isOWLIndividual() {
+		return false;
+	}
+
+	public boolean isOWLObjectProperty() {
+		return false;
+	}
+
+	public int compareTo(OWLObject arg0) {
+		return 0;
 	}
 
 }

@@ -6,6 +6,7 @@ import jasdl.bridge.ToAxiomConverter;
 import jasdl.bridge.ToSELiteralConverter;
 import jasdl.bridge.alias.AliasManager;
 import jasdl.bridge.label.LabelManager;
+import jasdl.bridge.label.PhysicalURIManager;
 import jasdl.bridge.seliteral.SELiteralFactory;
 import jasdl.util.JasdlException;
 import jason.JasonException;
@@ -27,6 +28,9 @@ import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyManager;
 
+import uk.ac.manchester.cs.owl.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
+import uk.ac.manchester.cs.owl.mansyntaxrenderer.ManchesterOWLSyntaxObjectRenderer;
+
 public class JasdlAgent extends JmcaAgent {	
 	private OWLOntologyManager ontologyManager;
 	private Reasoner reasoner;
@@ -35,6 +39,8 @@ public class JasdlAgent extends JmcaAgent {
 	private SELiteralFactory seLiteralFactory;
 	private ToSELiteralConverter toSELiteralConverter;	
 	private ToAxiomConverter toAxiomConverter;
+	private PhysicalURIManager physicalURIManager;
+	private ManchesterOWLSyntaxOWLObjectRendererImpl manchesterObjectRenderer;
 	
 	public JasdlAgent(){
 		super();
@@ -42,9 +48,13 @@ public class JasdlAgent extends JmcaAgent {
 		aliasManager = new AliasManager();
 		labelManager = new LabelManager();
 		ontologyManager = OWLManager.createOWLOntologyManager();
+		physicalURIManager = new PhysicalURIManager();
 		seLiteralFactory = new SELiteralFactory(this);
 		toAxiomConverter = new ToAxiomConverter(this);
 		toSELiteralConverter = new ToSELiteralConverter(this);
+		
+		manchesterObjectRenderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
+		
 		
 		// instantiate (Pellet) reasoner
 		PelletOptions.USE_TRACING = true;
@@ -81,11 +91,12 @@ public class JasdlAgent extends JmcaAgent {
 	 */
 	public void loadOntology(Atom label, URI uri) throws JasdlException{
 		try{
-			OWLOntology ont = ontologyManager.loadOntologyFromPhysicalURI(uri);
-			Set<OWLOntology> imports = ontologyManager.getImportsClosure(ont);
+			OWLOntology ontology = ontologyManager.loadOntologyFromPhysicalURI(uri);
+			Set<OWLOntology> imports = ontologyManager.getImportsClosure(ontology);
 			reasoner.loadOntologies(imports);
 			reasoner.classify();
-			labelManager.put(label, ont);
+			labelManager.put(label, ontology);
+			physicalURIManager.put(ontology, uri);
 		}catch(OWLOntologyCreationException e){
 			throw new JasdlException("Error loading ontology "+uri+". Reason: "+e);
 		}		
@@ -107,6 +118,14 @@ public class JasdlAgent extends JmcaAgent {
 
 	public OWLOntologyManager getOntologyManager() {
 		return ontologyManager;
+	}
+	
+	
+
+
+
+	public PhysicalURIManager getPhysicalURIManager() {
+		return physicalURIManager;
 	}
 
 
@@ -139,6 +158,15 @@ public class JasdlAgent extends JmcaAgent {
 	public ToSELiteralConverter getToSELiteralConverter() {
 		return toSELiteralConverter;
 	}
+
+
+
+	public ManchesterOWLSyntaxOWLObjectRendererImpl getManchesterObjectRenderer() {
+		return manchesterObjectRenderer;
+	}
+	
+	
+	
 
 
 

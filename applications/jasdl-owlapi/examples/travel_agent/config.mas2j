@@ -50,8 +50,8 @@ MAS dalt08 {
        	   customer.asl
 	       [		   
 	       	jasdl_ontologies="holidays",
-			//jasdl_holidays_uri="http://www.dur.ac.uk/t.g.klapiscak/onts/travel.owl",
-			jasdl_holidays_uri="file:///home/tom/Desktop/Project/workspace/jason/applications/jasdl-owlapi/examples/travel_agent/ontologies/travel.owl",
+			jasdl_holidays_uri="http://www.dur.ac.uk/t.g.klapiscak/onts/travel.owl",
+			//jasdl_holidays_uri="file:///home/tom/Desktop/Project/workspace/jason/applications/jasdl-owlapi/examples/travel_agent/ontologies/travel.owl",
 			jasdl_holidays_mapping_strategies="jasdl.bridge.alias.DecapitaliseMappingStrategy",
 			jasdl_holidays_mapping_manual="small_beach=beach, luxuriousHotel=LuxuryHotel" // arbitrary primitive mappings handled correctly
 			

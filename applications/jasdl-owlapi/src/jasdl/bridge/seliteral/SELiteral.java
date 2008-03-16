@@ -1,5 +1,6 @@
 package jasdl.bridge.seliteral;
 
+import static jasdl.util.Common.strip;
 import jasdl.asSemantics.JasdlAgent;
 import jasdl.bridge.alias.Alias;
 import jasdl.bridge.alias.AliasFactory;
@@ -10,10 +11,12 @@ import jasdl.util.UnknownMappingException;
 import jason.asSyntax.Atom;
 import jason.asSyntax.ListTerm;
 import jason.asSyntax.Literal;
+import jason.asSyntax.StringTermImpl;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Set;
 
 import org.semanticweb.owl.model.OWLClass;
@@ -34,14 +37,21 @@ public class SELiteral extends Literal{
 	protected JasdlAgent agent;
 	
 	public static String ONTOLOGY_ANNOTATION_FUNCTOR = "o";
+	public static String EXPR_ANNOTATION_FUNCTOR = "expr";
+	
+	protected Structure ontologyAnnotation;
 	
 	protected Atom ontologyLabel;
+	protected OWLOntology ontology;
+	
 
 	
 
 	/**
-	 * Construct an SELiteral from an existing Literal possesing valid constructs required for semantic enrichment
+	 * Construct an SELiteral from an existing Literal possesing valid constructs required for semantic enrichment.
 	 * Existence of referenced ontological entities IS NOT checked.
+	 * Ontology annotation can either be in atomic label or string physical uri format.
+	 * Novel ontologies referenced by physical URIs will be instantiated and assigned an anonymous label.
 	 * @param l		a Literal possesing valid constructs required for semantic enrichment
 	 * @throws JasdlException	if the literal does not possess valid constructs required for semantic enrichment
 	 */
@@ -60,14 +70,25 @@ public class SELiteral extends Literal{
 		if(!(t instanceof Structure)){
 			throw invalid;
 		}
-		Structure s = (Structure)t;
-		if(s.getArity() != 1){
+		ontologyAnnotation = (Structure)t;
+		if(ontologyAnnotation.getArity() != 1){
 			throw invalid;
 		}
-		if(!s.getTerm(0).isAtom()){
+		if(ontologyAnnotation.getTerm(0).isAtom()){
+			ontologyLabel = (Atom)ontologyAnnotation.getTerm(0);
+			ontology = agent.getLabelManager().getRight(ontologyLabel);
+		}else if(ontologyAnnotation.getTerm(0).isString()){
+			// Incoming SELiteral
+			parseOntologyURI(ontologyAnnotation.getTerm(0).toString());			
+		}else{
 			throw invalid;
 		}
-		ontologyLabel = (Atom)s.getTerm(0);		
+		
+		// look for expr annotation
+		// Do I really want expressions to be limited within a single ontology??
+		// would make things easier!
+		//Structure exprAnnotation = getAnnots(EXPR_ANNOTATION_FUNCTOR);
+				
 		
 		
 		
@@ -76,6 +97,35 @@ public class SELiteral extends Literal{
 		//}
 
 	}
+	
+	private void parseOntologyURI(String _uri) throws JasdlException{
+		URI uri;
+		try {
+			uri = new URI( strip(_uri, "\"")); // quotes stripped
+		} catch (URISyntaxException e) {
+			throw new InvalidSELiteralException("Invalid physical ontology URI in "+ontologyAnnotation+". Reason: "+e);
+		}
+		try{
+			ontology = agent.getPhysicalURIManager().getLeft(uri);
+			ontologyLabel = agent.getLabelManager().getLeft(ontology);
+		}catch(UnknownMappingException e){
+			// instantiate novel ontology
+		}
+	}
+	
+	/**
+	 * Sets the ontology annotation of this SELiteral to be the fully-qualified physical namespace of the associated ontology
+	 */
+	public void qualifyOntologyAnnotation(){
+		ontologyAnnotation.setTerm(0, new StringTermImpl(agent.getOntologyManager().getPhysicalURIForOntology(ontology).toString()));
+	}
+	
+	/**
+	 * Sets the ontology annotation of this SELiteral to be the label of the associated ontology
+	 */
+	public void unqualifyOntologyAnnotation(){
+		ontologyAnnotation.setTerm(0, ontologyLabel);
+	}	
 	
 	
 	/**
@@ -193,5 +243,7 @@ public class SELiteral extends Literal{
 		
 		return i;			
 	}
+	
+	
 	
 }

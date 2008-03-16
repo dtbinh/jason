@@ -150,8 +150,10 @@ public class JasdlConfigurator {
 		
 		// create a "placeholder" ontology so we can safely map thing and nothing without actually loading the ontology
 		try {
-			OWLOntology ontology = agent.getOntologyManager().createOntology( URI.create("http://www.w3.org/2002/07/owl") );
+			URI uri = URI.create("http://www.w3.org/2002/07/owl");
+			OWLOntology ontology = agent.getOntologyManager().createOntology( uri );
 			agent.getLabelManager().put(AliasFactory.OWL_THING.getLabel(), ontology);
+			agent.getPhysicalURIManager().put(ontology, uri);
 			agent.getReasoner().loadOntology(ontology);
 		
 		} catch (OWLOntologyCreationException e) {
