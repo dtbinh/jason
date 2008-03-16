@@ -1,0 +1,744 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY dc "http://purl.org/dc/elements/1.1/" >
+    <!ENTITY owl11 "http://www.w3.org/2006/12/owl11#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY owl11xml "http://www.w3.org/2006/12/owl11-xml#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY daml "http://www.daml.org/2001/03/daml+oil#" >
+    <!ENTITY travel "http://www.owl-ontologies.com/travel.owl#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http://www.owl-ontologies.com/travel.owl#"
+     xml:base="http://www.owl-ontologies.com/travel.owl"
+     xmlns:owl11="http://www.w3.org/2006/12/owl11#"
+     xmlns:owl11xml="http://www.w3.org/2006/12/owl11-xml#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:daml="http://www.daml.org/2001/03/daml+oil#"
+     xmlns:travel="http://www.owl-ontologies.com/travel.owl#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#">
+    <owl:Ontology rdf:about="">
+        <owl:versionInfo rdf:datatype="&xsd;string"
+            >1.0 by Holger Knublauch (holger@smi.stanford.edu)</owl:versionInfo>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >An example ontology for tutorial purposes.</rdfs:comment>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#hasAccommodation -->
+
+    <owl:ObjectProperty rdf:about="#hasAccommodation">
+        <rdfs:range rdf:resource="#Accommodation"/>
+        <rdfs:domain rdf:resource="#Destination"/>
+        <rdfs:subPropertyOf rdf:resource="#hasThing"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#hasActivity -->
+
+    <owl:ObjectProperty rdf:about="#hasActivity">
+        <rdfs:subPropertyOf rdf:resource="#hasThing"/>
+        <rdfs:range rdf:resource="#Activity"/>
+        <rdfs:domain rdf:resource="#Destination"/>
+        <owl:inverseOf rdf:resource="#isOfferedAt"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#hasContact -->
+
+    <owl:ObjectProperty rdf:about="#hasContact">
+        <rdfs:subPropertyOf rdf:resource="#hasThing"/>
+        <rdfs:domain rdf:resource="#Activity"/>
+        <rdfs:range rdf:resource="#Contact"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#hasDestination -->
+
+    <owl:ObjectProperty rdf:about="#hasDestination">
+        <rdfs:subPropertyOf rdf:resource="#hasThing"/>
+        <rdfs:range rdf:resource="#Destination"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#hasPart -->
+
+    <owl:ObjectProperty rdf:about="#hasPart">
+        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
+        <rdfs:domain rdf:resource="#Destination"/>
+        <rdfs:subPropertyOf rdf:resource="#hasThing"/>
+        <rdfs:range rdf:resource="#Destination"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#hasRating -->
+
+    <owl:ObjectProperty rdf:about="#hasRating">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="#Accommodation"/>
+        <rdfs:range rdf:resource="#AccommodationRating"/>
+        <rdfs:subPropertyOf rdf:resource="#hasThing"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#hasThing -->
+
+    <owl:ObjectProperty rdf:about="#hasThing"/>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#isLocatedAt -->
+
+    <owl:ObjectProperty rdf:about="#isLocatedAt">
+        <owl:inverseOf rdf:resource="#hasAccommodation"/>
+        <rdfs:subPropertyOf rdf:resource="#hasThing"/>
+        <rdfs:domain rdf:resource="#Accommodation"/>
+        <rdfs:range rdf:resource="#Destination"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#isOfferedAt -->
+
+    <owl:ObjectProperty rdf:about="#isOfferedAt">
+        <rdfs:range rdf:resource="#Destination"/>
+        <rdfs:comment
+            >Generalised to apply to accommodations as well</rdfs:comment>
+        <rdfs:subPropertyOf rdf:resource="#hasThing"/>
+        <rdfs:domain rdf:resource="#Activity"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#isPartOf -->
+
+    <owl:ObjectProperty rdf:about="#isPartOf">
+        <owl:inverseOf rdf:resource="#hasPart"/>
+        <rdfs:range rdf:resource="#Destination"/>
+        <rdfs:subPropertyOf rdf:resource="#hasThing"/>
+        <rdfs:domain rdf:resource="#Destination"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#hasCity -->
+
+    <owl:DatatypeProperty rdf:about="#hasCity">
+        <rdfs:subPropertyOf rdf:resource="#hasData"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+        <rdfs:domain rdf:resource="#Contact"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#hasData -->
+
+    <owl:DatatypeProperty rdf:about="#hasData"/>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#hasDuration -->
+
+    <owl:DatatypeProperty rdf:about="#hasDuration">
+        <rdfs:range rdf:resource="&xsd;duration"/>
+        <rdfs:subPropertyOf rdf:resource="#hasData"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#hasEMail -->
+
+    <owl:DatatypeProperty rdf:about="#hasEMail">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:subPropertyOf rdf:resource="#hasData"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+        <rdfs:domain rdf:resource="#Contact"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#hasPricePerNight -->
+
+    <owl:DatatypeProperty rdf:about="#hasPricePerNight">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:subPropertyOf rdf:resource="#hasData"/>
+        <rdfs:comment
+            >Stated in local currency</rdfs:comment>
+        <rdfs:domain rdf:resource="#Accommodation"/>
+        <rdfs:range rdf:resource="&xsd;double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#hasStartDate -->
+
+    <owl:DatatypeProperty rdf:about="#hasStartDate">
+        <rdfs:subPropertyOf rdf:resource="#hasData"/>
+        <rdfs:range rdf:resource="&xsd;dateTime"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#hasStreet -->
+
+    <owl:DatatypeProperty rdf:about="#hasStreet">
+        <rdfs:domain rdf:resource="#Contact"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+        <rdfs:subPropertyOf rdf:resource="#hasData"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#hasZipCode -->
+
+    <owl:DatatypeProperty rdf:about="#hasZipCode">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="#Contact"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+        <rdfs:subPropertyOf rdf:resource="#hasData"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#Accommodation -->
+
+    <owl:Class rdf:about="#Accommodation">
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >A place to stay for tourists.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#AccommodationRating -->
+
+    <owl:Class rdf:about="#AccommodationRating">
+        <owl:disjointWith rdf:resource="#Destination"/>
+        <owl:disjointWith rdf:resource="#Accommodation"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >Consists of exactly three individuals.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#Activity -->
+
+    <owl:Class rdf:about="#Activity">
+        <owl:disjointWith rdf:resource="#Accommodation"/>
+        <owl:disjointWith rdf:resource="#AccommodationRating"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#Adventure -->
+
+    <owl:Class rdf:about="#Adventure">
+        <rdfs:subClassOf rdf:resource="#Activity"/>
+        <owl:disjointWith rdf:resource="#Sports"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#BackpackersDestination -->
+
+    <owl:Class rdf:about="#BackpackersDestination">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="#hasActivity"/>
+                        <owl:someValuesFrom>
+                            <owl:Class>
+                                <owl:unionOf rdf:parseType="Collection">
+                                    <rdf:Description rdf:about="#Adventure"/>
+                                    <rdf:Description rdf:about="#Sports"/>
+                                </owl:unionOf>
+                            </owl:Class>
+                        </owl:someValuesFrom>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="#hasAccommodation"/>
+                        <owl:someValuesFrom rdf:resource="#BudgetAccommodation"/>
+                    </owl:Restriction>
+                    <rdf:Description rdf:about="#Destination"/>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >A destination that provides budget accommodation and offers sport or adventure activities.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#Beach -->
+
+    <owl:Class rdf:about="#Beach">
+        <rdfs:subClassOf rdf:resource="#Destination"/>
+    </owl:Class>
+    
+    <owl:Class rdf:about="#beach">
+        <rdfs:subClassOf rdf:resource="#Destination"/>
+    </owl:Class>
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#BedAndBreakfast -->
+
+    <owl:Class rdf:about="#BedAndBreakfast">
+        <rdfs:subClassOf rdf:resource="#Accommodation"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#BudgetAccommodation -->
+
+    <owl:Class rdf:about="#BudgetAccommodation">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="#hasRating"/>
+                                <owl:hasValue rdf:resource="#OneStarRating"/>
+                            </owl:Restriction>
+                            <owl:Restriction>
+                                <owl:onProperty rdf:resource="#hasRating"/>
+                                <owl:hasValue rdf:resource="#TwoStarRating"/>
+                            </owl:Restriction>
+                        </owl:unionOf>
+                    </owl:Class>
+                    <rdf:Description rdf:about="#Accommodation"/>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >Accommodation that has either one or two star rating.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#BudgetHotelDestination -->
+
+    <owl:Class rdf:about="#BudgetHotelDestination">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="#hasAccommodation"/>
+                        <owl:someValuesFrom>
+                            <owl:Class>
+                                <owl:intersectionOf rdf:parseType="Collection">
+                                    <rdf:Description rdf:about="#BudgetAccommodation"/>
+                                    <rdf:Description rdf:about="#Hotel"/>
+                                </owl:intersectionOf>
+                            </owl:Class>
+                        </owl:someValuesFrom>
+                    </owl:Restriction>
+                    <rdf:Description rdf:about="#Destination"/>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >A destination with a hotel that is also a budget accommodation.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#BunjeeJumping -->
+
+    <owl:Class rdf:about="#BunjeeJumping">
+        <rdfs:subClassOf rdf:resource="#Adventure"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#Campground -->
+
+    <owl:Class rdf:about="#Campground">
+        <rdfs:subClassOf rdf:resource="#Accommodation"/>
+        <owl:disjointWith rdf:resource="#BedAndBreakfast"/>
+        <owl:disjointWith rdf:resource="#Hotel"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#Capital -->
+
+    <owl:Class rdf:about="#Capital">
+        <rdfs:subClassOf rdf:resource="#City"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#hasActivity"/>
+                <owl:someValuesFrom rdf:resource="#Museums"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#City -->
+
+    <owl:Class rdf:about="#City">
+        <rdfs:subClassOf rdf:resource="#UrbanArea"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#hasAccommodation"/>
+                <owl:someValuesFrom rdf:resource="#LuxuryHotel"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#Contact -->
+
+    <owl:Class rdf:about="#Contact">
+        <owl:disjointWith rdf:resource="#Activity"/>
+        <owl:disjointWith rdf:resource="#Accommodation"/>
+        <owl:disjointWith rdf:resource="#Destination"/>
+        <owl:disjointWith rdf:resource="#AccommodationRating"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#Country -->
+
+    <owl:Class rdf:about="#Country">
+        <rdfs:subClassOf rdf:resource="#Destination"/>
+        <rdfs:comment
+            >Aligns with Country in currency.owl</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#Destination -->
+
+    <owl:Class rdf:about="#Destination"/>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#FamilyDestination -->
+
+    <owl:Class rdf:about="#FamilyDestination">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="#hasAccommodation"/>
+                        <owl:minCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:minCardinality>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="#hasActivity"/>
+                        <owl:minCardinality rdf:datatype="&xsd;nonNegativeInteger">2</owl:minCardinality>
+                    </owl:Restriction>
+                    <rdf:Description rdf:about="#Destination"/>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >A destination with at least one accommodation and at least 2 activities.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#Farmland -->
+
+    <owl:Class rdf:about="#Farmland">
+        <rdfs:subClassOf rdf:resource="#RuralArea"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#Hiking -->
+
+    <owl:Class rdf:about="#Hiking">
+        <rdfs:subClassOf rdf:resource="#Sports"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#Hotel -->
+
+    <owl:Class rdf:about="#Hotel">
+        <rdfs:subClassOf rdf:resource="#Accommodation"/>
+        <owl:disjointWith rdf:resource="#BedAndBreakfast"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#LuxuryHotel -->
+
+    <owl:Class rdf:about="#LuxuryHotel">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#Hotel"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="#hasRating"/>
+                        <owl:hasValue rdf:resource="#ThreeStarRating"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="#Hotel"/>
+        <owl:disjointWith rdf:resource="#BudgetAccommodation"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#Museums -->
+
+    <owl:Class rdf:about="#Museums">
+        <rdfs:subClassOf rdf:resource="#Sightseeing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#NationalPark -->
+
+    <owl:Class rdf:about="#NationalPark">
+        <rdfs:subClassOf rdf:resource="#RuralArea"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#hasAccommodation"/>
+                <owl:someValuesFrom rdf:resource="#Campground"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#hasActivity"/>
+                <owl:someValuesFrom rdf:resource="#Hiking"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf rdf:resource="#Destination"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#QuietDestination -->
+
+    <owl:Class rdf:about="#QuietDestination">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#Destination"/>
+                    <owl:Class>
+                        <owl:complementOf rdf:resource="#FamilyDestination"/>
+                    </owl:Class>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >A destination that is not frequented by noisy families.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#Relaxation -->
+
+    <owl:Class rdf:about="#Relaxation">
+        <rdfs:subClassOf rdf:resource="#Activity"/>
+        <owl:disjointWith rdf:resource="#Sports"/>
+        <owl:disjointWith rdf:resource="#Sightseeing"/>
+        <owl:disjointWith rdf:resource="#Adventure"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#RetireeDestination -->
+
+    <owl:Class rdf:about="#RetireeDestination">
+        <rdfs:subClassOf rdf:resource="#Destination"/>
+        <rdfs:comment rdf:datatype="&xsd;string"
+            >A destination with at least one three star accommodation and sightseeing opportunities.</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#RuralArea -->
+
+    <owl:Class rdf:about="#RuralArea">
+        <rdfs:subClassOf rdf:resource="#Destination"/>
+        <owl:disjointWith rdf:resource="#UrbanArea"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#Safari -->
+
+    <owl:Class rdf:about="#Safari">
+        <rdfs:subClassOf rdf:resource="#Adventure"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#Sightseeing -->
+
+    <owl:Class rdf:about="#Sightseeing">
+        <rdfs:subClassOf rdf:resource="#Activity"/>
+        <owl:disjointWith rdf:resource="#Sports"/>
+        <owl:disjointWith rdf:resource="#Adventure"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#Sports -->
+
+    <owl:Class rdf:about="#Sports">
+        <rdfs:subClassOf rdf:resource="#Activity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#Sunbathing -->
+
+    <owl:Class rdf:about="#Sunbathing">
+        <rdfs:subClassOf rdf:resource="#Relaxation"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#Surfing -->
+
+    <owl:Class rdf:about="#Surfing">
+        <rdfs:subClassOf rdf:resource="#Sports"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#Town -->
+
+    <owl:Class rdf:about="#Town">
+        <rdfs:subClassOf rdf:resource="#UrbanArea"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#UrbanArea -->
+
+    <owl:Class rdf:about="#UrbanArea">
+        <rdfs:subClassOf rdf:resource="#Destination"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#Yoga -->
+
+    <owl:Class rdf:about="#Yoga">
+        <rdfs:subClassOf rdf:resource="#Relaxation"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#Thing -->
+
+    <owl:Class rdf:about="&owl;Thing"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#OneStarRating -->
+
+    <AccommodationRating rdf:about="#OneStarRating"/>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#ThreeStarRating -->
+
+    <AccommodationRating rdf:about="#ThreeStarRating"/>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#TwoStarRating -->
+
+    <AccommodationRating rdf:about="#TwoStarRating"/>
+
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDifferent"/>
+        <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="#ThreeStarRating"/>
+            <rdf:Description rdf:about="#TwoStarRating"/>
+        </owl:distinctMembers>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDifferent"/>
+        <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="#OneStarRating"/>
+            <rdf:Description rdf:about="#TwoStarRating"/>
+        </owl:distinctMembers>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDifferent"/>
+        <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="#ThreeStarRating"/>
+            <rdf:Description rdf:about="#OneStarRating"/>
+        </owl:distinctMembers>
+    </rdf:Description>
+</rdf:RDF>

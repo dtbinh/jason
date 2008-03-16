@@ -19,6 +19,9 @@
  */
 package jasdl.util;
 
+import jason.asSyntax.Literal;
+import jason.asSyntax.Trigger;
+
 
 public class Common {
 
@@ -42,4 +45,19 @@ public class Common {
 			return text;
 		}
 	}
+	
+	/**
+	 * Probably should be a part of jason's Trigger class?
+	 * @param trigger
+	 * @return
+	 */
+	public static Trigger.TEOperator getTEOp(Trigger trigger){
+		if(trigger.isAddition()){
+			return Trigger.TEOperator.add;
+		}else{
+			return Trigger.TEOperator.del;
+		}
+	}
+	
+
 }

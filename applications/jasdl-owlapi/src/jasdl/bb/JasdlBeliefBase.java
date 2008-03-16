@@ -97,7 +97,7 @@ public class JasdlBeliefBase extends DefaultBeliefBase{
 
 	@Override
 	public Iterator<Literal> getRelevant(Literal l) {		
-		getLogger().info("Getting relevancies for "+l);
+		getLogger().fine("Getting relevancies for "+l);
 		Set<Literal> relevant = new HashSet<Literal>();
 		try{			
 			SELiteral sl = agent.getSELiteralFactory().create(l);
@@ -118,7 +118,7 @@ public class JasdlBeliefBase extends DefaultBeliefBase{
 				
 				relevant.add(found);
 			}
-			getLogger().info("... found: "+relevant);
+			getLogger().fine("... found: "+relevant);
 		}catch(NotEnrichedException e){
 			return super.getRelevant(l); // semantically-naive, use standard Jason mechanisms
 		}catch(Exception e){

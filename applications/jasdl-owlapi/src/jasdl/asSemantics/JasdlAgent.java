@@ -1,5 +1,6 @@
 package jasdl.asSemantics;
 
+import jasdl.asSyntax.JasdlPlanLibrary;
 import jasdl.bb.JasdlBeliefBase;
 import jasdl.bridge.ToAxiomConverter;
 import jasdl.bridge.ToSELiteralConverter;
@@ -7,7 +8,6 @@ import jasdl.bridge.alias.AliasManager;
 import jasdl.bridge.label.LabelManager;
 import jasdl.bridge.seliteral.SELiteralFactory;
 import jasdl.util.JasdlException;
-import jasdl.util.UnknownMappingException;
 import jason.JasonException;
 import jason.architecture.AgArch;
 import jason.asSemantics.TransitionSystem;
@@ -23,7 +23,6 @@ import jmca.asSemantics.JmcaAgent;
 import org.mindswap.pellet.PelletOptions;
 import org.mindswap.pellet.owlapi.Reasoner;
 import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyManager;
@@ -52,6 +51,8 @@ public class JasdlAgent extends JmcaAgent {
 		reasoner = new Reasoner(ontologyManager);
 		reasoner.getKB().setDoExplanation( true );
 		
+		// override plan library
+		setPL( new JasdlPlanLibrary(this) );
 	}
 	
 	
