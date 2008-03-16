@@ -1,6 +1,9 @@
 <project basedir="." default="jar" name="jasdl">
+	<property name="source.dir" value="${basedir}/src" />
 	<property name="build.dir" value="${basedir}/bin" />
+	<property name="apidocs.dir" value="${basedir}/doc/api" />
 	<property name="jar.file" value="${basedir}/lib/jasdl.jar" />
+	
 
 	<path id="project.classpath">
 		<pathelement location="../../lib/jason.jar"/>
@@ -33,6 +36,7 @@
 	<target name="clean">
 		<delete dir="${build.dir}"/>
 		<delete file="${jar.file}"/>
+		<delete dir="${apidocs.dir}"/>
 	</target>
 
 	<target name="test" depends="jar">
@@ -44,6 +48,21 @@
 			</batchtest>
 		</junit>
 		<fail message="test failed" if="test.failure" />
+	</target>
+
+	<target name="apidoc" depends="compile" >
+		<javadoc 
+			packagenames="jasdl.*"
+			destdir="${apidocs.dir}"
+			author="true"
+			version="true"
+			use="true"
+			windowtitle="Jason AgentSpeak-Description Logic">
+			<classpath refid="project.classpath"/>
+			<sourcepath>
+				<pathelement path="${source.dir}"/>
+			</sourcepath>
+		</javadoc>    
 	</target>
 
 
