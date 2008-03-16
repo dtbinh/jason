@@ -1,17 +1,20 @@
-* integration with new simulator
-  add perceptions to the agents
 * develop a team of dummies to play against
 ** what is a dummy strategy?
 * base components
-** A* (update previous to new directions)
 ** Vectors (operations)
-* Team formations (moise+ representation of the team)
+* new scenarios
+* team formations (moise+ representation of the team)
 ** Structure (we have something from the proposal)
 ** Functioning (we have noting, but I not sure we need...)
 ** computation of ideal locations of an agent to maintain a formation (can we use maintainance goal pattern?)
-* Protocols
+* protocols
 * exploration strategy
   details
 
 * herding strategy
   details
+* DONE A* (update previous to new directions)
+  CLOSED: [2008-03-16 Sun 15:29]
+* DONE integration with new simulator
+  CLOSED: [2008-03-16 Sun 15:28]
+  add perceptions to the agents
