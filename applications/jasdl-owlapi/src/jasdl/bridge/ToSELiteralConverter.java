@@ -2,6 +2,7 @@ package jasdl.bridge;
 
 import jasdl.asSemantics.JasdlAgent;
 import jasdl.bridge.alias.Alias;
+import jasdl.bridge.alias.AliasFactory;
 import jasdl.bridge.seliteral.SELiteral;
 import jasdl.bridge.xsd.XSDDataType;
 import jasdl.bridge.xsd.XSDDataTypeUtils;
@@ -169,7 +170,7 @@ public class ToSELiteralConverter {
 	 * @param alias		the alias from which to construct this SELiteral
 	 * @return			an SELiteral corresponding to alias with no arguments
 	 */
-	private Literal construct(Alias alias){
+	public Literal construct(Alias alias){
 		// construct a new literal (with no terms) based on alias
 		boolean sign = true;
 		String functor = alias.getFunctor().toString();		
@@ -183,8 +184,9 @@ public class ToSELiteralConverter {
 		// add ontology annotation
 		Structure o = new Structure(SELiteral.ONTOLOGY_ANNOTATION_FUNCTOR);
 		o.addTerm(alias.getLabel());		
-		l.addAnnot(o);
+		l.addAnnot(o);		
 		
 		return l;
 	}
+
 }

@@ -4,9 +4,7 @@ import jasdl.asSemantics.JasdlAgent;
 import jasdl.bridge.seliteral.SELiteral;
 import jasdl.bridge.seliteral.SELiteralAllDifferentAssertion;
 import jasdl.util.NotEnrichedException;
-import jason.asSyntax.ListTerm;
 import jason.asSyntax.Literal;
-import jason.asSyntax.Term;
 import jason.bb.DefaultBeliefBase;
 
 import java.util.HashSet;
@@ -18,6 +16,8 @@ import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLDifferentIndividualsAxiom;
 import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLIndividualAxiom;
+import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owl.model.RemoveAxiom;
 
 public class JasdlBeliefBase extends DefaultBeliefBase{
 	
@@ -25,14 +25,23 @@ public class JasdlBeliefBase extends DefaultBeliefBase{
 
 	@Override
 	public boolean add(Literal l) {
-		getLogger().info("Adding "+l);
+		getLogger().fine("Adding "+l);
 		try{
 			SELiteral sl = agent.getSELiteralFactory().create(l);
+			OWLOntology ontology = sl.getOntology();
 			OWLIndividualAxiom axiom = sl.createAxiom();
-			getLogger().info("... as axiom: "+axiom);
-			AddAxiom change = new AddAxiom(sl.getOntology(), axiom);
-			agent.getOntologyManager().applyChange(change);
+			getLogger().fine("... as axiom: "+axiom);
+			AddAxiom add = new AddAxiom(ontology, axiom);
+			agent.getOntologyManager().applyChange(add);
 			agent.getReasoner().refresh();
+			
+			if(!agent.getReasoner().isConsistent()){
+				RemoveAxiom rem = new RemoveAxiom(ontology, axiom);
+				agent.getOntologyManager().applyChange(rem);
+				agent.getReasoner().refresh();
+				return false;
+			}
+			
 			return true;
 		}catch(NotEnrichedException e){			
 			return super.add(l); // semantically-naive, use standard Jason mechanisms
@@ -44,12 +53,53 @@ public class JasdlBeliefBase extends DefaultBeliefBase{
 	}
 	
 	
+	
+	@Override
+	public boolean remove(Literal l) {
+		getLogger().fine("Removing "+l);
+		try{
+			SELiteral sl = agent.getSELiteralFactory().create(l);
+			OWLOntology ontology = sl.getOntology();
+			OWLIndividualAxiom axiom = sl.createAxiom();
+			getLogger().fine("... as axiom: "+axiom);
+			RemoveAxiom rem = new RemoveAxiom(ontology, axiom);
+			agent.getOntologyManager().applyChange(rem);
+			agent.getReasoner().refresh();
+			return true;
+		}catch(NotEnrichedException e){			
+			return super.add(l); // semantically-naive, use standard Jason mechanisms
+		}catch(Exception e){
+			getLogger().warning("Exception caught removing SELiteral "+l+" from belief base: ");
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	@Override
+	public Literal contains(Literal l) {		
+		try {
+			agent.getSELiteralFactory().create(l); // just to check for enrichement
+			Iterator<Literal> it = getRelevant(l);
+			if(it.hasNext()){
+				return it.next();
+			}else{
+				return null;
+			}
+		}catch(NotEnrichedException e){
+			return super.contains(l); // semantically-naive, use standard Jason mechanisms
+		}catch(Exception e){
+			getLogger().warning("Exception caught while checking if bb contains SELiteral "+l+". Reason: "+e);
+			return null;
+		}
+	}	
+	
+	
 
 	@Override
-	public Iterator<Literal> getRelevant(Literal l) {
+	public Iterator<Literal> getRelevant(Literal l) {		
 		getLogger().info("Getting relevancies for "+l);
-		try{
-			Set<Literal> relevant = new HashSet<Literal>();
+		Set<Literal> relevant = new HashSet<Literal>();
+		try{			
 			SELiteral sl = agent.getSELiteralFactory().create(l);
 			Set<OWLIndividualAxiom> axioms = sl.getAxioms();
 			for(OWLIndividualAxiom axiom : axioms){
@@ -69,14 +119,13 @@ public class JasdlBeliefBase extends DefaultBeliefBase{
 				relevant.add(found);
 			}
 			getLogger().info("... found: "+relevant);
-			return relevant.iterator();
 		}catch(NotEnrichedException e){
 			return super.getRelevant(l); // semantically-naive, use standard Jason mechanisms
 		}catch(Exception e){
 			getLogger().warning("Exception caught getting relevancies for SELiteral "+l+" to belief base: ");
-			e.printStackTrace();
-			return null;
+			e.printStackTrace();			
 		}
+		return relevant.iterator();
 	}
 
 
