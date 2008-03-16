@@ -8,6 +8,7 @@ import jasdl.bridge.alias.AliasFactory;
 import jasdl.bridge.alias.MappingStrategy;
 import jasdl.util.DuplicateMappingException;
 import jasdl.util.JasdlException;
+import jasdl.util.UnknownMappingException;
 import jason.asSyntax.Atom;
 import jason.runtime.Settings;
 
@@ -20,6 +21,7 @@ import java.util.Vector;
 import org.mindswap.pellet.owlapi.Reasoner;
 import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owl.model.OWLOntologyCreationException;
 
 public class JasdlConfigurator {
 	private static String MAS2J_PREFIX					= "jasdl";
@@ -74,12 +76,14 @@ public class JasdlConfigurator {
 				if(split.length == 2){
 					Alias alias = AliasFactory.INSTANCE.create(new Atom(split[0].trim()), label);
 					URI uri = URI.create(ontology.getURI() + "#" + split[1].trim());
-					OWLEntity entity = agent.toEntity(ontology, uri);
+					OWLEntity entity = toEntity(ontology, uri);
 					agent.getAliasManager().put(alias, entity);
 				}
 			}
 		}
 	}
+	
+
 	
 	
 	/**
@@ -92,17 +96,19 @@ public class JasdlConfigurator {
 			List<MappingStrategy> strategies = new Vector<MappingStrategy>();
 			String[] strategyNames = splitUserParameter(stts, MAS2J_PREFIX + "_" + label + MAS2J_MAPPING_STRATEGIES);
 			for(String strategyName : strategyNames){
-				try {
-					Class cls = Class.forName(strategyName);
-					Constructor ct = cls.getConstructor(new Class[] {});
-					MappingStrategy strategy = (MappingStrategy)ct.newInstance(new Object[] {});
-					if(strategy == null){
-						throw new JasdlException("Unknown mapping strategy class: "+strategy);
-					}else{
-						strategies.add(strategy);
+				if(strategyName.length() > 0){
+					try {
+						Class cls = Class.forName(strategyName);
+						Constructor ct = cls.getConstructor(new Class[] {});
+						MappingStrategy strategy = (MappingStrategy)ct.newInstance(new Object[] {});
+						if(strategy == null){
+							throw new JasdlException("Unknown mapping strategy class: "+strategy);
+						}else{
+							strategies.add(strategy);
+						}
+					}catch (Throwable e) {
+						throw new JasdlException("Error instantiating mapping strategy "+strategyName+". Reason: "+e);
 					}
-				}catch (Throwable e) {
-					throw new JasdlException("Error instantiating mapping strategy "+strategyName+". Reason: "+e);
 				}
 			}
 			
@@ -141,8 +147,19 @@ public class JasdlConfigurator {
 	 */
 	private void applyMiscMappings() throws JasdlException{
 		
-		agent.getAliasManager().put( AliasFactory.INSTANCE.thing(), agent.getOntologyManager().getOWLDataFactory().getOWLThing());
-		agent.getAliasManager().put( AliasFactory.INSTANCE.nothing(), agent.getOntologyManager().getOWLDataFactory().getOWLNothing());
+		
+		// create a "placeholder" ontology so we can safely map thing and nothing without actually loading the ontology
+		try {
+			OWLOntology ontology = agent.getOntologyManager().createOntology( URI.create("http://www.w3.org/2002/07/owl") );
+			agent.getLabelManager().put(AliasFactory.OWL_THING.getLabel(), ontology);
+			agent.getReasoner().loadOntology(ontology);
+		
+		} catch (OWLOntologyCreationException e) {
+			throw new JasdlException("Error instantiating blank OWL ontology placeholder. Reason: "+e);
+		}
+		
+		agent.getAliasManager().put( AliasFactory.OWL_THING, agent.getOntologyManager().getOWLDataFactory().getOWLThing());
+		agent.getAliasManager().put( AliasFactory.OWL_NOTHING, agent.getOntologyManager().getOWLDataFactory().getOWLNothing());
 		
 		for(Atom label : agent.getLabelManager().getLefts()){
 			agent.getAliasManager().put( AliasFactory.INSTANCE.all_different(label), new AllDifferentPlaceholder(label)); // must be new instance to avoid duplicate mapping exceptions
@@ -194,4 +211,42 @@ public class JasdlConfigurator {
 	private String[] splitUserParameter(Settings stts, String name){
 		return splitUserParameter(stts, name, DELIM);
 	}	
+	
+	
+	
+	
+	/**
+	 * Convenience method to (polymorphically) create an entity from resource URI (if known).
+	 * TODO: where should this sit?
+	 * @param uri	URI of resource to create entity from
+	 * @return		entity identified by URI
+	 * @throws UnknownReferenceException	if OWLObject not known
+	 */
+	private OWLEntity toEntity(OWLOntology ontology, URI uri) throws UnknownMappingException{
+		// clumsy approach, but I can't find any way of achieving this polymorphically (i.e. retrieve an OWLObject from a URI) using OWL-API
+		OWLEntity entity;
+		
+		/*
+		// TODO: make from uri only version once OWLOntologyManager#getOntology(URI) is fixed
+		URI ns = URI.create(uri.getScheme() + uri.getSchemeSpecificPart());		
+		OWLOntology ontology;
+		try {
+			ontology = ontologyManager.getOntology(ns);
+		} catch (UnknownOWLOntologyException e) {
+			throw new UnknownMappingException("Unknown ontology URI "+ns);
+		}
+		*/
+		if(ontology.containsClassReference(uri)){
+			entity = agent.getOntologyManager().getOWLDataFactory().getOWLClass(uri);
+		}else if (ontology.containsObjectPropertyReference(uri)){	
+			entity = agent.getOntologyManager().getOWLDataFactory().getOWLObjectProperty(uri);
+		}else if (ontology.containsDataPropertyReference(uri)){	
+			entity = agent.getOntologyManager().getOWLDataFactory().getOWLDataProperty(uri);
+		}else if (ontology.containsIndividualReference(uri)){
+			entity = agent.getOntologyManager().getOWLDataFactory().getOWLIndividual(uri);
+		}else{
+			throw new UnknownMappingException("Unknown ontology resource URI: "+uri);
+		}
+		return entity;
+	}			
 }

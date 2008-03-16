@@ -53,7 +53,7 @@ public class JasdlBeliefBase extends DefaultBeliefBase{
 			SELiteral sl = agent.getSELiteralFactory().create(l);
 			Set<OWLIndividualAxiom> axioms = sl.getAxioms();
 			for(OWLIndividualAxiom axiom : axioms){
-				SELiteral found = agent.getSELiteralConverter().convert(axiom);
+				SELiteral found = agent.getToSELiteralConverter().convert(axiom);
 				
 				// hack, gets around non-consistent ordering of OWLDifferentIndividualAxiom individuals
 				// -- just check list membership is equivalent (i.e. treat as sets)

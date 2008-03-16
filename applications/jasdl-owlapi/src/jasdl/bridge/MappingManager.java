@@ -7,17 +7,19 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.logging.Logger;
 
+/**
+ * A bi-directional hash map that enforces 1 to 1 mappings.
+ * 
+ * @author Tom Klapiscak
+ *
+ * @param <X>
+ * @param <Y>
+ */
 public class MappingManager<X extends Object, Y extends Object> {
 	private Logger logger = Logger.getLogger(this.getClass().toString());
 	
-	/**
-	 * Maps aliases to entities
-	 */
 	private HashMap<X, Y> xToYMap;
 	
-	/**
-	 * Maps entities to aliases
-	 */
 	private HashMap<Y, X> yToXMap;
 	
 	public MappingManager(){

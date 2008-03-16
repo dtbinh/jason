@@ -25,10 +25,27 @@ import org.semanticweb.owl.model.OWLIndividualAxiom;
 import org.semanticweb.owl.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owl.model.OWLTypedConstant;
 
-public class SELiteralConverter {
+
+/**
+ * Accepts an arbitrary OWLIndividualAxiom and, depending on its type, creates a SE-Literal encoding of it.
+ * Will always result in a ground SELiteral (since OWLIndividualAxioms must always be ground)<p>
+ * For example:
+ * <ul>
+ * 	<li>ClassAssertion(Hotel hilton) -> hotel(hilton)[o(travel)]</li>
+ *  <li>ObjectPropertyAssertion(hasRating hilton ThreeStarRating) -> hasRating(hilton,threeStarRating)[o(travel)]</li>
+ *  <li>DifferentIndividuals( fourSeasons hilton ) -> all_different([hilton,fourSeasons])[o(travel)]</li>  
+ * </ul>
+ * @author Tom Klapiscak
+ *
+ */
+public class ToSELiteralConverter {
+	
+	/**
+	 * The agent this converter is working on behalf of. Required for access to managers.
+	 */
 	private JasdlAgent agent;
 	
-	public SELiteralConverter(JasdlAgent agent){
+	public ToSELiteralConverter(JasdlAgent agent){
 		this.agent = agent;
 	}
 	
@@ -37,7 +54,7 @@ public class SELiteralConverter {
 	 * Polymorphically applies appropriate factory method depending on specialisation of axiom
 	 * @param axiom
 	 * @return
-	 * @throws JasdlException	if specialisation of axiom is not of an appropriate type for conversion to a SE-Literal
+	 * @throws JasdlException	if specialisation of axiom is not of an appropriate type for conversion to a SELiteral
 	 */
 	public SELiteral convert(OWLIndividualAxiom axiom) throws JasdlException{
 		if(axiom instanceof OWLClassAssertionAxiom){
@@ -53,6 +70,12 @@ public class SELiteralConverter {
 		}
 	}	
 	
+	/**
+	 * Convert an axiom asserting class membership to a unary SELiteral
+	 * @param axiom		the axiom to convert
+	 * @return			a unary SELiteral encoding of axiom
+	 * @throws JasdlException
+	 */
 	public SELiteral convert(OWLClassAssertionAxiom axiom) throws JasdlException{		
 		Alias alias = agent.getAliasManager().getLeft(axiom.getDescription());
 		Literal l = construct(alias);
@@ -61,6 +84,12 @@ public class SELiteralConverter {
 		return agent.getSELiteralFactory().create(l);		
 	}
 	
+	/**
+	 * Convert an axiom asserting that two individuals are related by an object property to a binary SELiteral
+	 * @param axiom		the axiom to convert
+	 * @return			an binary SELiteral encoding of axiom
+	 * @throws JasdlException
+	 */	
 	public SELiteral convert(OWLObjectPropertyAssertionAxiom axiom) throws JasdlException{		
 		Alias alias = agent.getAliasManager().getLeft(axiom.getProperty().asOWLObjectProperty());
 		Literal l = construct(alias);
@@ -70,7 +99,13 @@ public class SELiteralConverter {
 		l.addTerm(o);
 		return agent.getSELiteralFactory().create(l);		
 	}
-	
+
+	/**
+	 * Convert an axiom asserting that two individuals are related by a data property to a binary SELiteral
+	 * @param axiom		the axiom to convert
+	 * @return			a binary SELiteral encoding of axiom
+	 * @throws JasdlException
+	 */	
 	public SELiteral convert(OWLDataPropertyAssertionAxiom axiom) throws JasdlException{		
 		Alias alias = agent.getAliasManager().getLeft(axiom.getProperty().asOWLDataProperty());
 		Literal l = construct(alias);
@@ -102,6 +137,12 @@ public class SELiteralConverter {
 		return agent.getSELiteralFactory().create(l);		
 	}
 	
+	/**
+	 * Convert an axiom asserting that a set of individuals are distinct to a unary SELiteral (whose term is a list and functor is "all_different")
+	 * @param axiom		the axiom to convert
+	 * @return			a unary SELiteral (whose term is a list and functor is "all_different") encoding of axiom
+	 * @throws JasdlException
+	 */	
 	public SELiteral convert(OWLDifferentIndividualsAxiom axiom) throws JasdlException{
 		ListTerm list = new ListTermImpl(); // TODO: override this object's unify method to perform set, not list, unification?		
 		Set<OWLIndividual> is = axiom.getIndividuals();
@@ -122,7 +163,12 @@ public class SELiteralConverter {
 	}
 	
 
-	
+	/**
+	 * Common SELiteral construction code: sets functor, negation (based on presence of "~" prefix) and ontology annotation.
+	 * Results in a SELiteral with no arguments.
+	 * @param alias		the alias from which to construct this SELiteral
+	 * @return			an SELiteral corresponding to alias with no arguments
+	 */
 	private Literal construct(Alias alias){
 		// construct a new literal (with no terms) based on alias
 		boolean sign = true;

@@ -1,8 +1,8 @@
 package jasdl.asSemantics;
 
 import jasdl.bb.JasdlBeliefBase;
-import jasdl.bridge.AxiomConverter;
-import jasdl.bridge.SELiteralConverter;
+import jasdl.bridge.ToAxiomConverter;
+import jasdl.bridge.ToSELiteralConverter;
 import jasdl.bridge.alias.AliasManager;
 import jasdl.bridge.label.LabelManager;
 import jasdl.bridge.seliteral.SELiteralFactory;
@@ -34,8 +34,8 @@ public class JasdlAgent extends JmcaAgent {
 	private AliasManager aliasManager;
 	private LabelManager labelManager;
 	private SELiteralFactory seLiteralFactory;
-	private SELiteralConverter seLiteralConverter;	
-	private AxiomConverter axiomConverter;
+	private ToSELiteralConverter toSELiteralConverter;	
+	private ToAxiomConverter toAxiomConverter;
 	
 	public JasdlAgent(){
 		super();
@@ -44,8 +44,8 @@ public class JasdlAgent extends JmcaAgent {
 		labelManager = new LabelManager();
 		ontologyManager = OWLManager.createOWLOntologyManager();
 		seLiteralFactory = new SELiteralFactory(this);
-		axiomConverter = new AxiomConverter(this);
-		seLiteralConverter = new SELiteralConverter(this);
+		toAxiomConverter = new ToAxiomConverter(this);
+		toSELiteralConverter = new ToSELiteralConverter(this);
 		
 		// instantiate (Pellet) reasoner
 		PelletOptions.USE_TRACING = true;
@@ -127,52 +127,19 @@ public class JasdlAgent extends JmcaAgent {
 
 
 
-	public AxiomConverter getAxiomConverter() {
-		return axiomConverter;
+	public ToAxiomConverter getToAxiomConverter() {
+		return toAxiomConverter;
 	}
 	
 	
 
 
 
-	public SELiteralConverter getSELiteralConverter() {
-		return seLiteralConverter;
+	public ToSELiteralConverter getToSELiteralConverter() {
+		return toSELiteralConverter;
 	}
 
 
 
-	/**
-	 * (Polymorphically) create an entity from resource URI (if known).
-	 * TODO: where should this sit?
-	 * @param uri	URI of resource to create entity from
-	 * @return		entity identified by URI
-	 * @throws UnknownReferenceException	if OWLObject not known
-	 */
-	public OWLEntity toEntity(OWLOntology ontology, URI uri) throws UnknownMappingException{
-		// clumsy approach, but I can't find any way of achieving this polymorphically (i.e. retrieve an OWLObject from a URI) using OWL-API
-		OWLEntity entity;
-		
-		/*
-		// TODO: make from uri only version once OWLOntologyManager#getOntology(URI) is fixed
-		URI ns = URI.create(uri.getScheme() + uri.getSchemeSpecificPart());		
-		OWLOntology ontology;
-		try {
-			ontology = ontologyManager.getOntology(ns);
-		} catch (UnknownOWLOntologyException e) {
-			throw new UnknownMappingException("Unknown ontology URI "+ns);
-		}
-		*/
-		if(ontology.containsClassReference(uri)){
-			entity = ontologyManager.getOWLDataFactory().getOWLClass(uri);
-		}else if (ontology.containsObjectPropertyReference(uri)){	
-			entity = ontologyManager.getOWLDataFactory().getOWLObjectProperty(uri);
-		}else if (ontology.containsDataPropertyReference(uri)){	
-			entity = ontologyManager.getOWLDataFactory().getOWLDataProperty(uri);
-		}else if (ontology.containsIndividualReference(uri)){
-			entity = ontologyManager.getOWLDataFactory().getOWLIndividual(uri);
-		}else{
-			throw new UnknownMappingException("Unknown ontology resource URI: "+uri);
-		}
-		return entity;
-	}	
+
 }

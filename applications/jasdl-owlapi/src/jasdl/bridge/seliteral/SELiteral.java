@@ -24,7 +24,8 @@ import org.semanticweb.owl.model.OWLObject;
 import org.semanticweb.owl.model.OWLOntology;
 
 /**
- * Extends a Jason literal to provide ontology-related functionality 
+ * Extends a Jason literal to provide ontology-related functionality. There is a specialisation of this class
+ * for each type of SELiteral JASDL supports.
  * @author Tom Klapiscak
  *
  */
@@ -97,8 +98,11 @@ public class SELiteral extends Literal{
 	}
 	
 	/**
-	 * Convenience method, calls AliasManager.
-	 * @return
+	 * Convenience method, calls AliasManager to retrieve the ontological object referred to by the alias representing
+	 * this SELiteral. Special case is made for unmapped strongly-negated class assertions. Such SELiterals are identified by 
+	 * the "~" prefix to their functor. In this case the "unegated" ontological object is obtained, complemented and mapped
+	 * to the negated alias for future use.
+	 * @return	 the ontological object referred to by the alias representing this SELiteral
 	 * @throws UnknownMappingException
 	 */
 	public OWLObject toOWLObject() throws JasdlException{
@@ -106,10 +110,12 @@ public class SELiteral extends Literal{
 			return agent.getAliasManager().getRight(this.toAlias());
 		}catch(UnknownMappingException e){
 			Alias alias = toAlias();
-			if(alias.getFunctor().toString().startsWith("~")){
+			if(alias.getFunctor().toString().startsWith("~")){								
 				Atom negatedFunctor = new Atom(alias.getFunctor().toString().substring(1));
 				Alias negatedAlias = AliasFactory.INSTANCE.create( negatedFunctor, alias.getLabel());
-				agent.getLogger().info("negated functor: "+negatedFunctor+" negated alias: "+negatedAlias);
+				if(negatedAlias.equals(AliasFactory.OWL_THING) || negatedAlias.equals(AliasFactory.OWL_NOTHING)){
+					throw new InvalidSELiteralException("owl:thing and owl:nothing should not be negated");
+				}
 				OWLDescription negated = agent.getOntologyManager().getOWLDataFactory().getOWLObjectComplementOf(
 						(OWLClass)agent.getAliasManager().getRight(negatedAlias));
 				agent.getAliasManager().put(alias, negated);
@@ -125,14 +131,14 @@ public class SELiteral extends Literal{
 	 * @return
 	 */
 	public OWLIndividualAxiom createAxiom() throws JasdlException{
-		return agent.getAxiomConverter().convert(this);
+		return agent.getToAxiomConverter().create(this);
 	}
 	/**
 	 * Convenience method, calls AxiomFactory
 	 * @return
 	 */
 	public Set<OWLIndividualAxiom> getAxioms() throws JasdlException{
-		return agent.getAxiomConverter().convertAndCheck(this);
+		return agent.getToAxiomConverter().retrieve(this);
 	}
 	
 	public Atom getOntologyLabel(){
