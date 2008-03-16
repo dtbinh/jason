@@ -14,6 +14,7 @@ import jason.runtime.Settings;
 
 import java.lang.reflect.Constructor;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -76,7 +77,7 @@ public class JasdlConfigurator {
 				if(split.length == 2){
 					Alias alias = AliasFactory.INSTANCE.create(new Atom(split[0].trim()), label);
 					URI uri = URI.create(ontology.getURI() + "#" + split[1].trim());
-					OWLEntity entity = toEntity(ontology, uri);
+					OWLEntity entity = agent.toEntity(uri);
 					agent.getAliasManager().put(alias, entity);
 				}
 			}
@@ -147,18 +148,11 @@ public class JasdlConfigurator {
 	 */
 	private void applyMiscMappings() throws JasdlException{
 		
-		
 		// create a "placeholder" ontology so we can safely map thing and nothing without actually loading the ontology
-		try {
-			URI uri = URI.create("http://www.w3.org/2002/07/owl");
-			OWLOntology ontology = agent.getOntologyManager().createOntology( uri );
-			agent.getLabelManager().put(AliasFactory.OWL_THING.getLabel(), ontology);
-			agent.getPhysicalURIManager().put(ontology, uri);
-			agent.getReasoner().loadOntology(ontology);
+		agent.createOntology(AliasFactory.OWL_THING.getLabel(), URI.create("http://www.w3.org/2002/07/owl"));
 		
-		} catch (OWLOntologyCreationException e) {
-			throw new JasdlException("Error instantiating blank OWL ontology placeholder. Reason: "+e);
-		}
+		// create a personal ontology for (axioms that reference) run-time defined class
+		agent.createOntology(agent.getPersonalOntologyLabel(), agent.getPersonalOntologyURI());
 		
 		agent.getAliasManager().put( AliasFactory.OWL_THING, agent.getOntologyManager().getOWLDataFactory().getOWLThing());
 		agent.getAliasManager().put( AliasFactory.OWL_NOTHING, agent.getOntologyManager().getOWLDataFactory().getOWLNothing());
@@ -217,38 +211,5 @@ public class JasdlConfigurator {
 	
 	
 	
-	/**
-	 * Convenience method to (polymorphically) create an entity from resource URI (if known).
-	 * TODO: where should this sit?
-	 * @param uri	URI of resource to create entity from
-	 * @return		entity identified by URI
-	 * @throws UnknownReferenceException	if OWLObject not known
-	 */
-	private OWLEntity toEntity(OWLOntology ontology, URI uri) throws UnknownMappingException{
-		// clumsy approach, but I can't find any way of achieving this polymorphically (i.e. retrieve an OWLObject from a URI) using OWL-API
-		OWLEntity entity;
-		
-		/*
-		// TODO: make from uri only version once OWLOntologyManager#getOntology(URI) is fixed
-		URI ns = URI.create(uri.getScheme() + uri.getSchemeSpecificPart());		
-		OWLOntology ontology;
-		try {
-			ontology = ontologyManager.getOntology(ns);
-		} catch (UnknownOWLOntologyException e) {
-			throw new UnknownMappingException("Unknown ontology URI "+ns);
-		}
-		*/
-		if(ontology.containsClassReference(uri)){
-			entity = agent.getOntologyManager().getOWLDataFactory().getOWLClass(uri);
-		}else if (ontology.containsObjectPropertyReference(uri)){	
-			entity = agent.getOntologyManager().getOWLDataFactory().getOWLObjectProperty(uri);
-		}else if (ontology.containsDataPropertyReference(uri)){	
-			entity = agent.getOntologyManager().getOWLDataFactory().getOWLDataProperty(uri);
-		}else if (ontology.containsIndividualReference(uri)){
-			entity = agent.getOntologyManager().getOWLDataFactory().getOWLIndividual(uri);
-		}else{
-			throw new UnknownMappingException("Unknown ontology resource URI: "+uri);
-		}
-		return entity;
-	}			
+			
 }

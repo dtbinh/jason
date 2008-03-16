@@ -33,10 +33,13 @@ MAS dalt08 {
 	       travel_agent 
        	   travel_agent.asl
 	       [				
-	       	jasdl_ontologies="travel",
+	       	jasdl_ontologies="travel,places",
 			jasdl_travel_uri="http://www.dur.ac.uk/t.g.klapiscak/onts/travel.owl",
 			jasdl_travel_mapping_strategies="jasdl.bridge.alias.DecapitaliseMappingStrategy",
-			jasdl_travel_mapping_manual="small_beach=beach"
+			jasdl_travel_mapping_manual="small_beach=beach",
+			
+			jasdl_places_uri="http://www.dur.ac.uk/t.g.klapiscak/onts/places.owl",
+			jasdl_places_mapping_strategies="jasdl.bridge.alias.DecapitaliseMappingStrategy"
 			
 			//,jasdl_aktors_uri="http://www.aktors.org/ontology/portal.owl",
 			//jasdl_aktors_mapping_strategies="jasdl.bridge.alias.DecapitaliseMappingStrategy"
@@ -50,8 +53,8 @@ MAS dalt08 {
        	   customer.asl
 	       [		   
 	       	jasdl_ontologies="holidays",
-			jasdl_holidays_uri="http://www.dur.ac.uk/t.g.klapiscak/onts/travel.owl",
 			//jasdl_holidays_uri="file:///home/tom/Desktop/Project/workspace/jason/applications/jasdl-owlapi/examples/travel_agent/ontologies/travel.owl",
+			jasdl_holidays_uri="http://www.dur.ac.uk/t.g.klapiscak/onts/travel.owl",
 			jasdl_holidays_mapping_strategies="jasdl.bridge.alias.DecapitaliseMappingStrategy",
 			jasdl_holidays_mapping_manual="small_beach=beach, luxuriousHotel=LuxuryHotel" // arbitrary primitive mappings handled correctly
 			

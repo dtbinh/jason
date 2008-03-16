@@ -33,7 +33,8 @@ public class SELiteralFactory {
 			if(entity instanceof OWLDescription){
 				return new SELiteralClassAssertion(sl);
 			}else if(entity instanceof AllDifferentPlaceholder){
-				if(!l.isGround()) throw new JasdlException("JASDL does not currently support unground all_different assertions such as "+l);
+				//if(!l.isGround()) throw new JasdlException("JASDL does not currently support unground all_different assertions such as "+l);
+				// TODO: can ensure this here (due to unground TG all_different literals), where should I? axiom converter?
 				if(l.negated()) throw new JasdlException("JASDL does not currently support negated all_different assertions such as "+l+", since OWL makes the UNA by default and JASDL doesn't allow this to be overridden");
 				return new SELiteralAllDifferentAssertion(sl);
 			}else{

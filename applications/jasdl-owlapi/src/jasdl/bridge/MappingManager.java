@@ -35,6 +35,7 @@ public class MappingManager<X extends Object, Y extends Object> {
 	 * @throws DuplicateMappingException	if either alias or entity is already mapped (thus breaking 1 <-> 1 constraint)
 	 */
 	public void put(X x, Y y) throws DuplicateMappingException{
+		logger.fine("mapping "+x+" <-> "+y);
 		
 		if(isKnownLeft(x)){
 			throw new DuplicateMappingException("Duplicate mapping on "+x);
@@ -72,7 +73,7 @@ public class MappingManager<X extends Object, Y extends Object> {
 	public Y getRight(X x) throws UnknownMappingException{
 		Y y = xToYMap.get(x);
 		if(y == null){
-			throw new UnknownMappingException("Unknown mapping "+y);
+			throw new UnknownMappingException("Unknown mapping "+x);
 		}
 		return y;
 	}

@@ -19,13 +19,26 @@
  */
 package jasdl.architecture;
 
+import static jasdl.architecture.JasdlAgArch.ANON_ANNOTATION_FUNCTOR;
+import static jasdl.architecture.JasdlAgArch.NAMED_ANNOTATION_FUNCTOR;
 import jasdl.asSemantics.JasdlAgent;
+import jasdl.bridge.alias.Alias;
 import jasdl.bridge.seliteral.SELiteral;
 import jasdl.util.JasdlException;
 import jasdl.util.NotEnrichedException;
+import jason.asSyntax.ListTerm;
+import jason.asSyntax.ListTermImpl;
 import jason.asSyntax.Literal;
+import jason.asSyntax.StringTerm;
 import jason.asSyntax.StringTermImpl;
 import jason.asSyntax.Structure;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.semanticweb.owl.model.OWLOntology;
 
 public class OutgoingPropContProcessingStrategy implements PropContProcessingStrategy {
 
@@ -40,12 +53,51 @@ public class OutgoingPropContProcessingStrategy implements PropContProcessingStr
 	 */
 	public Literal process(Literal l, JasdlAgent agent) throws JasdlException {
 		try{
-			SELiteral sl = new SELiteral(l, agent); // note, l might not (yet) be a valid se-literal (mappings may be performed below) so factory cannot be used	
-			sl.qualifyOntologyAnnotation();
+			SELiteral sl = new SELiteral(l, agent);	
 			
-			Structure expr = new Structure("expr");			
-			expr.addTerm(new StringTermImpl( agent.getManchesterObjectRenderer().render(sl.toOWLObject()) ));			
-			sl.addAnnot(expr);
+			StringTerm expression = new StringTermImpl( agent.getManchesterObjectRenderer().render(sl.toOWLObject()));
+			
+			
+			Alias alias = sl.toAlias();
+			if(alias.getLabel().equals(agent.getPersonalOntologyLabel())){ // do we have an anonymous run-time defined class?				
+				
+				Structure anon = new Structure(ANON_ANNOTATION_FUNCTOR);
+				anon.addTerm(expression);				
+				
+				// add set of prerequisite ontologies
+				Set<OWLOntology> prereqs = new HashSet<OWLOntology>();
+				String[] tokens = expression.toString().split(" ");
+				for(String token : tokens){
+					try {
+						URI entityURI = new URI(token);
+						URI ontologyURI = new URI(entityURI.getScheme(), entityURI.getSchemeSpecificPart(), null);
+						prereqs.add(agent.getLogicalURIManager().getLeft(ontologyURI));
+					} catch (URISyntaxException e) {	
+						// do nothing, probably a keyword
+					}
+				}
+				ListTerm list = new ListTermImpl();
+				for(OWLOntology prereq : prereqs){
+					list.add(agent.getLabelManager().getLeft(prereq));
+				}
+				anon.addTerm(list);
+				
+				l.addAnnot(anon);				
+				
+				// drop o, not needed
+				sl.dropOntologyAnnotation();				
+				
+			}else{
+				// qualify o
+				sl.qualifyOntologyAnnotation();
+				
+				// unambiguously refer to named entity
+				Structure named = new Structure(NAMED_ANNOTATION_FUNCTOR);			
+				named.addTerm(expression);			
+				sl.addAnnot(named);
+			}
+			
+			
 			
 			return sl;
 		}catch(NotEnrichedException e){

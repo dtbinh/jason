@@ -45,6 +45,15 @@
 	+hasActivity(london, scienceMuseum)[o(travel)];	
 	+hotel(travel_lodge)[o(travel)];
 	
+	+building(hilton)[o(places)];
+	
+	?place(Place)[o(places)];
+	.print(Place);
+	
+	jasdl.ia.define_class(q2, "(places:place and places:building) and travel:hotel");
+	?q2(X)[o(self)];
+	.print(X);
+	
 	.print("Completed: Updating Belief Base 1").
 
 
@@ -121,11 +130,11 @@
 	+hasActivity(butlins, butlins_yoga)[o(travel)];
 	+hasActivity(butlins, butlins_sunbathing)[o(travel)];	
 	//jasdl.ia.all_different([butlins_yoga, butlins_sunbathing], travel);	- DEPRECATED (see below)
-	+all_different([butlins_yoga, butlins_sunbathing])[o(travel), something]; // all_different now represented as an se-literal. We can now query, inspect and send these assertions
+	+all_different([butlins_yoga, butlins_sunbathing])[o(self), something]; // all_different now represented as an se-literal. We can now query, inspect and send these assertions
 	// Query below will not succeed unless butlins_yoga and butlins_sunbathing are different individuals since family destination requires min 2 *different* activities.
 	// Note: OWL doesn't make UNA and since these individuals do not belong to disjoint classes, therefore they must be explicitly asserted as different.
 	?familyDestination(butlins)[o(travel)];
-	?all_different([butlins_yoga, butlins_sunbathing, hilton])[o(travel)];
+	?all_different([butlins_yoga, butlins_sunbathing, hilton])[o(self)];
 	/* ?all_different([hilton, fourSeasons])[o(travel)]; */  // Will fail, since hilton and fourSeasons cannot be established as distinct
 	.print("Completed: all_different assertion").
 		

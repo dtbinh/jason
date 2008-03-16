@@ -19,6 +19,8 @@
  */
 package jasdl.architecture;
 
+import static jasdl.architecture.JasdlAgArch.NAMED_ANNOTATION_FUNCTOR;
+import static jasdl.architecture.JasdlAgArch.ANON_ANNOTATION_FUNCTOR;
 import jasdl.asSemantics.JasdlAgent;
 import jasdl.bridge.seliteral.SELiteral;
 import jasdl.util.JasdlException;

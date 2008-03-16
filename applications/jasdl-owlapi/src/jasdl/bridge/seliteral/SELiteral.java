@@ -37,7 +37,6 @@ public class SELiteral extends Literal{
 	protected JasdlAgent agent;
 	
 	public static String ONTOLOGY_ANNOTATION_FUNCTOR = "o";
-	public static String EXPR_ANNOTATION_FUNCTOR = "expr";
 	
 	protected Structure ontologyAnnotation;
 	
@@ -78,25 +77,12 @@ public class SELiteral extends Literal{
 			ontologyLabel = (Atom)ontologyAnnotation.getTerm(0);
 			ontology = agent.getLabelManager().getRight(ontologyLabel);
 		}else if(ontologyAnnotation.getTerm(0).isString()){
-			// Incoming SELiteral
 			parseOntologyURI(ontologyAnnotation.getTerm(0).toString());			
 		}else{
 			throw invalid;
 		}
-		
-		// look for expr annotation
-		// Do I really want expressions to be limited within a single ontology??
-		// would make things easier!
-		//Structure exprAnnotation = getAnnots(EXPR_ANNOTATION_FUNCTOR);
-				
-		
-		
-		
-		//if(!agent.getAliasManager().isKnownLeft( toAlias() )){
-		//	throw new UnknownMappingException(l+" refers to an unknown resource");
-		//}
-
 	}
+
 	
 	private void parseOntologyURI(String _uri) throws JasdlException{
 		URI uri;
@@ -109,7 +95,7 @@ public class SELiteral extends Literal{
 			ontology = agent.getPhysicalURIManager().getLeft(uri);
 			ontologyLabel = agent.getLabelManager().getLeft(ontology);
 		}catch(UnknownMappingException e){
-			// instantiate novel ontology
+			// TODO: instantiate novel ontology
 		}
 	}
 	
@@ -126,6 +112,10 @@ public class SELiteral extends Literal{
 	public void unqualifyOntologyAnnotation(){
 		ontologyAnnotation.setTerm(0, ontologyLabel);
 	}	
+	
+	public void dropOntologyAnnotation(){
+		delAnnot(ontologyAnnotation);
+	}
 	
 	
 	/**
@@ -215,8 +205,11 @@ public class SELiteral extends Literal{
 	}
 	
 	/**
-	 * Placed here for convenient (varying) usage by subclasses
-	 * Validates since terms are mutable
+	 * Attempts to fetch individual from "parent" ontologies (i.e. that referred to by ontology label of enclosing SELiteral).
+	 * If not present, attempts to fetch from personal ontology.
+	 * If not present, instantiates in personal ontology.
+	 * Placed here for convenient (varying) usage by subclasses.
+	 * Validates since terms are mutable.
 	 * @return
 	 * @throws UnknownMappingException
 	 */
@@ -225,18 +218,22 @@ public class SELiteral extends Literal{
 			throw new InvalidSELiteralException(term+" must be atomic");
 		}
 		Atom atom = (Atom)term;
-		Alias alias = AliasFactory.INSTANCE.create(atom, ontologyLabel);
 		OWLIndividual i;
 		try {
-			i = (OWLIndividual)agent.getAliasManager().getRight(alias);
-		} catch (UnknownMappingException e) {
-			// Instantiate and map the individual if not known
-			OWLOntology ontology = getOntology();
-			// Clashes (with different types of resource) don't matter thanks to OWL1.1's punning features
-			//TODO: what about clashes with individuals (different alias, same uri)
-			URI uri = URI.create(ontology.getURI() + "#" + atom);
-			i = agent.getOntologyManager().getOWLDataFactory().getOWLIndividual(uri);
-			agent.getAliasManager().put(alias, i);
+			i = (OWLIndividual)agent.getAliasManager().getRight(AliasFactory.INSTANCE.create(atom, ontologyLabel));
+		} catch (UnknownMappingException e1) {
+			Alias alias = AliasFactory.INSTANCE.create(atom, agent.getPersonalOntologyLabel());
+			try {
+				i = (OWLIndividual)agent.getAliasManager().getRight(alias);
+			} catch (UnknownMappingException e2) {
+				// Instantiate and map the individual if not known
+				OWLOntology ontology = getOntology();
+				// Clashes (with different types of resource) don't matter thanks to OWL1.1's punning features
+				//TODO: what about clashes with individuals (different alias, same uri)
+				URI uri = URI.create(ontology.getURI() + "#" + atom);
+				i = agent.getOntologyManager().getOWLDataFactory().getOWLIndividual(uri);
+				agent.getAliasManager().put(alias, i);
+			}
 		} catch(ClassCastException e){
 			throw new InvalidSELiteralException(atom+" does not refer to an individual");
 		}

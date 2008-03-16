@@ -323,9 +323,6 @@
         <rdfs:subClassOf rdf:resource="#Destination"/>
     </owl:Class>
     
-    <owl:Class rdf:about="#beach">
-        <rdfs:subClassOf rdf:resource="#Destination"/>
-    </owl:Class>
 
 
     <!-- http://www.owl-ontologies.com/travel.owl#BedAndBreakfast -->
@@ -677,6 +674,14 @@
     
 
 
+    <!-- http://www.owl-ontologies.com/travel.owl#beach -->
+
+    <owl:Class rdf:about="#beach">
+        <rdfs:subClassOf rdf:resource="#Destination"/>
+    </owl:Class>
+    
+
+
     <!-- http://www.w3.org/2002/07/owl#Thing -->
 
     <owl:Class rdf:about="&owl;Thing"/>
@@ -709,7 +714,7 @@
     <!-- http://www.owl-ontologies.com/travel.owl#TwoStarRating -->
 
     <AccommodationRating rdf:about="#TwoStarRating"/>
-
+    
 
 
     <!-- 

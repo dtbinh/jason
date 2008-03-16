@@ -21,12 +21,12 @@
 +luxuriousHotel(L)[o(holidays), source(Source)]
 	<-
 	/* 1 */ .print("The ", L, " luxurious hotel is available");
-	/* 2 */ jasdl.ia.define_class(query, "city and hasAccommodation value ", L, holidays);
+	/* 2 */ jasdl.ia.define_class(query, "city and hasAccommodation value ", L);
 	/* 3 */ .send(Source, askOne, query(City)[o(holidays)], query(City)[o(holidays)]);
 	/* 4 */ .print(L, " is located in the city ", City);	
 	
 	// check given hotel is located in a destination that has some museums
-	jasdl.ia.define_class(q2, "{",L,"} and isLocatedAt some (hasActivity some museums)", holidays);
+	jasdl.ia.define_class(q2, "{",L,"} and isLocatedAt some (hasActivity some museums)");
 	.send(Source, askOne, q2(Hotel)[o(holidays)], q2(Hotel)[o(holidays)]);
 	.print(Hotel, " is located in a city with some museums");
 	

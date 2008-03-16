@@ -36,6 +36,8 @@ import java.util.logging.Logger;
 
 public class JasdlAgArch extends AgArch {
 	
+	public static String NAMED_ANNOTATION_FUNCTOR = "named";
+	public static String ANON_ANNOTATION_FUNCTOR = "anon";
 	
 	IncomingPropContProcessingStrategy incomingStrategy = new IncomingPropContProcessingStrategy();
 	OutgoingPropContProcessingStrategy outgoingStrategy = new OutgoingPropContProcessingStrategy();
