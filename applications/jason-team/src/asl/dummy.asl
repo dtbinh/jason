@@ -11,7 +11,8 @@
       Step:
         pos(X,Y,Step)
         cell(X,Y,Type) 
-           Type in { cow(Id), ally(Name), enemy, empty }
+           Type in { cow(Id), ally(Name), enemy(Id) }
+           // the Id of enemy is not working
 
       End:
         end_of_simulation(Result)

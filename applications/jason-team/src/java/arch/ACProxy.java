@@ -2,6 +2,7 @@ package arch;
 
 import jason.asSyntax.Literal;
 import jason.asSyntax.NumberTermImpl;
+import jason.asSyntax.Structure;
 import jason.environment.grid.Location;
 
 import java.util.ArrayList;
@@ -173,23 +174,27 @@ public class ACProxy extends ACAgent implements Runnable {
 				if (cellx > maxx)
 					maxx = cellx;
 				
+				int enemyId = 1;
 				NodeList cnl = cell.getChildNodes();
 				for (int j=0; j < cnl.getLength(); j++) {
-					if (cnl.item(j).getNodeType() == Element.ELEMENT_NODE) {
+					if (cnl.item(j).getNodeType() == Element.ELEMENT_NODE && cellx != 0 && celly != 0) {
 
 						Element type = (Element)cnl.item(j);
 						
 						if (type.getNodeName().equals("agent")) {
 							if (type.getAttribute("type").equals("ally")) {
-								percepts.add(CowboyArch.createCellPerception(cellx, celly, CowboyArch.aALLY));
+							    // allies are managed by communication
+								//percepts.add(CowboyArch.createCellPerception(cellx, celly, CowboyArch.aALLY));
 							} else if (type.getAttribute("type").equals("enemy")) {
+	                            Structure le = new Literal("enemy");
+	                            le.addTerm(new NumberTermImpl( (enemyId++) )); // we need an id to work with UniqueBB
 								arq.enemyPerceived(absx, absy);
-								percepts.add(CowboyArch.createCellPerception(cellx, celly, CowboyArch.aENEMY));
+								percepts.add(CowboyArch.createCellPerception(cellx, celly, le));
 							}
                             
                         } else if (type.getNodeName().equals("cow")) {
                             int cowId = Integer.parseInt(type.getAttribute("ID"));
-                            Literal lc = new Literal("cow");
+                            Structure lc = new Literal("cow");
                             lc.addTerm(new NumberTermImpl( cowId ));
                             percepts.add(CowboyArch.createCellPerception(cellx, celly, lc));
                             arq.cowPerceived(absx, absy);
@@ -199,8 +204,8 @@ public class ACProxy extends ACAgent implements Runnable {
                         } else if (type.getNodeName().equals("corral") && type.getAttribute("type").equals("enemy")) { 
                             arq.obstaclePerceived(absx, absy, CowboyArch.createCellPerception(absx, absy, CowboyArch.aOBSTACLE));
                             
-                        } else if (type.getNodeName().equals("empty")) {
-                            percepts.add(CowboyArch.createCellPerception(cellx, celly, CowboyArch.aEMPTY));
+                        //} else if (type.getNodeName().equals("empty")) {
+                        //    percepts.add(CowboyArch.createCellPerception(cellx, celly, CowboyArch.aEMPTY));
 						}
 					}
 				}

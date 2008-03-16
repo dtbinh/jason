@@ -38,7 +38,7 @@ public class UniqueBelsBB extends DefaultBeliefBase {
 	@Override
 	public boolean add(Literal bel) {
 		Literal kb = uniqueBels.get(bel.getFunctor());
-		if (kb != null && kb.getArity() == bel.getArity()) {
+		if (kb != null && kb.getArity() == bel.getArity()) { // is a constrained bel?
 			
 			// find the bel in BB and eventually remove it
 			u.clear();
@@ -47,13 +47,14 @@ public class UniqueBelsBB extends DefaultBeliefBase {
 
 			Iterator<Literal> relevant = getRelevant(bel);
 			if (relevant != null) {
+			    final int kbArity = kb.getArity();
 				while (relevant.hasNext() && !remove) {
 					linbb = relevant.next();
 
 					boolean equals = true;
-					for (int i = 0; i<kb.getArity(); i++) {
+					for (int i = 0; i<kbArity; i++) {
 						Term kbt = kb.getTerm(i);
-						if (!kbt.isVar()) {
+						if (!kbt.isVar()) { // is key?
 							if (!u.unifies(bel.getTerm(i), linbb.getTerm(i))) {
 								equals = false;
 								break;

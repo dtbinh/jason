@@ -6,6 +6,7 @@ import jason.asSyntax.Atom;
 import jason.asSyntax.Literal;
 import jason.asSyntax.NumberTerm;
 import jason.asSyntax.NumberTermImpl;
+import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 import jason.environment.grid.Location;
 import jason.mas2j.ClassParameters;
@@ -261,7 +262,7 @@ public class CowboyArch extends IdentifyCrashed {
     public void checkMail() {
 	    try {
     		super.checkMail();
-    
+    		
     		// remove messages related to obstacles and agent_position
     		// and update the model
     		Iterator<Message> im = getTS().getC().getMailBox().iterator();
@@ -280,8 +281,6 @@ public class CowboyArch extends IdentifyCrashed {
     				//getTS().getAg().getLogger().info("received obs="+p);
     				
     			} else if (ms.startsWith("my_status") && model != null) {
-    			    // TODO: add perception cell(X,Y,ally(Name))
-    			    
     				// update others location
     				Literal p = Literal.parseLiteral(m.getPropCont().toString());
     				int x = (int)((NumberTerm)p.getTerm(0)).solve();
@@ -293,6 +292,9 @@ public class CowboyArch extends IdentifyCrashed {
     						if (acView != null) acView.getModel().setAgPos(agid, x, y);
     						model.incVisited(x, y);
     						//getTS().getAg().getLogger().info("ag pos "+getMinerId(m.getSender())+" = "+x+","+y);
+    						Structure tAlly = new Structure("ally");
+    						tAlly.addTerm(new Atom(m.getSender()));
+    						getTS().getAg().addBel( createCellPerception(x, y, tAlly));
     					} catch (Exception e) {
     						e.printStackTrace();
     					}
