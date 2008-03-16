@@ -9,8 +9,7 @@
 ** computation of ideal locations of an agent to maintain a formation (can we use maintainance goal pattern?)
 * protocols
 * exploration strategy
-  details
-
+  details  
 * herding strategy
   details
 * DONE A* (update previous to new directions)
