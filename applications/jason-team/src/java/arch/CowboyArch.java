@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import env.ACViewer;
 import env.WorldModel;
 import env.WorldView;
 
@@ -27,17 +28,18 @@ import env.WorldView;
 public class CowboyArch extends IdentifyCrashed {
 
 	LocalWorldModel model = null;
-	WorldView  view  = null;
+	WorldView       view  = null;
 	
 	String     simId = null;
 	int	       myId  = -1;
 	boolean    gui   = false;
-	boolean    running = true;
 	boolean    playing = false;
+	
+	String   massimBackDir = null;
+	ACViewer acView        = null;
 	
 	int        cycle  = 0;
 	
-	WriteModelThread writeModelT = null;
 	protected Logger logger = Logger.getLogger(CowboyArch.class.getName());
 
 	public static Atom aOBSTACLE = new Atom("obstacle");
@@ -51,17 +53,18 @@ public class CowboyArch extends IdentifyCrashed {
 		super.initAg(agClass, bbPars, asSrc, stts);
 	    gui = "yes".equals(stts.getUserParameter("gui"));
 	    if ("yes".equals(stts.getUserParameter("write_model"))) {
-        	writeModelT = new WriteModelThread();
-        	writeModelT.start();
+        	new WriteModelThread().start();
         }
+        // create the viewer for contest simulator
+	    massimBackDir = stts.getUserParameter("ac_sim_back_dir");
+        if (massimBackDir != null && massimBackDir.startsWith("\"")) 
+            massimBackDir = massimBackDir.substring(1,massimBackDir.length()-1);
 	}
 	
 	@Override
 	public void stopAg() {
-		running = false;
-		if (view != null) {
-			view.dispose();
-		}
+		if (view != null)   view.dispose();
+		if (acView != null) acView.finish();
 		super.stopAg();
 	}
 	
@@ -84,25 +87,36 @@ public class CowboyArch extends IdentifyCrashed {
 	public LocalWorldModel getModel() {
 		return model;
 	}
+	
+	public ACViewer getACViewer() {
+	    return acView;
+	}
 
     /** The perception of the grid size is removed from the percepts list 
         and "directly" added as a belief */
     void gsizePerceived(int w, int h, String opponent) {
-		if (view != null) {
-			view.dispose();
-		}
         model = new LocalWorldModel(w, h);
-        if (gui) {
-        	view = new WorldView("Herding (view of cowboy "+(getMyId()+1)+") -- against "+opponent,model);
-        }
         getTS().getAg().addBel(Literal.parseLiteral("gsize("+w+","+h+")"));
         playing = true;
+
+        // manage GUIs
+        if (view != null)   view.dispose();
+        if (acView != null) acView.finish();
+        if (gui) { 
+            view = new WorldView("Herding (view of cowboy "+(getMyId()+1)+") -- against "+opponent,model);
+        }
+        if (massimBackDir != null) { 
+            acView = new ACViewer(massimBackDir, w, h);
+            acView.setPriority(Thread.MIN_PRIORITY);
+            acView.start();
+        }
     }
     
     /** The perception of the corral location is removed from the percepts list 
         and "directly" added as a belief */
     void corralPerceived(Location upperLeft, Location downRight) {
         model.setCorral(upperLeft, downRight);
+        if (acView != null) acView.getModel().setCorral(upperLeft, downRight);
         getTS().getAg().addBel(Literal.parseLiteral("corral("+upperLeft.x+","+upperLeft.y+","+downRight.x+","+downRight.y+")"));
     }
 
@@ -125,7 +139,7 @@ public class CowboyArch extends IdentifyCrashed {
 	void obstaclePerceived(int x, int y, Literal p) {
 		if (! model.hasObject(WorldModel.OBSTACLE, x, y)) {
 			model.add(WorldModel.OBSTACLE, x, y);
-			
+			if (acView != null) acView.addObject(WorldModel.OBSTACLE, x, y);
 			Message m = new Message("tell", null, null, p);
 			try {
 				broadcast(m);
@@ -152,6 +166,7 @@ public class CowboyArch extends IdentifyCrashed {
 		if (oldLoc == null || !oldLoc.equals(new Location(x,y))) {
 			try {
 				model.setAgPos(getMyId(), x, y);
+				if (acView != null) acView.getModel().setAgPos(getMyId(), x, y);
 				model.incVisited(x, y);
 			
 				Message m = new Message("tell", null, null, "my_status("+x+","+y+")");
@@ -235,7 +250,9 @@ public class CowboyArch extends IdentifyCrashed {
     		if (!getAgName().equals(oname)) {
     			Message msg = new Message(m);
     			msg.setReceiver(oname);
-    			sendMsg(msg);
+    			try {
+    			    sendMsg(msg);
+    			} catch (JasonException e) {} // no problem, the agent still does not exists
     		}
     	}
     }
@@ -257,6 +274,7 @@ public class CowboyArch extends IdentifyCrashed {
     				int y = (int)((NumberTerm)p.getTerm(1)).solve();
     				if (model.inGrid(x,y)) {
     					model.add(WorldModel.OBSTACLE, x, y);
+    					if (acView != null) acView.addObject(WorldModel.OBSTACLE, x, y);
     				}
     				im.remove();
     				//getTS().getAg().getLogger().info("received obs="+p);
@@ -272,6 +290,7 @@ public class CowboyArch extends IdentifyCrashed {
     					try {
     						int agid = getAgId(m.getSender());
     						model.setAgPos(agid, x, y);
+    						if (acView != null) acView.getModel().setAgPos(agid, x, y);
     						model.incVisited(x, y);
     						//getTS().getAg().getLogger().info("ag pos "+getMinerId(m.getSender())+" = "+x+","+y);
     					} catch (Exception e) {
@@ -297,7 +316,7 @@ public class CowboyArch extends IdentifyCrashed {
 			String fileName = "world-state-"+getAgName()+".txt";
 			try {
 				PrintWriter out = new PrintWriter(fileName);
-				while (running) {
+				while (isRunning()) {
 					waitSomeTime();
 					if (model != null && playing) {
 						out.println("\n\n** Agent "+getAgName()+" in cycle "+cycle+"\n");

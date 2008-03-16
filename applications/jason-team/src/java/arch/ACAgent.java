@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -90,13 +89,6 @@ public abstract class ACAgent {
 		this.password=password;
 	}
 	
-	public void start() {
-		new Thread() {
-			public void run() {agentThread();}
-		}.start();
-	}
-	
-
 	public void sendAuthentication(String username, String password) throws IOException{
 		try {
 			Document doc = documentbuilderfactory.newDocumentBuilder().newDocument();
@@ -216,40 +208,6 @@ public abstract class ACAgent {
     }
     */
     
-	public void agentThread() {
-		connect();
-			
-		while (true) {
-			try {
-				if (isConnected()) {
-                    Document doc = receiveDocument();
-                    Element el_root = doc.getDocumentElement();
-    
-                    if (el_root != null) {
-                        if (el_root.getNodeName().equals("message")) {
-                            processMessage(el_root);
-                        } else {
-                            logger.log(Level.SEVERE,"unknown document received");
-                        }
-                    } else {
-                        logger.log(Level.SEVERE, "no document element found");
-                    }
-				} else {
-                	// wait auto-reconnect
-					logger.info("waiting reconnection...");
-                	try { Thread.sleep(2000); } catch (InterruptedException e1) { }
-				}
-            } catch (SocketClosedException e) {
-            	logger.log(Level.SEVERE, "Socket was closed:"+e);
-            	connected = false;
-            } catch (SocketException e) {
-                logger.log(Level.SEVERE, "Socket exception:"+e);
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, "Exception", e);
-            }
-		}
-	}
-	
 	public boolean processMessage(Element el_message) {
 		String type = el_message.getAttribute("type");
 		if (type.equals("request-action") || type.equals("sim-start") || type.equals("sim-end")) {
@@ -346,11 +304,7 @@ public abstract class ACAgent {
 			logger.log(Level.SEVERE,"transformer error error",e);
 		} catch (IOException e) {
 			logger.log(Level.SEVERE,"error in sendDocument -- reconnect",e);
-			try {
-				connect();
-			} catch (Exception e1) {
-				e1.printStackTrace();
-			}
+			connect();
 		}
 	}
 	

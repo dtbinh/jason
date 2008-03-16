@@ -22,7 +22,6 @@ public class Search {
 	final LocalWorldModel model;
     final Location        from, to;
     final boolean         considerAgentsAsObstacles;
-	final boolean         corralIsTarget; 
     int[]                 actionsOrder;    
     int                   nbStates = 0;
     AgArch                agArch;
@@ -42,7 +41,6 @@ public class Search {
     	} else {
     		this.actionsOrder = defaultActions;
     	}
-    	corralIsTarget = model.inCorral(to); 
     }
 
     /** used normally to discover the distance from 'from' to 'to' */
@@ -177,17 +175,14 @@ final class GridState implements Estado, Heuristica {
     
     private void suc(List<Estado> s, Location newl, WorldModel.Move op) {
 
-        if (ia.model.isFreeOfObstacle(newl)) {
-        	// the depot is an obstacle if not the target.
-        	if (ia.corralIsTarget || !ia.model.hasObject(WorldModel.CORRAL, newl)) {
-	        	if (ia.considerAgentsAsObstacles) {
-	        		if (ia.model.isFree(newl) || ia.from.distance(newl) > 1) {
-	        			s.add(new GridState(newl,op,ia));
-	        		}
-	        	} else {
-	                s.add(new GridState(newl,op,ia));
-	            }
-        	}
+        if (ia.model.isFreeOfObstacle(newl) && !ia.model.hasObject(WorldModel.CORRAL, newl)) {
+        	if (ia.considerAgentsAsObstacles) {
+        		if (ia.model.isFree(newl) || ia.from.distance(newl) > 1) {
+        			s.add(new GridState(newl,op,ia));
+        		}
+        	} else {
+                s.add(new GridState(newl,op,ia));
+            }
     	}
     }
     

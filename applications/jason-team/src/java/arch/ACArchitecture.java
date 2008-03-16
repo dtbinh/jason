@@ -28,8 +28,6 @@ public class ACArchitecture extends CowboyArch {
 	private ACProxy       proxy;
 	private List<Literal> percepts = new ArrayList<Literal>();
 	
-	//ActionExec acExec; // action of the current cycle
-	
 	@Override
     public void initAg(String agClass, ClassParameters bbPars, String asSrc, Settings stts) throws JasonException {
 		super.initAg(agClass, bbPars, asSrc, stts);
@@ -45,9 +43,16 @@ public class ACArchitecture extends CowboyArch {
 								Integer.parseInt(stts.getUserParameter("port")),
 								username,
 								password);
-		proxy.start();
+		new Thread(proxy,"AgentProxy"+username).start();
 	}
 
+	
+	@Override
+	public void stopAg() {
+	    super.stopAg();
+	    proxy.finish();
+	}
+	
 	@Override
 	public List<Literal> perceive() {
 		return new ArrayList<Literal>(percepts);
@@ -87,12 +92,12 @@ public class ACArchitecture extends CowboyArch {
         }
 	}
 	
+    // TODO: create a new agent and plug it on the connection
 	
 	/** this method is called when the agent crashes and other approaches to fix it (fix1 and fix2) does not worked */
+    /*
 	@Override
     protected boolean fix3() throws Exception {
-        // TODO: create a new agent and plug it on the connection
-        /*
         getTS().getLogger().warning("Cloning!");
         
         RuntimeServicesInfraTier services = getArchInfraTier().getRuntimeServices();
@@ -112,8 +117,8 @@ public class ACArchitecture extends CowboyArch {
         
         // just to test, add !start
         arch.getTS().getC().addAchvGoal(Literal.parseLiteral("start"), Intention.EmptyInt);
-        */
         return false;
     }
+     */
 
 }

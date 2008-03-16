@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -12,35 +13,49 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXParseException;
 
 public class ACViewer extends Thread {
+
+    private static Logger logger = Logger.getLogger(ACViewer.class.getName());
 
     WorldModel model = null;
     WorldView  view  = null;
     
     DocumentBuilder builder = null;
     
-    File massimServerBackupDir = new File("/Users/jomi/bin/massim-server/backup");
+    File massimServerBackupDir;
+
+    public ACViewer(String massimBackDir, int w, int h) {
+        massimServerBackupDir = new File(massimBackDir);
+
+        model = new WorldModel(w,h, WorldModel.agsByTeam*2);
+        view  = new WorldView("Herding Contest -- AC simulator view",model);
+        model.setView(view);
+    }
+    
     
     File getLastFile(File dir) {
-        List<File> lfiles = new ArrayList<File>();
-        for (File f: dir.listFiles()) {
-            lfiles.add(f);
+        if (dir != null) {
+            File[] afiles = dir.listFiles();
+            if (afiles != null && afiles.length > 0) {
+                List<File> lfiles = new ArrayList<File>();
+                for (File f: dir.listFiles()) {
+                    lfiles.add(f);
+                }
+                return Collections.max(lfiles);
+            } else {
+                logger.info("no files in "+dir);
+            }
         }
-        return Collections.max(lfiles);        
+        return null;
     }
     
     void updateWorld(File f) throws Exception {
-        if (model == null) {
-            model = new WorldModel(70,70,12);
-            view  = new WorldView("Herding Contest",model);
-            model.setView(view);
-        }
         if (builder == null) {
             builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         }
 
-        clearModel();
         
         Document doc = builder.parse(f);
         Element simulation = (Element)doc.getElementsByTagName("simulation").item(0); //((NodeList)expr.evaluate("//simulation[@id='"+simId+"']/configuration", doc, XPathConstants.NODESET)).item(0);
@@ -51,6 +66,8 @@ public class ACViewer extends Thread {
         model.setCowsBlue(Integer.parseInt(team.getAttribute("score")));
         team = (Element)simulation.getElementsByTagName("team2").item(0);
         model.setCowsRed(Integer.parseInt(team.getAttribute("score")));
+
+        clearModel();
 
         // cows
         NodeList cows = simulation.getElementsByTagName("cow");
@@ -85,25 +102,39 @@ public class ACViewer extends Thread {
         }
     }
     
+    public void addObject(int object, int x, int y) {
+        model.add(object, x, y);
+    }
+    
+    public WorldModel getModel() {
+        return model;
+    }
+    
+    public void finish() {
+        view.dispose();
+        this.interrupt();
+    }
+    
     public void run() {
         while (true) {
             try {
                 File lastFile = getLastFile(getLastFile(massimServerBackupDir));
-                System.out.println(lastFile); 
-                updateWorld(lastFile);
+                if (lastFile != null) {
+                    logger.info("getting scenario from "+lastFile); 
+                    updateWorld(lastFile);
+                }
                 sleep(500);
             } catch (InterruptedException e) {
                 return;
-            } catch (NoSuchElementException e) { 
+            } catch (NoSuchElementException e) {
+            } catch (SAXParseException e) {  // no problem: Premature end of file.
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
     
-    
-    
     public static void main(String[] args) {
-        new ACViewer().start();
+        new ACViewer("/Users/jomi/bin/massim-server/backup", 70, 70).start();
     }
 }

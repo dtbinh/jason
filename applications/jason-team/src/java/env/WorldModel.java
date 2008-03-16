@@ -20,6 +20,8 @@ public class WorldModel extends GridWorldModel {
 
     public static final int   nbActions = 8;
 
+    public static final int   agsByTeam = 6;    
+
     
     double                    PSim = 0.1; // probability of action/information failure
     double                    PMax = 0.5; // maximal value for action/information failure
@@ -35,8 +37,6 @@ public class WorldModel extends GridWorldModel {
     int                       pratio = -1; // perception ratio
     
     private Logger            logger   = Logger.getLogger("jasonTeamSimLocal.mas2j." + WorldModel.class.getName());
-
-    int agsByTeam = 6;    
 
     public enum Move {
         north, south, east, west, northeast, southeast, northwest, southwest, skip 

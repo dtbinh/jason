@@ -16,7 +16,7 @@ import jason.runtime.Settings;
 public class IdentifyCrashed extends AgArch {
 
     private boolean didPercept = true;
-    private int     maxCycleTime = 3000;
+    private int     maxCycleTime = 4000;
     private boolean dead = false;
     private Thread  agThread = null;
     private Thread  checkThread = null;
@@ -72,7 +72,7 @@ public class IdentifyCrashed extends AgArch {
     
     /** try to fix the agent: approach 1: simulates the agent has stopped */
     protected boolean fix1() throws Exception {
-        getTS().getLogger().warning("I am dead!");
+        getTS().getLogger().warning("fix1: I am dead! Simulating a termination...");
         
         // simulates a stop running
         dead = true;
@@ -80,10 +80,12 @@ public class IdentifyCrashed extends AgArch {
         // gives some time to TS get the change in state
         waitPercept();
         try {
-            if (isCrashed())
+            if (isCrashed()) {
                 return fix2();
-            else
+            } else {
+                getTS().getLogger().warning("fix1: I am Ok now!");
                 return true;
+            }
         } finally {
             // start the agent again
             dead = false;
@@ -92,7 +94,7 @@ public class IdentifyCrashed extends AgArch {
 
     /** try to fix the agent: approach 2: interrupt the agent thread */
     protected boolean fix2() throws Exception {
-        getTS().getLogger().warning("I am still dead!");
+        getTS().getLogger().warning("fix2: I am still dead! Interrupting the agent thread...");
         // try to interrupt the agent thread.
         agThread.interrupt();
         
@@ -101,6 +103,7 @@ public class IdentifyCrashed extends AgArch {
             getTS().getLogger().warning("Interrupt doesn't work!!! The agent remains dead!");
             return fix3();
         } else {
+            getTS().getLogger().warning("fix2: I am Ok now!");
             return true;
         }
     }
@@ -122,6 +125,7 @@ public class IdentifyCrashed extends AgArch {
         @Override
         public void run() {
             try {
+                sleep(maxCycleTime*2); // wait a bit before start checking
                 while (IdentifyCrashed.super.isRunning()) {
                     didPercept = false;
                     sleep(maxCycleTime);

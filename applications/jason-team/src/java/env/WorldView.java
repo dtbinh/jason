@@ -216,6 +216,17 @@ public class WorldView extends GridWorldView {
                         Color.red } ;
     */
     
+    @Override
+    public void drawAgent(Graphics g, int x, int y, Color c, int id) {
+        g.setColor(c);
+        g.fillOval(x * cellSizeW + 2, y * cellSizeH + 2, cellSizeW - 4, cellSizeH - 4);
+        if (id >= 0) {
+            g.setColor(Color.white);
+            drawString(g, x, y, defaultFont, String.valueOf(id+1));
+        }
+    }
+    
+    
     /*
     @Override
     public void drawAgent(Graphics g, int x, int y, Color c, int id) {

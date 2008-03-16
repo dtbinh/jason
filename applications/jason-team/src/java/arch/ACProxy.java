@@ -23,13 +23,13 @@ import org.w3c.dom.NodeList;
  * 
  * @author Jomi
  */
-public class ACProxy extends ACAgent {
+public class ACProxy extends ACAgent implements Runnable {
 
     String         rid; // the response id of the current cycle
 	ACArchitecture arq;
+	boolean        running = true;
 	
 	private Logger logger = Logger.getLogger(ACProxy.class.getName());
-	//private Transformer transformer;
 	private DocumentBuilder documentbuilder;
 
 	ConnectionMonitor monitor = new ConnectionMonitor();
@@ -53,8 +53,47 @@ public class ACProxy extends ACAgent {
 			e.printStackTrace();
 		}
 		
+        connect();
 		monitor.start();
 	}
+	
+	public void finish() {
+	    running = false;
+	    monitor.interrupt();
+	}
+	
+    public void run() {
+        while (running) {
+            try {
+                if (isConnected()) {
+                    Document doc = receiveDocument();
+                    Element el_root = doc.getDocumentElement();
+    
+                    if (el_root != null) {
+                        if (el_root.getNodeName().equals("message")) {
+                            processMessage(el_root);
+                        } else {
+                            logger.log(Level.SEVERE,"unknown document received");
+                        }
+                    } else {
+                        logger.log(Level.SEVERE, "no document element found");
+                    }
+                } else {
+                    // wait auto-reconnect
+                    logger.info("waiting reconnection...");
+                    try { Thread.sleep(2000); } catch (InterruptedException e1) {}
+                }
+            /*} catch (SocketClosedException e) {
+                logger.log(Level.SEVERE, "Socket was closed:"+e);
+                connected = false;
+            } catch (SocketException e) {
+                logger.log(Level.SEVERE, "Socket exception:"+e); */
+            } catch (Exception e) {
+                logger.log(Level.SEVERE, "Exception", e);
+            }
+        }
+    }
+
 	
 	public void processLogIn() {
 		logger.info("---#-#-#-#-#-#-- login ok.");
@@ -214,7 +253,7 @@ public class ACProxy extends ACAgent {
 		public void run() {
 			int d = new Random().nextInt(10000);
             try {
-                while (true) {
+                while (running) {
 					sleep(20000+d);
 					count++;
 					ok = false;
@@ -229,6 +268,7 @@ public class ACProxy extends ACAgent {
 						connect();
 					}
 			    }
+            } catch (InterruptedException e) {
             } catch (Exception e) {
                 logger.log(Level.WARNING,"Error in communication ",e);
             }
