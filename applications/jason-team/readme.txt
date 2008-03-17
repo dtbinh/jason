@@ -9,6 +9,36 @@
  *   Gauthier Picard    (EMSE, France)
  */
 
+
+To run this team:
+
+1. update sources of Jason
+   cd Jason-svn
+   svn update
+   ant plugin
+   
+2. run massim-server
+   cd applications/jason-team/massim-server
+   ./startServer.sh
+
+3. run massim-agents (6 agents developed by the ContestTeam)
+   cd ../massim-agents
+   ./startAgents.sh
+
+4. run Jason dummies (for now we do not have a team)
+   a. by JasonIDE
+      	 ../../bin/jason.sh
+      open an run  AC-Local-JasonTeam.mas2j
+
+   b. by Ant (only after run once by JasonIDE)
+         ant -f bin/build.xml
+
+5. start the simulation
+   go to shell running startServer.sh and press ENTER
+
+
+---- OLD ----
+
 Our team can run in three configurations (Jason 1.0.2 is required):
 
 1. With a local simulator developed by us to test the team. 
