@@ -59,7 +59,7 @@ search_gold_strategy(near_unvisited). // initial strategy
     !change_to_fetch(NewG).
 
 +!choose_goal // there is no worth gold
- :  carrying.gold > 0
+ :  carrying_gold(NG) & NG > 0
  <- !change_to_goto_depot.
 
 +!choose_goal // not carrying gold, be free and search gold
