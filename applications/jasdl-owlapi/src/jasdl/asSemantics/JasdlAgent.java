@@ -1,5 +1,8 @@
 package jasdl.asSemantics;
 
+import static jasdl.util.Common.strip;
+import jasdl.asSemantics.parsing.NSPrefixEntityChecker;
+import jasdl.asSemantics.parsing.URIEntityChecker;
 import jasdl.asSyntax.JasdlPlanLibrary;
 import jasdl.bb.JasdlBeliefBase;
 import jasdl.bridge.ToAxiomConverter;
@@ -7,9 +10,13 @@ import jasdl.bridge.ToSELiteralConverter;
 import jasdl.bridge.alias.Alias;
 import jasdl.bridge.alias.AliasFactory;
 import jasdl.bridge.alias.AliasManager;
+import jasdl.bridge.alias.DecapitaliseMappingStrategy;
+import jasdl.bridge.alias.MappingStrategy;
 import jasdl.bridge.label.LabelManager;
 import jasdl.bridge.label.OntologyURIManager;
 import jasdl.bridge.seliteral.SELiteralFactory;
+import jasdl.util.DuplicateMappingException;
+import jasdl.util.InvalidSELiteralException;
 import jasdl.util.JasdlException;
 import jasdl.util.UnknownMappingException;
 import jason.JasonException;
@@ -21,7 +28,10 @@ import jason.runtime.Settings;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import jmca.asSemantics.JmcaAgent;
 
@@ -29,25 +39,18 @@ import org.coode.manchesterowlsyntax.ManchesterOWLSyntaxDescriptionParser;
 import org.mindswap.pellet.PelletOptions;
 import org.mindswap.pellet.owlapi.Reasoner;
 import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.expression.OWLEntityChecker;
-import org.semanticweb.owl.model.OWLClass;
-import org.semanticweb.owl.model.OWLDataProperty;
-import org.semanticweb.owl.model.OWLDataType;
 import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLEntity;
-import org.semanticweb.owl.model.OWLIndividual;
-import org.semanticweb.owl.model.OWLObject;
-import org.semanticweb.owl.model.OWLObjectProperty;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyManager;
-import org.semanticweb.owl.model.OWLRuntimeException;
 import org.semanticweb.owl.util.ShortFormProvider;
 
-import uk.ac.manchester.cs.owl.OWLClassImpl;
 import uk.ac.manchester.cs.owl.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
 
 public class JasdlAgent extends JmcaAgent {	
+	public static List<MappingStrategy> DEFAULT_MAPPING_STRATEGIES = Arrays.asList( new MappingStrategy[] { new DecapitaliseMappingStrategy()} );
+	
 	private OWLOntologyManager ontologyManager;
 	private Reasoner reasoner;
 	private AliasManager aliasManager;
@@ -58,12 +61,26 @@ public class JasdlAgent extends JmcaAgent {
 	private OntologyURIManager logicalURIManager;
 	private OntologyURIManager physicalURIManager;
 	private ManchesterOWLSyntaxOWLObjectRendererImpl manchesterObjectRenderer;
-	private ManchesterOWLSyntaxDescriptionParser manchesterDescriptionParser;
+	
+	private ManchesterOWLSyntaxDescriptionParser manchesterNsPrefixDescriptionParser;
+	private ManchesterOWLSyntaxDescriptionParser manchesterURIDescriptionParser;
+	
+	private List<MappingStrategy> defaultMappingStrategies;
+	
+	public static String ANON_LABEL_PREFIX = "anon_label_";	
+	public static String ANON_ALIAS_PREFIX = "anon_alias_";
+	
+	/**
+	 * Since Jason doesn't initialise an agent name in time
+	 */
+	private String agentName;
 	
 
 	
 	public JasdlAgent(){
 		super();
+		defaultMappingStrategies = DEFAULT_MAPPING_STRATEGIES;
+		
 		// instantiate managers
 		aliasManager = new AliasManager();
 		labelManager = new LabelManager();
@@ -84,9 +101,9 @@ public class JasdlAgent extends JmcaAgent {
 			}			
 		}); // we want fully qualified entity references
 		
-		manchesterDescriptionParser = new ManchesterOWLSyntaxDescriptionParser(ontologyManager.getOWLDataFactory(), new NSPrefixEntityChecker(this));
-		
-		
+		manchesterNsPrefixDescriptionParser = new ManchesterOWLSyntaxDescriptionParser(ontologyManager.getOWLDataFactory(), new NSPrefixEntityChecker(this));
+		manchesterURIDescriptionParser = new ManchesterOWLSyntaxDescriptionParser(ontologyManager.getOWLDataFactory(), new URIEntityChecker(this));
+				
 		// instantiate (Pellet) reasoner
 		PelletOptions.USE_TRACING = true;
 		reasoner = new Reasoner(ontologyManager);
@@ -102,153 +119,14 @@ public class JasdlAgent extends JmcaAgent {
 	public TransitionSystem initAg(AgArch arch, BeliefBase bb, String src, Settings stts) throws JasonException {
 		if(!(bb instanceof JasdlBeliefBase)){
 			throw new JasdlException("JASDL must be used in combination with the jasdl.bb.OwlBeliefBase class");
-		}
-		
-		((JasdlBeliefBase)bb).setAgent(this);	
-		
-		
+		}		
+		((JasdlBeliefBase)bb).setAgent(this);		
 		// load .mas2j JASDL configuration
 		JasdlConfigurator config = new JasdlConfigurator(this);
-			config.configure(stts);
+		config.configure(stts);
 		return super.initAg(arch, bb, src, stts);
 	}
-
-
-
-	/**
-	 * Convenience method to instantiate an ontology, load it into reasoner and map it to a label
-	 * @param uri
-	 * @throws JasdlException
-	 */
-	public void loadOntology(Atom label, URI uri) throws JasdlException{
-		try{
-			OWLOntology ontology = ontologyManager.loadOntologyFromPhysicalURI(uri);
-			Set<OWLOntology> imports = ontologyManager.getImportsClosure(ontology);
-			reasoner.loadOntologies(imports);
-			reasoner.classify();
-			labelManager.put(label, ontology);
-			physicalURIManager.put(ontology, uri);
-			logicalURIManager.put(ontology, ontology.getURI());
-		}catch(OWLOntologyCreationException e){
-			throw new JasdlException("Error loading ontology "+uri+". Reason: "+e);
-		}		
-	}
 	
-	
-	public void createOntology(Atom label, URI uri) throws JasdlException{
-		try{
-			OWLOntology ontology = getOntologyManager().createOntology( uri );
-			getLabelManager().put(label, ontology);
-			getPhysicalURIManager().put(ontology, uri);
-			getLogicalURIManager().put(ontology, uri);
-			getReasoner().loadOntology(ontology);			
-		} catch (OWLOntologyCreationException e) {
-			throw new JasdlException("Error instantiating OWL ontology. Reason: "+e);
-		}		
-	}
-	
-	public Atom getPersonalOntologyLabel(){
-		return new Atom("self");		
-	}
-	
-
-
-	public URI getPersonalOntologyURI() {
-		return URI.create("http://www.dur.ac.uk/t.g.klapiscak/"+getPersonalOntologyLabel()+".owl");
-	}	
-	
-	
-	
-	public OWLDescription defineClass(Atom functor, String expression) throws JasdlException{
-		OWLDescription desc;
-		try{
-    		desc = getManchesterDescriptionParser().parse(expression);       
-    	}catch(Exception e){
-    		e.printStackTrace();
-    		throw new JasdlException("Could not parse expression "+expression+". Reason: "+e);
-    	}
-    	
-    	Alias alias = AliasFactory.INSTANCE.create(functor, getPersonalOntologyLabel());
-    	getAliasManager().put(alias, desc); 
-    	
-    	return desc;    	
-	}
-
-
-
-	public AliasManager getAliasManager() {
-		return aliasManager;
-	}
-
-
-
-	public LabelManager getLabelManager() {
-		return labelManager;
-	}
-
-
-
-	public OWLOntologyManager getOntologyManager() {
-		return ontologyManager;
-	}
-	
-	
-
-
-
-	public OntologyURIManager getPhysicalURIManager() {
-		return physicalURIManager;
-	}
-
-	
-	
-
-	public OntologyURIManager getLogicalURIManager() {
-		return logicalURIManager;
-	}
-
-
-
-	public Reasoner getReasoner() {
-		return reasoner;
-	}
-	
-	
-	
-	
-	
-	
-	public SELiteralFactory getSELiteralFactory() {
-		return seLiteralFactory;
-	}
-	
-	
-
-
-
-	public ToAxiomConverter getToAxiomConverter() {
-		return toAxiomConverter;
-	}
-	
-	
-
-
-
-	public ToSELiteralConverter getToSELiteralConverter() {
-		return toSELiteralConverter;
-	}
-
-
-
-	public ManchesterOWLSyntaxOWLObjectRendererImpl getManchesterObjectRenderer() {
-		return manchesterObjectRenderer;
-	}
-
-
-
-	public ManchesterOWLSyntaxDescriptionParser getManchesterDescriptionParser() {
-		return manchesterDescriptionParser;
-	}
 	
 	
 	/**
@@ -265,9 +143,8 @@ public class JasdlAgent extends JmcaAgent {
 		} catch (URISyntaxException e) {
 			throw new JasdlException("Invalid entity URI "+uri);
 		}
-		OWLOntology ontology = getLogicalURIManager().getLeft(ontURI);;
-		
-		// clumsy approach, but I can't find any way of achieving this polymorphically (i.e. retrieve an OWLObject from a URI) using OWL-API
+		OWLOntology ontology = getLogicalURIManager().getLeft(ontURI);		
+		// clumsy approach, but I can't find any way of achieving this polymorphically (i.e. retrieve an OWLEntity from a URI) using OWL-API
 		OWLEntity entity;
 		if(ontology.containsClassReference(uri)){
 			entity = getOntologyManager().getOWLDataFactory().getOWLClass(uri);
@@ -281,97 +158,265 @@ public class JasdlAgent extends JmcaAgent {
 			throw new UnknownMappingException("Unknown ontology resource URI: "+uri);
 		}
 		return entity;
-	}	
+	}
+
+	/**
+	 * Convenience method to parse a string into a URI and return the associated ontology.
+	 * Ontology is instantiated and assigned a unique anonymous label if unknown.
+	 * @param uri
+	 * @return
+	 * @throws JasdlException
+	 */	
+	public OWLOntology getOntology(String _uri) throws JasdlException{
+		URI uri;
+		try {
+			uri = new URI( strip(_uri, "\"")); // quotes stripped
+		} catch (URISyntaxException e) {
+			throw new InvalidSELiteralException("Invalid physical ontology URI "+_uri+". Reason: "+e);
+		}
+		return getOntology(uri);
+	}
+	
+	/**
+	 * Convenience method to return the ontology associated with a URI.
+	 * Ontology is instantiated and assigned a unique anonymous label if unknown.
+	 * @param uri
+	 * @return
+	 * @throws JasdlException
+	 */
+	public OWLOntology getOntology(URI uri) throws JasdlException{
+		OWLOntology ontology;		
+		try{
+			ontology = getPhysicalURIManager().getLeft(uri);			
+		}catch(UnknownMappingException e){
+			// instantiate novel ontology
+			// create a guaranteed unique anonymous label
+			String label;
+			Atom labelAtom;
+			int i = 0;
+			while(true){
+				label = ANON_LABEL_PREFIX+i;
+				labelAtom = new Atom(label);
+				if(!getLabelManager().isKnownLeft(labelAtom)){
+					break;
+				}
+				i++;
+			}
+			ontology = loadOntology(labelAtom, uri);
+		}
+		return ontology;
+	}
+
+	/**
+	 * Calls loadOntology with default mapping strategies.
+	 * For incoming ontologies and those with unspecified mapping strategies.
+	 * @param label
+	 * @param uri
+	 * @return
+	 * @throws JasdlException
+	 */
+	public OWLOntology loadOntology(Atom label, URI uri) throws JasdlException{
+		return loadOntology(label, uri, defaultMappingStrategies);
+	}
+
+	/**
+	 * Convenience method to instantiate an ontology, load it into reasoner and map it to a label.
+	 * @param uri
+	 * @throws JasdlException
+	 */
+	public OWLOntology loadOntology(Atom label, URI uri, List<MappingStrategy> strategies) throws JasdlException{
+		try{
+			OWLOntology ontology = ontologyManager.loadOntologyFromPhysicalURI(uri);
+			Set<OWLOntology> imports = ontologyManager.getImportsClosure(ontology);
+			reasoner.loadOntologies(imports);
+			reasoner.classify();
+			labelManager.put(label, ontology);
+			physicalURIManager.put(ontology, uri);
+			logicalURIManager.put(ontology, ontology.getURI());
+			getLogger().fine("Loaded ontology from "+uri+" and assigned label "+label);
+			applyMappingStrategies(ontology, strategies);
+			return ontology;
+		}catch(OWLOntologyCreationException e){
+			getLogger().warning("Placeholder ontology substituted for unreachable "+uri);
+			return createOntology(label, uri);		// can't load it, just create a blank (for unqualification of ontology annotations for example)	
+		}	
+	}
+	
+	/**
+	 * Creates and fully maps a blank ontology. Used for example for "owl" ontology, containing
+	 * axioms referencing "owl:thing" and "owl:nothing", and for personal ontologies containing
+	 * axioms referencing run-time defined anonymous classes.
+	 * @param label
+	 * @param uri
+	 * @throws JasdlException
+	 */
+	public OWLOntology createOntology(Atom label, URI uri) throws JasdlException{
+		try{
+			OWLOntology ontology = getOntologyManager().createOntology( uri );
+			getLabelManager().put(label, ontology);
+			getPhysicalURIManager().put(ontology, uri);
+			getLogicalURIManager().put(ontology, uri);
+			getReasoner().loadOntology(ontology);
+			return ontology;
+		} catch (OWLOntologyCreationException e) {
+			throw new JasdlException("Error instantiating OWL ontology. Reason: "+e);
+		}		
+	}
+	
+	/**
+	 * When a duplicate mapping is encountered, an anonymous alias is created for the offending resource
+	 * @param ontology
+	 * @param strategies
+	 * @throws JasdlException
+	 */
+	private void applyMappingStrategies(OWLOntology ontology, List<MappingStrategy> strategies) throws JasdlException{
+		// we need to construct a reasoner specifically for this to isolate entities from just one ontology
+		Reasoner reasoner = new Reasoner(getOntologyManager());			
+		Set<OWLOntology> imports = getOntologyManager().getImportsClosure(ontology);
+		reasoner.loadOntologies(imports);
+		
+		List<OWLEntity> entities = new Vector<OWLEntity>();
+		entities.addAll(reasoner.getClasses());
+		entities.addAll(reasoner.getProperties());
+		entities.addAll(reasoner.getIndividuals());
+		
+		Atom label = getLabelManager().getLeft(ontology);
+		
+		for(OWLEntity entity : entities){
+			try{
+				String _functor = entity.getURI().getFragment();					
+				for(MappingStrategy strategy : strategies){
+					_functor = strategy.apply(_functor);
+				}
+				Atom functor = new Atom(_functor);				
+				getAliasManager().put(AliasFactory.INSTANCE.create(functor, label), entity);
+			}catch(DuplicateMappingException e){
+				// generate an anonymous alias for this entity
+				String functor;
+				Alias anonAlias;
+				int i = 0;				
+				while(true){
+					functor = ANON_ALIAS_PREFIX + i;
+					anonAlias = AliasFactory.INSTANCE.create(new Atom(functor), label);
+					if(!getAliasManager().isKnownLeft(anonAlias)){
+						break;
+					}
+					i++;
+				}
+				getAliasManager().put(anonAlias, entity);
+			}
+		}
+	}
+	
+
+	
+	public OWLDescription defineClass(Atom functor, String expression, ManchesterOWLSyntaxDescriptionParser parser) throws JasdlException{
+		return defineClass(functor, getPersonalOntologyLabel(), expression, parser);
+	}
 	
 	
+	public OWLDescription defineClass(Atom functor, Atom label, String expression, ManchesterOWLSyntaxDescriptionParser parser) throws JasdlException{
+		Alias alias = AliasFactory.INSTANCE.create(functor, label);		
+		if(getAliasManager().isKnownLeft(alias)){
+			throw new DuplicateMappingException("New class definition with alias "+alias+" overlaps with an existing ontological entity");
+		}	
+		OWLDescription desc;
+		try{
+    		desc = parser.parse(expression);       
+    	}catch(Exception e){    		
+    		throw new JasdlException("Could not parse expression "+expression+". Reason: "+e);
+    	}   	
+    	getAliasManager().put(alias, desc);     	
+    	getLogger().fine("Defined new class with alias "+alias);
+    	return desc;    	
+	}
+	
+	/**
+	 * *Must* be unique within society!
+	 * @return
+	 */
+	public String getAgentName(){
+		return agentName;
+	}
+	
+	public void setAgentName(String agentName){
+		this.agentName = agentName;
+	}
 	
 	
-	private class NSPrefixEntityChecker implements OWLEntityChecker{
-		
-		private JasdlAgent agent;
 
-		public NSPrefixEntityChecker(JasdlAgent agent){
-			this.agent = agent;
-		}
-
-		public OWLClass getOWLClass(String name) {			
-			OWLEntity entity = convert(name);
-			if(entity == null){
-				return null;
-			}
-			if(entity.isOWLClass()){
-				return entity.asOWLClass();
-			}else{
-				return null;
-			}
-		}
-
-		public OWLDataProperty getOWLDataProperty(String name) {
-			OWLEntity entity = convert(name);
-			if(entity == null){
-				return null;
-			}
-			if(entity.isOWLDataProperty()){
-				return entity.asOWLDataProperty();
-			}else{
-				return null;
-			}
-		}
-
-		public OWLDataType getOWLDataType(String name) {
-			OWLEntity entity = convert(name);
-			if(entity == null){
-				return null;
-			}
-			if(entity.isOWLDataType()){
-				return entity.asOWLDataType();
-			}else{
-				return null;
-			}
-		}
-
-		public OWLIndividual getOWLIndividual(String name) {
-			OWLEntity entity = convert(name);
-			if(entity == null){
-				return null;
-			}
-			if(entity.isOWLIndividual()){
-				return entity.asOWLIndividual();
-			}else{
-				return null;
-			}
-		}
-
-		public OWLObjectProperty getOWLObjectProperty(String name) {
-			OWLEntity entity = convert(name);
-			if(entity == null){
-				return null;
-			}
-			if(entity.isOWLObjectProperty()){
-				return entity.asOWLObjectProperty();
-			}else{
-				return null;
-			}
-		}
-		
-		private OWLEntity convert(String name){
-			String[] tokens = name.split(":");
-			try {
-				Atom functor = new Atom(tokens[1]);
-				Atom label = new Atom(tokens[0]);
-				Alias alias = AliasFactory.INSTANCE.create(functor, label);
-				return (OWLEntity)agent.getAliasManager().getRight(alias); // guaranteed to be an entity? Not for anonymous classes!
-			} catch (Exception e) {
-				return null;
-			}			
-		}
-		
-		
+	
+	public List<MappingStrategy> getDefaultMappingStrategies() {
+		return defaultMappingStrategies;
 	}
 
 
 
+	public void setDefaultMappingStrategies(List<MappingStrategy> defaultMappingStrategies) {
+		this.defaultMappingStrategies = defaultMappingStrategies;
+	}
 
 
+
+	public Atom getPersonalOntologyLabel(){
+		return new Atom("self");		
+	}
+	
+	public URI getPersonalOntologyURI() {
+		return getPersonalOntologyURI(new Atom(getAgentName()));
+	}
+
+	public URI getPersonalOntologyURI(Atom label) {
+		return URI.create("http://www.dur.ac.uk/t.g.klapiscak/"+label+".owl");
+	}	
+
+
+	public AliasManager getAliasManager() {
+		return aliasManager;
+	}
+
+	public LabelManager getLabelManager() {
+		return labelManager;
+	}
+
+	public OWLOntologyManager getOntologyManager() {
+		return ontologyManager;
+	}
+
+	public OntologyURIManager getPhysicalURIManager() {
+		return physicalURIManager;
+	}	
+
+	public OntologyURIManager getLogicalURIManager() {
+		return logicalURIManager;
+	}
+	
+	public Reasoner getReasoner() {
+		return reasoner;
+	}
+		
+	public SELiteralFactory getSELiteralFactory() {
+		return seLiteralFactory;
+	}
+	
+	public ToAxiomConverter getToAxiomConverter() {
+		return toAxiomConverter;
+	}
+	
+	public ToSELiteralConverter getToSELiteralConverter() {
+		return toSELiteralConverter;
+	}
+
+	public ManchesterOWLSyntaxOWLObjectRendererImpl getManchesterObjectRenderer() {
+		return manchesterObjectRenderer;
+	}
+	
+	public ManchesterOWLSyntaxDescriptionParser getManchesterNsPrefixDescriptionParser() {
+		return manchesterNsPrefixDescriptionParser;
+	}	
+	
+	public ManchesterOWLSyntaxDescriptionParser getManchesterURIDescriptionParser() {
+		return manchesterURIDescriptionParser;
+	}
 
 }

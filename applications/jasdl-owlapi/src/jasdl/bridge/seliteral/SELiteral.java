@@ -1,6 +1,5 @@
 package jasdl.bridge.seliteral;
 
-import static jasdl.util.Common.strip;
 import jasdl.asSemantics.JasdlAgent;
 import jasdl.bridge.alias.Alias;
 import jasdl.bridge.alias.AliasFactory;
@@ -14,9 +13,9 @@ import jason.asSyntax.Literal;
 import jason.asSyntax.StringTermImpl;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
+import jason.asSyntax.VarTerm;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Set;
 
 import org.semanticweb.owl.model.OWLClass;
@@ -27,24 +26,19 @@ import org.semanticweb.owl.model.OWLObject;
 import org.semanticweb.owl.model.OWLOntology;
 
 /**
- * Extends a Jason literal to provide ontology-related functionality. There is a specialisation of this class
- * for each type of SELiteral JASDL supports.
+ * Wraps around a Jason literal to provide ontology-related functionality. Follows the "Decorator" design pattern.
+ * There is a specialisation of this class for each type of SELiteral JASDL supports, each adding functionality appropriate to its type.
+ * 
+ * TODO: This class could be made much more efficient by storing values to avoid recalculation
  * @author Tom Klapiscak
  *
  */
-public class SELiteral extends Literal{
-	
-	protected JasdlAgent agent;
-	
+public class SELiteral{
 	public static String ONTOLOGY_ANNOTATION_FUNCTOR = "o";
 	
-	protected Structure ontologyAnnotation;
+	protected JasdlAgent agent;	
 	
-	protected Atom ontologyLabel;
-	protected OWLOntology ontology;
-	
-
-	
+	protected Literal literal;	
 
 	/**
 	 * Construct an SELiteral from an existing Literal possesing valid constructs required for semantic enrichment.
@@ -54,86 +48,53 @@ public class SELiteral extends Literal{
 	 * @param l		a Literal possesing valid constructs required for semantic enrichment
 	 * @throws JasdlException	if the literal does not possess valid constructs required for semantic enrichment
 	 */
-	public SELiteral(Literal l, JasdlAgent agent) throws JasdlException{
-		super(l);
-		this.agent = agent;
-		ListTerm os = getAnnots(ONTOLOGY_ANNOTATION_FUNCTOR);
+	public SELiteral(Literal literal, JasdlAgent agent) throws JasdlException{
+		this.literal = (Literal)literal.clone(); // TODO: for some reason, without cloning the literal we have trouble with annotations on incoming propsotional content?!
+		this.agent = agent;	
+	}
+	
+	private Structure getOntologyAnnotation() throws JasdlException{
+		Structure annot = null;
+		ListTerm os = literal.getAnnots(ONTOLOGY_ANNOTATION_FUNCTOR);
 		if(os.size() == 0){
-			throw new NotEnrichedException(l+" is not semantically-enriched");
+			throw new NotEnrichedException("Not semantically-enriched");
 		}
-		InvalidSELiteralException invalid = new InvalidSELiteralException("Invalid ontology annotation on "+l);
 		if(os.size() > 1){
-			throw invalid;
+			throw new InvalidSELiteralException("Multiple ontology annotations present");
 		}
 		Term t = os.get(0);
 		if(!(t instanceof Structure)){
-			throw invalid;
+			throw new InvalidSELiteralException("Invalid ontology annotation term");
 		}
-		ontologyAnnotation = (Structure)t;
-		if(ontologyAnnotation.getArity() != 1){
-			throw invalid;
+		annot = (Structure)t;
+		
+		if(annot.getArity() != 1){
+			throw new InvalidSELiteralException("Invalid ontology annotation arity");
 		}
-		if(ontologyAnnotation.getTerm(0).isAtom()){
-			ontologyLabel = (Atom)ontologyAnnotation.getTerm(0);
-			ontology = agent.getLabelManager().getRight(ontologyLabel);
-		}else if(ontologyAnnotation.getTerm(0).isString()){
-			parseOntologyURI(ontologyAnnotation.getTerm(0).toString());			
+		return annot;
+	}
+	
+	public OWLOntology getOntology() throws JasdlException{
+		Structure o = getOntologyAnnotation();
+		if(o.getTerm(0).isStructure()){ // Checking for atomicity directly does not seem to work
+			return agent.getLabelManager().getRight((Atom)o.getTerm(0));
+		}else if(o.getTerm(0).isString()){
+			return agent.getOntology(o.getTerm(0).toString());
 		}else{
-			throw invalid;
-		}
+			throw new InvalidSELiteralException("Invalid ontology annotation format on "+o);
+		}		
+	}
+	
+	public Atom getOntologyLabel() throws JasdlException{
+		return agent.getLabelManager().getLeft(getOntology());
 	}
 
-	
-	private void parseOntologyURI(String _uri) throws JasdlException{
-		URI uri;
-		try {
-			uri = new URI( strip(_uri, "\"")); // quotes stripped
-		} catch (URISyntaxException e) {
-			throw new InvalidSELiteralException("Invalid physical ontology URI in "+ontologyAnnotation+". Reason: "+e);
-		}
-		try{
-			ontology = agent.getPhysicalURIManager().getLeft(uri);
-			ontologyLabel = agent.getLabelManager().getLeft(ontology);
-		}catch(UnknownMappingException e){
-			// TODO: instantiate novel ontology
-		}
-	}
-	
-	/**
-	 * Sets the ontology annotation of this SELiteral to be the fully-qualified physical namespace of the associated ontology
-	 */
-	public void qualifyOntologyAnnotation(){
-		ontologyAnnotation.setTerm(0, new StringTermImpl(agent.getOntologyManager().getPhysicalURIForOntology(ontology).toString()));
-	}
-	
-	/**
-	 * Sets the ontology annotation of this SELiteral to be the label of the associated ontology
-	 */
-	public void unqualifyOntologyAnnotation(){
-		ontologyAnnotation.setTerm(0, ontologyLabel);
-	}	
-	
-	public void dropOntologyAnnotation(){
-		delAnnot(ontologyAnnotation);
-	}
-	
-	
-	/**
-	 * Prevents uneccessary re-processing steps
-	 * @param l
-	 * @throws JasdlException
-	 */
-	public SELiteral(SELiteral l) throws JasdlException{
-		super(l);
-		this.agent = l.agent;
-		this.ontologyLabel = l.ontologyLabel;		
-	}
 		
 	/**
 	 * Convenience method, calls AliasFactory
 	 * @return	the alias associated with this SELiteral
 	 */
-	public Alias toAlias(){
+	public Alias toAlias() throws JasdlException{
 		return AliasFactory.INSTANCE.create(this);
 	}
 	
@@ -181,27 +142,14 @@ public class SELiteral extends Literal{
 		return agent.getToAxiomConverter().retrieve(this);
 	}
 	
-	public Atom getOntologyLabel(){
-		return ontologyLabel;
-	}
-	
-	/**
-	 * Remains dynamic incase label<->ontology mapping changes
-	 * @return
-	 */
-	public OWLOntology getOntology() throws UnknownMappingException{
-		return agent.getLabelManager().getRight(ontologyLabel);
-	}
-	
-	
 	/**
 	 * Placed here for convenient (varying) usage by subclasses
 	 * Validates since terms are mutable
 	 * @return
 	 * @throws UnknownMappingException
 	 */
-	public OWLIndividual getOWLIndividual(int term) throws JasdlException{
-		return getOWLIndividual(getTerm(term));
+	public OWLIndividual getOWLIndividual(int i) throws JasdlException{
+		return getOWLIndividual(literal.getTerm(i));
 	}
 	
 	/**
@@ -214,13 +162,19 @@ public class SELiteral extends Literal{
 	 * @throws UnknownMappingException
 	 */
 	public OWLIndividual getOWLIndividual(Term term) throws JasdlException{	
-		if(!(term instanceof Atom)){
-			throw new InvalidSELiteralException(term+" must be atomic");
-		}
-		Atom atom = (Atom)term;
+		//agent.getLogger().info("term: "+term);
+		//if(term.isVar()){
+		//	term = ((VarTerm)term).getValue();
+		//}
+		
+		//if(!(term.isAtom())){
+		//	throw new InvalidSELiteralException(term+" must be atomic in literal "+literal);
+		//}
+		//Atom atom = (Atom);
+		Atom atom = new Atom(term.toString());
 		OWLIndividual i;
 		try {
-			i = (OWLIndividual)agent.getAliasManager().getRight(AliasFactory.INSTANCE.create(atom, ontologyLabel));
+			i = (OWLIndividual)agent.getAliasManager().getRight(AliasFactory.INSTANCE.create(atom, agent.getLabelManager().getLeft(getOntology())));
 		} catch (UnknownMappingException e1) {
 			Alias alias = AliasFactory.INSTANCE.create(atom, agent.getPersonalOntologyLabel());
 			try {
@@ -236,10 +190,64 @@ public class SELiteral extends Literal{
 			}
 		} catch(ClassCastException e){
 			throw new InvalidSELiteralException(atom+" does not refer to an individual");
-		}
-		
+		}		
 		return i;			
 	}
+	
+	
+	public Literal getLiteral(){
+		return literal;
+	}
+		
+	
+	public SELiteralClassAssertion asClassAssertion() throws JasdlException{
+		return new SELiteralClassAssertion(literal, agent);
+	}
+	public SELiteralObjectPropertyAssertion asObjectPropertyAssertion() throws JasdlException{
+		return new SELiteralObjectPropertyAssertion(literal, agent);
+	}		
+	public SELiteralDataPropertyAssertion asDataPropertyAssertion() throws JasdlException{
+		return new SELiteralDataPropertyAssertion(literal, agent);
+	}	
+	public SELiteralAllDifferentAssertion asAllDifferentAssertion() throws JasdlException{
+		return new SELiteralAllDifferentAssertion(literal, agent);
+	}	
+	
+	
+	
+	// *** Mutators ***
+	
+	/**
+	 * Sets the ontology annotation of this SELiteral to be the fully-qualified physical namespace of the associated ontology
+	 */
+	public void qualifyOntologyAnnotation() throws JasdlException{
+		getOntologyAnnotation().setTerm(0, new StringTermImpl(agent.getPhysicalURIManager().getRight((getOntology())).toString()));
+	}
+	
+	/**
+	 * Sets the ontology annotation of this SELiteral to be the label of the associated ontology.
+	 * Will instantiate ontology if unknown.
+	 */
+	public void unqualifyOntologyAnnotation() throws JasdlException{		
+		getOntologyAnnotation().setTerm(0, getOntologyLabel());
+	}	
+	
+	/**
+	 * Clones the literal associated with this SELiteral, replacing its functor with the suppleid
+	 * @param newFunctor	functor to replace the original functor with
+	 * @return
+	 */
+	public void mutateFunctor(String newFunctor) throws JasdlException{
+		Literal mutated = new Literal(!literal.negated(), newFunctor); // negation dealt with by ~ prefix
+		mutated.addTerms(literal.getTerms());
+		mutated.addAnnots(literal.getAnnots());
+		literal = mutated;
+	}	
+
+	//	*************	
+	
+	
+	
 	
 	
 	

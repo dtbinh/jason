@@ -24,8 +24,10 @@ import static jasdl.architecture.JasdlAgArch.NAMED_ANNOTATION_FUNCTOR;
 import jasdl.asSemantics.JasdlAgent;
 import jasdl.bridge.alias.Alias;
 import jasdl.bridge.seliteral.SELiteral;
+import jasdl.bridge.seliteral.SELiteralAllDifferentAssertion;
 import jasdl.util.JasdlException;
 import jasdl.util.NotEnrichedException;
+import jasdl.util.UnknownMappingException;
 import jason.asSyntax.ListTerm;
 import jason.asSyntax.ListTermImpl;
 import jason.asSyntax.Literal;
@@ -38,6 +40,8 @@ import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.semanticweb.owl.model.OWLNamedObject;
+import org.semanticweb.owl.model.OWLObject;
 import org.semanticweb.owl.model.OWLOntology;
 
 public class OutgoingPropContProcessingStrategy implements PropContProcessingStrategy {
@@ -51,22 +55,39 @@ public class OutgoingPropContProcessingStrategy implements PropContProcessingStr
 	 * @param l
 	 * @throws JasdlException
 	 */
-	public Literal process(Literal l, JasdlAgent agent) throws JasdlException {
+	public Literal process(Literal l, JasdlAgent agent, String src) throws JasdlException {
+		agent.getLogger().fine("Processing outgoing "+l);
+		
+		Literal result = l;
 		try{
-			SELiteral sl = new SELiteral(l, agent);	
+			SELiteral sl = agent.getSELiteralFactory().create(l);				
+
+			//	qualify o
+			sl.qualifyOntologyAnnotation();
 			
-			StringTerm expression = new StringTermImpl( agent.getManchesterObjectRenderer().render(sl.toOWLObject()));
+			OWLObject obj = sl.toOWLObject();			
+			String expression = agent.getManchesterObjectRenderer().render(obj);
+			StringTerm expressionTerm = new StringTermImpl(expression);			
+			Alias alias = sl.toAlias();			
 			
-			
-			Alias alias = sl.toAlias();
-			if(alias.getLabel().equals(agent.getPersonalOntologyLabel())){ // do we have an anonymous run-time defined class?				
+			if(obj instanceof OWLNamedObject){				
 				
+				// unambiguously refer to named entity				
+				if(!(sl instanceof SELiteralAllDifferentAssertion)){// not required if all_different
+					Structure named = new Structure(NAMED_ANNOTATION_FUNCTOR);			
+					named.addTerm(expressionTerm);			
+					sl.getLiteral().addAnnot(named);
+				}			
+				
+			}else{ // we have an anonymous run-time defined class
+				
+				// construct anon annotation
 				Structure anon = new Structure(ANON_ANNOTATION_FUNCTOR);
-				anon.addTerm(expression);				
+				anon.addTerm(expressionTerm);				
 				
 				// add set of prerequisite ontologies
 				Set<OWLOntology> prereqs = new HashSet<OWLOntology>();
-				String[] tokens = expression.toString().split(" ");
+				String[] tokens = expression.toString().split("[ |\n]");
 				for(String token : tokens){
 					try {
 						URI entityURI = new URI(token);
@@ -74,36 +95,24 @@ public class OutgoingPropContProcessingStrategy implements PropContProcessingStr
 						prereqs.add(agent.getLogicalURIManager().getLeft(ontologyURI));
 					} catch (URISyntaxException e) {	
 						// do nothing, probably a keyword
+					} catch(UnknownMappingException e){
+						// do nothing, probably a keyword
 					}
 				}
 				ListTerm list = new ListTermImpl();
 				for(OWLOntology prereq : prereqs){
-					list.add(agent.getLabelManager().getLeft(prereq));
+					list.add( new StringTermImpl(agent.getPhysicalURIManager().getRight(prereq).toString()) );
 				}
 				anon.addTerm(list);
 				
-				l.addAnnot(anon);				
-				
-				// drop o, not needed
-				sl.dropOntologyAnnotation();				
-				
-			}else{
-				// qualify o
-				sl.qualifyOntologyAnnotation();
-				
-				// unambiguously refer to named entity
-				Structure named = new Structure(NAMED_ANNOTATION_FUNCTOR);			
-				named.addTerm(expression);			
-				sl.addAnnot(named);
-			}
-			
-			
-			
-			return sl;
+				sl.getLiteral().addAnnot(anon);				
+			}			
+			result = sl.getLiteral();
 		}catch(NotEnrichedException e){
 			// do nothing
-			return l;
 		}
+		return result;
 	}
+	
 
 }

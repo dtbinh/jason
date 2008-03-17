@@ -17,18 +17,14 @@ public class SELiteralAllDifferentAssertion extends SELiteral{
 	public SELiteralAllDifferentAssertion(Literal l, JasdlAgent agent) throws JasdlException {
 		super(l, agent);
 	}
-
-	public SELiteralAllDifferentAssertion(SELiteral l) throws JasdlException {
-		super(l);
-	}
 	
 	/**
 	 * Validates since terms are mutable
 	 * @return
 	 */
 	public Set<OWLIndividual> getOWLIndividuals() throws JasdlException{
-		if(!getTerm(0).isList()) throw new InvalidSELiteralException("The first term of an all_different assertion must be a list");
-		ListTerm list = (ListTerm)getTerm(0);
+		if(!literal.getTerm(0).isList()) throw new InvalidSELiteralException("The first term of an all_different assertion must be a list");
+		ListTerm list = (ListTerm)literal.getTerm(0);
 		Set<OWLIndividual> is = new HashSet<OWLIndividual>();
 		for(Term i : list){
 			is.add(getOWLIndividual(i));

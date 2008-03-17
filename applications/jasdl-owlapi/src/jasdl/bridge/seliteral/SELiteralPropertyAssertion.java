@@ -15,9 +15,6 @@ public abstract class SELiteralPropertyAssertion extends SELiteral{
 		super(l, agent);
 	}
 
-	public SELiteralPropertyAssertion(SELiteral l) throws JasdlException {
-		super(l);
-	}
 	
 	
 	public OWLIndividual getSubject() throws JasdlException{

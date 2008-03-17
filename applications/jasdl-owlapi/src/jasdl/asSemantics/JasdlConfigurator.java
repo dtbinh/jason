@@ -6,30 +6,28 @@ import jasdl.bridge.AllDifferentPlaceholder;
 import jasdl.bridge.alias.Alias;
 import jasdl.bridge.alias.AliasFactory;
 import jasdl.bridge.alias.MappingStrategy;
-import jasdl.util.DuplicateMappingException;
 import jasdl.util.JasdlException;
-import jasdl.util.UnknownMappingException;
 import jason.asSyntax.Atom;
 import jason.runtime.Settings;
 
 import java.lang.reflect.Constructor;
 import java.net.URI;
-import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 
-import org.mindswap.pellet.owlapi.Reasoner;
 import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyCreationException;
 
 public class JasdlConfigurator {
 	private static String MAS2J_PREFIX					= "jasdl";
 	private static String MAS2J_ONTOLOGIES 				= "_ontologies";
 	private static String MAS2J_URI						= "_uri";
 	private static String MAS2J_MAPPING_STRATEGIES		= "_mapping_strategies";
-	private static String MAS2J_MAPPING_MANUAL			= "_mapping_manual";
+	private static String MAS2J_MAPPING_MANUAL			= "_mapping_manual";	
+	private static String MAS2J_AGENT_NAME				= "_agent_name";
+	
+	public static List<Atom> reservedOntologyLabels = Arrays.asList( new Atom[] {new Atom("default"), new Atom("self")});
 	
 	
 	private JasdlAgent agent;
@@ -40,10 +38,16 @@ public class JasdlConfigurator {
 	
 	public void configure(Settings stts) throws JasdlException{
 		try{
+			// load agent name
+			agent.setAgentName(prepareUserParameter( stts, MAS2J_PREFIX  + MAS2J_AGENT_NAME ));
+			
+			// load default mapping strategies
+			agent.setDefaultMappingStrategies(getMappingStrategies(stts, new Atom("default"))); //implication "default" is a reserved ontology label
+			
 			loadOntologies(stts);
 			applyManualMappings(stts);
-			applyMiscMappings();
-			applyMappingStrategies(stts);
+			applyMiscMappings();		
+			
 			
 		}catch(JasdlException e){
 			throw new JasdlException("JASDL agent encountered error during configuration. Reason: "+e);
@@ -58,16 +62,24 @@ public class JasdlConfigurator {
 	private void loadOntologies(Settings stts) throws JasdlException{
 		String[] labels = splitUserParameter( stts, MAS2J_PREFIX + MAS2J_ONTOLOGIES );
 		for(String label : labels){
+			if(reservedOntologyLabels.contains(label)){
+				throw new JasdlException(label+" is a reserved ontology label");
+			}			
 			URI physicalURI;
 			try {
 				physicalURI = new URI(prepareUserParameter( stts, MAS2J_PREFIX + "_" + label + MAS2J_URI ));
-				agent.loadOntology(new Atom(label), physicalURI);
+				agent.loadOntology(new Atom(label), physicalURI, getMappingStrategies(stts, new Atom(label)));
 			} catch (Exception e) {
 				throw new JasdlException("Unable to instantiate ontology \""+label+"\". Reason: "+e);
 			}			
 		}
 	}
 	
+	/**
+	 * Overrides auto mappings!
+	 * @param stts
+	 * @throws JasdlException
+	 */
 	private void applyManualMappings(Settings stts) throws JasdlException{
 		for(Atom label : agent.getLabelManager().getLefts()){
 			String[] mappings = splitUserParameter(stts, MAS2J_PREFIX + "_" + label + MAS2J_MAPPING_MANUAL);
@@ -78,6 +90,11 @@ public class JasdlConfigurator {
 					Alias alias = AliasFactory.INSTANCE.create(new Atom(split[0].trim()), label);
 					URI uri = URI.create(ontology.getURI() + "#" + split[1].trim());
 					OWLEntity entity = agent.toEntity(uri);
+					
+					if(agent.getAliasManager().isKnownRight(entity)){ // manual mappings override automatic ones
+						agent.getAliasManager().removeByRight(entity);
+					}
+					
 					agent.getAliasManager().put(alias, entity);
 				}
 			}
@@ -92,53 +109,29 @@ public class JasdlConfigurator {
 	 * Applies mappings to all resources in an ontology according to composition of supplied strategies.
 	 * @param stts	.mas2j settings
 	 */
-	private void applyMappingStrategies(Settings stts) throws JasdlException{
-		for(Atom label : agent.getLabelManager().getLefts()){
-			List<MappingStrategy> strategies = new Vector<MappingStrategy>();
-			String[] strategyNames = splitUserParameter(stts, MAS2J_PREFIX + "_" + label + MAS2J_MAPPING_STRATEGIES);
-			for(String strategyName : strategyNames){
-				if(strategyName.length() > 0){
-					try {
-						Class cls = Class.forName(strategyName);
-						Constructor ct = cls.getConstructor(new Class[] {});
-						MappingStrategy strategy = (MappingStrategy)ct.newInstance(new Object[] {});
-						if(strategy == null){
-							throw new JasdlException("Unknown mapping strategy class: "+strategy);
-						}else{
-							strategies.add(strategy);
-						}
-					}catch (Throwable e) {
-						throw new JasdlException("Error instantiating mapping strategy "+strategyName+". Reason: "+e);
+	private List<MappingStrategy> getMappingStrategies(Settings stts, Atom label) throws JasdlException{
+		List<MappingStrategy> strategies = new Vector<MappingStrategy>();
+		String[] strategyNames = splitUserParameter(stts, MAS2J_PREFIX + "_" + label + MAS2J_MAPPING_STRATEGIES);
+		for(String strategyName : strategyNames){
+			if(strategyName.length() > 0){
+				try {
+					Class cls = Class.forName(strategyName);
+					Constructor ct = cls.getConstructor(new Class[] {});
+					MappingStrategy strategy = (MappingStrategy)ct.newInstance(new Object[] {});
+					if(strategy == null){
+						throw new JasdlException("Unknown mapping strategy class: "+strategy);
+					}else{
+						strategies.add(strategy);
 					}
+				}catch (Throwable e) {
+					throw new JasdlException("Error instantiating mapping strategy "+strategyName+". Reason: "+e);
 				}
 			}
-			
-			OWLOntology ontology = agent.getLabelManager().getRight(label);
-			
-			// we need to construct a reasoner specifically for this to isolate entities from just one ontology
-			Reasoner reasoner = new Reasoner(agent.getOntologyManager());			
-			Set<OWLOntology> imports = agent.getOntologyManager().getImportsClosure(ontology);
-			reasoner.loadOntologies(imports);
-			
-			List<OWLEntity> entities = new Vector<OWLEntity>();
-			entities.addAll(reasoner.getClasses());
-			entities.addAll(reasoner.getProperties());
-			entities.addAll(reasoner.getIndividuals());
-			
-			for(OWLEntity entity : entities){
-				try{
-					String _functor = entity.getURI().getFragment();					
-					for(MappingStrategy strategy : strategies){
-						_functor = strategy.apply(_functor);
-					}
-					Atom functor = new Atom(_functor);
-					agent.getAliasManager().put(AliasFactory.INSTANCE.create(functor, label), entity);
-				}catch(DuplicateMappingException e){
-					// only apply mapping strategies to entities that have not been manually mapped already
-				}
-			}
-
-		}		
+		}
+		if(strategies.size() == 0){
+			strategies = agent.getDefaultMappingStrategies();
+		}
+		return strategies;	
 	}	
 	
 	/**

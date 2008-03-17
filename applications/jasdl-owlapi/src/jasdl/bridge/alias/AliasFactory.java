@@ -1,6 +1,7 @@
 package jasdl.bridge.alias;
 
 import jasdl.bridge.seliteral.SELiteral;
+import jasdl.util.JasdlException;
 import jason.asSyntax.Atom;
 
 /**
@@ -42,8 +43,8 @@ public class AliasFactory {
 	 * @param sl	the SELiteral the alias will represent
 	 * @return		an alias representing the supplied SELiteral
 	 */
-	public Alias create(SELiteral sl){
-		return new Alias( (sl.negated()?"~":"") + sl.getFunctor(), sl.getOntologyLabel());
+	public Alias create(SELiteral sl) throws JasdlException{
+		return new Alias( (sl.getLiteral().negated()?"~":"") + sl.getLiteral().getFunctor(), sl.getOntologyLabel());
 	}
 	
 	/**

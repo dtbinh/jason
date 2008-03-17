@@ -21,7 +21,6 @@ package jasdl.asSyntax;
 
 import static jasdl.util.Common.getTEOp;
 import jasdl.asSemantics.JasdlAgent;
-import jasdl.bridge.alias.Alias;
 import jasdl.bridge.seliteral.SELiteral;
 import jasdl.util.JasdlException;
 import jasdl.util.NotEnrichedException;
@@ -58,6 +57,7 @@ public class JasdlPlanLibrary extends PlanLibrary{
 		}catch(NotEnrichedException e){
 			super.add(p);
 		}catch(Exception e){
+			e.printStackTrace();
 			throw new JasdlException("Exception caught while initialising JasdlPlanLibrary: "+e);
 		}
 	}
@@ -136,8 +136,8 @@ public class JasdlPlanLibrary extends PlanLibrary{
 		Collections.reverse(functors);
 			
 		for(String functor : functors){
-			Literal imaginaryLiteral = mutateLiteral(l, functor);
-			Trigger imaginaryTrigger = new Trigger(getTEOp(te), te.getType(), imaginaryLiteral);
+			sl.mutateFunctor(functor);
+			Trigger imaginaryTrigger = new Trigger(getTEOp(te), te.getType(), sl.getLiteral());
 			moreGeneral.add(imaginaryTrigger);				
 		}
 		return moreGeneral;
@@ -163,17 +163,6 @@ public class JasdlPlanLibrary extends PlanLibrary{
 		return os;		
 	}	
 	
-	/**
-	 * Creates a new literal identical except functor is replaced by new functor
-	 * @param original		the original literal
-	 * @param newFunctor	functor to replace the original functor with
-	 * @return
-	 */
-	private static Literal mutateLiteral(Literal original, String newFunctor){
-		Literal mutated = new Literal(newFunctor); // negation dealt with by ~ prefix
-		mutated.addTerms(original.getTerms());
-		mutated.addAnnots(original.getAnnots());
-		return mutated;
-	}	
+
 
 }

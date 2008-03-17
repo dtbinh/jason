@@ -30,6 +30,8 @@ import jason.asSyntax.Term;
 
 import java.util.logging.Logger;
 
+import org.coode.manchesterowlsyntax.ManchesterOWLSyntaxDescriptionParser;
+
 /**
  * @author Tom Klapiscak
  * 
@@ -69,7 +71,7 @@ public class define_class extends DefaultInternalAction {
         	
         	JasdlAgent agent = (JasdlAgent)ts.getAg();
         	
-        	agent.defineClass(classname, expr);
+        	agent.defineClass(classname, expr, agent.getManchesterNsPrefixDescriptionParser());
         	
  
             return true;

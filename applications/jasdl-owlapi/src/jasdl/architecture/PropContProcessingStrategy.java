@@ -24,5 +24,5 @@ import jasdl.util.JasdlException;
 import jason.asSyntax.Literal;
 
 public interface PropContProcessingStrategy {
-	public Literal process(Literal propcont, JasdlAgent agent) throws JasdlException;
+	public Literal process(Literal propcont, JasdlAgent agent, String src) throws JasdlException;
 }

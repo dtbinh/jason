@@ -94,4 +94,14 @@ public class MappingManager<X extends Object, Y extends Object> {
 	public Set<Y> getRights(){
 		return yToXMap.keySet();
 	}
+
+	public void removeByLeft(X x){
+		Y y = xToYMap.remove(x);
+		yToXMap.remove(y);		
+	}
+	
+	public void removeByRight(Y y){
+		X x = yToXMap.remove(y);
+		xToYMap.remove(x);		
+	}
 }

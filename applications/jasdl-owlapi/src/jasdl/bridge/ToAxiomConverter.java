@@ -91,7 +91,7 @@ public class ToAxiomConverter {
 	 * @throws JasdlException
 	 */
 	public OWLIndividualAxiom create(SELiteral sl) throws JasdlException{
-		if(!sl.isGround()){
+		if(!sl.getLiteral().isGround()){
 			throw new JasdlException("Cannot create an axiom from unground SELiteral "+sl);
 		}		
 		Set<OWLIndividualAxiom> axioms = convert(sl, false);
@@ -133,7 +133,7 @@ public class ToAxiomConverter {
 		Set<OWLIndividual> is = new HashSet<OWLIndividual>();		
 		OWLDescription desc = sl.getOWLDescription();		
 		
-		if(sl.isGround()){
+		if(sl.getLiteral().isGround()){
 			OWLIndividual i = sl.getOWLIndividual();
 			if(!checkForExistence || agent.getReasoner().hasType(i, desc)){
 				is.add(i);
@@ -196,7 +196,7 @@ public class ToAxiomConverter {
 		Set<OWLIndividual> os = new HashSet<OWLIndividual>();
 		OWLIndividual s = sl.getSubject();
 		OWLObjectProperty p = sl.getPredicate();
-		if(sl.getTerm(RANGE).isGround()){
+		if(sl.getLiteral().getTerm(RANGE).isGround()){
 			OWLIndividual o = sl.getObject();
 			if(!checkForExistence || agent.getReasoner().hasObjectPropertyRelationship(s, p, o)){
 				os.add(o);
@@ -222,7 +222,7 @@ public class ToAxiomConverter {
 		Set<OWLConstant> os = new HashSet<OWLConstant>();
 		OWLIndividual s = sl.getSubject();
 		OWLDataProperty p = sl.getPredicate();
-		if(sl.getTerm(RANGE).isGround()){
+		if(sl.getLiteral().getTerm(RANGE).isGround()){
 			OWLTypedConstant o = sl.getObject();
 			if(!checkForExistence || agent.getReasoner().hasDataPropertyRelationship(s, p, o)){
 				os.add(o);

@@ -15,9 +15,6 @@ public class SELiteralObjectPropertyAssertion extends SELiteralPropertyAssertion
 		super(l, agent);
 	}
 
-	public SELiteralObjectPropertyAssertion(SELiteral l) throws JasdlException {
-		super(l);
-	}
 	
 	public OWLObjectProperty getPredicate() throws JasdlException{
 		return (OWLObjectProperty)toOWLObject();

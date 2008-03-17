@@ -32,10 +32,16 @@ MAS dalt08 {
     agents:
 	       travel_agent 
        	   travel_agent.asl
-	       [				
-	       	jasdl_ontologies="travel,places",
+	       [		
+		  	jasdl_agent_name = "travelagent",
+			// implication, "default" is a reserved ontology name
+			// also, "self"
+			jasdl_default_mapping_strategies="jasdl.bridge.alias.DecapitaliseMappingStrategy", // applied to incoming ontologies and those given no automapping
+			//TODO: what about when automapping causes a conflict?! anonymous aliasing?
+		   
+	       	jasdl_ontologies="travel",
 			jasdl_travel_uri="http://www.dur.ac.uk/t.g.klapiscak/onts/travel.owl",
-			jasdl_travel_mapping_strategies="jasdl.bridge.alias.DecapitaliseMappingStrategy",
+			//jasdl_travel_mapping_strategies="jasdl.bridge.alias.DecapitaliseMappingStrategy",
 			jasdl_travel_mapping_manual="small_beach=beach",
 			
 			jasdl_places_uri="http://www.dur.ac.uk/t.g.klapiscak/onts/places.owl",
@@ -51,12 +57,17 @@ MAS dalt08 {
 		   
 	       customer 
        	   customer.asl
-	       [		   
-	       	jasdl_ontologies="holidays",
+	       [
+		    jasdl_agent_name = "customer",
+		   
+	       	jasdl_ontologies="holidays,places",
 			//jasdl_holidays_uri="file:///home/tom/Desktop/Project/workspace/jason/applications/jasdl-owlapi/examples/travel_agent/ontologies/travel.owl",
 			jasdl_holidays_uri="http://www.dur.ac.uk/t.g.klapiscak/onts/travel.owl",
 			jasdl_holidays_mapping_strategies="jasdl.bridge.alias.DecapitaliseMappingStrategy",
-			jasdl_holidays_mapping_manual="small_beach=beach, luxuriousHotel=LuxuryHotel" // arbitrary primitive mappings handled correctly
+			jasdl_holidays_mapping_manual="small_beach=beach, luxuriousHotel=LuxuryHotel", // arbitrary primitive mappings handled correctly
+			
+			jasdl_places_uri="http://www.dur.ac.uk/t.g.klapiscak/onts/places.owl",
+			jasdl_places_mapping_strategies="jasdl.bridge.alias.DecapitaliseMappingStrategy"
 			
 			/* Example per-agent proxy settings used for ontology instantiation */
 			//jasdl_http_proxy="127.0.0.1:3128"

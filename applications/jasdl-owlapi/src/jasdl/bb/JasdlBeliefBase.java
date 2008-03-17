@@ -24,13 +24,14 @@ public class JasdlBeliefBase extends DefaultBeliefBase{
 	private JasdlAgent agent;
 
 	@Override
-	public boolean add(Literal l) {
+	public boolean add(Literal l) {		
 		getLogger().fine("Adding "+l);
 		try{
 			SELiteral sl = agent.getSELiteralFactory().create(l);
+			getLogger().fine("... "+sl);
 			OWLOntology ontology = sl.getOntology();
 			OWLIndividualAxiom axiom = sl.createAxiom();
-			getLogger().fine("... as axiom: "+axiom);
+			getLogger().fine("..... as axiom: "+axiom);
 			AddAxiom add = new AddAxiom(ontology, axiom);
 			agent.getOntologyManager().applyChange(add);
 			agent.getReasoner().refresh();
@@ -43,7 +44,8 @@ public class JasdlBeliefBase extends DefaultBeliefBase{
 			}
 			
 			return true;
-		}catch(NotEnrichedException e){			
+		}catch(NotEnrichedException e){	
+			getLogger().fine("... semantically-naive");
 			return super.add(l); // semantically-naive, use standard Jason mechanisms
 		}catch(Exception e){
 			getLogger().warning("Exception caught adding SELiteral "+l+" to belief base: ");
@@ -112,11 +114,11 @@ public class JasdlBeliefBase extends DefaultBeliefBase{
 					Set<OWLIndividual> is = diff.getOWLIndividuals();
 					Set<OWLIndividual> js = ((OWLDifferentIndividualsAxiom)axiom).getIndividuals();
 					if(is.containsAll(js)){
-						found.setTerm(0, l.getTerm(0)); // Sets are equivalent, change to original ordering
+						found.getLiteral().setTerm(0, l.getTerm(0)); // Sets are equivalent, change to original ordering
 					}
 				}
 				
-				relevant.add(found);
+				relevant.add(found.getLiteral());
 			}
 			getLogger().fine("... found: "+relevant);
 		}catch(NotEnrichedException e){

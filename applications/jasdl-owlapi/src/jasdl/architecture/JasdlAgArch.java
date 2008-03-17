@@ -30,8 +30,8 @@ import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 import jason.asSyntax.VarTerm;
 
-import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
 public class JasdlAgArch extends AgArch {
@@ -48,7 +48,7 @@ public class JasdlAgArch extends AgArch {
 		super.checkMail();		
 		
 		// temporary set to hold processed message clones
-		Queue<Message> tempMail = new PriorityQueue<Message>();		
+		Queue<Message> tempMail = new ConcurrentLinkedQueue<Message>();		
 		Queue<Message> mail = getTS().getC().getMailBox();
 		
 		// mustn't affect original message object, otherwise effects are global (i.e. at infrastructure level) 
@@ -67,21 +67,21 @@ public class JasdlAgArch extends AgArch {
 		mail.addAll(tempMail);
 		
 		if(!mail.isEmpty()){
-			getLogger().info("Pending messages: "+mail);
+			getLogger().fine("Pending messages: "+mail);
 		}
 	}
 
 	@Override
 	public void sendMsg(Message msg) throws Exception {
 		processMessage(msg, outgoingStrategy);
-		getLogger().info("Sending message: "+msg);
+		getLogger().fine("Sending message: "+msg);
 		super.sendMsg(msg);
 	}
 	
 	@Override
 	public void broadcast(Message msg) throws Exception {
 		processMessage(msg, outgoingStrategy);
-		getLogger().finest("Broadcasting message: "+msg);
+		getLogger().fine("Broadcasting message: "+msg);
 		super.broadcast(msg);
 	}	
 	
@@ -98,28 +98,30 @@ public class JasdlAgArch extends AgArch {
 		Object propcont = msg.getPropCont();
 		if(propcont == null){
 			return;
-		}			
-		if(propcont instanceof Structure){ // only Structures require processing
-			propcont = processStructure((Structure)propcont, strategy);
 		}
-		msg.setPropCont(propcont);
+		if(propcont instanceof Structure){ // only Structures require processing
+			msg.setPropCont(processStructure((Structure)propcont, strategy, msg.getSender()));
+		}
+		
 	}
 	
 
-	private Structure processStructure(Structure struct, PropContProcessingStrategy strategy) throws JasdlException{
+	private Structure processStructure(Structure struct, PropContProcessingStrategy strategy, String src) throws JasdlException{
 		
-		// Process outer SE-enriched content
-		if(struct instanceof Literal){ // processing strategies only apply to Literals
-			Literal l = (Literal)struct;
-			try{
-				struct = strategy.process(l, getAgent());
-			}catch(JasdlException e){
-				e.printStackTrace();
-			}
-		}			
+				
 		
 		// recurse down terms and lists (for "bundled" SE-enriched content)
 		if(struct.getArity()>0){ // if we have any terms to process!
+			// Process outer SE-enriched content
+			if(struct instanceof Literal){ // processing strategies only apply to Literals
+				Literal l = (Literal)struct;
+				try{
+					struct = strategy.process(l, getAgent(), src);
+				}catch(JasdlException e){
+					e.printStackTrace();
+				}
+			}	
+			
 			//int i=0;
 			//for(Term _term : struct.getTerms()){ - mustn't use in case struct is a list		
 			if(struct.isVar()){
@@ -129,7 +131,7 @@ public class JasdlAgArch extends AgArch {
 				ListTermImpl newList = new ListTermImpl(); // a "clone"
 				for(Term e : ((ListTerm)struct).getAsList()){
 					if(e instanceof Structure){
-						Structure alteredTerm = (Structure)processStructure((Structure)e, strategy);
+						Structure alteredTerm = (Structure)processStructure((Structure)e, strategy, src);
 						newList.append(alteredTerm);
 					}
 				}
@@ -139,7 +141,7 @@ public class JasdlAgArch extends AgArch {
 					Term _term = struct.getTerm(i);
 					if(_term instanceof Structure){
 						Structure term = (Structure)_term;
-						Structure alteredTerm = (Structure)processStructure(term, strategy);						
+						Structure alteredTerm = (Structure)processStructure(term, strategy, src);						
 						struct.setTerm(i, alteredTerm); // modifies original struct
 					}
 				}

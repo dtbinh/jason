@@ -44,16 +44,7 @@
 	+museums(scienceMuseum)[o(travel)];
 	+hasActivity(london, scienceMuseum)[o(travel)];	
 	+hotel(travel_lodge)[o(travel)];
-	
-	+building(hilton)[o(places)];
-	
-	?place(Place)[o(places)];
-	.print(Place);
-	
-	jasdl.ia.define_class(q2, "(places:place and places:building) and travel:hotel");
-	?q2(X)[o(self)];
-	.print(X);
-	
+
 	.print("Completed: Updating Belief Base 1").
 
 

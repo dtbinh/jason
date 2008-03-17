@@ -21,20 +21,16 @@ public class SELiteralDataPropertyAssertion extends SELiteralPropertyAssertion{
 	public SELiteralDataPropertyAssertion(Literal l, JasdlAgent agent) throws JasdlException {
 		super(l, agent);
 	}
-
-	public SELiteralDataPropertyAssertion(SELiteral l) throws JasdlException {
-		super(l);
-	}
 	
 	public OWLDataProperty getPredicate() throws JasdlException{
 		return (OWLDataProperty)toOWLObject();
 	}
 	
 	public OWLTypedConstant getObject() throws JasdlException{		
-		OWLOntology ontology = agent.getLabelManager().getRight(ontologyLabel);		
+		OWLOntology ontology = getOntology();		
 		OWLDataType typ = (OWLDataType)getPredicate().getRanges(ontology).toArray()[0];// will this always return exactly 1 range? If not, how should I deal with it
 		XSDDataType wrapper = XSDDataTypeUtils.get(typ.toString());
-		Term o = getTerm(RANGE);
+		Term o = literal.getTerm(RANGE);
 		if(XSDDataTypeUtils.isStringType(wrapper)){
 			if(!surroundedBy(o.toString(), "\"")){
 				throw new InvalidSELiteralException("Data type mismatch on "+this);
