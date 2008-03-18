@@ -5,6 +5,7 @@ import jasdl.asSemantics.parsing.NSPrefixEntityChecker;
 import jasdl.asSemantics.parsing.URIEntityChecker;
 import jasdl.asSyntax.JasdlPlanLibrary;
 import jasdl.bb.JasdlBeliefBase;
+import jasdl.bridge.AllDifferentPlaceholder;
 import jasdl.bridge.ToAxiomConverter;
 import jasdl.bridge.ToSELiteralConverter;
 import jasdl.bridge.alias.Alias;
@@ -132,7 +133,20 @@ public class JasdlAgent extends JmcaAgent {
 		// load .mas2j JASDL configuration
 		JasdlConfigurator config = new JasdlConfigurator(this);
 		config.configure(stts);
-		return super.initAg(arch, bb, src, stts);
+		
+		TransitionSystem ts =  super.initAg(arch, bb, src, stts);	
+		
+		// *** The following must be performed after super.initAg since we require an agent name to be set ***	
+		
+		// create a personal ontology for (axioms that reference) run-time defined class
+		createOntology(getPersonalOntologyLabel(), getPersonalOntologyURI(), true);		
+		
+		// create a "placeholder" ontology so we can safely map thing and nothing without actually loading the ontology
+		createOntology(AliasFactory.OWL_THING.getLabel(), URI.create("http://www.w3.org/2002/07/owl"), false);	
+		getAliasManager().put( AliasFactory.OWL_THING, getOntologyManager().getOWLDataFactory().getOWLThing());
+		getAliasManager().put( AliasFactory.OWL_NOTHING, getOntologyManager().getOWLDataFactory().getOWLNothing());
+		
+		return ts;
 	}
 	
 	
@@ -237,12 +251,10 @@ public class JasdlAgent extends JmcaAgent {
 			OWLOntology ontology = ontologyManager.loadOntologyFromPhysicalURI(uri);
 			Set<OWLOntology> imports = ontologyManager.getImportsClosure(ontology);
 			reasoner.loadOntologies(imports);
-			reasoner.classify();
-			labelManager.put(label, ontology, false); // (successfully) loaded ontologies never personal
-			physicalURIManager.put(ontology, uri);
-			logicalURIManager.put(ontology, ontology.getURI());
-			getLogger().fine("Loaded ontology from "+uri+" and assigned label "+label);
+			reasoner.classify();			
+			initOntology(ontology, label, uri, ontology.getURI(), false);  // (successfully) loaded ontologies never personal			
 			applyMappingStrategies(ontology, strategies);
+			getLogger().fine("Loaded ontology from "+uri+" and assigned label "+label);
 			return ontology;
 		}catch(OWLOntologyCreationException e){
 			getLogger().warning("Placeholder personal ontology substituted for unreachable "+uri);
@@ -251,6 +263,8 @@ public class JasdlAgent extends JmcaAgent {
 			return createOntology(label, uri, true);	
 		}	
 	}
+	
+
 	
 	/**
 	 * Creates and fully maps a blank ontology. Used for example for "owl" ontology, containing
@@ -263,15 +277,30 @@ public class JasdlAgent extends JmcaAgent {
 	public OWLOntology createOntology(Atom label, URI uri, boolean isPersonal) throws JasdlException{
 		try{
 			OWLOntology ontology = getOntologyManager().createOntology( uri );
-			getLabelManager().put(label, ontology, isPersonal);
-			getPhysicalURIManager().put(ontology, uri);
-			getLogicalURIManager().put(ontology, uri);
 			getReasoner().loadOntology(ontology);
+			initOntology(ontology, label, uri, uri, isPersonal);
 			return ontology;
 		} catch (OWLOntologyCreationException e) {
 			throw new JasdlException("Error instantiating OWL ontology. Reason: "+e);
 		}		
 	}
+	
+	/**
+	 * Common ontology initialisation functionality, sets up various mappings.
+	 * @param ontology
+	 * @param label
+	 * @param physicalURI
+	 * @param logicalURI
+	 * @param isPersonal
+	 * @throws JasdlException
+	 */
+	private void initOntology(OWLOntology ontology, Atom label, URI physicalURI, URI logicalURI, boolean isPersonal) throws JasdlException{
+		labelManager.put(label, ontology, isPersonal);
+		physicalURIManager.put(ontology, physicalURI);
+		logicalURIManager.put(ontology, logicalURI);
+		// create the AllDifferent placeholder entity for this ontology
+		getAliasManager().put( AliasFactory.INSTANCE.all_different(label), new AllDifferentPlaceholder(label)); // must be new instance to avoid duplicate mapping exceptions
+	}	
 	
 	/**
 	 * When a duplicate mapping is encountered, an anonymous alias is created for the offending resource
@@ -364,14 +393,8 @@ public class JasdlAgent extends JmcaAgent {
 	 * @return
 	 */
 	public String getAgentName(){
-		return agentName;
+		return getTS().getUserAgArch().getAgName();
 	}
-	
-	public void setAgentName(String agentName){
-		this.agentName = agentName;
-	}
-	
-	
 
 	
 	public List<MappingStrategy> getDefaultMappingStrategies() {

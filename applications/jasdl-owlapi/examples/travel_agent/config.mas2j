@@ -21,9 +21,7 @@
 
 
 /* Jason Project */
-/* Note: Uses c-build.xml for two reasons:
- * 1) to prevent need for large classpath specification in this file
- * 2) to automatically run ant jar task for jasdl and jmca so up-to-date versions are used
+/* Note: Uses c-build.xml to automatically run ant jar task for jasdl and jmca so up-to-date versions are used
  */
 MAS dalt08 {
 
@@ -32,23 +30,13 @@ MAS dalt08 {
     agents:
 	       travel_agent 
        	   travel_agent.asl
-	       [		
-		  	jasdl_agent_name = "travelagent",
-			// implication, "default" is a reserved ontology name
-			// also, "self"
+	       [			
 			jasdl_default_mapping_strategies="jasdl.bridge.alias.DecapitaliseMappingStrategy", // applied to incoming ontologies and those given no automapping
-			//TODO: what about when automapping causes a conflict?! anonymous aliasing?
-		   
+
 	       	jasdl_ontologies="travel",
 			jasdl_travel_uri="http://www.dur.ac.uk/t.g.klapiscak/onts/travel.owl",
-			//jasdl_travel_mapping_strategies="jasdl.bridge.alias.DecapitaliseMappingStrategy",
-			jasdl_travel_mapping_manual="small_beach=beach",
-			
-			jasdl_places_uri="http://www.dur.ac.uk/t.g.klapiscak/onts/places.owl",
-			jasdl_places_mapping_strategies="jasdl.bridge.alias.DecapitaliseMappingStrategy"
-			
-			//,jasdl_aktors_uri="http://www.aktors.org/ontology/portal.owl",
-			//jasdl_aktors_mapping_strategies="jasdl.bridge.alias.DecapitaliseMappingStrategy"
+			/*jasdl_travel_mapping_strategies="jasdl.bridge.alias.DecapitaliseMappingStrategy",*/ // defaults can be overriden per-ontology here
+			jasdl_travel_mapping_manual="small_beach=beach" // these manual mappings will override any automatic mappings made by strategies
 	       ]
 	       agentArchClass jasdl.architecture.JasdlAgArch
 	       agentClass jasdl.asSemantics.JasdlAgent
@@ -57,29 +45,22 @@ MAS dalt08 {
 		   
 	       customer 
        	   customer.asl
-	       [
-		    jasdl_agent_name = "customer",
+	       [			
+			/* jasdl_default_mapping_strategies="jasdl.bridge.alias.DecapitaliseMappingStrategy", */ // defaults to this
 		   
 	       	jasdl_ontologies="holidays,places",
-			//jasdl_holidays_uri="file:///home/tom/Desktop/Project/workspace/jason/applications/jasdl-owlapi/examples/travel_agent/ontologies/travel.owl",
+			/*jasdl_holidays_uri="file:///home/tom/Desktop/Project/workspace/jason/applications/jasdl-owlapi/examples/travel_agent/ontologies/travel.owl", */
 			jasdl_holidays_uri="http://www.dur.ac.uk/t.g.klapiscak/onts/travel.owl",
 			jasdl_holidays_mapping_strategies="jasdl.bridge.alias.DecapitaliseMappingStrategy",
-			jasdl_holidays_mapping_manual="small_beach=beach, luxuriousHotel=LuxuryHotel", // arbitrary primitive mappings handled correctly
+			jasdl_holidays_mapping_manual="small_beach=beach, luxuriousHotel=LuxuryHotel", // for demonstration of arbitrary primitive mappings being handled correctly
 			
 			jasdl_places_uri="http://www.dur.ac.uk/t.g.klapiscak/onts/places.owl",
 			jasdl_places_mapping_strategies="jasdl.bridge.alias.DecapitaliseMappingStrategy"
-			
-			/* Example per-agent proxy settings used for ontology instantiation */
-			//jasdl_http_proxy="127.0.0.1:3128"
-			//jasdl_https_proxy="127.0.0.1:8080"
-			//jasdl_ftp_proxy="127.0.0.1:8080"
-			//jasdl_socks_proxy="127.0.0.1:1080"
 			]
 	       agentArchClass jasdl.architecture.JasdlAgArch
 	       agentClass jasdl.asSemantics.JasdlAgent
 	       beliefBaseClass jasdl.bb.JasdlBeliefBase	       
 	       #1;		   
-		   
 		   
 		 classpath: "../../lib/**/*.jar";"../../../jmca/lib/jmca.jar";
 }

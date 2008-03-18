@@ -27,6 +27,14 @@ public class JasdlConfigurator {
 	private static String MAS2J_MAPPING_MANUAL			= "_mapping_manual";	
 	private static String MAS2J_AGENT_NAME				= "_agent_name";
 	
+	/**
+	 * List of reserved ontology labels. Currently:
+	 * <ul>
+	 * 	<li> "default" - allows jasdl_default_mapping_strategies to be conveniently used to define the default mapping strategies performed
+	 * 		by this agent on unknown incoming ontologies and predefined ontologies lacking mapping strategy definition</li>
+	 * <li> "self" - refers to the "personal" ontology used by this agent to store axioms referencing run-time defined classes and individuals </li>
+	 * </ul>
+	 */
 	public static List<Atom> reservedOntologyLabels = Arrays.asList( new Atom[] {new Atom("default"), new Atom("self")});
 	
 	
@@ -38,15 +46,11 @@ public class JasdlConfigurator {
 	
 	public void configure(Settings stts) throws JasdlException{
 		try{
-			// load agent name
-			agent.setAgentName(prepareUserParameter( stts, MAS2J_PREFIX  + MAS2J_AGENT_NAME ));
-			
 			// load default mapping strategies
 			agent.setDefaultMappingStrategies(getMappingStrategies(stts, new Atom("default"))); //implication "default" is a reserved ontology label
 			
 			loadOntologies(stts);
-			applyManualMappings(stts);
-			applyMiscMappings();		
+			applyManualMappings(stts);	
 			
 			
 		}catch(JasdlException e){
@@ -133,28 +137,6 @@ public class JasdlConfigurator {
 		}
 		return strategies;	
 	}	
-	
-	/**
-	 * Maps thing and nothing. Must use "owl" label to refer to these, e.g. thing(x)[o(owl)]
-	 * 
-	 * @throws JasdlException
-	 */
-	private void applyMiscMappings() throws JasdlException{
-		
-		// create a "placeholder" ontology so we can safely map thing and nothing without actually loading the ontology
-		agent.createOntology(AliasFactory.OWL_THING.getLabel(), URI.create("http://www.w3.org/2002/07/owl"), false);
-		
-		// create a personal ontology for (axioms that reference) run-time defined class
-		agent.createOntology(agent.getPersonalOntologyLabel(), agent.getPersonalOntologyURI(), true);
-		
-		agent.getAliasManager().put( AliasFactory.OWL_THING, agent.getOntologyManager().getOWLDataFactory().getOWLThing());
-		agent.getAliasManager().put( AliasFactory.OWL_NOTHING, agent.getOntologyManager().getOWLDataFactory().getOWLNothing());
-		
-		for(Atom label : agent.getLabelManager().getLefts()){
-			agent.getAliasManager().put( AliasFactory.INSTANCE.all_different(label), new AllDifferentPlaceholder(label)); // must be new instance to avoid duplicate mapping exceptions
-		}
-	}	
-	
 	
 	
 	

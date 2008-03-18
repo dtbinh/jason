@@ -39,15 +39,11 @@
 	+urbanArea(windsor)[o(travel)];					// windsor is an urban area
 	+isPartOf(windsor, london)[o(travel)];			// windsor is a part of london
 	+isPartOf(london, england)[o(travel)];			// london is a part of england
-	+hasPricePerNight(hilton, 22.0)[o(travel)];		// hilton costs £22 a night
-	
+	+hasPricePerNight(hilton, 22.0)[o(travel)];		// hilton costs £22 a night	
 	+museums(scienceMuseum)[o(travel)];
 	+hasActivity(london, scienceMuseum)[o(travel)];	
 	+hotel(travel_lodge)[o(travel)];
-
 	.print("Completed: Updating Belief Base 1").
-
-
 
 @example_ubb_2[atomic]
 +!example_UBB_2
@@ -88,8 +84,10 @@
 	<-
 	.print("Example: Knowledge Sharing Among Agents");	
 	.send(customer, tell, luxuryHotel(hilton)[o(travel)]);
-	.send(customer, tell, all_different([hilton, fourSeasons])[o(travel)]). // since all_different assertions are treated as SE-literals, we can now send them between agents
-
+	// since all_different assertions are treated as SE-literals, we can now send them between agents
+	.send(customer, tell, all_different([hilton, fourSeasons])[o(travel)]). 
+	
+	
 // for dealing with bundled queries - see customer.asl
 @bundle_1[atomic]
 +?bundle([]).
@@ -144,9 +142,11 @@
 	
 	+urbanArea(x)[o(travel), source(tom)];
 	+ruralArea(y)[o(travel), source(ben)];
-	?all_different([x,y])[o(travel), source(tom), source(ben)]; // because knowledge from tom and ben contributed to the inference that x and y are distinct
+	// because knowledge from tom and ben contributed to the inference that x and y are distinct
+	?all_different([x,y])[o(travel), source(tom), source(ben)]; 
 	
-	?familyDestination(butlins)[o(travel), something]; // notice "something" annotation is gathered here since it all_different assertion contributes to this inference
+	// notice "something" annotation is gathered (added in !example_all_different) here since it all_different assertion contributes to this inference
+	?familyDestination(butlins)[o(travel), something]; 
 	
 	.print("Complete: annotation gathering").
 
