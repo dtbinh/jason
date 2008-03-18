@@ -79,7 +79,7 @@ public class SELiteral{
 		if(o.getTerm(0).isStructure()){ // Checking for atomicity directly does not seem to work
 			return agent.getLabelManager().getRight((Atom)o.getTerm(0));
 		}else if(o.getTerm(0).isString()){
-			return agent.getOntology(o.getTerm(0).toString());
+			return agent.getOntology(o.getTerm(0).toString()); // may instantiate a new ontology
 		}else{
 			throw new InvalidSELiteralException("Invalid ontology annotation format on "+o);
 		}		

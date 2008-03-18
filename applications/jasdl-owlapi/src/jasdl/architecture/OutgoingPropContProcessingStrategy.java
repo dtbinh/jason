@@ -22,7 +22,6 @@ package jasdl.architecture;
 import static jasdl.architecture.JasdlAgArch.ANON_ANNOTATION_FUNCTOR;
 import static jasdl.architecture.JasdlAgArch.NAMED_ANNOTATION_FUNCTOR;
 import jasdl.asSemantics.JasdlAgent;
-import jasdl.bridge.alias.Alias;
 import jasdl.bridge.seliteral.SELiteral;
 import jasdl.bridge.seliteral.SELiteralAllDifferentAssertion;
 import jasdl.util.JasdlException;
@@ -40,8 +39,8 @@ import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.semanticweb.owl.model.OWLNamedObject;
-import org.semanticweb.owl.model.OWLObject;
+import org.semanticweb.owl.model.OWLDescription;
+import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.model.OWLOntology;
 
 public class OutgoingPropContProcessingStrategy implements PropContProcessingStrategy {
@@ -65,21 +64,11 @@ public class OutgoingPropContProcessingStrategy implements PropContProcessingStr
 			//	qualify o
 			sl.qualifyOntologyAnnotation();
 			
-			OWLObject obj = sl.toOWLObject();			
-			String expression = agent.getManchesterObjectRenderer().render(obj);
-			StringTerm expressionTerm = new StringTermImpl(expression);			
-			Alias alias = sl.toAlias();			
+			OWLEntity entity = (OWLEntity)sl.toOWLObject();			
+			String expression = normaliseExpression(agent.getManchesterObjectRenderer().render(entity), agent);
+			StringTerm expressionTerm = new StringTermImpl(expression);
 			
-			if(obj instanceof OWLNamedObject){				
-				
-				// unambiguously refer to named entity				
-				if(!(sl instanceof SELiteralAllDifferentAssertion)){// not required if all_different
-					Structure named = new Structure(NAMED_ANNOTATION_FUNCTOR);			
-					named.addTerm(expressionTerm);			
-					sl.getLiteral().addAnnot(named);
-				}			
-				
-			}else{ // we have an anonymous run-time defined class
+			if(entity.isOWLClass() && agent.getDefinitionManager().isKnownLeft(entity.asOWLClass())){	 // we have an anonymous run-time defined class
 				
 				// construct anon annotation
 				Structure anon = new Structure(ANON_ANNOTATION_FUNCTOR);
@@ -105,7 +94,17 @@ public class OutgoingPropContProcessingStrategy implements PropContProcessingStr
 				}
 				anon.addTerm(list);
 				
-				sl.getLiteral().addAnnot(anon);				
+				sl.getLiteral().addAnnot(anon);	
+				
+			}else{
+				
+				// unambiguously refer to named entity				
+				if(!(sl instanceof SELiteralAllDifferentAssertion)){// not required if all_different
+					Structure named = new Structure(NAMED_ANNOTATION_FUNCTOR);			
+					named.addTerm(expressionTerm);			
+					sl.getLiteral().addAnnot(named);
+				}	
+							
 			}			
 			result = sl.getLiteral();
 		}catch(NotEnrichedException e){
@@ -114,5 +113,44 @@ public class OutgoingPropContProcessingStrategy implements PropContProcessingStr
 		return result;
 	}
 	
+	/**
+	 * Returns an expression in which all references to run-time defined classes have been (recursuvely) replaced 
+	 * with the rendering of their anonymous descriptions, thus ensuring this rendering only refers to predefined classes. 
+	 * @param expression		expression to normalise
+	 * @param agent
+	 * @return					normalised form of expression
+	 * @throws JasdlException
+	 */
+	private String normaliseExpression(String expression, JasdlAgent agent) throws JasdlException{
+		String[] tokens = expression.toString().split("[ |\n]");
+		String newExpression = "";
+		for(String token : tokens){
+			try {
+				URI entityURI = new URI(token);
+				OWLEntity entity = agent.toEntity(entityURI);
+				if(entity.isOWLClass()){
+					try{
+						OWLDescription desc = agent.getDefinitionManager().getRight(entity.asOWLClass());
+						String rendering =  agent.getManchesterObjectRenderer().render(desc);
+						newExpression += "("+normaliseExpression(rendering, agent)+")";	
+					}catch(UnknownMappingException e1){
+						// this is a predefined class
+						newExpression += token;
+					}									
+				}else{
+					// this is a predefined non-class entity (property, individual, etc)
+					newExpression += token;
+				}
+			}catch(URISyntaxException e){
+				// this is (probably) a keyword
+				newExpression += " " + token + " ";
+			}catch(UnknownMappingException e2){
+				// this is (probably) a keyword
+				newExpression += " " + token + " ";
+			}
+		
+		}
+		return newExpression;
+	}
 
 }

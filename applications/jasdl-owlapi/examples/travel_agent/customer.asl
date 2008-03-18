@@ -29,13 +29,17 @@
 	.print(L, " is located in the city ", City);
 	
 	// check given hotel is located in a destination that has some museums
-	jasdl.ia.define_class(q2, "{self:",L,"} and holidays:isLocatedAt some (holidays:hasActivity some holidays:museums)");
-	.send(Source, askOne, q2(Hotel)[o(self)], q2(Hotel)[o(self)]);
-	.print(Hotel, " is located in a city with some museums");
+	jasdl.ia.define_class(hotelNearMuseums, "holidays:isLocatedAt some (holidays:hasActivity some holidays:museums)");
+	.send(Source, askOne, hotelNearMuseums(HotelNearMuseums)[o(self)], hotelNearMuseums(HotelNearMuseums)[o(self)]);
+	.print(HotelNearMuseums, " is a hotel located in a city with some museums");
+	
+	jasdl.ia.define_class(luxuriousHotelNearMuseums, "self:hotelNearMuseums AND holidays:luxuriousHotel");
+	.send(Source, askOne, luxuriousHotelNearMuseums(LuxuriousHotelNearMuseums)[o(self)], luxuriousHotelNearMuseums(LuxuriousHotelNearMuseums)[o(self)]);
+	.print(LuxuriousHotelNearMuseums, " is a luxurious hotel located in a city with some museums");
 	
 	// bundle([h_1...h_n]) demonstrates how JASDL deals with nested se-content
 	// in particular, this query bundles together an arbitrary number of queries into a single message
-	.send(Source, askOne, bundle( [ luxuriousHotel(H1)[o(holidays)], hotel(H2)[o(holidays)], activity(H3)[o(holidays)], q2(H4)[o(self)] ] ), Response);	
+	.send(Source, askOne, bundle( [ luxuriousHotel(H1)[o(holidays)], hotel(H2)[o(holidays)], activity(H3)[o(holidays)], hotelNearMuseums(H4)[o(self)] ] ), Response);	
 	.print("Bundled query response: ", Response);	
 	
 	.send(Source, tell, example_KSAA_complete).

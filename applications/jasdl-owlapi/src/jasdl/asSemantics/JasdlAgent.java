@@ -11,6 +11,7 @@ import jasdl.bridge.alias.Alias;
 import jasdl.bridge.alias.AliasFactory;
 import jasdl.bridge.alias.AliasManager;
 import jasdl.bridge.alias.DecapitaliseMappingStrategy;
+import jasdl.bridge.alias.DefinitionManager;
 import jasdl.bridge.alias.MappingStrategy;
 import jasdl.bridge.label.LabelManager;
 import jasdl.bridge.label.OntologyURIManager;
@@ -29,6 +30,7 @@ import jason.runtime.Settings;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -39,9 +41,12 @@ import org.coode.manchesterowlsyntax.ManchesterOWLSyntaxDescriptionParser;
 import org.mindswap.pellet.PelletOptions;
 import org.mindswap.pellet.owlapi.Reasoner;
 import org.semanticweb.owl.apibinding.OWLManager;
+import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLEntity;
+import org.semanticweb.owl.model.OWLEquivalentClassesAxiom;
 import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owl.model.OWLOntologyChangeException;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyManager;
 import org.semanticweb.owl.util.ShortFormProvider;
@@ -74,6 +79,8 @@ public class JasdlAgent extends JmcaAgent {
 	 * Since Jason doesn't initialise an agent name in time
 	 */
 	private String agentName;
+
+	private DefinitionManager definitionManager;
 	
 
 	
@@ -87,6 +94,7 @@ public class JasdlAgent extends JmcaAgent {
 		ontologyManager = OWLManager.createOWLOntologyManager();
 		physicalURIManager = new OntologyURIManager();
 		logicalURIManager = new OntologyURIManager();
+		definitionManager = new DefinitionManager();
 		
 		seLiteralFactory = new SELiteralFactory(this);
 		toAxiomConverter = new ToAxiomConverter(this);
@@ -230,15 +238,17 @@ public class JasdlAgent extends JmcaAgent {
 			Set<OWLOntology> imports = ontologyManager.getImportsClosure(ontology);
 			reasoner.loadOntologies(imports);
 			reasoner.classify();
-			labelManager.put(label, ontology);
+			labelManager.put(label, ontology, false); // (successfully) loaded ontologies never personal
 			physicalURIManager.put(ontology, uri);
 			logicalURIManager.put(ontology, ontology.getURI());
 			getLogger().fine("Loaded ontology from "+uri+" and assigned label "+label);
 			applyMappingStrategies(ontology, strategies);
 			return ontology;
 		}catch(OWLOntologyCreationException e){
-			getLogger().warning("Placeholder ontology substituted for unreachable "+uri);
-			return createOntology(label, uri);		// can't load it, just create a blank (for unqualification of ontology annotations for example)	
+			getLogger().warning("Placeholder personal ontology substituted for unreachable "+uri);
+			// can't load it, just create a blank (for unqualification of ontology annotations for example)	
+			// personal by definition
+			return createOntology(label, uri, true);	
 		}	
 	}
 	
@@ -250,10 +260,10 @@ public class JasdlAgent extends JmcaAgent {
 	 * @param uri
 	 * @throws JasdlException
 	 */
-	public OWLOntology createOntology(Atom label, URI uri) throws JasdlException{
+	public OWLOntology createOntology(Atom label, URI uri, boolean isPersonal) throws JasdlException{
 		try{
 			OWLOntology ontology = getOntologyManager().createOntology( uri );
-			getLabelManager().put(label, ontology);
+			getLabelManager().put(label, ontology, isPersonal);
 			getPhysicalURIManager().put(ontology, uri);
 			getLogicalURIManager().put(ontology, uri);
 			getReasoner().loadOntology(ontology);
@@ -325,8 +335,26 @@ public class JasdlAgent extends JmcaAgent {
     		desc = parser.parse(expression);       
     	}catch(Exception e){    		
     		throw new JasdlException("Could not parse expression "+expression+". Reason: "+e);
-    	}   	
-    	getAliasManager().put(alias, desc);     	
+    	} 
+    	
+    	// We need this class to be named for parsing.
+    	// Create an equivalent class and add this instead with alias as fragment.
+    	// Clashes shouldn't be an issue here (thanks to distinct personal ontologies).
+    	OWLOntology ontology = getLabelManager().getRight(label);
+    	String _uri = getLogicalURIManager().getRight(ontology).toString();
+    	_uri+="#"+functor;
+    	URI uri = URI.create(_uri);
+    	OWLClass naming = ontologyManager.getOWLDataFactory().getOWLClass(uri);
+    	OWLEquivalentClassesAxiom axiom = ontologyManager.getOWLDataFactory().getOWLEquivalentClassesAxiom(naming, desc);
+    	try {
+			ontologyManager.addAxioms(ontology, Collections.singleton(axiom));
+		} catch (OWLOntologyChangeException e) {
+			throw new JasdlException("Error adding "+uri+" naming of "+desc+" to "+label);
+		}
+		reasoner.refresh();
+		getLogger().fine("Adding named class "+uri+" for "+desc+" in "+label);
+    	getAliasManager().put(alias, naming);  // consequence, we can no longer easily distinguish run-time defined classes from pre-defined - need to maintain a map
+    	getDefinitionManager().put(naming, desc);
     	getLogger().fine("Defined new class with alias "+alias);
     	return desc;    	
 	}
@@ -391,6 +419,12 @@ public class JasdlAgent extends JmcaAgent {
 		return logicalURIManager;
 	}
 	
+	public DefinitionManager getDefinitionManager() {
+		return definitionManager;
+	}
+
+
+
 	public Reasoner getReasoner() {
 		return reasoner;
 	}

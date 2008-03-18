@@ -142,10 +142,10 @@ public class JasdlConfigurator {
 	private void applyMiscMappings() throws JasdlException{
 		
 		// create a "placeholder" ontology so we can safely map thing and nothing without actually loading the ontology
-		agent.createOntology(AliasFactory.OWL_THING.getLabel(), URI.create("http://www.w3.org/2002/07/owl"));
+		agent.createOntology(AliasFactory.OWL_THING.getLabel(), URI.create("http://www.w3.org/2002/07/owl"), false);
 		
 		// create a personal ontology for (axioms that reference) run-time defined class
-		agent.createOntology(agent.getPersonalOntologyLabel(), agent.getPersonalOntologyURI());
+		agent.createOntology(agent.getPersonalOntologyLabel(), agent.getPersonalOntologyURI(), true);
 		
 		agent.getAliasManager().put( AliasFactory.OWL_THING, agent.getOntologyManager().getOWLDataFactory().getOWLThing());
 		agent.getAliasManager().put( AliasFactory.OWL_NOTHING, agent.getOntologyManager().getOWLDataFactory().getOWLNothing());

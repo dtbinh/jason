@@ -94,6 +94,9 @@ public class NSPrefixEntityChecker implements OWLEntityChecker{
 				Atom label = new Atom(tokens[0]);
 				Alias alias = AliasFactory.INSTANCE.create(functor, label);
 				return (OWLEntity)agent.getAliasManager().getRight(alias); // guaranteed to be an entity? Not for anonymous classes!
+			}catch(ClassCastException e){
+				// we are dealing with an anonymous class description
+				return null;
 			} catch (Exception e) {
 				return null;
 			}			
