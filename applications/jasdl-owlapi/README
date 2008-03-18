@@ -1,5 +1,23 @@
-JASDL: "Jason AgentSpeak-DescriptionLogic"
+JASDL: "Jason AgentSpeak-Description Logic"
 Copyright (C) 2008 Thomas Klapiscak (t.g.klapiscak@durham.ac.uk)
 JASDL is distributed under the LGPL license (see COPYING and COPYING.LESSER)
+
+
+*** Running JASDL ***
+
+Firstly, please check you are using the latest revision of the entire Jason trunk from the SVN before use.
+
+To run a JASDL agent, its class-path must include all jars under the sub-directories: 
+	* trunk/applications/jasdl-owlapi/lib
+	* trunk/applications/jmca/lib
+	* All standard Jason libraries, please ensure that these are built from the latest revision of the Jason trunk.	
+
+The (unmodified) travel_agent example (trunk/applications/jasdl-owlapi/examples/travel_agent/config.mas2j) 
+must be run in-situ within the Jason trunk. All necessary ant tasks will be performed by its custom build script.	
+			
+*** Configuring JASDL ***
+
+Please refer to /trunk/jason/applications/jasdl-owlapi/examples/travel_agent/config.mas2j for an example of how to configure JASDL agents.
+
 
 Thank you for your interest in JASDL!
