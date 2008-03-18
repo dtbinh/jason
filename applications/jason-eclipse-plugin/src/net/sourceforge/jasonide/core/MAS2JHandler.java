@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -109,8 +110,38 @@ public class MAS2JHandler {
 	/**
 	 * Gets the contents of the mas2j file.
 	 */
-	public static String getMas2JFileName(IProject project) throws FileNotFoundException {
-	    String pathToMas2JFile = project.getLocation().toString() + File.separator + project.getName() + MAS2J_EXT;
+	public static String getMas2JFilePath(String projectDir) throws FileNotFoundException {
+	    String pathToMas2JFile = null;
+	    File d = new File(projectDir);
+	    // list only dirs and *.mas2j
+	    File[] files = d.listFiles(
+	    		new FilenameFilter() {
+					public boolean accept(File dir, String name) {
+						File f = new File(dir, name);
+						if (f.isDirectory()) {
+							return true;
+						}
+						else if (name.toLowerCase().endsWith("mas2j")){
+							return true;
+						}
+						return false;
+					}
+	    		}
+	    );
+	    for (int i = 0; i < files.length; i++) {
+			File f = files[i];
+	    	if (f.isDirectory()) {
+	    		pathToMas2JFile = getMas2JFilePath(f.getAbsolutePath());
+	    		if (pathToMas2JFile != null) {
+	    			break;
+	    		}
+			}
+	    	else {
+	    		return f.getAbsolutePath();
+	    	}
+		}
+	    
+	    
 	    return pathToMas2JFile;
 	}	
 	
@@ -156,7 +187,7 @@ public class MAS2JHandler {
 	 */
 	public static String persistMas2JFile(IProject project, String contents) throws JasonPluginException {		
 		try {
-			String fileName = getMas2JFileName(project);
+			String fileName = getMas2JFilePath(project.getLocation().toString());
 			writeTextInFile(fileName, contents);
 			
 			return fileName;

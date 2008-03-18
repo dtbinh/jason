@@ -1,17 +1,12 @@
 package net.sourceforge.jasonide.editors;
 
 import jason.JasonException;
-import jason.mas2j.MAS2JProject;
-import jason.mas2j.parser.ParseException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.Iterator;
-import java.util.List;
 
 import net.sourceforge.jasonide.Activator;
-import net.sourceforge.jasonide.core.MAS2JHandler;
 import net.sourceforge.jasonide.core.PluginMarkerUtils;
 import net.sourceforge.jasonide.editors.cbg.ColoringEditor;
 
@@ -52,38 +47,16 @@ public class ASLEditor extends ColoringEditor {
 		// delete old markers
 		PluginMarkerUtils.deleteOldMarkers(ifile);
 		
-		String projectLocation = iproject.getLocation().toString();
-		try {
-			String mas2jFileName = MAS2JHandler.getMas2JFileName(iproject);
-			MAS2JProject project = MAS2JHandler.parseForRun(mas2jFileName, projectLocation);
-		
-			List srcPaths = project.getSourcePaths();
-			
-			 // check if agent source file exists in actual sourcepath
-            for (Iterator iter = srcPaths.iterator(); iter.hasNext();) {
-				String element = (String) iter.next();
-				String asFileName = element + File.separator + ifile.getName();
-				
-				File file = new File(asFileName);
-				if (file.exists()) {
-					jason.asSyntax.parser.as2j parser = new jason.asSyntax.parser.as2j(new FileReader(file));
-					if (parser != null) {
-						parser.agent(null);
-					}
-					break;
-				} 
+		try {		
+			// absolute project location + filePath relative in project (without project name)
+			String asfileName = iproject.getLocation().toString() + getFilePathWithoutProjectName(ifile);
+			jason.asSyntax.parser.as2j parser = new jason.asSyntax.parser.as2j(new FileReader(new File(asfileName)));
+			if (parser != null) {
+				parser.agent(null);
 			}
 			
 		} catch (FileNotFoundException e) {
 			showError(e.getMessage(), e);
-		} catch (ParseException e) {
-			String msg = e.getMessage();
-			
-			int lineError = PluginMarkerUtils.getLineNumberFromMsg(msg);
-			PluginMarkerUtils.createMarker(ifile, e.getMessage().replace("\r", "").replace("\n", ""), 
-						 lineError,
-						 PluginMarkerUtils.getCharStart(document.get(), lineError, msg),
-						 PluginMarkerUtils.getCharEnd(document.get(), lineError, msg));
 		} catch (JasonException e) {
 			String msg = "Problems:" + "\n\n" + e.getMessage();
 			showError(msg, e);
@@ -106,6 +79,22 @@ public class ASLEditor extends ColoringEditor {
 						 charStart,
 						 charEnd);
 		} 
+	}
+	
+	/**
+	 * Extract only the path of the file, excluding the project name.
+	 * @param iFile
+	 * @return String
+	 */
+	private String getFilePathWithoutProjectName(IFile iFile) {
+		String[] parts = iFile.getFullPath().toString().split("/");
+		StringBuilder sb = new StringBuilder();
+		// first is empty and the second is the project name
+		for(int i = 2; i < parts.length; i++) {
+			sb.append("/");
+			sb.append(parts[i]);
+		}
+		return sb.toString();
 	}
 	
 	private void showError(String msg, Throwable e) {

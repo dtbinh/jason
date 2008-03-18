@@ -183,12 +183,17 @@ public class NewEnvironmentWizard extends Wizard implements INewWizard {
 		try {	
 			// mas2j editor is open? yes: then modify contents of editor, no: then modify contents of file.
 			if (document == null) {
-				// parse the mas2j file project.
-				MAS2JProject project2 = MAS2JHandler.parse(MAS2JHandler.getMas2JFileName(file.getProject()));
-				project2.setEnvClass(new ClassParameters(className));
 				
-				String mas2jContents = MAS2JHandler.mas2jProjectToString(project2);
-				MAS2JHandler.persistMas2JFile(file.getProject(), mas2jContents);
+				// get the mas2j file path, if null then mas2j is not located in project directory.
+				String mas2jFilePath = MAS2JHandler.getMas2JFilePath(file.getProject().getLocation().toString());
+				if (mas2jFilePath != null) {
+					// parse the mas2j file project.
+					MAS2JProject project2 = MAS2JHandler.parse(mas2jFilePath);
+					project2.setEnvClass(new ClassParameters(className));
+					
+					String mas2jContents = MAS2JHandler.mas2jProjectToString(project2);
+					MAS2JHandler.persistMas2JFile(file.getProject(), mas2jContents);
+				}
 			}
 			else {
 				String tempFileName = MAS2JHandler.persistTempMas2JFile(file.getProject(), document.get());

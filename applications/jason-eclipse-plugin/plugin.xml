@@ -131,5 +131,21 @@
                menubarPath="additions"/>
       </objectContribution>
    </extension>
+   <extension
+         point="org.eclipse.ui.importWizards">
+      <category
+            id="net.sourceforge.jasonide.importWizards"
+            name="Jason"/>
+      <wizard
+            category="net.sourceforge.jasonide.importWizards"
+            class="net.sourceforge.jasonide.importWizards.JasonProjectImportWizard"
+            icon="icons/jason.jpg"
+            id="net.sourceforge.jasonide.importWizards.JasonProjectImportWizard"
+            name="Import Jason Project">
+         <description>
+            Import a file from the local file system into the workspace.
+         </description>
+      </wizard>
+   </extension>
 
 </plugin>

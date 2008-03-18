@@ -20,7 +20,6 @@ import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaConventions;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.internal.core.PackageFragment;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.dialogs.IDialogPage;
 import org.eclipse.jface.viewers.ISelection;
@@ -101,7 +100,7 @@ public class NewInternalActionWizardPage extends WizardPage {
 				else if (firstElement instanceof IPackageFragment) {
 					IPackageFragment pfr = (IPackageFragment)firstElement;
 					
-					String[] names = ((PackageFragment)pfr).names; // TODO: fix that
+					String[] names = ((org.eclipse.jdt.internal.core.PackageFragment)pfr).names; // TODO: fix that
 					if (names.length > 0) {
 						packageName = names[0];
 						for (int i = 1; i < names.length; i++) {
@@ -136,7 +135,7 @@ public class NewInternalActionWizardPage extends WizardPage {
 						else if (parent instanceof IPackageFragment) {
 							if (packageName == null) {
 								//System.out.println("eh pacote: " + parent.getPath().segments()[parent.getPath().segments().length-1]);
-								String[] names = ((PackageFragment)parent).names; // TODO: fix that
+								String[] names = ((org.eclipse.jdt.internal.core.PackageFragment)parent).names; // TODO: fix that
 								if (names.length > 0) {
 									packageName = names[0];
 									for (int i = 1; i < names.length; i++) {
@@ -364,7 +363,7 @@ public class NewInternalActionWizardPage extends WizardPage {
 				if (dialog.open() == SelectionDialog.OK) {
 					Object[] result = dialog.getResult();
 					if (result.length == 1) {
-						String[] names = ((PackageFragment)result[0]).names; // TODO: fix that
+						String[] names = ((org.eclipse.jdt.internal.core.PackageFragment)result[0]).names; // TODO: fix that
 						if (names.length > 0) {
 							packageName = names[0];
 							for (int i = 1; i < names.length; i++) {

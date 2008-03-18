@@ -165,10 +165,10 @@ public class MAS2JEditor extends MultiPageEditorPart implements IResourceChangeL
 		PluginMarkerUtils.deleteOldMarkers(ifile);
 		
 	    IProject project = ifile.getProject();
-	    
 	    String mas2jFilePath = null;
 		try {
-			mas2jFilePath = MAS2JHandler.getMas2JFileName(project);
+			// absolute project location + filePath relative in project (without project name)
+			mas2jFilePath = project.getLocation().toString() + getFilePathWithoutProjectName(ifile);
 			
 			// compile Mas2J
 			MAS2JProject mas2Project = MAS2JHandler.parse(mas2jFilePath);
@@ -189,6 +189,22 @@ public class MAS2JEditor extends MultiPageEditorPart implements IResourceChangeL
 		} catch (Throwable e) {
 			PluginMarkerUtils.createMarker(ifile, e.getMessage(), 0, 0, 0);
 		}
+	}
+	
+	/**
+	 * Extract only the path of the file, excluding the project name.
+	 * @param iFile
+	 * @return String
+	 */
+	private String getFilePathWithoutProjectName(IFile iFile) {
+		String[] parts = iFile.getFullPath().toString().split("/");
+		StringBuilder sb = new StringBuilder();
+		// first is empty and the second is the project name
+		for(int i = 2; i < parts.length; i++) {
+			sb.append("/");
+			sb.append(parts[i]);
+		}
+		return sb.toString();
 	}
 	
 	/**

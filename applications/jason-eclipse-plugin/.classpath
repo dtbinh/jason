@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
+	<classpathentry excluding="**/.svn/|.svn/" kind="src" path="src"/>
 	<classpathentry exported="true" kind="lib" path="lib/dom4j-mini.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jason.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/regexp-1.2-mini.jar"/>

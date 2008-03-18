@@ -28,7 +28,7 @@ public class PluginTemplates {
 	
 	public static final String JASON_BUILDER_LAUNCHER = "JasonBuilder.launch";
 	
-	public static String getProjectPropertiesContents() {
+	public static String getProjectClasspathContents() {
 		return 
 		"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
 		"<classpath>\n" +
