@@ -5,7 +5,6 @@ import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Structure;
 import jason.environment.grid.Location;
 
-import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -160,6 +159,7 @@ public class ACProxy extends ACAgent implements Runnable {
 			percepts.add(lpos);
 
 			int maxx = 0; // max value of some cell'x
+            int enemyId = 1;
 			// add in perception what is around
 			NodeList nl = perception.getElementsByTagName("cell");
 			for (int i=0; i < nl.getLength(); i++) {
@@ -172,7 +172,6 @@ public class ACProxy extends ACAgent implements Runnable {
 				if (cellx > maxx)
 					maxx = cellx;
 				
-				int enemyId = 1;
 				NodeList cnl = cell.getChildNodes();
 				for (int j=0; j < cnl.getLength(); j++) {
 					if (cnl.item(j).getNodeType() == Element.ELEMENT_NODE && cellx != 0 && celly != 0) {
@@ -186,8 +185,8 @@ public class ACProxy extends ACAgent implements Runnable {
 							} else if (type.getAttribute("type").equals("enemy")) {
 	                            Structure le = new Literal("enemy");
 	                            le.addTerm(new NumberTermImpl( (enemyId++) )); // we need an id to work with UniqueBB
-								arq.enemyPerceived(absx, absy);
 								percepts.add(CowboyArch.createCellPerception(cellx, celly, le));
+                                arq.enemyPerceived(absx, absy);
 							}
                             
                         } else if (type.getNodeName().equals("cow")) {
@@ -212,8 +211,8 @@ public class ACProxy extends ACAgent implements Runnable {
 			//if (logger.isLoggable(Level.FINE)) 
 			logger.info("Request action for "+lpos+" / "+rid + " percepts: "+percepts);
 			
+            arq.perceptionRatioPerceived(maxx);
 			arq.startNextStep(step, percepts);
-			arq.perceptionRatioPerceived(maxx);
 			
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "error processing request",e);
@@ -257,7 +256,10 @@ public class ACProxy extends ACAgent implements Runnable {
 			int d = new Random().nextInt(10000);
             try {
                 while (running) {
-					sleep(20000+d);
+                    if (isConnected())
+                        sleep(20000+d);
+                    else 
+                        sleep(2000);
 					count++;
 					ok = false;
 					sentTime = System.currentTimeMillis();

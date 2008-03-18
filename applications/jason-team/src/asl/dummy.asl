@@ -19,9 +19,6 @@
 
 */
 
-// the following plans (+pos....) react to the starting step
-// (since each new step causes a new +pos perception)
-
 /* -- useful rules */ 
 
 // find a free random location	  
@@ -29,35 +26,56 @@ random_pos(X,Y) :-
    pos(AgX,AgY,_) &
    jia.random(RX,40)   & X = (RX-20)+AgX & X > 0 &
    jia.random(RY,40,5) & Y = (RY-20)+AgY &
-   not jia.obstacle(X,Y) &
-   jia.set_target(X,Y).  
+   not jia.obstacle(X,Y).  
    
+/* -- initial goal */
 
-/* -- go to the back pos -- */
+!move.
 
-// at the back_pos
-+pos(X,Y,_) 
-   : back_pos(X,Y) | // I am at back pos, find another 
-     (back_pos(BX,BY) & jia.direction(X, Y, BX, BY, skip)) // impossible to go to back_pos, find another
-  <- !define_new_pos.
-+pos(X,Y,_) 
-   : back_pos(BX,BY) & jia.direction(X, Y, BX, BY, D) // one step towards back_pos
-  <- do(D).
-	 
-/* -- random move -- */	 
-+pos(_,_,_) 
-   <- !define_new_pos.
+
+/* -- plans to move to a destination represented in the belief target(X,Y) 
+   -- (it is a kind of persistent goal)
+*/
+
+// I still do not know my location
++!move
+    : not pos(_,_,_)
+  <- .print("waiting my location....");
+     .wait("+pos(_,_,_)");
+     !move.
+
+// find a new destination
++!move 
+    : pos(X,Y,_) &
+      (not target(_,_) |  // I have no target OR
+       target(X,Y)     |  // I am at target OR
+       (target(BX,BY) & jia.direction(X, Y, BX, BY, skip))) // is impossible to go to target
+   <- !define_new_target;
+      !move.
+   
+// does one step towards target  
++!move 
+    : pos(X,Y,_) & 
+      target(BX,BY) & 
+      jia.direction(X, Y, BX, BY, D) // jia.direction finds one action D (using A*) towards the target
+   <- do(D);  // this action will "block" the intention until it is sent to the simulator (in the end of the cycle)
+      !!move. // continue moving
+
+// in case of failure, move
+-!move
+   <- .current_intention(I); .println("failure in move:",I);
+      !move.
+
+
+/* -- add a belief target random move -- */	 
 	  
-+!define_new_pos
-   <- ?pos(X,Y,_);
-      ?random_pos(NX,NY);
-     //.print("New point ",NX,",",NY);
-     -+back_pos(NX,NY);
-     jia.direction(X, Y, NX, NY, D);
-     do(D).
++!define_new_target
+   <- ?random_pos(NX,NY);
+      jia.set_target(NX,NY);
+      -+target(NX,NY).
 
 
-+restart <- .drop_all_desires; !define_new_pos.
++restart <- .print("*** Restart! "); .drop_all_desires; !define_new_target; !move.
 
 /* -- tests -- */
 
@@ -67,3 +85,4 @@ random_pos(X,Y) :-
 
 +cell(X,Y,Type)       <- .println("cell   = ",X,",",Y," = ",Type).
 +pratio(R)            <- .println("pratio = ",R).
++pos(X,Y,S)           <- .println("pos    = ",X,",",Y,"/",S).

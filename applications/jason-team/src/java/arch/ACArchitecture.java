@@ -3,7 +3,6 @@ package arch;
 import jason.JasonException;
 import jason.asSemantics.ActionExec;
 import jason.asSyntax.Literal;
-import jason.asSyntax.Structure;
 import jason.mas2j.ClassParameters;
 import jason.runtime.Settings;
 
@@ -11,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /** 
@@ -27,6 +27,7 @@ public class ACArchitecture extends CowboyArch {
 
 	private ACProxy       proxy;
 	private List<Literal> percepts = new ArrayList<Literal>();
+	private WaitSleep     waitSleepThread;
 	
 	@Override
     public void initAg(String agClass, ClassParameters bbPars, String asSrc, Settings stts) throws JasonException {
@@ -44,6 +45,9 @@ public class ACArchitecture extends CowboyArch {
 								username,
 								password);
 		new Thread(proxy,"AgentProxy"+username).start();
+		
+		waitSleepThread = new WaitSleep();
+		waitSleepThread.start();
 	}
 
 	
@@ -51,47 +55,45 @@ public class ACArchitecture extends CowboyArch {
 	public void stopAg() {
 	    super.stopAg();
 	    proxy.finish();
+	    waitSleepThread.interrupt();
 	}
 	
 	@Override
 	public List<Literal> perceive() {
-		return new ArrayList<Literal>(percepts);
+		return new ArrayList<Literal>(percepts); // it must be a copy!
 	}
 
-	Queue<ActionExec> toExecute = new ConcurrentLinkedQueue<ActionExec>();
-    
+	@Override
+	/** when the agent can sleep, i.e. has nothing else to decide, sent its last action to the simulator */ 
+	public void sleep() {
+        waitSleepThread.go();
+	    super.sleep();
+	}
+	
 	public void startNextStep(int step, List<Literal> p) {
 		percepts = p;
-
-		// set all actions as successfully executed
-		List<ActionExec> feedback = getTS().getC().getFeedbackActions();
-		while (!toExecute.isEmpty()) {
-    		ActionExec action = toExecute.poll();
-    		action.setResult(true);
-			feedback.add(action);
-		}
-		
+		waitSleepThread.newCycle();
 		getTS().getUserAgArch().getArchInfraTier().wake();
     	setCycle(step);
 	}
 	
+	/** all actions block its intention and succeed in the end of the cycle, 
+	 *  only the last action of the cycle will be sent to simulator */ 
 	@Override
-	public void act(final ActionExec act, List<ActionExec> feedback) {
-        final Structure acTerm = act.getActionTerm();
-        if (acTerm.getFunctor().equals("do")){
-        	// (to not block the TS)
-        	// TODO: use a thread pool
-        	new Thread() {
-        		public void run() {
-                    proxy.sendAction(acTerm.getTerm(0).toString());
-                    toExecute.offer(act);
-        		}
-        	}.start();
+	public void act(ActionExec act, List<ActionExec> feedback) {
+        if (act.getActionTerm().getFunctor().equals("do")) {
+            waitSleepThread.addAction(act);
         } else {
-        	logger.info("ignoring action "+acTerm+", it is not a 'do'.");
+        	logger.info("ignoring action "+act+", it is not a 'do'.");
         }
 	}
-	
+
+	@Override
+    void simulationEndPerceived(String result) {
+	    percepts = new ArrayList<Literal>();
+	    super.simulationEndPerceived(result);
+    }
+
     // TODO: create a new agent and plug it on the connection
 	
 	/** this method is called when the agent crashes and other approaches to fix it (fix1 and fix2) does not worked */
@@ -120,5 +122,58 @@ public class ACArchitecture extends CowboyArch {
         return false;
     }
      */
+	
+	class WaitSleep extends Thread {
+	    
+	    ActionExec        lastAction;
+	    Queue<ActionExec> toExecute = new ConcurrentLinkedQueue<ActionExec>();
+
+	    WaitSleep() {
+	        super("WaitSpeepToSendAction");
+	    }
+	    
+	    synchronized void addAction(ActionExec action) {
+	        if (lastAction != null)
+	            toExecute.offer(lastAction);
+	        lastAction = action;
+        }
+	    
+	    void newCycle() {
+            List<ActionExec> feedback = getTS().getC().getFeedbackActions();
+            
+            // set all actions as successfully executed
+            while (!toExecute.isEmpty()) {
+                ActionExec action = toExecute.poll();
+                action.setResult(true);
+                feedback.add(action);
+            }	        
+	    }
+	    
+	    synchronized void go() {
+            notifyAll();
+        }
+	    synchronized void waitSleep() throws InterruptedException {
+            wait();
+        }
+	    
+	    @Override
+	    synchronized public void run() {
+	        while (true) {
+	            try {
+                    lastAction = null;
+	                waitSleep();
+	                if (lastAction != null) {
+	                    proxy.sendAction(lastAction.getActionTerm().getTerm(0).toString());
+	                    toExecute.offer(lastAction);
+	                }
+	            } catch (InterruptedException e) {
+	                return; // condition to stop the thread 
+	            } catch (Exception e) {
+	                logger.log(Level.SEVERE, "Error sending "+lastAction+" to simulator.",e);
+	                toExecute.clear();
+	            }
+	        }
+	    }
+	}
 
 }

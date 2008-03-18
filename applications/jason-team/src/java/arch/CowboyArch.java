@@ -41,6 +41,8 @@ public class CowboyArch extends IdentifyCrashed {
 	
 	int        cycle  = 0;
 	
+	WriteModelThread writeModelThread = null;
+	
 	protected Logger logger = Logger.getLogger(CowboyArch.class.getName());
 
 	public static Atom aOBSTACLE = new Atom("obstacle");
@@ -54,7 +56,8 @@ public class CowboyArch extends IdentifyCrashed {
 		super.initAg(agClass, bbPars, asSrc, stts);
 	    gui = "yes".equals(stts.getUserParameter("gui"));
 	    if ("yes".equals(stts.getUserParameter("write_model"))) {
-        	new WriteModelThread().start();
+	        writeModelThread = new WriteModelThread();
+	        writeModelThread.start();
         }
         // create the viewer for contest simulator
 	    massimBackDir = stts.getUserParameter("ac_sim_back_dir");
@@ -66,6 +69,7 @@ public class CowboyArch extends IdentifyCrashed {
 	public void stopAg() {
 		if (view != null)   view.dispose();
 		if (acView != null) acView.finish();
+		if (writeModelThread != null) writeModelThread.interrupt();
 		super.stopAg();
 	}
 	
@@ -192,8 +196,6 @@ public class CowboyArch extends IdentifyCrashed {
 	        	getTS().getAg().getBB().abolish(new Atom("restart").getPredicateIndicator());
 	        	getTS().getAg().addBel(new Atom("restart"));
 	        	lo2 = new Location(-1,-1); // to not restart again in the next cycle
-	     
-	        	//getTS().stopCycle();
         	} catch (Exception e) {
             	logger.info("Error in restart!"+ e);
         	}
@@ -218,11 +220,6 @@ public class CowboyArch extends IdentifyCrashed {
     	model.add(WorldModel.COW, x, y);
     }
 
-    // not used, the allies send messages with their location    
-    //void allyPerceived(int x, int y) {
-    //    model.add(WorldModel.AGENT, x, y);
-    //}
-    
     void enemyPerceived(int x, int y) {
         model.add(WorldModel.ENEMY, x, y); 
     }
@@ -316,9 +313,10 @@ public class CowboyArch extends IdentifyCrashed {
 	class WriteModelThread extends Thread {
 		public void run() {
 			String fileName = "world-state-"+getAgName()+".txt";
+			PrintWriter out = null;
 			try {
-				PrintWriter out = new PrintWriter(fileName);
-				while (isRunning()) {
+				out = new PrintWriter(fileName);
+				while (true) {
 					waitSomeTime();
 					if (model != null && playing) {
 						out.println("\n\n** Agent "+getAgName()+" in cycle "+cycle+"\n");
@@ -329,9 +327,11 @@ public class CowboyArch extends IdentifyCrashed {
 						out.flush();
 					}
 				}
-				out.close();
+			} catch (InterruptedException e) { // no problem, quit the thread
 			} catch (Exception e) {
 				e.printStackTrace();
+			} finally {
+                out.close();			    
 			}
 		}
 		
