@@ -3,6 +3,7 @@ package arch;
 import jason.JasonException;
 import jason.asSemantics.ActionExec;
 import jason.asSyntax.Literal;
+import jason.functions.log;
 import jason.mas2j.ClassParameters;
 import jason.runtime.Settings;
 
@@ -128,6 +129,8 @@ public class ACArchitecture extends CowboyArch {
 	    ActionExec        lastAction;
 	    Queue<ActionExec> toExecute = new ConcurrentLinkedQueue<ActionExec>();
 
+	    String x;
+	    
 	    WaitSleep() {
 	        super("WaitSpeepToSendAction");
 	    }
@@ -146,7 +149,10 @@ public class ACArchitecture extends CowboyArch {
                 ActionExec action = toExecute.poll();
                 action.setResult(true);
                 feedback.add(action);
-            }	        
+            }
+            
+            logger.info("last action sent is "+x);
+            x = null;
 	    }
 	    
 	    synchronized void go() {
@@ -163,7 +169,8 @@ public class ACArchitecture extends CowboyArch {
                     lastAction = null;
 	                waitSleep();
 	                if (lastAction != null) {
-	                    proxy.sendAction(lastAction.getActionTerm().getTerm(0).toString());
+                        x = lastAction.getActionTerm().getTerm(0).toString();
+	                    proxy.sendAction(x);
 	                    toExecute.offer(lastAction);
 	                }
 	            } catch (InterruptedException e) {

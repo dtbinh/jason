@@ -37,6 +37,11 @@ random_pos(X,Y) :-
    -- (it is a kind of persistent goal)
 */
 
+// if the target is changed, "restart" move
++target(_,_)
+  <- .drop_desire(move);
+     !!move.
+
 // I still do not know my location
 +!move
     : not pos(_,_,_)
@@ -50,8 +55,9 @@ random_pos(X,Y) :-
       (not target(_,_) |  // I have no target OR
        target(X,Y)     |  // I am at target OR
        (target(BX,BY) & jia.direction(X, Y, BX, BY, skip))) // is impossible to go to target
-   <- !define_new_target;
-      !move.
+   <- ?random_pos(NX,NY);
+      jia.set_target(NX,NY);
+      -+target(NX,NY).
    
 // does one step towards target  
 +!move 
@@ -63,19 +69,14 @@ random_pos(X,Y) :-
 
 // in case of failure, move
 -!move
-   <- .current_intention(I); .println("failure in move:",I);
+   <- .current_intention(I); .println("failure in move, intention: ",I);
       !move.
 
 
-/* -- add a belief target random move -- */	 
-	  
-+!define_new_target
-   <- ?random_pos(NX,NY);
-      jia.set_target(NX,NY);
-      -+target(NX,NY).
-
-
-+restart <- .print("*** Restart! "); .drop_all_desires; !define_new_target; !move.
++restart 
+  <- .print("*** restart ***"); 
+     .drop_all_desires; 
+     !move.
 
 /* -- tests -- */
 
