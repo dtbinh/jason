@@ -1,6 +1,7 @@
 package jmoise;
 
 import jason.JasonException;
+import jason.RevisionFailedException;
 import jason.architecture.AgArch;
 import jason.asSemantics.Agent;
 import jason.asSemantics.Event;
@@ -129,15 +130,18 @@ public class OrgAgent extends AgArch {
                 logger.log(Level.SEVERE, "Error!", e);
             }
         } // while
-        
-        if (updateGoalBels)
-            updateGoalBels();
-        if (updateGoalEvt)
-            generateOrgGoalEvents();
+        try {
+            if (updateGoalBels)
+                updateGoalBels();
+            if (updateGoalEvt)
+                generateOrgGoalEvents();
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error!", e);
+        }
 
     }
 
-    private Literal addAsBel(String b) {
+    private Literal addAsBel(String b) throws RevisionFailedException {
         Literal l = Literal.parseLiteral(b);
         if (l.isAtom())
             l = new Literal(l.getFunctor());
@@ -146,7 +150,7 @@ public class OrgAgent extends AgArch {
         return l;
     }
     
-    void generateObligationPermissionEvents(Pred m) {
+    void generateObligationPermissionEvents(Pred m) throws RevisionFailedException {
         // computes this agent obligations in the scheme
         String schId = m.getTerm(0).toString();
         String grId  = m.getTerm(1).toString();
@@ -217,7 +221,7 @@ public class OrgAgent extends AgArch {
     private static final PredicateIndicator commitmentLiteral  = new PredicateIndicator("commitment", 3);
 
     /** removes all bels related to a Scheme */
-    void removeBeliefs(String schId) {
+    void removeBeliefs(String schId) throws RevisionFailedException {
         Agent ag = getTS().getAg();
         ag.abolish(buildLiteralToCleanBB(schId, obligationLiteral, false), null);
         ag.abolish(buildLiteralToCleanBB(schId, permissionLiteral, false), null);
@@ -246,7 +250,7 @@ public class OrgAgent extends AgArch {
     }
 
     /** add/remove bel regarding the goals' state */
-    void updateGoalBels() {
+    void updateGoalBels() throws RevisionFailedException {
         // for all missions
         // for all goals
         // if not in BB, add
@@ -258,7 +262,7 @@ public class OrgAgent extends AgArch {
         }
     }
 
-    void updateGoalBels(Pred arg) {
+    void updateGoalBels(Pred arg) throws RevisionFailedException {
         String schId  = arg.getTerm(0).toString();
         String goalId = arg.getTerm(1).toString();
         for (SchemeInstance sch : getMyOEAgent().getAllMySchemes()) {
@@ -277,7 +281,7 @@ public class OrgAgent extends AgArch {
     private static final Atom aImpossible = new Atom("impossible");
     private static final Atom aAchieved   = new Atom("achieved");
 
-    void updateGoalBels(GoalInstance gi) {
+    void updateGoalBels(GoalInstance gi) throws RevisionFailedException {
         Pred gap = Pred.parsePred(gi.getAsProlog());
         
         if (gi.getScheme().getRoot() == gi) {

@@ -1,6 +1,7 @@
 package arch;
 
 import jason.JasonException;
+import jason.RevisionFailedException;
 import jason.architecture.AgArch;
 import jason.asSemantics.Message;
 import jason.asSyntax.Atom;
@@ -73,7 +74,7 @@ public class MinerArch extends AgArch {
 
     /** The perception of the grid size is removed from the percepts list 
         and "directly" added as a belief */
-    void gsizePerceived(int w, int h) {
+    void gsizePerceived(int w, int h) throws RevisionFailedException {
 		if (view != null) {
 			view.dispose();
 		}
@@ -87,14 +88,14 @@ public class MinerArch extends AgArch {
     
     /** The perception of the depot location is removed from the percepts list 
         and "directly" added as a belief */
-    void depotPerceived(int x, int y) {
+    void depotPerceived(int x, int y) throws RevisionFailedException {
         model.setDepot(x, y);
         getTS().getAg().addBel(Literal.parseLiteral("depot("+simId+","+x+","+y+")"));
     }
 
     /** The number of steps of the simulation is removed from the percepts list 
-        and "directly" added as a belief */
-    void stepsPerceived(int s) {
+        and "directly" added as a belief  */
+    void stepsPerceived(int s) throws RevisionFailedException {
     	getTS().getAg().addBel(Literal.parseLiteral("steps("+simId+","+s+")"));
         model.setMaxSteps(s);
     }
@@ -186,7 +187,7 @@ public class MinerArch extends AgArch {
         model.add(WorldModel.ENEMY, x, y); 
     }
 
-    void simulationEndPerceived(String result) {
+    void simulationEndPerceived(String result) throws RevisionFailedException {
     	getTS().getAg().addBel(Literal.parseLiteral("end_of_simulation("+simId+","+result+")"));
         playing = false;
     }

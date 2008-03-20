@@ -1,6 +1,7 @@
 package comm;
 
 import jason.JasonException;
+import jason.RevisionFailedException;
 import jason.architecture.AgArch;
 import jason.asSemantics.Message;
 import jason.asSyntax.Atom;
@@ -61,6 +62,10 @@ public class SnifferCentralised extends AgArch implements MsgListener {
 		e.addTerm(new Atom(m.getSender()));
 		e.addTerm(new Atom(m.getReceiver()));
 		e.addTerm(new StringTermImpl(m.getPropCont().toString()));
-		getTS().getAg().addBel(e);
+		try {
+            getTS().getAg().addBel(e);
+        } catch (RevisionFailedException e1) {
+            e1.printStackTrace();
+        }
     }    
 }
