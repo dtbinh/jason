@@ -213,6 +213,17 @@ public class SELiteral{
 		return new SELiteralAllDifferentAssertion(literal, agent);
 	}	
 	
+	/**
+	 * Returns all non-JASDL annotations to this literal
+	 * @return
+	 * @throws JasdlException
+	 */
+	public ListTerm getSemanticallyNaiveAnnotations() throws JasdlException{
+		ListTerm annotsClone = (ListTerm)literal.getAnnots().clone(); // clone so as not to affect original literal
+		annotsClone.remove(getOntologyAnnotation());
+		return annotsClone;		
+		//TODO: drop anon and named? uneccessary I think since they are isolated to architecture level.
+	}
 	
 	
 	// *** Mutators ***
@@ -245,6 +256,7 @@ public class SELiteral{
 	}	
 
 	//	*************	
+	
 	
 	
 	

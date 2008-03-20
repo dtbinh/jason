@@ -59,3 +59,7 @@
 	.print(XS, " are mutually distinct individuals, according to ", Source).
 	
 	
++testing
+	<-
+	.print("Semantically-naive inter-agent communication working").
+	

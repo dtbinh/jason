@@ -26,6 +26,9 @@ public class JasdlConfigurator {
 	private static String MAS2J_MAPPING_STRATEGIES		= "_mapping_strategies";
 	private static String MAS2J_MAPPING_MANUAL			= "_mapping_manual";	
 	private static String MAS2J_AGENT_NAME				= "_agent_name";
+	private static String MAS2J_TRUSTRATING				= "_trustRating";
+	private static String MAS2J_KNOWNAGENTS				= "_knownAgents";
+	private static String MAS2J_USEBELIEFREVISION		= "_useBeliefRevision";
 	
 	/**
 	 * List of reserved ontology labels. Currently:
@@ -49,9 +52,15 @@ public class JasdlConfigurator {
 			// load default mapping strategies
 			agent.setDefaultMappingStrategies(getMappingStrategies(stts, new Atom("default"))); //implication "default" is a reserved ontology label
 			
-			loadOntologies(stts);
-			applyManualMappings(stts);	
+			// set whether to use belief revision or not
+			String useBeliefRevision = prepareUserParameter(stts, MAS2J_PREFIX + MAS2J_USEBELIEFREVISION);
+			agent.setBeliefRevisionEnabled(Boolean.parseBoolean(useBeliefRevision));
 			
+			loadOntologies(stts);
+			applyManualMappings(stts);			
+			loadTrustRatings(stts);
+			
+		
 			
 		}catch(JasdlException e){
 			throw new JasdlException("JASDL agent encountered error during configuration. Reason: "+e);
@@ -101,6 +110,26 @@ public class JasdlConfigurator {
 					
 					agent.getAliasManager().put(alias, entity);
 				}
+			}
+		}
+	}
+	
+	private void loadTrustRatings(Settings stts) throws JasdlException{
+		// agent trusts itself completely!
+		agent.setTrustRating(new Atom("self"), 1f);
+		
+		// load trust ratings
+		String[] knownAgents = splitUserParameter(stts, MAS2J_PREFIX + MAS2J_KNOWNAGENTS);
+		for(String knownAgent : knownAgents){
+			if(knownAgent.length() > 0){
+				String _trustRating = prepareUserParameter(stts, MAS2J_PREFIX + "_" + knownAgent + MAS2J_TRUSTRATING);
+				Float trustRating;
+				try{
+					trustRating = Float.parseFloat(_trustRating);
+				}catch(NumberFormatException e){
+					throw new JasdlException("Invalid trust rating for "+knownAgent+". Reason: "+e);
+				}
+				agent.setTrustRating(new Atom(knownAgent), trustRating);
 			}
 		}
 	}

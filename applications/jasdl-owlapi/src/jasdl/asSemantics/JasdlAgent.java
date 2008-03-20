@@ -5,6 +5,10 @@ import jasdl.asSemantics.parsing.NSPrefixEntityChecker;
 import jasdl.asSemantics.parsing.URIEntityChecker;
 import jasdl.asSyntax.JasdlPlanLibrary;
 import jasdl.bb.JasdlBeliefBase;
+import jasdl.bb.revision.BeliefBaseRevisor;
+import jasdl.bb.revision.JasdlIncisionFunction;
+import jasdl.bb.revision.JasdlReasonerFactory;
+import jasdl.bb.revision.TBoxAxiomKernelsetFilter;
 import jasdl.bridge.AllDifferentPlaceholder;
 import jasdl.bridge.ToAxiomConverter;
 import jasdl.bridge.ToSELiteralConverter;
@@ -16,15 +20,20 @@ import jasdl.bridge.alias.DefinitionManager;
 import jasdl.bridge.alias.MappingStrategy;
 import jasdl.bridge.label.LabelManager;
 import jasdl.bridge.label.OntologyURIManager;
+import jasdl.bridge.seliteral.SELiteral;
 import jasdl.bridge.seliteral.SELiteralFactory;
 import jasdl.util.DuplicateMappingException;
 import jasdl.util.InvalidSELiteralException;
 import jasdl.util.JasdlException;
+import jasdl.util.NotEnrichedException;
 import jasdl.util.UnknownMappingException;
 import jason.JasonException;
+import jason.RevisionFailedException;
 import jason.architecture.AgArch;
+import jason.asSemantics.Intention;
 import jason.asSemantics.TransitionSystem;
 import jason.asSyntax.Atom;
+import jason.asSyntax.Literal;
 import jason.bb.BeliefBase;
 import jason.runtime.Settings;
 
@@ -32,6 +41,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -42,10 +52,15 @@ import org.coode.manchesterowlsyntax.ManchesterOWLSyntaxDescriptionParser;
 import org.mindswap.pellet.PelletOptions;
 import org.mindswap.pellet.owlapi.Reasoner;
 import org.semanticweb.owl.apibinding.OWLManager;
+import org.semanticweb.owl.model.AddAxiom;
+import org.semanticweb.owl.model.OWLAnnotation;
+import org.semanticweb.owl.model.OWLAxiom;
+import org.semanticweb.owl.model.OWLAxiomAnnotationAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.model.OWLEquivalentClassesAxiom;
+import org.semanticweb.owl.model.OWLIndividualAxiom;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyChangeException;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
@@ -54,7 +69,7 @@ import org.semanticweb.owl.util.ShortFormProvider;
 
 import uk.ac.manchester.cs.owl.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
 
-public class JasdlAgent extends JmcaAgent {	
+public class JasdlAgent extends JmcaAgent{	
 	public static List<MappingStrategy> DEFAULT_MAPPING_STRATEGIES = Arrays.asList( new MappingStrategy[] { new DecapitaliseMappingStrategy()} );
 	
 	private OWLOntologyManager ontologyManager;
@@ -76,12 +91,11 @@ public class JasdlAgent extends JmcaAgent {
 	public static String ANON_LABEL_PREFIX = "anon_label_";	
 	public static String ANON_ALIAS_PREFIX = "anon_alias_";
 	
-	/**
-	 * Since Jason doesn't initialise an agent name in time
-	 */
-	private String agentName;
-
 	private DefinitionManager definitionManager;
+	
+	private HashMap<Atom, Float> trustMap;
+	
+	private boolean beliefRevisionEnabled = true;
 	
 
 	
@@ -100,6 +114,8 @@ public class JasdlAgent extends JmcaAgent {
 		seLiteralFactory = new SELiteralFactory(this);
 		toAxiomConverter = new ToAxiomConverter(this);
 		toSELiteralConverter = new ToSELiteralConverter(this);
+		
+		trustMap = new HashMap<Atom, Float>();
 		
 		manchesterObjectRenderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
 		manchesterObjectRenderer.setShortFormProvider(new ShortFormProvider(){
@@ -121,6 +137,8 @@ public class JasdlAgent extends JmcaAgent {
 		// override plan library
 		setPL( new JasdlPlanLibrary(this) );
 	}
+	
+	
 	
 	
 	
@@ -149,8 +167,110 @@ public class JasdlAgent extends JmcaAgent {
 		return ts;
 	}
 	
+	public List<Literal> getABoxState() throws JasdlException{
+		List<Literal> bels = new Vector<Literal>();		
+		for(OWLOntology ontology : ontologyManager.getOntologies()){
+			for(OWLIndividualAxiom axiom : ontology.getIndividualAxioms()){				
+				Literal l = toSELiteralConverter.convert(axiom).getLiteral();			
+				bels.add(l);	
+			}
+		}
+		return bels;
+	}
 	
 	
+	
+	
+	
+	public List<Literal>[] brf(Literal beliefToAdd, Literal beliefToDel, Intention i)  throws RevisionFailedException {
+		
+		if(!isBeliefRevisionEnabled()){ // if experimental feature is disabled
+			return super.brf(beliefToAdd, beliefToDel, i);
+		}
+		
+		List<Literal> addList = new Vector<Literal>();
+		List<Literal> removeList = new Vector<Literal>();
+		
+			
+		// just accept beliefToDel. Assumption: Deletions never lead to inconsistencies?!
+		if(beliefToDel != null){
+			removeList.add(beliefToDel);
+		}
+		
+		if(beliefToAdd != null){
+			try{
+				
+				
+				SELiteral sl = getSELiteralFactory().create(beliefToAdd);
+				OWLAxiom axiomToAdd = sl.createAxiom();
+				
+				BeliefBaseRevisor bbrev = new BeliefBaseRevisor(axiomToAdd, getOntologyManager(), new JasdlReasonerFactory(), getLogger());
+				List<OWLAxiom>[] result = bbrev.revise(new TBoxAxiomKernelsetFilter(), new JasdlIncisionFunction(this, sl));
+				
+				/*
+				for(OWLAxiom added : result[0]){
+					addList.add( getToSELiteralConverter().convert((OWLIndividualAxiom)added).getLiteral()); // safe type cast - Jasdl's incision function ensures only individual axioms are contracted
+				}
+				*/
+				// Simplication possible: only at most one addition (toAdd). Additionally, annotations required!
+				if(result[0].contains(axiomToAdd)){
+					addList.add(beliefToAdd);
+					
+					// there will only be axioms to remove if we accepted beliefToAdd
+					for(OWLAxiom removed : result[1]){
+						removeList.add( getToSELiteralConverter().convert((OWLIndividualAxiom)removed).getLiteral()); // safe type cast - Jasdl's incision function ensures only individual axioms are contracted
+					}
+				}else{
+					// throw revision failed exception, since we didn't successfully add this belief
+					throw new RevisionFailedException("Revision failed on "+beliefToAdd);
+				}
+				
+
+			}catch(RevisionFailedException e){
+				throw e; // propagate upwards
+			}catch(NotEnrichedException e){
+				// can't perform DL-based belief revision on SN-Literals
+				addList.add(beliefToAdd);
+			}catch(Exception e){
+				getLogger().warning("Error performing belief revision. Reason:");
+				e.printStackTrace();
+			}
+		}
+		List<Literal>[] toReturn = null;
+
+		
+		// affect BB
+		for(Literal added : addList){			
+			if(getBB().add(added)){
+				if(toReturn == null){
+					toReturn = new List[2];
+					toReturn[0] = new Vector<Literal>();
+					toReturn[1] = new Vector<Literal>();
+				}
+				toReturn[0].add(added);
+			}
+		}
+		for(Literal removed : removeList){
+			if(getBB().remove(removed)){
+				if(toReturn == null){
+					if(toReturn == null){
+						toReturn = new List[2];
+						toReturn[0] = new Vector<Literal>();
+						toReturn[1] = new Vector<Literal>();
+					}
+					toReturn[1].add(removed);	
+				}
+				
+			}
+		}
+		
+		return toReturn;
+	}
+
+
+
+
+
 	/**
 	 * Convenience method to (polymorphically) create an entity from resource URI (if known).
 	 * TODO: where should this sit?
@@ -475,5 +595,29 @@ public class JasdlAgent extends JmcaAgent {
 	public ManchesterOWLSyntaxDescriptionParser getManchesterURIDescriptionParser() {
 		return manchesterURIDescriptionParser;
 	}
+
+	public void setTrustRating(Atom name, float trust){
+		trustMap.remove(name);
+		trustMap.put(name, trust);
+	}
+	
+	public Float getTrustRating(Atom name){
+		return trustMap.get(name);
+	}
+
+
+
+
+
+	public boolean isBeliefRevisionEnabled() {
+		return beliefRevisionEnabled;
+	}
+
+	public void setBeliefRevisionEnabled(boolean beliefRevisionEnabled) {
+		this.beliefRevisionEnabled = beliefRevisionEnabled;
+	}
+	
+	
+	
 
 }

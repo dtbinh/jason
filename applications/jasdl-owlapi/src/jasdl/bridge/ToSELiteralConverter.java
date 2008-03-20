@@ -2,7 +2,6 @@ package jasdl.bridge;
 
 import jasdl.asSemantics.JasdlAgent;
 import jasdl.bridge.alias.Alias;
-import jasdl.bridge.alias.AliasFactory;
 import jasdl.bridge.seliteral.SELiteral;
 import jasdl.bridge.xsd.XSDDataType;
 import jasdl.bridge.xsd.XSDDataTypeUtils;
@@ -15,8 +14,12 @@ import jason.asSyntax.Literal;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 
+import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
+import org.semanticweb.owl.model.OWLAxiom;
+import org.semanticweb.owl.model.OWLAxiomAnnotationAxiom;
 import org.semanticweb.owl.model.OWLClassAssertionAxiom;
 import org.semanticweb.owl.model.OWLConstant;
 import org.semanticweb.owl.model.OWLDataPropertyAssertionAxiom;
@@ -24,6 +27,7 @@ import org.semanticweb.owl.model.OWLDifferentIndividualsAxiom;
 import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLIndividualAxiom;
 import org.semanticweb.owl.model.OWLObjectPropertyAssertionAxiom;
+import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLTypedConstant;
 
 
@@ -48,6 +52,26 @@ public class ToSELiteralConverter {
 	
 	public ToSELiteralConverter(JasdlAgent agent){
 		this.agent = agent;
+	}
+	
+	/**
+	 * Fetches and deseralises and returns all ASSERTED annotations of the supplied axiom.
+	 * TODO: Shift to a factory?
+	 * @param sl
+	 */
+	public static List<Term> getAssertedAnnotations(OWLAxiom axiom, OWLOntology ontology){
+		List<Term> result = new Vector<Term>();
+		// get annotations
+		Set<OWLAxiomAnnotationAxiom> annotAxioms = axiom.getAnnotationAxioms(ontology);
+		for(OWLAxiomAnnotationAxiom annotAxiom : annotAxioms){ // remember, possibly semantically-naive payload!
+			Structure annot = ListTermImpl.parse(annotAxiom.getAnnotation().getAnnotationValueAsConstant().getLiteral());
+			if(annot.isList()){
+				result.addAll((ListTerm)annot);
+			}else{
+				result.add(annot);
+			}
+		}
+		return result;
 	}
 	
 	
@@ -82,7 +106,10 @@ public class ToSELiteralConverter {
 		Literal l = construct(alias);
 		Atom i = agent.getAliasManager().getLeft(axiom.getIndividual()).getFunctor(); // TODO: what if individual is previously undefined? possible?
 		l.addTerm(i);		
-		return agent.getSELiteralFactory().create(l);		
+		
+		SELiteral sl =  agent.getSELiteralFactory().create(l);		
+		sl.getLiteral().addAnnots(getAssertedAnnotations(axiom, sl.getOntology()));		
+		return sl;
 	}
 	
 	/**
@@ -98,7 +125,10 @@ public class ToSELiteralConverter {
 		l.addTerm(s);	
 		Atom o = agent.getAliasManager().getLeft(axiom.getObject()).getFunctor();
 		l.addTerm(o);
-		return agent.getSELiteralFactory().create(l);		
+		
+		SELiteral sl =  agent.getSELiteralFactory().create(l);
+		sl.getLiteral().addAnnots(getAssertedAnnotations(axiom, sl.getOntology()));
+		return sl;		
 	}
 
 	/**
@@ -135,7 +165,10 @@ public class ToSELiteralConverter {
 		}
 		
 		l.addTerm(o);
-		return agent.getSELiteralFactory().create(l);		
+		
+		SELiteral sl =  agent.getSELiteralFactory().create(l);
+		sl.getLiteral().addAnnots(getAssertedAnnotations(axiom, sl.getOntology()));
+		return sl;			
 	}
 	
 	/**
@@ -160,7 +193,10 @@ public class ToSELiteralConverter {
 		Literal l = construct(alias);		
 		
 		l.addTerm(list);
-		return agent.getSELiteralFactory().create(l);
+		
+		SELiteral sl =  agent.getSELiteralFactory().create(l);
+		sl.getLiteral().addAnnots(getAssertedAnnotations(axiom, sl.getOntology()));
+		return sl;	
 	}
 	
 

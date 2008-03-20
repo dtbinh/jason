@@ -33,6 +33,7 @@
 	.print("Example: Updating Belief Base 1");
 	+hotel(hilton)[o(travel)];						// hilton is a hotel
 	+hasRating(hilton, threeStarRating)[o(travel)];	// hilton has three-star rating
+	+town(london)[o(travel)];
 	+city(london)[o(travel)];						// london is a city
 	+hasAccommodation(london, hilton)[o(travel)];	// hilton is in london
 	+country(england)[o(travel)];					// england is a country
@@ -49,8 +50,28 @@
 +!example_UBB_2
 	<-
 	.print("Example: Updating Belief Base 2");
-	/* 1 */ +hasRating(hilton, twoStarRating)[o(travel)];
-	/* 2 */ +ruralArea(london)[o(travel)];
+	
+	+city(somewhere)[o(travel), source(ben)];
+	+town(somewhere)[o(travel), source(ben)];
+	
+	// Despite the classes urbanArea and ruralArea being disjoint, the belief addition below will succeed,
+	// since tom's word is trusted over ben's (see config.mas2j)
+	// as a result, both (incompatible) assertions made above by ben will be contracted
+	// and the one below will be added. Notice ABox consistency is maintained..
+	+ruralArea(somewhere)[o(travel), source(tom)];
+	?ruralArea(somewhere)[o(travel)];
+	
+	.print("DL-based belief revision is enabled"); // without, the above test-goal will fail, since legacy mechanism simply removes incoming inconsistent beliefs
+	
+	// since the classes destination and and contact are disjoint (and ruralArea is a subclass of destination),
+	// and since we trust ben less than tom, the belief addition below will fail (and tom's assertion above will persist),
+	// thus failing the whole plan.
+	+contact(somewhere)[o(travel), source(ben)].
+	
+-!example_UBB_2
+	<-
+	// Notice this does not hold, since belief revision rejected the less trusted assertion made by ben.
+	?~contact(somewhere)[o(travel)];
 	.print("Completed: Updating Belief Base 2").
 	
 	
@@ -83,6 +104,7 @@
 +!example_KSAA
 	<-
 	.print("Example: Knowledge Sharing Among Agents");	
+	.send(customer, tell, testing);
 	.send(customer, tell, luxuryHotel(hilton)[o(travel)]);
 	// since all_different assertions are treated as SE-literals, we can now send them between agents
 	.send(customer, tell, all_different([hilton, fourSeasons])[o(travel)]). 
