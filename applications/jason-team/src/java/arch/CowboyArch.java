@@ -1,6 +1,7 @@
 package arch;
 
 import jason.JasonException;
+import jason.RevisionFailedException;
 import jason.asSemantics.Message;
 import jason.asSyntax.Atom;
 import jason.asSyntax.Literal;
@@ -103,7 +104,7 @@ public class CowboyArch extends IdentifyCrashed {
 
     /** The perception of the grid size is removed from the percepts list 
         and "directly" added as a belief */
-    void gsizePerceived(int w, int h, String opponent) {
+    void gsizePerceived(int w, int h, String opponent) throws RevisionFailedException {
         model = new LocalWorldModel(w, h);
         getTS().getAg().addBel(Literal.parseLiteral("gsize("+w+","+h+")"));
         playing = true;
@@ -125,7 +126,7 @@ public class CowboyArch extends IdentifyCrashed {
     
     /** The perception of the corral location is removed from the percepts list 
         and "directly" added as a belief */
-    void corralPerceived(Location upperLeft, Location downRight) {
+    void corralPerceived(Location upperLeft, Location downRight) throws RevisionFailedException  {
         model.setCorral(upperLeft, downRight);
         if (acView != null) acView.getModel().setCorral(upperLeft, downRight);
         getTS().getAg().addBel(Literal.parseLiteral("corral("+upperLeft.x+","+upperLeft.y+","+downRight.x+","+downRight.y+")"));
@@ -133,13 +134,13 @@ public class CowboyArch extends IdentifyCrashed {
 
     /** The number of steps of the simulation is removed from the percepts list 
         and "directly" added as a belief */
-    void stepsPerceived(int s) {
+    void stepsPerceived(int s) throws RevisionFailedException {
     	getTS().getAg().addBel(Literal.parseLiteral("steps("+s+")"));
         model.setMaxSteps(s);
     }
 
     /** The perception ratio is discovered */
-	void perceptionRatioPerceived(int s) {
+	void perceptionRatioPerceived(int s) throws RevisionFailedException {
 		if (s != model.getPerceptionRatio()) {
 			model.setPerceptionRatio(s);
 			getTS().getAg().addBel(Literal.parseLiteral("pratio("+s+")"));
@@ -199,8 +200,8 @@ public class CowboyArch extends IdentifyCrashed {
 	        	logger.info("** Arch adding restart for "+getAgName());
         	    getTS().getC().create();
         		
-	        	getTS().getAg().getBB().abolish(new Atom("restart").getPredicateIndicator());
-	        	getTS().getAg().addBel(new Atom("restart"));
+	        	getTS().getAg().getBB().abolish(new Literal("restart").getPredicateIndicator());
+	        	getTS().getAg().addBel(new Literal("restart"));
 	        	lo2 = new Location(-1,-1); // to not restart again in the next cycle
         	} catch (Exception e) {
             	logger.info("Error in restart!"+ e);
@@ -230,7 +231,7 @@ public class CowboyArch extends IdentifyCrashed {
         model.add(WorldModel.ENEMY, x, y); 
     }
 
-    void simulationEndPerceived(String result) {
+    void simulationEndPerceived(String result) throws RevisionFailedException {
     	getTS().getAg().addBel(Literal.parseLiteral("end_of_simulation("+result+")"));
         playing = false;
     }

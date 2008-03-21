@@ -1,9 +1,9 @@
 package arch;
 
 import jason.JasonException;
+import jason.RevisionFailedException;
 import jason.asSemantics.ActionExec;
 import jason.asSyntax.Literal;
-import jason.functions.log;
 import jason.mas2j.ClassParameters;
 import jason.runtime.Settings;
 
@@ -90,7 +90,7 @@ public class ACArchitecture extends CowboyArch {
 	}
 
 	@Override
-    void simulationEndPerceived(String result) {
+    void simulationEndPerceived(String result) throws RevisionFailedException {
 	    percepts = new ArrayList<Literal>();
 	    super.simulationEndPerceived(result);
     }

@@ -2,11 +2,11 @@ package jason.asunit;
 
 import static org.junit.Assert.fail;
 import jason.JasonException;
+import jason.RevisionFailedException;
 import jason.asSemantics.Agent;
 import jason.asSemantics.Event;
 import jason.asSemantics.Intention;
 import jason.asSemantics.Unifier;
-import jason.asSyntax.Atom;
 import jason.asSyntax.Literal;
 import jason.asSyntax.LogExpr;
 import jason.asSyntax.LogicalFormula;
@@ -76,19 +76,21 @@ public class TestAgent extends Agent {
             super.addBel(Literal.tryParsingLiteral(bel));
         } catch (ParseException e) {
             fail("Parsing '"+bel+"' as a belief!");
+        } catch (RevisionFailedException e) {
+            fail("BRF error for adding '"+bel+"!");
         }        
     }
     public void delBel(String bel) {
         try {
             Literal l = Literal.tryParsingLiteral(bel);
             if (!l.hasSource()) {
-                if (l instanceof Atom)
-                    l = new Literal(l.getFunctor());                
                 l.addAnnot(BeliefBase.TSelf);
             }
             super.delBel(l);
         } catch (ParseException e) {
             fail("Parsing '"+bel+"' as a belief!");
+        } catch (RevisionFailedException e) {
+            fail("BRF error for deleting '"+bel+"!");
         }        
     }
     

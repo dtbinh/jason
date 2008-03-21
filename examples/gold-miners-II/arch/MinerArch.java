@@ -152,9 +152,9 @@ public class MinerArch extends AgArch {
 	        	//logger.info("** Arch adding restart for "+getAgName()+", TS="+getTS().getCurrentTask()+", "+getTS().getC());
 	        	getTS().getC().create();
         		
-	        	getTS().getAg().getBB().abolish(new Atom("restart").getPredicateIndicator());
+	        	getTS().getAg().getBB().abolish(new Literal("restart").getPredicateIndicator());
 	        	getTS().getAg().getBB().abolish(new PredicateIndicator("gold",2)); // tira os ouros
-	        	getTS().getAg().addBel(new Atom("restart"));
+	        	getTS().getAg().addBel(new Literal("restart"));
 	        	lo2 = new Location(-1,-1); // to not restart again in the next cycle
 	     
 	        	//getTS().stopCycle();

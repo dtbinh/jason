@@ -143,8 +143,6 @@ public class OrgAgent extends AgArch {
 
     private Literal addAsBel(String b) throws RevisionFailedException {
         Literal l = Literal.parseLiteral(b);
-        if (l.isAtom())
-            l = new Literal(l.getFunctor());
         l.addAnnot(managerSource);
         getTS().getAg().addBel(l);
         return l;
@@ -189,8 +187,6 @@ public class OrgAgent extends AgArch {
                 alreadyGeneratedEvents.add(gi);
 
                 Literal l = Literal.parseLiteral(gi.getAsProlog());
-                if (l.isAtom()) 
-                    l = new Literal(l.getFunctor());
                 Literal giID = new Literal("scheme");
                 giID.addTerm(new Atom(gi.getScheme().getId()));
                 l.addAnnot(giID);
