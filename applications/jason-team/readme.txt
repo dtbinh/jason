@@ -38,7 +38,7 @@ To run this team:
 
 6. you can get the agents location with the command
    
-   tail -f world-state-dummy1.txt 
+   tail -f world-status.txt 
 
 7. the get the graphical view of some agent, add gui=yes in 
    the agent's option (.mas2j file)

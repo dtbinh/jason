@@ -84,6 +84,6 @@ random_pos(X,Y) :-
 +steps(MaxSteps)      <- .println("steps  = ",MaxSteps).
 +corral(X1,Y1,X2,Y2)  <- .println("corral = ",X1,",",Y1," -- ",X2,",",Y2).
 
-+cell(X,Y,Type)       <- .println("cell   = ",X,",",Y," = ",Type).
+//+cell(X,Y,Type)       <- .println("cell   = ",X,",",Y," = ",Type).
 +pratio(R)            <- .println("pratio = ",R).
 +pos(X,Y,S)           <- .println("pos    = ",X,",",Y,"/",S).

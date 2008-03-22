@@ -304,7 +304,7 @@
 	<target name="clean">
 		<delete failonerror="no" includeEmptyDirs="true" verbose="true">
 			<fileset defaultexcludes="no" dir="${basedir}" includes="**/*~" />
-			<fileset dir="${basedir}" includes="**/*.class" />
+			<fileset dir="${basedir}" includes="**/*.class" excludes="applications/**/*"/>
 			<fileset dir="${basedir}" includes="**/core" />
 			<fileset dir="${basedir}/doc/api" includes="**/*" />
 			<fileset dir="${basedir}" includes="**/.nbattrs" />

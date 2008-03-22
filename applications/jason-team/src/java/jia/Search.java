@@ -177,7 +177,7 @@ final class GridState implements Estado, Heuristica {
 
         if (ia.model.isFreeOfObstacle(newl) && !ia.model.hasObject(WorldModel.CORRAL, newl)) {
         	if (ia.considerAgentsAsObstacles) {
-        		if (ia.model.isFree(newl) || ia.from.distance(newl) > 1) {
+        		if ((ia.model.isFree(WorldModel.AGENT,newl) && ia.model.isFree(WorldModel.COW,newl)) || ia.from.distance(newl) > 3) {
         			s.add(new GridState(newl,op,ia));
         		}
         	} else {

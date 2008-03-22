@@ -13,12 +13,7 @@ import jason.environment.grid.Location;
 import jason.mas2j.ClassParameters;
 import jason.runtime.Settings;
 
-import java.io.PrintWriter;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -46,7 +41,7 @@ public class CowboyArch extends IdentifyCrashed {
 	
 	int        cycle  = 0;
 	
-	WriteModelThread writeModelThread = null;
+	WriteStatusThread writeStatusThread = null;
 	
 	protected Logger logger = Logger.getLogger(CowboyArch.class.getName());
 
@@ -60,10 +55,11 @@ public class CowboyArch extends IdentifyCrashed {
     public void initAg(String agClass, ClassParameters bbPars, String asSrc, Settings stts) throws JasonException {
 		super.initAg(agClass, bbPars, asSrc, stts);
 	    gui = "yes".equals(stts.getUserParameter("gui"));
-	    if ("yes".equals(stts.getUserParameter("write_model"))) {
-	        writeModelThread = new WriteModelThread();
-	        writeModelThread.start();
+	    if ("yes".equals(stts.getUserParameter("write_status"))) {
+	        writeStatusThread = WriteStatusThread.create(this);
         }
+	    WriteStatusThread.registerAgent(getAgName(), this);
+	    
         // create the viewer for contest simulator
 	    massimBackDir = stts.getUserParameter("ac_sim_back_dir");
         if (massimBackDir != null && massimBackDir.startsWith("\"")) 
@@ -74,7 +70,7 @@ public class CowboyArch extends IdentifyCrashed {
 	public void stopAg() {
 		if (view != null)   view.dispose();
 		if (acView != null) acView.finish();
-		if (writeModelThread != null) writeModelThread.interrupt();
+		if (writeStatusThread != null) writeStatusThread.interrupt();
 		super.stopAg();
 	}
 	
@@ -120,8 +116,8 @@ public class CowboyArch extends IdentifyCrashed {
             acView.setPriority(Thread.MIN_PRIORITY);
             acView.start();
         }
-        if (writeModelThread != null)
-            writeModelThread.reset();
+        if (writeStatusThread != null)
+            writeStatusThread.reset();
     }
     
     /** The perception of the corral location is removed from the percepts list 
@@ -168,10 +164,29 @@ public class CowboyArch extends IdentifyCrashed {
              lo5 = new Location(-1,-1),
              lo6 = new Location(-1,-1);
 
+
+    Location oldLoc;
+    /** the location in previous cycle */
+	public Location getLastLocation() {
+	    return oldLoc; 
+	}
+	
+	protected String lastAct;
+	protected void setLastAct(String act) {
+	    lastAct = act;
+	}
+	public String getLastAction() {
+	    return lastAct;
+	}
+	
+	public int getCycle() {
+	    return cycle;
+	}
+	
 	
 	/** update the model with the agent location and share this information with team mates */
 	void locationPerceived(int x, int y) {
-		Location oldLoc = model.getAgPos(getMyId());
+		oldLoc = model.getAgPos(getMyId());
         if (oldLoc != null) {
             model.clearAgView(oldLoc); // clear golds and  enemies
         }
@@ -239,7 +254,7 @@ public class CowboyArch extends IdentifyCrashed {
     void setCycle(int s) {
     	cycle = s;
 		if (view != null) view.setCycle(cycle);
-        if (writeModelThread != null) writeModelThread.go();
+        if (writeStatusThread != null) writeStatusThread.go();
     }
     
     void setScore(int s) {
@@ -315,75 +330,4 @@ public class CowboyArch extends IdentifyCrashed {
 		return (Integer.parseInt(agName.substring(agName.length()-1))) - 1;    	
     }
 
-	
-	
-	class WriteModelThread extends Thread {
-	    
-	    Map<Integer,List<Location>> locations;
-	    
-	    public void reset() {
-            // init locations
-	        locations = new HashMap<Integer, List<Location>>();
-            for (int i=0; i<WorldModel.agsByTeam; i++) {
-                locations.put(i, new LinkedList<Location>());
-            }
-	    }
-	    
-		public void run() {
-		    reset();
-		    
-			String fileName = "world-state-"+getAgName()+".txt";
-			PrintWriter out = null;
-			try {
-				out = new PrintWriter(fileName);
-				while (true) {
-                    try {
-    					waitSomeTime();
-    					if (model != null && playing) {
-    						//out.println("\n\n** Agent "+getAgName()+" in cycle "+cycle+"\n");
-    						//for (int i=0; i<model.getNbOfAgs(); i++) {
-    							// out.println("miner"+(i+1)+" is carrying "+model.getGoldsWithAg(i)+" gold(s), at "+model.getAgPos(i));
-    						//}
-    						//out.println(model.toString());
-    					    StringBuilder s = new StringBuilder(String.format("Step %5d : ", cycle));
-    					    for (int i=0; i<WorldModel.agsByTeam; i++) {
-    					        Location agp = model.getAgPos(i);
-    					        if (agp != null) {
-    					            // count how long the agent is in the same location
-    					            int c = 0;
-    					            Iterator<Location> il = locations.get(i).iterator();
-    					            while (il.hasNext() && il.next().equals(agp) && c <= 11) {
-    					                c++;
-    					            }
-    					            String sc = "*";
-    					            if (c < 10) sc = ""+c;
-    					            
-    					            locations.get(i).add(0,agp);
-    					            s.append(String.format("%5d,%2d/%s", agp.x, agp.y, sc));
-    					        }
-    					    }
-    					    logger.info(s.toString());
-    					    out.println(s.toString());
-    						out.flush();
-    					}
-        			} catch (InterruptedException e) { // no problem, quit the thread
-        			    return;
-        			} catch (Exception e) {
-        				e.printStackTrace();
-        			}
-				}
-            } catch (Exception e) {
-                e.printStackTrace();
-			} finally {
-                out.close();			    
-			}
-		}
-		
-		synchronized private void waitSomeTime() throws InterruptedException {
-			wait(4000);
-		}
-        synchronized private void go() {
-            notifyAll();
-        }
-	}
 }

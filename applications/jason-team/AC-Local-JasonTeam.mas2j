@@ -11,7 +11,7 @@ MAS miners {
 	
     agents:
  		dummy1 dummy.asl
-		      [verbose=1, gui=no, write_model=yes, ac_sim_back_dir="./massim-server/backup",
+		      [verbose=1, gui=yes, write_status=yes, ac_sim_back_dir="./massim-server/backup",
 		       host="localhost", port=12300, username=participant1, password="1"] 
               agentArchClass arch.ACArchitecture
 		      agentClass     agent.SelectEvent 

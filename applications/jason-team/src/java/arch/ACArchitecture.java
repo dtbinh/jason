@@ -127,9 +127,9 @@ public class ACArchitecture extends CowboyArch {
 	class WaitSleep extends Thread {
 	    
 	    ActionExec        lastAction;
+        String            lastActionInCurrentCycle;
 	    Queue<ActionExec> toExecute = new ConcurrentLinkedQueue<ActionExec>();
 
-	    String x;
 	    
 	    WaitSleep() {
 	        super("WaitSpeepToSendAction");
@@ -151,8 +151,9 @@ public class ACArchitecture extends CowboyArch {
                 feedback.add(action);
             }
             
-            logger.info("last action sent is "+x);
-            x = null;
+            logger.info("last action sent is "+lastActionInCurrentCycle);
+            setLastAct(lastActionInCurrentCycle);
+            lastActionInCurrentCycle = null;
 	    }
 	    
 	    synchronized void go() {
@@ -169,8 +170,8 @@ public class ACArchitecture extends CowboyArch {
                     lastAction = null;
 	                waitSleep();
 	                if (lastAction != null) {
-                        x = lastAction.getActionTerm().getTerm(0).toString();
-	                    proxy.sendAction(x);
+                        lastActionInCurrentCycle = lastAction.getActionTerm().getTerm(0).toString();
+	                    proxy.sendAction(lastActionInCurrentCycle);
 	                    toExecute.offer(lastAction);
 	                }
 	            } catch (InterruptedException e) {
