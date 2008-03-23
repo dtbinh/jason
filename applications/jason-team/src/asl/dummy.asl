@@ -75,7 +75,8 @@ random_pos(X,Y) :-
 
 +restart 
   <- .print("*** restart ***"); 
-     .drop_all_desires; 
+     .drop_all_desires;
+     .abolish(target(_,_));
      !move.
 
 /* -- tests -- */

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project basedir="." default="test" name="Jason AS Unit">
+
+	<property environment="env" />
+
+	<property name="jasondir"     value="../.." />
+
+	<property name="asunitjar"    value="lib/asunit.jar" />
+
+	<property name="build.dir" value="${basedir}/bin" />
+
+	<property name="dist.properties" value="${basedir}/bin/dist.properties" />
+	<property name="version" value="0" />
+	<property name="release" value="0.1" />
+	<property name="distDir" value="${env.HOME}/tmp/x/ASUnit-${version}.${release}" />
+	<property name="distFile" value="${env.HOME}/ASUnit-${version}.${release}" />
+
+	<path id="project.classpath">
+		<pathelement location="${basedir}/lib/junit.jar" />
+		<pathelement location="${jasondir}/lib/jason.jar" />
+	</path>
+
+	<target name="init" >
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${basedir}/lib" />
+	</target>
+
+	<target name="compile" depends="init">
+		<javac srcdir="src" destdir="${build.dir}" debug="true" deprecation="true" optimize="true" nowarn="true" source="1.5" target="1.5">
+			<classpath refid="project.classpath" />
+		</javac>
+	</target>
+
+
+	<target name="jar" depends="compile">
+		<jar jarfile="${asunitjar}" >
+			<fileset dir="${build.dir}">
+				<include name="jason/asunit/**/*.class" />
+			</fileset>
+		</jar>
+	</target>
+
+	<target name="test" depends="jar">
+		<ant dir="../.." target="jar" />
+		<junit printsummary="yes" failureProperty="test.failure">
+			<classpath refid="project.classpath" />
+			<classpath path="${build.dir}" />
+			<formatter type="plain" usefile="false" />
+			<batchtest>
+				<fileset dir="${basedir}/src" includes="example/**/Test*.java" />
+				<fileset dir="${basedir}/src" includes="jason/tests/**/Test*.java" />
+			</batchtest>
+		</junit>
+		<fail message="test failed" if="test.failure" />
+		<delete failonerror="no" verbose="false">
+			<fileset dir="${basedir}" includes="bookstore.*" />
+		</delete>
+	</target>
+
+	<target name="apidoc" depends="compile">
+		<javadoc 
+			destdir="${basedir}/doc/api" 
+			packagenames="jason.asunit.*" 
+			sourcepath="${basedir}/src" 
+			excludepackagenames="jason.asSyntax.parser,jason.mas2j.parser" 
+			use="true" 
+			version="true" 
+			author="true" 
+			windowtitle="Jason - AgentSpeak Unit Test">
+				<classpath refid="project.classpath" />
+		</javadoc>
+	</target>
+
+	<target name="dist" depends="jar" description="Build distribution.">
+
+		<echo message="Generating Jason ASUnit ${version}.${release}" />
+
+		<propertyfile file="${dist.properties}">
+			<entry key="version" value="${version}" />
+			<entry key="release" value="${release}" />
+			<!-- entry default="0" key="build" operation="+" type="int" /-->
+			<entry key="build.date" type="date" value="now" />
+		</propertyfile>
+		<property file="${dist.properties}" />
+
+		<fixcrlf eol="crlf" includes="**/*.txt,**/*.bat" srcdir="${basedir}" />
+
+		<delete failonerror="no" includeEmptyDirs="true">
+			<fileset dir="${distDir}" />
+		</delete>
+		<delete dir="${distDir}/.." />
+
+		<mkdir dir="${distDir}" />
+
+		<copy todir="${distDir}">
+			<fileset dir="${basedir}" includes="*.*" />
+			<fileset dir="${basedir}" includes="LICENSE" />
+			<fileset dir="${basedir}" includes="README" />
+
+			<fileset dir="${basedir}" includes="bin/*" excludes="bin/jedit.tgz" />
+			<fileset dir="${basedir}" includes="bin/jedit/**/*" />
+			<fileset dir="${basedir}" includes="doc/**/*" />
+			<fileset dir="${basedir}" includes="examples/**/*" />
+			<fileset dir="${basedir}" includes="demos/**/*" />
+			<fileset dir="${basedir}" includes="lib/**/*" />
+			<fileset dir="${basedir}" includes="src/**/*" />
+		</copy>
+
+		<delete failonerror="no" includeEmptyDirs="true">
+			<fileset dir="${distDir}" includes=".settings" />
+			<fileset dir="${distDir}" includes=".project" />
+			<fileset dir="${distDir}" includes=".classpath" />
+		</delete>
+		<delete dir="${distDir}/bin/classes" />
+		<delete dir="${distDir}/doc/faq" />
+		<delete dir="${distDir}/doc/mini-tutorial/src" />
+
+		<tar compression="gzip" tarfile="${distFile}.tgz">
+			<tarfileset dir="${distDir}/.." mode="755">
+				<include name="Jason-${version}.${release}/**/*.sh" />
+				<include name="Jason-${version}.${release}/**/asl2*" />
+			</tarfileset>
+			<tarfileset dir="${distDir}/..">
+				<include name="Jason-${version}.${release}/**/*" />
+				<exclude name="Jason-${version}.${release}/**/*.sh" />
+				<exclude name="Jason-${version}.${release}/**/asl2*" />
+			</tarfileset>
+		</tar>
+	</target>
+
+	<target name="clean">
+		<delete dir="${build.dir}" />
+	</target>
+
+</project>

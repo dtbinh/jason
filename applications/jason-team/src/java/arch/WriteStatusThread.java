@@ -3,7 +3,6 @@ package arch;
 import jason.environment.grid.Location;
 
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;

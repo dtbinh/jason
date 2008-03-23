@@ -142,24 +142,24 @@ public class ACArchitecture extends CowboyArch {
         }
 	    
 	    void newCycle() {
-            List<ActionExec> feedback = getTS().getC().getFeedbackActions();
+            logger.info("last action sent is "+lastActionInCurrentCycle+". The following was not sent: "+toExecute);
+            setLastAct(lastActionInCurrentCycle);
+            lastActionInCurrentCycle = null;
             
             // set all actions as successfully executed
+            List<ActionExec> feedback = getTS().getC().getFeedbackActions();
             while (!toExecute.isEmpty()) {
                 ActionExec action = toExecute.poll();
                 action.setResult(true);
                 feedback.add(action);
             }
-            
-            logger.info("last action sent is "+lastActionInCurrentCycle);
-            setLastAct(lastActionInCurrentCycle);
-            lastActionInCurrentCycle = null;
 	    }
 	    
 	    synchronized void go() {
             notifyAll();
         }
 	    synchronized void waitSleep() throws InterruptedException {
+	        // TODO: do something by timeout?
             wait();
         }
 	    
