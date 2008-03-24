@@ -31,6 +31,8 @@ public class TestVarInContext {
     public void testContext() {
         ag.addGoal("test1");
         ag.assertPrint("b2", 5);
+        ag.addGoal("test1"); // test twice to see if nothing was changed
+        ag.assertPrint("b2", 5);
         
         ag.addGoal("test2");
         ag.assertPrint("error", 5);

@@ -14,6 +14,7 @@ import jason.asSyntax.Structure;
 import jason.asSyntax.Trigger;
 import jason.asSyntax.parser.ParseException;
 import jason.bb.BeliefBase;
+import jason.infra.centralised.RunCentralisedMAS;
 import jason.runtime.Settings;
 
 import java.io.StringReader;
@@ -21,9 +22,23 @@ import java.util.logging.Level;
 
 public class TestAgent extends Agent {
     
+    // creates the masRunner
+    static {
+        new RunCentralisedMAS();
+    }
+
+    
     public TestAgent() {
+        this(null);
+    }
+    
+    public TestAgent(String agName) {
         try {
-            TestArch arch = new TestArch();
+            TestArch arch = null;
+            if (agName == null)
+                arch = new TestArch();
+            else
+                arch = new TestArch(agName);
             arch.getUserAgArch().setTS(initAg(arch.getUserAgArch(), null, null, new Settings()));
         } catch (JasonException e) {
             logger.log(Level.SEVERE, "Error creating TestArch", e);
@@ -32,10 +47,16 @@ public class TestAgent extends Agent {
     
     public boolean parseAScode(String aslCode) {
         try {
+            getPL().clear(); // to force KQML plans to be after string plans
             setASLSrc("stringcode");
             parseAS(new StringReader(aslCode));
             addInitialBelsInBB();
             addInitialGoalsInTS();
+            
+            // kqml Plans at the end of the ag PS
+            setASLSrc("kqmlPlans.asl");
+            parseAS(JasonException.class.getResource("/asl/kqmlPlans.asl"));
+            setASLSrc("stringcode");
             return true;
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error parsing\n"+aslCode+": "+e.getMessage());
@@ -105,14 +126,14 @@ public class TestAgent extends Agent {
             fail("Parsing '"+formula+"' as a formula failed!");
         }
     }
-    public void assertBel(final LogicalFormula bel, final int maxCycles) {
+    public void assertBel(final LogicalFormula belief, final int maxCycles) {
         Condition c = new Condition() {
             public boolean test(TestArch arch) {
-                return believes(bel, new Unifier());
+                return believes(belief, new Unifier());
             }
         };
         if (!assertMaxCyclesAndAnotherCondition(c, maxCycles))
-            fail("failed assertBel("+bel+")");
+            fail("failed assertBel("+belief+")");
     }
     
     
@@ -167,8 +188,7 @@ public class TestAgent extends Agent {
     public void assertPrint(final String out, final int maxCycles) {
         Condition c = new Condition() {
             public boolean test(TestArch arch) {
-                boolean result = arch.getOutput().indexOf(out) >= 0;
-                return result;
+                return arch.getOutput().indexOf(out) >= 0;
             }
         };
         if (assertMaxCyclesAndAnotherCondition(c, maxCycles))

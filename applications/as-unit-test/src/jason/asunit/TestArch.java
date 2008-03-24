@@ -24,14 +24,16 @@ public class TestArch extends CentralisedAgArch implements Runnable {
     
     StringBuilder output = new StringBuilder();
 
-    private static RunCentralisedMAS runner = new RunCentralisedMAS();
-    
     public TestArch() {
-        setAgName("ASUnitTest" + (nameCount++));
+        this("ASUnitTest" + (nameCount++));
+    }
+
+    public TestArch(String agName) {
+        setAgName(agName);
         AgArch a = new AgArch();
         a.setArchInfraTier(this);
         setUserAgArch(a);
-        runner.addAg(this);
+        RunCentralisedMAS.getRunner().addAg(this);
     }
     
     public int getCycle() {
@@ -62,7 +64,7 @@ public class TestArch extends CentralisedAgArch implements Runnable {
     
     public void setEnv(Environment env) {
         try {
-            CentralisedEnvironment infraEnv = new CentralisedEnvironment(null, runner);
+            CentralisedEnvironment infraEnv = new CentralisedEnvironment(null, RunCentralisedMAS.getRunner());
             infraEnv.setUserEnvironment(env);
             env.setEnvironmentInfraTier(infraEnv);
             setEnvInfraTier(infraEnv);
