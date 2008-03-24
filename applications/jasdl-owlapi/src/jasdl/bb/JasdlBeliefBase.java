@@ -1,13 +1,12 @@
 package jasdl.bb;
 
 import jasdl.asSemantics.JasdlAgent;
-import jasdl.bb.revision.BeliefBaseContractor;
-import jasdl.bb.revision.JasdlReasonerFactory;
 import jasdl.bridge.seliteral.SELiteral;
 import jasdl.bridge.seliteral.SELiteralAllDifferentAssertion;
 import jasdl.util.JasdlException;
 import jasdl.util.NotEnrichedException;
 import jason.asSyntax.Literal;
+import jason.asSyntax.Term;
 import jason.bb.DefaultBeliefBase;
 
 import java.util.HashSet;
@@ -34,31 +33,28 @@ public class JasdlBeliefBase extends DefaultBeliefBase{
 	public boolean add(Literal l) {		
 		getLogger().fine("Adding "+l);
 		try{
-			SELiteral sl = agent.getSELiteralFactory().create(l); // all non-JASDL annotations added.. TODO: This needs sorting
+
+			SELiteral sl = agent.getSELiteralFactory().create(l); 
 			OWLIndividualAxiom axiom = sl.createAxiom();
 			OWLOntology ontology = sl.getOntology();
-			// add axiom annotations to axiom containing serialised list terms.
-			// Could be (clumsily) made to sit in toAxiomConverter? - this is probably the only place we add axioms to an ontology anyway
-			OWLAnnotation annot = agent.getOntologyManager().getOWLDataFactory().getOWLLabelAnnotation(sl.getSemanticallyNaiveAnnotations().toString()); //TODO: more efficient way of serialising list terms?
-			OWLAxiomAnnotationAxiom annotAxiom = agent.getOntologyManager().getOWLDataFactory().getOWLAxiomAnnotationAxiom(axiom, annot);
-			
-			// need to merge existing annotations into a single one containing a whole list.
-			
-			
-			boolean containsAxiom = ontology.containsAxiom(axiom);
-			boolean containsAnnot = ontology.containsAxiom(annotAxiom);
-			agent.getLogger().fine("Contains Axiom "+axiom+"?: " +containsAxiom);
-			agent.getLogger().fine("Contains Annotation "+annotAxiom+"?: " +containsAnnot);
 						
-			if(!containsAxiom || !containsAnnot){
-				if(!containsAxiom){
-					agent.getOntologyManager().applyChange(new AddAxiom(ontology, axiom));	
-				}			
-				if(!containsAnnot){
+			boolean containsAxiom = ontology.containsAxiom(axiom);
+			if(!containsAxiom){
+				agent.getOntologyManager().applyChange(new AddAxiom(ontology, axiom));	
+			}
+			
+			boolean containsAllAnnots = true;
+			for(Term _annot : sl.getSemanticallyNaiveAnnotations()){
+				OWLAnnotation annot = agent.getOntologyManager().getOWLDataFactory().getOWLLabelAnnotation(_annot.toString());
+				OWLAxiomAnnotationAxiom annotAxiom = agent.getOntologyManager().getOWLDataFactory().getOWLAxiomAnnotationAxiom(axiom, annot);
+				if(!ontology.containsAxiom(annotAxiom)){
+					containsAllAnnots = false;
 					agent.getOntologyManager().applyChange(new AddAxiom(ontology, annotAxiom));
 				}
-				agent.getReasoner().refresh();
-				
+			}			
+						
+			if(!containsAxiom || !containsAllAnnots){
+				agent.getReasoner().refresh();				
 				if(!agent.isBeliefRevisionEnabled()){ // if brf disabled, resort to legacy consistency maintenance mechanism 
 					if(!agent.getReasoner().isConsistent()){
 						RemoveAxiom rem = new RemoveAxiom(ontology, axiom);
@@ -90,7 +86,7 @@ public class JasdlBeliefBase extends DefaultBeliefBase{
 	public boolean remove(Literal l) {
 		getLogger().fine("Removing "+l);
 		try{
-			// TODO: use contraction
+			// TODO: use contraction for belief base removal
 			//BeliefBaseContractor contractor = new BeliefBaseContractor(agent.getOntologyManager(), new JasdlReasonerFactory(), agent.getLogger());			
 			//contractor.contract(axiom, kernelsetFilter, incisionFunction)
 			
@@ -103,7 +99,7 @@ public class JasdlBeliefBase extends DefaultBeliefBase{
 			agent.getReasoner().refresh();
 			return true;
 		}catch(NotEnrichedException e){			
-			return super.add(l); // semantically-naive, use standard Jason mechanisms
+			return super.remove(l); // semantically-naive, use standard Jason mechanisms
 		}catch(Exception e){
 			getLogger().warning("Exception caught removing SELiteral "+l+" from belief base: ");
 			e.printStackTrace();

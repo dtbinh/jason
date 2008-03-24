@@ -32,6 +32,7 @@ import jason.RevisionFailedException;
 import jason.architecture.AgArch;
 import jason.asSemantics.Intention;
 import jason.asSemantics.TransitionSystem;
+import jason.asSemantics.Unifier;
 import jason.asSyntax.Atom;
 import jason.asSyntax.Literal;
 import jason.bb.BeliefBase;
@@ -193,7 +194,7 @@ public class JasdlAgent extends JmcaAgent{
 		
 			
 		// just accept beliefToDel. Assumption: Deletions never lead to inconsistencies?!
-		if(beliefToDel != null){
+		if(beliefToDel != null){			
 			removeList.add(beliefToDel);
 		}
 		
@@ -250,18 +251,29 @@ public class JasdlAgent extends JmcaAgent{
 				toReturn[0].add(added);
 			}
 		}
+		
 		for(Literal removed : removeList){
-			if(getBB().remove(removed)){
-				if(toReturn == null){
+			// we need to ground unground removals
+			Unifier u = null;
+            try {
+                u = i.peek().getUnif(); // get from current intention
+            } catch (Exception e) {
+                u = new Unifier();
+            }
+            if (believes(removed, u)) {
+            	removed.apply(u);  // TODO: should unground removals not result in removal of all unifications?  
+				if(getBB().remove(removed)){
 					if(toReturn == null){
-						toReturn = new List[2];
-						toReturn[0] = new Vector<Literal>();
-						toReturn[1] = new Vector<Literal>();
+						if(toReturn == null){
+							toReturn = new List[2];
+							toReturn[0] = new Vector<Literal>();
+							toReturn[1] = new Vector<Literal>();
+						}
+						toReturn[1].add(removed);	
 					}
-					toReturn[1].add(removed);	
+					
 				}
-				
-			}
+            }
 		}
 		
 		return toReturn;

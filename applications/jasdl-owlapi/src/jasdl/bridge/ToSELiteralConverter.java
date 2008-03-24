@@ -64,12 +64,8 @@ public class ToSELiteralConverter {
 		// get annotations
 		Set<OWLAxiomAnnotationAxiom> annotAxioms = axiom.getAnnotationAxioms(ontology);
 		for(OWLAxiomAnnotationAxiom annotAxiom : annotAxioms){ // remember, possibly semantically-naive payload!
-			Structure annot = ListTermImpl.parse(annotAxiom.getAnnotation().getAnnotationValueAsConstant().getLiteral());
-			if(annot.isList()){
-				result.addAll((ListTerm)annot);
-			}else{
-				result.add(annot);
-			}
+			Term annot = Literal.parse(annotAxiom.getAnnotation().getAnnotationValueAsConstant().getLiteral());
+			result.add(annot);
 		}
 		return result;
 	}
