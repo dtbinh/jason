@@ -49,7 +49,7 @@
 			<formatter type="plain" usefile="false" />
 			<batchtest>
 				<fileset dir="${basedir}/src" includes="example/**/Test*.java" />
-				<fileset dir="${basedir}/src" includes="jason/tests/**/Test*.java" />
+				<fileset dir="${basedir}/src" includes="jason/tests/TestAll.java" />
 			</batchtest>
 		</junit>
 		<fail message="test failed" if="test.failure" />
@@ -70,63 +70,6 @@
 			windowtitle="Jason - AgentSpeak Unit Test">
 				<classpath refid="project.classpath" />
 		</javadoc>
-	</target>
-
-	<target name="dist" depends="jar" description="Build distribution.">
-
-		<echo message="Generating Jason ASUnit ${version}.${release}" />
-
-		<propertyfile file="${dist.properties}">
-			<entry key="version" value="${version}" />
-			<entry key="release" value="${release}" />
-			<!-- entry default="0" key="build" operation="+" type="int" /-->
-			<entry key="build.date" type="date" value="now" />
-		</propertyfile>
-		<property file="${dist.properties}" />
-
-		<fixcrlf eol="crlf" includes="**/*.txt,**/*.bat" srcdir="${basedir}" />
-
-		<delete failonerror="no" includeEmptyDirs="true">
-			<fileset dir="${distDir}" />
-		</delete>
-		<delete dir="${distDir}/.." />
-
-		<mkdir dir="${distDir}" />
-
-		<copy todir="${distDir}">
-			<fileset dir="${basedir}" includes="*.*" />
-			<fileset dir="${basedir}" includes="LICENSE" />
-			<fileset dir="${basedir}" includes="README" />
-
-			<fileset dir="${basedir}" includes="bin/*" excludes="bin/jedit.tgz" />
-			<fileset dir="${basedir}" includes="bin/jedit/**/*" />
-			<fileset dir="${basedir}" includes="doc/**/*" />
-			<fileset dir="${basedir}" includes="examples/**/*" />
-			<fileset dir="${basedir}" includes="demos/**/*" />
-			<fileset dir="${basedir}" includes="lib/**/*" />
-			<fileset dir="${basedir}" includes="src/**/*" />
-		</copy>
-
-		<delete failonerror="no" includeEmptyDirs="true">
-			<fileset dir="${distDir}" includes=".settings" />
-			<fileset dir="${distDir}" includes=".project" />
-			<fileset dir="${distDir}" includes=".classpath" />
-		</delete>
-		<delete dir="${distDir}/bin/classes" />
-		<delete dir="${distDir}/doc/faq" />
-		<delete dir="${distDir}/doc/mini-tutorial/src" />
-
-		<tar compression="gzip" tarfile="${distFile}.tgz">
-			<tarfileset dir="${distDir}/.." mode="755">
-				<include name="Jason-${version}.${release}/**/*.sh" />
-				<include name="Jason-${version}.${release}/**/asl2*" />
-			</tarfileset>
-			<tarfileset dir="${distDir}/..">
-				<include name="Jason-${version}.${release}/**/*" />
-				<exclude name="Jason-${version}.${release}/**/*.sh" />
-				<exclude name="Jason-${version}.${release}/**/asl2*" />
-			</tarfileset>
-		</tar>
 	</target>
 
 	<target name="clean">

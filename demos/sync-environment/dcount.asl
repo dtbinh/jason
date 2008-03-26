@@ -1,9 +1,10 @@
 // this agent has TWO intentions to act 
 
+vl(0).
+
 !i1.
 !i2.
 
-vl(0).
 
 /* Plans */
 
