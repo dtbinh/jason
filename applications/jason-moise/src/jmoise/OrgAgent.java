@@ -309,7 +309,8 @@ public class OrgAgent extends AgArch {
         	if (!u.get(S).equals(gState) || !gap.equals(gilInBB.getTerm(1))) { 
                 if (!getTS().getAg().delBel(gilInBB))
                 	logger.warning("Belief "+gilInBB+" should be deleted, but was not!");
-                else if (logger.isLoggable(Level.FINE)) logger.fine("Remove goal belief: " + gil);
+                else 
+                    if (logger.isLoggable(Level.FINE)) logger.fine("Remove goal belief: " + gil);
             }
         }
 

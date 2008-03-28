@@ -46,7 +46,7 @@ desired_mission(doAuction,mParticipant).
       .send(A,tell,alliance).
    
 // remember the winners
-+goal_state(Sch, winner(W), satisfied) 
++goal_state(Sch, winner(W), achieved) 
    :  goal_state(Sch, auction(N), _)
    <- +winner(N,W).
-  
+

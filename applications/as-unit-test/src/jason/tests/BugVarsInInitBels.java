@@ -17,7 +17,7 @@ public class BugVarsInInitBels {
         
         // defines the agent's AgentSpeak code
         ag.parseAScode(
-                "test_rule(A,A). "+
+                "test_rule(A,A). "+ // do not replace A by _ (the test is just the name A for the var)
                 "!test. "+
                 "+!test <- A = test_wrong_value; "+
                 "          ?test_rule(T,right_value); "+
