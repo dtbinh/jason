@@ -166,7 +166,6 @@ public class TestAgent extends Agent {
     public void assertAct(final Structure act, final int maxCycles) {
         Condition c = new Condition() {
             public boolean test(TestArch arch) {
-                //System.out.println(arch.getCycle() + " " + arch.getActions()+ getTS().getC().getFeedbackActions());
                 return arch.getActions().contains(act);
             }
         };
