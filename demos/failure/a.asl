@@ -8,5 +8,13 @@
 +!g5(_) : true <- .fail.
 -!g3(failure) : true 
   <- .current_intention(I);
-     .print("In failure handling plan, current intention is: ",I).
+     .print("In failure handling plan, current intention is: ",I);
+	 I = intention(Id,IntendedMeans);
+	 .println;
+	 .println("*  Intention ",Id, " IM stack:");
+	 !print_im(IntendedMeans).
 
++!print_im([]).
++!print_im([im(_Planlabel,Body)|R])
+  <- .println("*        ",Body);
+     !print_im(R).

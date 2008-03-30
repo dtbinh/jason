@@ -5,8 +5,6 @@ import jason.architecture.AgArch;
 import jason.asSemantics.ActionExec;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Structure;
-import jason.asSyntax.Term;
-import jason.asSyntax.VarTerm;
 import jason.environment.Environment;
 import jason.infra.centralised.CentralisedAgArch;
 import jason.infra.centralised.CentralisedEnvironment;
@@ -85,12 +83,7 @@ public class TestArch extends CentralisedAgArch implements Runnable {
     
     @Override
     public void act(ActionExec action, List<ActionExec> feedback) {
-        Term t = action.getActionTerm();
-        if (t instanceof VarTerm) {
-            t = ((VarTerm)t).getValue();
-        }
-        actions.add(action.getActionTerm());
-        System.out.println("*"+action.getActionTerm().getClass().getName()+"   "+t.getClass().getName());
+        actions.add(action.getActionTerm());        
         if (getEnvInfraTier() != null) {
             super.act(action, feedback); //env.scheduleAction(getAgName(), action.getActionTerm(), action);
         } else { 

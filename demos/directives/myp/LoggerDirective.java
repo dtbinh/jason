@@ -3,6 +3,7 @@ package myp;
 
 import jason.asSemantics.Agent;
 import jason.asSyntax.BodyLiteral;
+import jason.asSyntax.BodyLiteralImpl;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Plan;
 import jason.asSyntax.Pred;
@@ -27,11 +28,11 @@ public class LoggerDirective implements Directive {
             // add .print(te) in the begin and end of the plan
             for (Plan p: innerContent.getPL()) {
                 Literal print1 = Literal.parseLiteral(".print(\"Entering \","+p.getTrigger().getLiteral()+")");
-                BodyLiteral b1 = new BodyLiteral(BodyType.internalAction, print1);
+                BodyLiteral b1 = new BodyLiteralImpl(BodyType.internalAction, print1);
                 p.getBody().add(0,b1);
 
                 Literal print2 = Literal.parseLiteral(".print(\"Leaving \","+p.getTrigger().getLiteral()+")");
-                BodyLiteral b2 = new BodyLiteral(BodyType.internalAction, print2);
+                BodyLiteral b2 = new BodyLiteralImpl(BodyType.internalAction, print2);
                 p.getBody().add(b2);
                 
                 newAg.getPL().add(p);

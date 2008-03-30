@@ -16,19 +16,27 @@ public class TestPlanbodyAsTerm {
         
         // defines the agent's AgentSpeak code
         ag.parseAScode(
-                "+!start <- +g(a; b; c); ?g(X); !g(X). "+
+                "+!start <- +g(a(1); b; c); ?g(X); !g(X). "+
+                "+!test2 <- !g(!g2(1)). "+
                 "+!g(A; R) <- A; !g(R). "+
-                "+!g(A)    <- .print(A); A; .print(end)."
+                "+!g(A)    <- A." +
+                "+!g2(A)   <- jason.asunit.print(A)."
         );
     }
     
     @Test
-    public void testProgram() {
+    public void testProgram1() {
         ag.addGoal("start");
-        ag.assertBel("g(a;b;c)", 5);
-        ag.assertAct("a", 4);
+        ag.assertBel("g(a(1);b;c)", 5);
+        ag.assertAct("a(1)", 4);
         ag.assertAct("b", 4);
         ag.assertAct("c", 4);
+    }
+
+    @Test
+    public void testProgram2() {
+        ag.addGoal("test2");
+        ag.assertPrint("1", 5);
     }
 
 }
