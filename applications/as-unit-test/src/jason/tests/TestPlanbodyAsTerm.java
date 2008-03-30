@@ -18,6 +18,7 @@ public class TestPlanbodyAsTerm {
         ag.parseAScode(
                 "+!start <- +g(a(1); b; c); ?g(X); !g(X). "+
                 "+!test2 <- !g(!g2(1)). "+
+                "+!test3 <- !g2(-1 + 2). "+
                 "+!g(A; R) <- A; !g(R). "+
                 "+!g(A)    <- A." +
                 "+!g2(A)   <- jason.asunit.print(A)."
@@ -36,6 +37,12 @@ public class TestPlanbodyAsTerm {
     @Test
     public void testProgram2() {
         ag.addGoal("test2");
+        ag.assertPrint("1", 5);
+    }
+
+    @Test
+    public void testProgram3() {
+        ag.addGoal("test3");
         ag.assertPrint("1", 5);
     }
 

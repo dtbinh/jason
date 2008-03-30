@@ -9,7 +9,7 @@ import org.junit.runners.Suite.SuiteClasses;
     BugVarsInInitBels.class,
     TestAddLogExprInBB.class,
     TestKQML.class,
-    TestVarInContext.class,
-    TestPlanbodyAsTerm.class
+    TestVarInContext.class /*,
+    TestPlanbodyAsTerm.class*/
  })
 public class TestAll { }
