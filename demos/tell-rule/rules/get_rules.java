@@ -22,7 +22,7 @@ public class get_rules extends DefaultInternalAction {
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
         try {
             Literal pattern = (Literal)args[0];
-            Iterator<Literal> i = ts.getAg().getBB().getRelevant(pattern);
+            Iterator<Literal> i = ts.getAg().getBB().getCandidateBeliefs(pattern, un);
             ListTerm result = new ListTermImpl();
             while (i.hasNext()) {
             	Literal l = i.next();
