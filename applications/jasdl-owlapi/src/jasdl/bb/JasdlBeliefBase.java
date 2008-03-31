@@ -1,10 +1,15 @@
 package jasdl.bb;
 
 import jasdl.asSemantics.JasdlAgent;
+import jasdl.bb.revision.BeliefBaseContractor;
+import jasdl.bb.revision.JasdlIncisionFunction;
+import jasdl.bb.revision.JasdlReasonerFactory;
+import jasdl.bb.revision.TBoxAxiomKernelsetFilter;
 import jasdl.bridge.seliteral.SELiteral;
 import jasdl.bridge.seliteral.SELiteralAllDifferentAssertion;
 import jasdl.util.JasdlException;
 import jasdl.util.NotEnrichedException;
+import jason.asSemantics.Unifier;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Term;
 import jason.bb.DefaultBeliefBase;
@@ -18,6 +23,7 @@ import java.util.logging.Logger;
 
 import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLAnnotation;
+import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLAxiomAnnotationAxiom;
 import org.semanticweb.owl.model.OWLDifferentIndividualsAxiom;
 import org.semanticweb.owl.model.OWLIndividual;
@@ -84,20 +90,44 @@ public class JasdlBeliefBase extends DefaultBeliefBase{
 	 */
 	@Override
 	public boolean remove(Literal l) {
-		getLogger().fine("Removing "+l);
-		try{
-			// TODO: use contraction for belief base removal
-			//BeliefBaseContractor contractor = new BeliefBaseContractor(agent.getOntologyManager(), new JasdlReasonerFactory(), agent.getLogger());			
-			//contractor.contract(axiom, kernelsetFilter, incisionFunction)
-			
+		getLogger().fine("Contracting "+l);
+		try{			
 			SELiteral sl = agent.getSELiteralFactory().create(l);
 			OWLOntology ontology = sl.getOntology();
-			OWLIndividualAxiom axiom = sl.createAxiom();
-			getLogger().fine("... as axiom: "+axiom);
-			RemoveAxiom rem = new RemoveAxiom(ontology, axiom);
-			agent.getOntologyManager().applyChange(rem);
+			OWLIndividualAxiom axiom = sl.createAxiom();			
+			
+			boolean result = false; // -> at least *something* must be removed for this to be true!
+			
+			BeliefBaseContractor contractor = new BeliefBaseContractor(agent.getOntologyManager(), new JasdlReasonerFactory(), agent.getLogger());			
+			List<OWLAxiom> contractList = contractor.contract(axiom, new TBoxAxiomKernelsetFilter(), new JasdlIncisionFunction(agent, sl));
+			
+			// NOTE: this technique only really makes sense with annotation gathering!
+			for(OWLAxiom contract : contractList){ // removals corresponds to l and all l's whose removal will undermine it
+				
+				// for each annotation to this axiom, remove it if l has it
+				List<OWLAxiomAnnotationAxiom> annotationsToRemove = new Vector<OWLAxiomAnnotationAxiom>(); // to avoid concurrency issues
+				for(OWLAxiomAnnotationAxiom annotAxiom : contract.getAnnotationAxioms(ontology)){
+					Term annot = Literal.parse(annotAxiom.getAnnotation().getAnnotationValueAsConstant().getLiteral());
+					if(l.hasAnnot(annot)){
+						annotationsToRemove.add(annotAxiom);
+						result = true;
+					}
+				}
+				
+				for(OWLAxiom annotationToRemove : annotationsToRemove){
+					agent.getOntologyManager().applyChange(new RemoveAxiom(ontology, annotationToRemove));
+				}				
+				
+				// remove source(self) and source(percept). TODO: right thing to do?				
+				// remove assertion if no annotation axioms left
+				Set<OWLAxiomAnnotationAxiom> remaining = contract.getAnnotationAxioms(ontology);
+				if(remaining.isEmpty()){
+					agent.getOntologyManager().applyChange(new RemoveAxiom(ontology, contract));
+					result = true;
+				}
+			}
 			agent.getReasoner().refresh();
-			return true;
+			return result;
 		}catch(NotEnrichedException e){			
 			return super.remove(l); // semantically-naive, use standard Jason mechanisms
 		}catch(Exception e){
@@ -108,22 +138,19 @@ public class JasdlBeliefBase extends DefaultBeliefBase{
 	}
 	
 	@Override
-	public Literal contains(Literal l) {		
+	public Literal contains(Literal l) {	
+		agent.getLogger().fine("Contains: "+l);
 		try {
-			// TODO: use OWLOntology#contains
-			SELiteral sl = agent.getSELiteralFactory().create(l); // <- currently just to establish if semantically-enriched
-			//OWLIndividualAxiom axiom = sl.createAxiom();
-			//OWLAnnotation annot = agent.getOntologyManager().getOWLDataFactory().getOWLLabelAnnotation(sl.getSemanticallyNaiveAnnotations().toString()); //TODO: more efficient way of serialising list terms?
-			//OWLAxiomAnnotationAxiom annotAxiom = agent.getOntologyManager().getOWLDataFactory().getOWLAxiomAnnotationAxiom(axiom, annot);
-			
-			
-			Iterator<Literal> it = getRelevant(l);
-			if(it.hasNext()){
-				return it.next();
-			}else{
-				return null;
+			SELiteral sl = agent.getSELiteralFactory().create(l);
+			OWLIndividualAxiom axiom = sl.createAxiom();
+			if(sl.getOntology().containsAxiom(axiom)){
+				Iterator<Literal> it = getCandidateBeliefs(l, null);
+				if(it.hasNext()){
+					return it.next();
+				}
 			}
-		}catch(NotEnrichedException e){
+			return null;
+		}catch(NotEnrichedException e){			
 			return super.contains(l); // semantically-naive, use standard Jason mechanisms
 		}catch(Exception e){
 			getLogger().warning("Exception caught while checking if bb contains SELiteral "+l+". Reason: "+e);
@@ -134,8 +161,12 @@ public class JasdlBeliefBase extends DefaultBeliefBase{
 	
 
 	@Override
-	public Iterator<Literal> getRelevant(Literal l) {		
+	public Iterator<Literal> getCandidateBeliefs(Literal l, Unifier un) {		
+		l = (Literal)l.clone();
+		l.apply(un);
+		
 		getLogger().fine("Getting relevancies for "+l);
+		
 		Set<Literal> relevant = new HashSet<Literal>();
 		try{			
 			SELiteral sl = agent.getSELiteralFactory().create(l);
@@ -160,8 +191,13 @@ public class JasdlBeliefBase extends DefaultBeliefBase{
 				
 			}
 			getLogger().fine("... found: "+relevant);
+			if(relevant.isEmpty()){
+				return null;
+			}
+			
+			
 		}catch(NotEnrichedException e){
-			return super.getRelevant(l); // semantically-naive, use standard Jason mechanisms
+			return super.getCandidateBeliefs(l, un); // semantically-naive, use standard Jason mechanisms
 		}catch(Exception e){
 			getLogger().warning("Exception caught getting relevancies for SELiteral "+l+" to belief base: ");
 			e.printStackTrace();			

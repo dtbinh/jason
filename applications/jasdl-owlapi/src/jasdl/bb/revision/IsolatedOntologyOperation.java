@@ -26,12 +26,14 @@ public class IsolatedOntologyOperation {
 	protected OWLReasoner isolatedReasoner;
 	
 	
-	public IsolatedOntologyOperation(OWLOntologyManager originalManager, ReasonerFactory reasonerFactory) throws OWLOntologyCreationException, OWLOntologyChangeException, UnknownOWLOntologyException, OWLReasonerException{
+	public IsolatedOntologyOperation(OWLOntologyManager originalOntologyManager, ReasonerFactory reasonerFactory) throws OWLOntologyCreationException, OWLOntologyChangeException, UnknownOWLOntologyException, OWLReasonerException{	
+		//long start = System.currentTimeMillis();
 		this.isolatedOntologyManager = OWLManager.createOWLOntologyManager();
-		this.isolatedOntology = createDebuggingOntology(originalManager, isolatedOntologyManager);			
+		this.isolatedOntology = createDebuggingOntology(originalOntologyManager, isolatedOntologyManager);			
 		this.reasonerFactory = new JasdlReasonerFactory();
 		this.isolatedReasoner = reasonerFactory.createReasoner(isolatedOntologyManager);			
 		this.isolatedReasoner.loadOntologies(isolatedOntologyManager.getImportsClosure(isolatedOntology));		
+		//System.out.println("Duration: "+(System.currentTimeMillis() - start) / 1000.0);
 	}
 	
 	private OWLOntology createDebuggingOntology(OWLOntologyManager from, OWLOntologyManager to) throws OWLOntologyCreationException, OWLOntologyChangeException{

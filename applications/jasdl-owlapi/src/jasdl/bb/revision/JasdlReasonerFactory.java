@@ -1,5 +1,6 @@
 package jasdl.bb.revision;
 
+import org.mindswap.pellet.PelletOptions;
 import org.mindswap.pellet.owlapi.Reasoner;
 import org.semanticweb.owl.inference.OWLReasoner;
 import org.semanticweb.owl.model.OWLOntologyManager;
@@ -17,7 +18,8 @@ public class JasdlReasonerFactory implements ReasonerFactory{
 	}
 
 	public OWLReasoner createReasoner(OWLOntologyManager manager) {
-		return new Reasoner(manager);
+		Reasoner pellet = new Reasoner(manager);
+		return pellet;
 	}
 
 	public String getReasonerName() {

@@ -39,12 +39,13 @@
 		<delete dir="${apidocs.dir}"/>
 	</target>
 
+
 	<target name="test" depends="jar">
 		<junit printsummary="yes" failureProperty="test.failure">
 			<classpath refid="test.classpath" />
 			<formatter type="plain" usefile="false" />
 			<batchtest>
-				<fileset dir="${basedir}/src" includes="**/junit/AllTests.java" />
+				<fileset dir="${source.dir}/jasdl/test" includes="*Test.java" />
 			</batchtest>
 		</junit>
 		<fail message="test failed" if="test.failure" />

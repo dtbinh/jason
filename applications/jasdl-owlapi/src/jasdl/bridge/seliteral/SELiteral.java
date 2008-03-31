@@ -260,7 +260,9 @@ public class SELiteral{
 	
 	
 	
-	
+	public String toString(){
+		return literal.toString();
+	}
 	
 	
 }

@@ -37,22 +37,30 @@
 	+city(london)[o(travel)];						// london is a city
 	+hasAccommodation(london, hilton)[o(travel)];	// hilton is in london
 	+country(england)[o(travel)];					// england is a country
-	+urbanArea(windsor)[o(travel)];					// windsor is an urban area
-	+isPartOf(windsor, london)[o(travel)];			// windsor is a part of london
+	+urbanArea(wembley)[o(travel)];					// wembley is an urban area
+	+isPartOf(wembley, london)[o(travel)];			// wembley is a part of london
 	+isPartOf(london, england)[o(travel)];			// london is a part of england
 	+hasPricePerNight(hilton, 22.0)[o(travel)];		// hilton costs £22 a night	
 	+museums(scienceMuseum)[o(travel)];
 	+hasActivity(london, scienceMuseum)[o(travel)];	
 	+hotel(travel_lodge)[o(travel)];
 	.print("Completed: Updating Belief Base 1").
-
+	
 @example_ubb_2[atomic]
 +!example_UBB_2
-	<-
-	.print("Example: Updating Belief Base 2");
+	<-	
+	.print("Example: Updating Belief Base 2");	
+	
+	jasdl.ia.define_class(tiny, "travel:urbanArea and travel:hasActivity max 1 travel:activity");
+	+tiny(newcastle)[o(self), source(tom)];	
+	+hasActivity(newcastle, ax)[o(travel), source(tom)];
+	+hasActivity(newcastle, bx)[o(travel), source(ben)];	
+	+all_different([ax, bx])[o(self), source(tom)];	
+	
 	
 	+city(somewhere)[o(travel), source(ben)];
 	+town(somewhere)[o(travel), source(ben)];
+	
 	
 	// Despite the classes urbanArea and ruralArea being disjoint, the belief addition below will succeed,
 	// since tom's word is trusted over ben's (see config.mas2j)
@@ -66,16 +74,18 @@
 	// since the classes destination and and contact are disjoint (and ruralArea is a subclass of destination),
 	// and since we trust ben less than tom, the belief addition below will fail (and tom's assertion above will persist),
 	// thus failing the whole plan.
-	+contact(somewhere)[o(travel), source(ben)].
+	+contact(somewhere)[o(travel), source(ben)];
 	
+	.print("Failed: Updating Belief Base 2").
+
+@example_UBB_2_failure[atomic]
 -!example_UBB_2
 	<-
 	// Notice this does not hold, since belief revision rejected the less trusted assertion made by ben.
 	?~contact(somewhere)[o(travel)];
 	.print("Completed: Updating Belief Base 2").
 	
-	
-@example_qbb[atomic]
+@example_qbb[atomic, breakpoint]
 +!example_QBB
 	<-
 	.print("Example: Querying Belief Base");
@@ -83,12 +93,12 @@
 	/* 2 */ ?luxuryHotel(LuxuryHotel)[o(travel)];
 	/* 3 */ ?~budgetAccommodation(hilton)[o(travel)]; 	
 	/* 4 */ .findall(Thing, thing(Thing)[o(owl)], E);	
-	/* 5 */ ?countryOf(windsor, Country);
+	/* 5 */ ?countryOf(wembley, Country);
 	/* 6 */ ?hasPricePerNight(hilton, Price)[o(travel)];
 	.print("Completed: Querying Belief Base").
-+?countryOf(Destination, Country) :
-	isPartOf(Destination, Country)[o(travel)] &
-	country(Country)[o(travel)].
+
++?countryOf(Destination, Country) : isPartOf(Destination, Country)[o(travel)] & country(Country)[o(travel)].
+
 
 @example_rpp[atomic]	
 +!example_RPP

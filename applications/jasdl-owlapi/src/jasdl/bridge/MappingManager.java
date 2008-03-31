@@ -43,9 +43,7 @@ public class MappingManager<X extends Object, Y extends Object> {
 		if(isKnownRight(y)){
 			throw new DuplicateMappingException("Duplicate mapping on "+y);
 		}
-		
-		logger.fine("Mapped: "+x+" to "+y);
-		
+				
 		xToYMap.put(x, y);
 		yToXMap.put(y, x);
 	}

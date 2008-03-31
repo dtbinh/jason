@@ -5,7 +5,7 @@ import jasdl.asSemantics.parsing.NSPrefixEntityChecker;
 import jasdl.asSemantics.parsing.URIEntityChecker;
 import jasdl.asSyntax.JasdlPlanLibrary;
 import jasdl.bb.JasdlBeliefBase;
-import jasdl.bb.revision.BeliefBaseRevisor;
+import jasdl.bb.revision.BeliefBaseSemiRevisor;
 import jasdl.bb.revision.JasdlIncisionFunction;
 import jasdl.bb.revision.JasdlReasonerFactory;
 import jasdl.bb.revision.TBoxAxiomKernelsetFilter;
@@ -30,6 +30,7 @@ import jasdl.util.UnknownMappingException;
 import jason.JasonException;
 import jason.RevisionFailedException;
 import jason.architecture.AgArch;
+import jason.asSemantics.Event;
 import jason.asSemantics.Intention;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
@@ -44,6 +45,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 import java.util.Vector;
 
@@ -53,10 +55,7 @@ import org.coode.manchesterowlsyntax.ManchesterOWLSyntaxDescriptionParser;
 import org.mindswap.pellet.PelletOptions;
 import org.mindswap.pellet.owlapi.Reasoner;
 import org.semanticweb.owl.apibinding.OWLManager;
-import org.semanticweb.owl.model.AddAxiom;
-import org.semanticweb.owl.model.OWLAnnotation;
 import org.semanticweb.owl.model.OWLAxiom;
-import org.semanticweb.owl.model.OWLAxiomAnnotationAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLEntity;
@@ -183,6 +182,16 @@ public class JasdlAgent extends JmcaAgent{
 	
 	
 	
+	@Override
+	public Event selectEvent(Queue<Event> events) {
+		getLogger().finest("Events: "+events);
+		return super.selectEvent(events);
+	}
+
+
+
+
+
 	public List<Literal>[] brf(Literal beliefToAdd, Literal beliefToDel, Intention i)  throws RevisionFailedException {
 		
 		if(!isBeliefRevisionEnabled()){ // if experimental feature is disabled
@@ -192,41 +201,23 @@ public class JasdlAgent extends JmcaAgent{
 		List<Literal> addList = new Vector<Literal>();
 		List<Literal> removeList = new Vector<Literal>();
 		
-			
 		// just accept beliefToDel. Assumption: Deletions never lead to inconsistencies?!
-		if(beliefToDel != null){			
+		if(beliefToDel != null){		
+			getLogger().finest("Revise: -"+beliefToDel);			
 			removeList.add(beliefToDel);
-		}
-		
-		if(beliefToAdd != null){
-			try{
-				
-				
+		}else if(beliefToAdd != null){
+			try{				
+				getLogger().fine("Revise: +"+beliefToAdd);	
 				SELiteral sl = getSELiteralFactory().create(beliefToAdd);
-				OWLAxiom axiomToAdd = sl.createAxiom();
+				OWLAxiom axiomToAdd = sl.createAxiom();				
+				BeliefBaseSemiRevisor bbrev = new BeliefBaseSemiRevisor(axiomToAdd, getOntologyManager(), new JasdlReasonerFactory(), getLogger());
+				List<OWLAxiom> contractList = bbrev.revise(new TBoxAxiomKernelsetFilter(), new JasdlIncisionFunction(this, sl));
 				
-				BeliefBaseRevisor bbrev = new BeliefBaseRevisor(axiomToAdd, getOntologyManager(), new JasdlReasonerFactory(), getLogger());
-				List<OWLAxiom>[] result = bbrev.revise(new TBoxAxiomKernelsetFilter(), new JasdlIncisionFunction(this, sl));
-				
-				/*
-				for(OWLAxiom added : result[0]){
-					addList.add( getToSELiteralConverter().convert((OWLIndividualAxiom)added).getLiteral()); // safe type cast - Jasdl's incision function ensures only individual axioms are contracted
+				// will only have reached here if new belief is accepted.
+				addList.add(beliefToAdd);
+				for(OWLAxiom contract : contractList){
+					removeList.add(toSELiteralConverter.convert((OWLIndividualAxiom)contract).getLiteral());
 				}
-				*/
-				// Simplication possible: only at most one addition (toAdd). Additionally, annotations required!
-				if(result[0].contains(axiomToAdd)){
-					addList.add(beliefToAdd);
-					
-					// there will only be axioms to remove if we accepted beliefToAdd
-					for(OWLAxiom removed : result[1]){
-						removeList.add( getToSELiteralConverter().convert((OWLIndividualAxiom)removed).getLiteral()); // safe type cast - Jasdl's incision function ensures only individual axioms are contracted
-					}
-				}else{
-					// throw revision failed exception, since we didn't successfully add this belief
-					throw new RevisionFailedException("Revision failed on "+beliefToAdd);
-				}
-				
-
 			}catch(RevisionFailedException e){
 				throw e; // propagate upwards
 			}catch(NotEnrichedException e){
@@ -236,10 +227,36 @@ public class JasdlAgent extends JmcaAgent{
 				getLogger().warning("Error performing belief revision. Reason:");
 				e.printStackTrace();
 			}
+		}else{
+			throw new RuntimeException("Unexpected behaviour, both beliefToAdd and beliefToDel are non-null...?");
 		}
 		List<Literal>[] toReturn = null;
-
 		
+		
+		// Need to perform removals before additions so our ontology instance never becomes inconsistent		
+		for(Literal removed : removeList){
+			// we need to ground unground removals
+			Unifier u = null;
+            try {
+                u = i.peek().getUnif(); // get from current intention
+            } catch (Exception e) {
+                u = new Unifier();
+            }
+            if (believes(removed, u)) {
+            	removed.apply(u);
+				if(getBB().remove(removed)){
+					if(toReturn == null){
+						toReturn = new List[2];
+						toReturn[0] = new Vector<Literal>();
+						toReturn[1] = new Vector<Literal>();
+					}
+					toReturn[1].add(removed);	
+					
+				}
+            } 
+		}
+					
+
 		// affect BB
 		for(Literal added : addList){			
 			if(getBB().add(added)){
@@ -251,30 +268,9 @@ public class JasdlAgent extends JmcaAgent{
 				toReturn[0].add(added);
 			}
 		}
+				
+
 		
-		for(Literal removed : removeList){
-			// we need to ground unground removals
-			Unifier u = null;
-            try {
-                u = i.peek().getUnif(); // get from current intention
-            } catch (Exception e) {
-                u = new Unifier();
-            }
-            if (believes(removed, u)) {
-            	removed.apply(u);  // TODO: should unground removals not result in removal of all unifications?  
-				if(getBB().remove(removed)){
-					if(toReturn == null){
-						if(toReturn == null){
-							toReturn = new List[2];
-							toReturn[0] = new Vector<Literal>();
-							toReturn[1] = new Vector<Literal>();
-						}
-						toReturn[1].add(removed);	
-					}
-					
-				}
-            }
-		}
 		
 		return toReturn;
 	}
@@ -381,19 +377,23 @@ public class JasdlAgent extends JmcaAgent{
 	public OWLOntology loadOntology(Atom label, URI uri, List<MappingStrategy> strategies) throws JasdlException{
 		try{
 			OWLOntology ontology = ontologyManager.loadOntologyFromPhysicalURI(uri);
+			try{
+				OWLOntology alreadyKnown = logicalURIManager.getLeft(ontology.getURI());
+				return alreadyKnown;
+			}catch(UnknownMappingException e){}
 			Set<OWLOntology> imports = ontologyManager.getImportsClosure(ontology);
 			reasoner.loadOntologies(imports);
-			reasoner.classify();			
+			reasoner.classify();						
 			initOntology(ontology, label, uri, ontology.getURI(), false);  // (successfully) loaded ontologies never personal			
 			applyMappingStrategies(ontology, strategies);
-			getLogger().fine("Loaded ontology from "+uri+" and assigned label "+label);
+			getLogger().fine("Loaded ontology from "+uri+" and assigned label "+label);			
 			return ontology;
 		}catch(OWLOntologyCreationException e){
 			getLogger().warning("Placeholder personal ontology substituted for unreachable "+uri);
 			// can't load it, just create a blank (for unqualification of ontology annotations for example)	
 			// personal by definition
 			return createOntology(label, uri, true);	
-		}	
+		}		
 	}
 	
 
@@ -428,6 +428,7 @@ public class JasdlAgent extends JmcaAgent{
 	 */
 	private void initOntology(OWLOntology ontology, Atom label, URI physicalURI, URI logicalURI, boolean isPersonal) throws JasdlException{
 		labelManager.put(label, ontology, isPersonal);
+		
 		physicalURIManager.put(ontology, physicalURI);
 		logicalURIManager.put(ontology, logicalURI);
 		// create the AllDifferent placeholder entity for this ontology

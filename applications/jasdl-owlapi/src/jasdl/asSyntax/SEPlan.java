@@ -43,6 +43,9 @@ public class SEPlan extends Plan {
 		this.agent = agent;
 	}
 	
+	
+	
+	@Override
 	public Unifier isRelevant(Trigger te) {
 		Unifier un = super.isRelevant(te);
 		if(un != null){ // plan is specifically relevant to deal with the trigger
@@ -61,5 +64,10 @@ public class SEPlan extends Plan {
 			agent.getLogger().warning("Relevancy check failed for plan: "+this+"\n against trigger: "+te);
 		}
 		return null;
+	}
+	
+	@Override
+	public Object clone(){
+		return new SEPlan(agent, (Plan)super.clone());
 	}
 }

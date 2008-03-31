@@ -37,6 +37,7 @@ MAS dalt08 {
 
 	       	jasdl_ontologies="travel",
 			jasdl_travel_uri="http://www.dur.ac.uk/t.g.klapiscak/onts/travel.owl",
+			
 			/*jasdl_travel_mapping_strategies="jasdl.bridge.alias.DecapitaliseMappingStrategy",*/ // defaults can be overriden per-ontology here
 			jasdl_travel_mapping_manual="small_beach=beach", // these manual mappings will override any automatic mappings made by strategies,
 						
@@ -57,7 +58,6 @@ MAS dalt08 {
 			jasdl_useBeliefRevision = "true",
 		   
 	       	jasdl_ontologies="holidays,places",
-			/*jasdl_holidays_uri="file:///home/tom/Desktop/Project/workspace/jason/applications/jasdl-owlapi/examples/travel_agent/ontologies/travel.owl", */
 			jasdl_holidays_uri="http://www.dur.ac.uk/t.g.klapiscak/onts/travel.owl",
 			jasdl_holidays_mapping_strategies="jasdl.bridge.alias.DecapitaliseMappingStrategy",
 			jasdl_holidays_mapping_manual="small_beach=beach, luxuriousHotel=LuxuryHotel", // for demonstration of arbitrary primitive mappings being handled correctly

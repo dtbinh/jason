@@ -67,8 +67,8 @@ public class JasdlPlanLibrary extends PlanLibrary{
 	 * TODO: We are repeating work here: fetching more general triggers. Optimise by storing result for immedate use?
 	 * Could store as part of plan, but wouldn't work correctly for run-time defined class
 	 */
-	public List<Plan> getAllRelevant(Trigger te){
-		List<Plan> relevant = super.getAllRelevant(te);
+	public List<Plan> getCandidatePlans(Trigger te){
+		List<Plan> relevant = super.getCandidatePlans(te);		
 		if(!te.getLiteral().negated()){			
 			try {
 				List<Plan> moreGeneral = getMoreGeneralPlans(te);
@@ -86,6 +86,28 @@ public class JasdlPlanLibrary extends PlanLibrary{
 				agent.getLogger().warning("JASDL plan relevancy check failed. Reason: "+e);
 			}
 		}
+		
+		/*
+		 * Alternative fix for issue discovered on 31/03/08
+		 * (Subtle difference in JASDL's BB#getRelevant operation meaning context's must be unified first)
+		if(relevant != null){
+			List<Plan> clones = new Vector<Plan>();
+			for(Plan plan : relevant){
+				if(plan.getContext() != null){
+					Plan clone = (Plan)plan.clone();										
+					Unifier un = new Unifier();					
+					un.unifiesNoUndo(clone.getTrigger(), te);					
+					clone.getTrigger().getLiteral().apply(un);
+					clones.add(clone);
+				}else{
+					clones.add(plan);
+				}
+				
+			}
+			relevant = clones;
+		}
+		*/
+		
 		return relevant;
 	}
 	
