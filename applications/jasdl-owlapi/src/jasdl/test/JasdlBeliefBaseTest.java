@@ -203,27 +203,7 @@ public class JasdlBeliefBaseTest extends TestCase{
 			actual.add(bbit.next());
 		}
 		
-		Set<Literal> actuallyLessDifference = new HashSet<Literal>();
-		actuallyLessDifference.addAll(expected);
-		actuallyLessDifference.removeAll(actual);
-		if(!actuallyLessDifference.isEmpty()){
-			System.out.println("\n\nexpected > actual. Difference: "+actuallyLessDifference+"\n\n");
-		}
-		
-		Set<Literal> actuallyMoreDifference = new HashSet<Literal>();
-		actuallyMoreDifference.addAll(actual);
-		actuallyMoreDifference.removeAll(expected);
-		if(!actuallyMoreDifference.isEmpty()){
-			System.out.println("\n\nexpected < actual. Difference: "+actuallyMoreDifference+"\n\n");
-		}
-		
-		//System.out.println("Terminal state: "+actual);
-		
 		assertEquals(expected, actual);
-		//System.out.println("Terminal state consistent? "+);
-		
-		
-
 	}
 	
 	
@@ -278,15 +258,6 @@ public class JasdlBeliefBaseTest extends TestCase{
 			//System.out.println("Adding: "+l);		
 			assertEquals(testbb.add((Literal)l.clone()), bb.add((Literal)l.clone())); // cloning necessary since Jason's default bb.add affects l passed to it
 		}
-		
-		// TODO: error in Jason's BB below? Rejects additions even though annots changed!
-		// might be because deffault  bb.add affects literals?
-		//l.addAnnot(new Atom("x"));
-		//System.out.println("Adding: "+l);
-		//assertEquals(testbb.add(l), bb.add(l));
-		//l.addAnnot(new Atom("y"));
-		//System.out.println("Adding: "+l);
-		//assertEquals(testbb.add(l), bb.add(l));
 	}
 	
 	
