@@ -15,7 +15,6 @@ import jasdl.bridge.ToSELiteralConverter;
 import jasdl.bridge.alias.Alias;
 import jasdl.bridge.alias.AliasFactory;
 import jasdl.bridge.alias.AliasManager;
-import jasdl.bridge.alias.DecapitaliseMappingStrategy;
 import jasdl.bridge.alias.DefinitionManager;
 import jasdl.bridge.alias.MappingStrategy;
 import jasdl.bridge.label.LabelManager;
@@ -41,7 +40,6 @@ import jason.runtime.Settings;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +49,7 @@ import java.util.Vector;
 
 import jmca.asSemantics.JmcaAgent;
 
+import org.apache.commons.logging.impl.Log4JLogger;
 import org.coode.manchesterowlsyntax.ManchesterOWLSyntaxDescriptionParser;
 import org.mindswap.pellet.owlapi.Reasoner;
 import org.semanticweb.owl.apibinding.OWLManager;
@@ -71,8 +70,7 @@ import org.semanticweb.owl.util.ShortFormProvider;
 import uk.ac.manchester.cs.owl.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
 
 public class JasdlAgent extends JmcaAgent{	
-	public static List<MappingStrategy> DEFAULT_MAPPING_STRATEGIES = Arrays.asList( new MappingStrategy[] { new DecapitaliseMappingStrategy()} );
-	public static String DEFAULT_REASONER_CLASS = "org.mindswap.pellet.owlapi.Reasoner";
+	
 	
 	private OWLOntologyManager ontologyManager;
 	private OWLReasoner reasoner;
@@ -86,24 +84,23 @@ public class JasdlAgent extends JmcaAgent{
 	private ManchesterOWLSyntaxOWLObjectRendererImpl manchesterObjectRenderer;
 	
 	private ManchesterOWLSyntaxDescriptionParser manchesterNsPrefixDescriptionParser;
-	private ManchesterOWLSyntaxDescriptionParser manchesterURIDescriptionParser;
+	private ManchesterOWLSyntaxDescriptionParser manchesterURIDescriptionParser;	
 	
-	private List<MappingStrategy> defaultMappingStrategies;
 	
 	public static String ANON_LABEL_PREFIX = "anon_label_";	
 	public static String ANON_ALIAS_PREFIX = "anon_alias_";
 	
 	private DefinitionManager definitionManager;
 	
+	private List<String> knownAgentNames;
 	private HashMap<Atom, Float> trustMap;
 	
-	private boolean beliefRevisionEnabled = true;
-	
+	private boolean beliefRevisionEnabled;
+	private List<MappingStrategy> defaultMappingStrategies = JasdlConfigurator.DEFAULT_MAPPING_STRATEGIES;
 
 	
 	public JasdlAgent(){
 		super();
-		defaultMappingStrategies = DEFAULT_MAPPING_STRATEGIES;
 		
 		// instantiate managers
 		aliasManager = new AliasManager();
@@ -117,6 +114,7 @@ public class JasdlAgent extends JmcaAgent{
 		toAxiomConverter = new ToAxiomConverter(this);
 		toSELiteralConverter = new ToSELiteralConverter(this);
 		
+		knownAgentNames = new Vector<String>();
 		trustMap = new HashMap<Atom, Float>();
 		
 		manchesterObjectRenderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
@@ -133,11 +131,36 @@ public class JasdlAgent extends JmcaAgent{
 				
 		// override plan library
 		setPL( new JasdlPlanLibrary(this) );
+		
 	}
 	
 	public void setReasoner(OWLReasoner reasoner){
 		this.reasoner = reasoner;
 	}	
+	
+	public void addKnownAgentName(String name){
+		knownAgentNames.add(name);
+	}
+	
+	public List<String> getKnownAgentNames(){
+		return knownAgentNames;
+	}
+	
+	
+	public void setReasonerLogLevel(org.apache.log4j.Level level){
+		if(reasoner instanceof org.mindswap.pellet.owlapi.Reasoner){
+			org.mindswap.pellet.owlapi.Reasoner pellet = (org.mindswap.pellet.owlapi.Reasoner)reasoner;		
+			Log4JLogger abox_logger = (Log4JLogger)pellet.getKB().getABox().log;
+			abox_logger.getLogger().setLevel(level);
+	
+			Log4JLogger taxonomy_logger = (Log4JLogger)pellet.getKB().getTaxonomy().log;
+			taxonomy_logger.getLogger().setLevel(level);
+	
+			Log4JLogger kb_logger = (Log4JLogger)pellet.getKB().log;
+			kb_logger.getLogger().setLevel(level);
+		}
+	}
+	
 	
 	
 	@Override
@@ -582,7 +605,7 @@ public class JasdlAgent extends JmcaAgent{
 	}
 
 	public URI getPersonalOntologyURI(Atom label) {
-		return URI.create("http://www.dur.ac.uk/t.g.klapiscak/"+label+".owl");
+		return URI.create("http://www.dur.ac.uk/t.g.klapiscak/self"+label+".owl");
 	}	
 
 

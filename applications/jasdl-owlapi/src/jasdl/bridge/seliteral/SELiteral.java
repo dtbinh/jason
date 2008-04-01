@@ -124,7 +124,10 @@ public class SELiteral{
 			return agent.getAliasManager().getRight(this.toAlias());
 		}catch(UnknownMappingException e){
 			Alias alias = toAlias();
-			if(alias.getFunctor().toString().startsWith("~")){								
+			if(alias.getFunctor().toString().startsWith("~")){
+				if(literal.getArity() == 2){
+					throw new InvalidSELiteralException("JASDL does not currently support negated property assertions");
+				}				
 				Atom negatedFunctor = new Atom(alias.getFunctor().toString().substring(1));
 				Alias negatedAlias = AliasFactory.INSTANCE.create( negatedFunctor, alias.getLabel());
 				if(negatedAlias.equals(AliasFactory.OWL_THING) || negatedAlias.equals(AliasFactory.OWL_NOTHING)){

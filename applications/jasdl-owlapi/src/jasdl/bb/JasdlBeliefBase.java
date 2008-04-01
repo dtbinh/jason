@@ -14,6 +14,8 @@ import jason.asSyntax.Literal;
 import jason.asSyntax.Term;
 import jason.bb.DefaultBeliefBase;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -77,8 +79,7 @@ public class JasdlBeliefBase extends DefaultBeliefBase{
 			getLogger().fine("... semantically-naive");
 			return super.add(l); // semantically-naive, use standard Jason mechanisms
 		}catch(Exception e){
-			getLogger().warning("Exception caught adding SELiteral "+l+" to belief base: ");
-			e.printStackTrace();
+			getLogger().fine("Exception caught adding SELiteral "+l+" to belief base: "+e);
 			return false;
 		}
 	}
@@ -207,6 +208,8 @@ public class JasdlBeliefBase extends DefaultBeliefBase{
 	
 	/**
 	 * TODO: Currently only returns asserted ABox axioms. Include option to also show inferences?
+	 * Doesn't return beliefs in same order as Jason (could sort stricly alphabetically - but this would be costly
+	 * isn't even exactly identical to Jason's behaviour - does it really matter anyway?)
 	 */
 	@Override
 	public Iterator<Literal> iterator() {
@@ -223,7 +226,9 @@ public class JasdlBeliefBase extends DefaultBeliefBase{
 			bels.addAll(agent.getABoxState());
 		}catch(JasdlException e){
 			getLogger().warning("Exception caught while retrieving ABox state: "+e);
-		}		
+		}	
+		
+		//Collections.sort(bels);
 		
 		return bels.iterator();
 	}	

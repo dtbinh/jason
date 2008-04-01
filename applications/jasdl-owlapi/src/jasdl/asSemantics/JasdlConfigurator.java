@@ -4,7 +4,9 @@ import static jasdl.util.Common.DELIM;
 import static jasdl.util.Common.strip;
 import jasdl.bridge.alias.Alias;
 import jasdl.bridge.alias.AliasFactory;
+import jasdl.bridge.alias.DecapitaliseMappingStrategy;
 import jasdl.bridge.alias.MappingStrategy;
+import jasdl.util.JasdlConfigurationException;
 import jasdl.util.JasdlException;
 import jason.asSyntax.Atom;
 import jason.runtime.Settings;
@@ -15,21 +17,26 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.log4j.Level;
 import org.semanticweb.owl.inference.OWLReasoner;
 import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyManager;
 
 public class JasdlConfigurator {
-	private static String MAS2J_PREFIX					= "jasdl";
-	private static String MAS2J_ONTOLOGIES 				= "_ontologies";
-	private static String MAS2J_URI						= "_uri";
-	private static String MAS2J_MAPPING_STRATEGIES		= "_mapping_strategies";
-	private static String MAS2J_MAPPING_MANUAL			= "_mapping_manual";
-	private static String MAS2J_TRUSTRATING				= "_trustRating";
-	private static String MAS2J_KNOWNAGENTS				= "_knownAgents";
-	private static String MAS2J_USEBELIEFREVISION		= "_useBeliefRevision";
-	private static String MAS2J_REASONERCLASS				= "_reasonerClass";
+	public static String MAS2J_PREFIX					= "jasdl";
+	public static String MAS2J_ONTOLOGIES 				= "_ontologies";
+	public static String MAS2J_URI						= "_uri";
+	public static String MAS2J_MAPPING_STRATEGIES		= "_mapping_strategies";
+	public static String MAS2J_MAPPING_MANUAL			= "_mapping_manual";
+	public static String MAS2J_TRUSTRATING				= "_trustRating";
+	public static String MAS2J_KNOWNAGENTS				= "_knownAgents";
+	public static String MAS2J_USEBELIEFREVISION		= "_useBeliefRevision";
+	public static String MAS2J_REASONERCLASS			= "_reasonerClass";
+	
+	public static List<MappingStrategy> DEFAULT_MAPPING_STRATEGIES = Arrays.asList( new MappingStrategy[] { new DecapitaliseMappingStrategy()} );
+	public static String DEFAULT_REASONER_CLASS = "org.mindswap.pellet.owlapi.Reasoner";
+	public static boolean DEFAULT_USEBELIEFREVISION = false;
 	
 	
 	
@@ -55,30 +62,25 @@ public class JasdlConfigurator {
 	public void configure(Settings stts) throws JasdlException{
 		try{
 			loadReasoner(stts);
-			
-			// load default mapping strategies
-			agent.setDefaultMappingStrategies(getMappingStrategies(stts, new Atom("default"))); //implication "default" is a reserved ontology label
-			
-			// set whether to use belief revision or not
-			String useBeliefRevision = prepareUserParameter(stts, MAS2J_PREFIX + MAS2J_USEBELIEFREVISION);
-			agent.setBeliefRevisionEnabled(Boolean.parseBoolean(useBeliefRevision));
-			
+			loadDefaultMappingStrategies(stts);
+			setUseBeliefRevision(stts);			
 			loadOntologies(stts);
-			applyManualMappings(stts);			
-			loadTrustRatings(stts);
-			
-		
-			
+			applyManualMappings(stts);
+			loadKnownAgents(stts);
+			loadTrustRatings(stts);			
 		}catch(JasdlException e){
 			throw new JasdlException("JASDL agent encountered error during configuration. Reason: "+e);
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void loadReasoner(Settings stts) throws JasdlException{
-		String reasonerClass = prepareUserParameter( stts, MAS2J_PREFIX + MAS2J_REASONERCLASS);
-		if(reasonerClass.length() == 0){
-			reasonerClass = JasdlAgent.DEFAULT_REASONER_CLASS;
-		}
+		String reasonerClass;
+		try{
+			reasonerClass = prepareUserParameter( stts, MAS2J_PREFIX + MAS2J_REASONERCLASS);
+		}catch(JasdlConfigurationException e){
+			reasonerClass = DEFAULT_REASONER_CLASS;
+		}	
 		try {
 			Class cls = Class.forName(reasonerClass);
 			Constructor ct = cls.getConstructor(new Class[] {OWLOntologyManager.class});
@@ -87,9 +89,24 @@ public class JasdlConfigurator {
 				throw new JasdlException("Unknown reasoner class: "+reasonerClass);
 			}else{
 				agent.setReasoner(reasoner);
+				agent.setReasonerLogLevel(Level.WARN);
 			}
 		}catch (Throwable e) {
 			throw new JasdlException("Error instantiating reasoner "+reasonerClass+". Reason: "+e);
+		}
+	}
+	
+	private void loadDefaultMappingStrategies(Settings stts) throws JasdlException{
+		agent.setDefaultMappingStrategies(getMappingStrategies(stts, new Atom("default"))); //implication "default" is a reserved ontology label
+	}
+	
+	private void setUseBeliefRevision(Settings stts) throws JasdlException{
+		try{
+			// set whether to use belief revision or not
+			String useBeliefRevision = prepareUserParameter(stts, MAS2J_PREFIX + MAS2J_USEBELIEFREVISION);
+			agent.setBeliefRevisionEnabled(Boolean.parseBoolean(useBeliefRevision));
+		}catch(JasdlConfigurationException e){
+			agent.setBeliefRevisionEnabled(DEFAULT_USEBELIEFREVISION);
 		}
 	}
 	
@@ -105,12 +122,13 @@ public class JasdlConfigurator {
 			if(reservedOntologyLabels.contains(label)){
 				throw new JasdlException(label+" is a reserved ontology label");
 			}			
-			URI physicalURI;
+			String _uri = prepareUserParameter( stts, MAS2J_PREFIX + "_" + label + MAS2J_URI );
+			URI uri = null;
 			try {
-				physicalURI = new URI(prepareUserParameter( stts, MAS2J_PREFIX + "_" + label + MAS2J_URI ));
-				agent.loadOntology(new Atom(label), physicalURI, getMappingStrategies(stts, new Atom(label)));
+				uri = new URI(_uri);
+				agent.loadOntology(new Atom(label), uri, getMappingStrategies(stts, new Atom(label)));
 			} catch (Exception e) {
-				throw new JasdlException("Unable to instantiate ontology \""+label+"\". Reason: "+e);
+				throw new JasdlException("Unable to instantiate ontology "+_uri+" (\""+label+"\"). Reason: "+e);
 			}			
 		}
 	}
@@ -122,42 +140,55 @@ public class JasdlConfigurator {
 	 */
 	private void applyManualMappings(Settings stts) throws JasdlException{
 		for(Atom label : agent.getLabelManager().getLefts()){
-			String[] mappings = splitUserParameter(stts, MAS2J_PREFIX + "_" + label + MAS2J_MAPPING_MANUAL);
-			for(String mapping : mappings){
-				OWLOntology ontology = agent.getLabelManager().getRight(label);
-				String[] split = mapping.split("=");
-				if(split.length == 2){
-					Alias alias = AliasFactory.INSTANCE.create(new Atom(split[0].trim()), label);
-					URI uri = URI.create(ontology.getURI() + "#" + split[1].trim());
-					OWLEntity entity = agent.toEntity(uri);
-					
-					if(agent.getAliasManager().isKnownRight(entity)){ // manual mappings override automatic ones
-						agent.getAliasManager().removeByRight(entity);
+			try{
+				String[] mappings = splitUserParameter(stts, MAS2J_PREFIX + "_" + label + MAS2J_MAPPING_MANUAL);
+				for(String mapping : mappings){
+					OWLOntology ontology = agent.getLabelManager().getRight(label);
+					String[] split = mapping.split("=");
+					if(split.length == 2){
+						Alias alias = AliasFactory.INSTANCE.create(new Atom(split[0].trim()), label);
+						URI uri = URI.create(ontology.getURI() + "#" + split[1].trim());
+						OWLEntity entity = agent.toEntity(uri);
+						
+						if(agent.getAliasManager().isKnownRight(entity)){ // manual mappings override automatic ones
+							agent.getAliasManager().removeByRight(entity);
+						}
+						
+						agent.getAliasManager().put(alias, entity);
 					}
-					
-					agent.getAliasManager().put(alias, entity);
 				}
+			}catch(JasdlConfigurationException e){
+				// manual mappings are optional
 			}
 		}
 	}
 	
+	private void loadKnownAgents(Settings stts) throws JasdlException{
+		try{
+			String[] names = (splitUserParameter(stts, MAS2J_PREFIX + MAS2J_KNOWNAGENTS));
+			for(String name : names){
+				agent.addKnownAgentName(name);
+			}
+		}catch(JasdlConfigurationException e){
+			// optional parameter, default to empty			
+		}
+	}
+	
+	
+	// TODO: set trust ratings for assertions predefined in ontology schema (maybe annotated with self)
 	private void loadTrustRatings(Settings stts) throws JasdlException{
 		// agent trusts itself completely!
-		agent.setTrustRating(new Atom("self"), 1f);
-		
-		// load trust ratings
-		String[] knownAgents = splitUserParameter(stts, MAS2J_PREFIX + MAS2J_KNOWNAGENTS);
-		for(String knownAgent : knownAgents){
-			if(knownAgent.length() > 0){
-				String _trustRating = prepareUserParameter(stts, MAS2J_PREFIX + "_" + knownAgent + MAS2J_TRUSTRATING);
-				Float trustRating;
-				try{
-					trustRating = Float.parseFloat(_trustRating);
-				}catch(NumberFormatException e){
-					throw new JasdlException("Invalid trust rating for "+knownAgent+". Reason: "+e);
-				}
-				agent.setTrustRating(new Atom(knownAgent), trustRating);
+		agent.setTrustRating(new Atom("self"), 1f);			
+		for(String knownAgent : agent.getKnownAgentNames()){
+			// load trust ratings (mandatory for known agents)
+			String _trustRating = prepareUserParameter(stts, MAS2J_PREFIX + "_" + knownAgent + MAS2J_TRUSTRATING);
+			Float trustRating;
+			try{
+				trustRating = Float.parseFloat(_trustRating);
+			}catch(NumberFormatException e){
+				throw new JasdlException("Invalid trust rating for "+knownAgent+". Reason: "+e);
 			}
+			agent.setTrustRating(new Atom(knownAgent), trustRating);
 		}
 	}
 	
@@ -169,11 +200,12 @@ public class JasdlConfigurator {
 	 * Applies mappings to all resources in an ontology according to composition of supplied strategies.
 	 * @param stts	.mas2j settings
 	 */
+	@SuppressWarnings("unchecked")
 	private List<MappingStrategy> getMappingStrategies(Settings stts, Atom label) throws JasdlException{
 		List<MappingStrategy> strategies = new Vector<MappingStrategy>();
-		String[] strategyNames = splitUserParameter(stts, MAS2J_PREFIX + "_" + label + MAS2J_MAPPING_STRATEGIES);
-		for(String strategyName : strategyNames){
-			if(strategyName.length() > 0){
+		try{
+			String[] strategyNames = splitUserParameter(stts, MAS2J_PREFIX + "_" + label + MAS2J_MAPPING_STRATEGIES);
+			for(String strategyName : strategyNames){
 				try {
 					Class cls = Class.forName(strategyName);
 					Constructor ct = cls.getConstructor(new Class[] {});
@@ -187,9 +219,8 @@ public class JasdlConfigurator {
 					throw new JasdlException("Error instantiating mapping strategy "+strategyName+". Reason: "+e);
 				}
 			}
-		}
-		if(strategies.size() == 0){
-			strategies = agent.getDefaultMappingStrategies();
+		}catch(JasdlConfigurationException e){
+			strategies = agent.getDefaultMappingStrategies(); // mapping strategies optional, use defaults if not set
 		}
 		return strategies;	
 	}	
@@ -206,10 +237,10 @@ public class JasdlConfigurator {
 	 * @param name	name of the setting to prepare
 	 * @return
 	 */
-	private String prepareUserParameter(Settings stts, String name){
+	private String prepareUserParameter(Settings stts, String name) throws JasdlConfigurationException{
 		String p = stts.getUserParameter(name);
 		if(p == null){
-			return "";
+			throw new JasdlConfigurationException(name+" is not set!");
 		}else{
 			return strip(p, "\"").trim();
 		}
@@ -221,7 +252,7 @@ public class JasdlConfigurator {
 	 * @param name	name of the setting to split
 	 * @return
 	 */
-	private String[] splitUserParameter(Settings stts, String name, String delim){
+	private String[] splitUserParameter(Settings stts, String name, String delim) throws JasdlConfigurationException{
 		String[] elems = prepareUserParameter(stts, name).split(delim);
 		for(int i=0; i<elems.length; i++){
 			elems[i] = strip(elems[i], "\"").trim();
@@ -235,7 +266,7 @@ public class JasdlConfigurator {
 	 * @param name	name of the setting to split
 	 * @return
 	 */
-	private String[] splitUserParameter(Settings stts, String name){
+	private String[] splitUserParameter(Settings stts, String name) throws JasdlConfigurationException{
 		return splitUserParameter(stts, name, DELIM);
 	}	
 	
