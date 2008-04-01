@@ -58,18 +58,17 @@ public class JasdlBeliefBase extends DefaultBeliefBase{
 					agent.getOntologyManager().applyChange(new AddAxiom(ontology, annotAxiom));
 				}
 			}			
-						
+			
 			if(!containsAxiom || !containsAllAnnots){
-				agent.getReasoner().refresh();				
+				agent.refreshReasoner();			
 				if(!agent.isBeliefRevisionEnabled()){ // if brf disabled, resort to legacy consistency maintenance mechanism 
-					if(!agent.getReasoner().isConsistent()){
+					if(!agent.getReasoner().isConsistent(ontology)){
 						RemoveAxiom rem = new RemoveAxiom(ontology, axiom);
 						agent.getOntologyManager().applyChange(rem);
-						agent.getReasoner().refresh();
+						agent.refreshReasoner();
 						return false;
 					}
 				}
-				
 				return true;
 			}else{
 				return false;
@@ -126,7 +125,7 @@ public class JasdlBeliefBase extends DefaultBeliefBase{
 					result = true;
 				}
 			}
-			agent.getReasoner().refresh();
+			agent.refreshReasoner();
 			return result;
 		}catch(NotEnrichedException e){			
 			return super.remove(l); // semantically-naive, use standard Jason mechanisms

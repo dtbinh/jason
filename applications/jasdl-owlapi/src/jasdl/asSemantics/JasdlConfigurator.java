@@ -2,7 +2,6 @@ package jasdl.asSemantics;
 
 import static jasdl.util.Common.DELIM;
 import static jasdl.util.Common.strip;
-import jasdl.bridge.AllDifferentPlaceholder;
 import jasdl.bridge.alias.Alias;
 import jasdl.bridge.alias.AliasFactory;
 import jasdl.bridge.alias.MappingStrategy;
@@ -16,19 +15,23 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 
+import org.semanticweb.owl.inference.OWLReasoner;
 import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owl.model.OWLOntologyManager;
 
 public class JasdlConfigurator {
 	private static String MAS2J_PREFIX					= "jasdl";
 	private static String MAS2J_ONTOLOGIES 				= "_ontologies";
 	private static String MAS2J_URI						= "_uri";
 	private static String MAS2J_MAPPING_STRATEGIES		= "_mapping_strategies";
-	private static String MAS2J_MAPPING_MANUAL			= "_mapping_manual";	
-	private static String MAS2J_AGENT_NAME				= "_agent_name";
+	private static String MAS2J_MAPPING_MANUAL			= "_mapping_manual";
 	private static String MAS2J_TRUSTRATING				= "_trustRating";
 	private static String MAS2J_KNOWNAGENTS				= "_knownAgents";
 	private static String MAS2J_USEBELIEFREVISION		= "_useBeliefRevision";
+	private static String MAS2J_REASONERCLASS				= "_reasonerClass";
+	
+	
 	
 	/**
 	 * List of reserved ontology labels. Currently:
@@ -41,6 +44,8 @@ public class JasdlConfigurator {
 	public static List<Atom> reservedOntologyLabels = Arrays.asList( new Atom[] {new Atom("default"), new Atom("self")});
 	
 	
+	
+	
 	private JasdlAgent agent;
 
 	public JasdlConfigurator(JasdlAgent agent){
@@ -49,6 +54,8 @@ public class JasdlConfigurator {
 	
 	public void configure(Settings stts) throws JasdlException{
 		try{
+			loadReasoner(stts);
+			
 			// load default mapping strategies
 			agent.setDefaultMappingStrategies(getMappingStrategies(stts, new Atom("default"))); //implication "default" is a reserved ontology label
 			
@@ -66,6 +73,26 @@ public class JasdlConfigurator {
 			throw new JasdlException("JASDL agent encountered error during configuration. Reason: "+e);
 		}
 	}
+	
+	private void loadReasoner(Settings stts) throws JasdlException{
+		String reasonerClass = prepareUserParameter( stts, MAS2J_PREFIX + MAS2J_REASONERCLASS);
+		if(reasonerClass.length() == 0){
+			reasonerClass = JasdlAgent.DEFAULT_REASONER_CLASS;
+		}
+		try {
+			Class cls = Class.forName(reasonerClass);
+			Constructor ct = cls.getConstructor(new Class[] {OWLOntologyManager.class});
+			OWLReasoner reasoner = (OWLReasoner)ct.newInstance(new Object[] {agent.getOntologyManager()});
+			if(reasoner == null){
+				throw new JasdlException("Unknown reasoner class: "+reasonerClass);
+			}else{
+				agent.setReasoner(reasoner);
+			}
+		}catch (Throwable e) {
+			throw new JasdlException("Error instantiating reasoner "+reasonerClass+". Reason: "+e);
+		}
+	}
+	
 	
 	/**
 	 * Load ontologies as specified in .mas2j settings

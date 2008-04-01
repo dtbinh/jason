@@ -52,9 +52,10 @@ import java.util.Vector;
 import jmca.asSemantics.JmcaAgent;
 
 import org.coode.manchesterowlsyntax.ManchesterOWLSyntaxDescriptionParser;
-import org.mindswap.pellet.PelletOptions;
 import org.mindswap.pellet.owlapi.Reasoner;
 import org.semanticweb.owl.apibinding.OWLManager;
+import org.semanticweb.owl.inference.OWLReasoner;
+import org.semanticweb.owl.inference.OWLReasonerException;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDescription;
@@ -71,9 +72,10 @@ import uk.ac.manchester.cs.owl.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRen
 
 public class JasdlAgent extends JmcaAgent{	
 	public static List<MappingStrategy> DEFAULT_MAPPING_STRATEGIES = Arrays.asList( new MappingStrategy[] { new DecapitaliseMappingStrategy()} );
+	public static String DEFAULT_REASONER_CLASS = "org.mindswap.pellet.owlapi.Reasoner";
 	
 	private OWLOntologyManager ontologyManager;
-	private Reasoner reasoner;
+	private OWLReasoner reasoner;
 	private AliasManager aliasManager;
 	private LabelManager labelManager;
 	private SELiteralFactory seLiteralFactory;
@@ -129,17 +131,13 @@ public class JasdlAgent extends JmcaAgent{
 		manchesterNsPrefixDescriptionParser = new ManchesterOWLSyntaxDescriptionParser(ontologyManager.getOWLDataFactory(), new NSPrefixEntityChecker(this));
 		manchesterURIDescriptionParser = new ManchesterOWLSyntaxDescriptionParser(ontologyManager.getOWLDataFactory(), new URIEntityChecker(this));
 				
-		// instantiate (Pellet) reasoner
-		PelletOptions.USE_TRACING = true;
-		reasoner = new Reasoner(ontologyManager);
-		reasoner.getKB().setDoExplanation( true );
-		
 		// override plan library
 		setPL( new JasdlPlanLibrary(this) );
 	}
 	
-	
-	
+	public void setReasoner(OWLReasoner reasoner){
+		this.reasoner = reasoner;
+	}	
 	
 	
 	@Override
@@ -201,6 +199,9 @@ public class JasdlAgent extends JmcaAgent{
 		List<Literal> addList = new Vector<Literal>();
 		List<Literal> removeList = new Vector<Literal>();
 		
+		// For efficiency reasons: no need to check beliefs to be contracted if established by BB revisor (since they are implicitly grounded)
+		boolean revisionApplied = false;
+		
 		// just accept beliefToDel. Assumption: Deletions never lead to inconsistencies?!
 		if(beliefToDel != null){		
 			getLogger().finest("Revise: -"+beliefToDel);			
@@ -218,6 +219,7 @@ public class JasdlAgent extends JmcaAgent{
 				for(OWLAxiom contract : contractList){
 					removeList.add(toSELiteralConverter.convert((OWLIndividualAxiom)contract).getLiteral());
 				}
+				revisionApplied = true;
 			}catch(RevisionFailedException e){
 				throw e; // propagate upwards
 			}catch(NotEnrichedException e){
@@ -235,23 +237,28 @@ public class JasdlAgent extends JmcaAgent{
 		
 		// Need to perform removals before additions so our ontology instance never becomes inconsistent		
 		for(Literal removed : removeList){
-			// we need to ground unground removals
-			Unifier u = null;
-            try {
-                u = i.peek().getUnif(); // get from current intention
-            } catch (Exception e) {
-                u = new Unifier();
-            }
-            if (believes(removed, u)) {
-            	removed.apply(u);
+			boolean ok = false;
+			if(revisionApplied){
+				ok = true;
+			}else{
+				// we need to ground unground removals
+				Unifier u = null;
+	            try {
+	                u = i.peek().getUnif(); // get from current intention
+	            } catch (Exception e) {
+	                u = new Unifier();
+	            }
+	            ok = believes(removed, u);
+	            if(ok) removed.apply(u);
+			}			
+            if(ok){	
 				if(getBB().remove(removed)){
 					if(toReturn == null){
 						toReturn = new List[2];
 						toReturn[0] = new Vector<Literal>();
 						toReturn[1] = new Vector<Literal>();
 					}
-					toReturn[1].add(removed);	
-					
+					toReturn[1].add(removed);					
 				}
             } 
 		}
@@ -382,8 +389,12 @@ public class JasdlAgent extends JmcaAgent{
 				return alreadyKnown;
 			}catch(UnknownMappingException e){}
 			Set<OWLOntology> imports = ontologyManager.getImportsClosure(ontology);
-			reasoner.loadOntologies(imports);
-			reasoner.classify();						
+			try {
+				reasoner.loadOntologies(imports);
+				reasoner.classify();
+			} catch (OWLReasonerException e) {
+				throw new JasdlException("Unable to load "+uri+". Reason: "+e);
+			}						
 			initOntology(ontology, label, uri, ontology.getURI(), false);  // (successfully) loaded ontologies never personal			
 			applyMappingStrategies(ontology, strategies);
 			getLogger().fine("Loaded ontology from "+uri+" and assigned label "+label);			
@@ -409,7 +420,11 @@ public class JasdlAgent extends JmcaAgent{
 	public OWLOntology createOntology(Atom label, URI uri, boolean isPersonal) throws JasdlException{
 		try{
 			OWLOntology ontology = getOntologyManager().createOntology( uri );
-			getReasoner().loadOntology(ontology);
+			try{
+			getReasoner().loadOntologies(Collections.singleton(ontology));
+			} catch (OWLReasonerException e) {
+				throw new JasdlException("Unable to load "+uri+". Reason: "+e);
+			}	
 			initOntology(ontology, label, uri, uri, isPersonal);
 			return ontology;
 		} catch (OWLOntologyCreationException e) {
@@ -513,12 +528,28 @@ public class JasdlAgent extends JmcaAgent{
 		} catch (OWLOntologyChangeException e) {
 			throw new JasdlException("Error adding "+uri+" naming of "+desc+" to "+label);
 		}
-		reasoner.refresh();
 		getLogger().fine("Adding named class "+uri+" for "+desc+" in "+label);
     	getAliasManager().put(alias, naming);  // consequence, we can no longer easily distinguish run-time defined classes from pre-defined - need to maintain a map
     	getDefinitionManager().put(naming, desc);
+    	
+    	refreshReasoner();
+    	
     	getLogger().fine("Defined new class with alias "+alias);
     	return desc;    	
+	}
+	
+	public void refreshReasoner() throws JasdlException{
+		try {
+			if(reasoner instanceof uk.ac.manchester.cs.factplusplus.owlapi.Reasoner){
+				((uk.ac.manchester.cs.factplusplus.owlapi.Reasoner)reasoner).classify();
+			}else if(reasoner instanceof org.mindswap.pellet.owlapi.Reasoner){
+				((org.mindswap.pellet.owlapi.Reasoner)reasoner).refresh();
+			}else{
+				reasoner.classify();
+			}
+		} catch (OWLReasonerException e) {
+			throw new JasdlException("Unable to refresh reasoner. Reason: "+e);
+		}
 	}
 	
 	/**
@@ -581,7 +612,7 @@ public class JasdlAgent extends JmcaAgent{
 
 
 
-	public Reasoner getReasoner() {
+	public OWLReasoner getReasoner() {
 		return reasoner;
 	}
 		

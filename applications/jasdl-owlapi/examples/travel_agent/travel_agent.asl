@@ -18,14 +18,28 @@
  *  
  */
 
-!example_UBB_1.
-!example_UBB_2.
-!example_QBB.
-!example_RPP.
-!example_all_different.
+!start(total).
+!start(ubb1).!example_UBB_1.!end(ubb1).
+!start(ubb2).!example_UBB_2.!end(ubb2).
+!start(qbb).!example_QBB.!end(qbb).
+!start(rpp).!example_RPP.!end(rpp).
+!start(all_different).!example_all_different.!end(all_different).
 //!example_annotation_gathering.
-!example_KSAA.
+!start(ksaa).!example_KSAA.!end(ksaa).
+//!end(total) is within example_KSAA_complete to allow inter-agent communication to finish
 
+@start[atomic]
++!start(A)
+	<-
+	+counter(A, system.time).
+
+@end[atomic]
++!end(A)
+	<-
+	?counter(A, StartTime);
+	-counter(A, _);
+	TotalTime = (system.time - StartTime) / 1000;
+	.print("Execution time for counter ",A,": ",TotalTime,"s").
 
 @example_ubb_1[atomic]
 +!example_UBB_1
@@ -130,10 +144,7 @@
         ?H;
         ?bundle(R).
 
-@example_KSAA_complete[atomic]
-+example_KSAA_complete
-	<-
-	.print("Completed: Knowledge Sharing Among Agents").
+
 	
 	
 /**
@@ -181,6 +192,13 @@
 	?familyDestination(butlins)[o(travel), something]; 
 	
 	.print("Complete: annotation gathering").
+	
+	
+@example_KSAA_complete[atomic]
++example_KSAA_complete
+	<-
+	.print("Completed: Knowledge Sharing Among Agents");
+	!end(total).
 
 	
 

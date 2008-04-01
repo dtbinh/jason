@@ -21,6 +21,7 @@ package jasdl.bridge;
 
 import static jasdl.util.Common.RANGE;
 import jasdl.asSemantics.JasdlAgent;
+import jasdl.bb.revision.IndividualAxiomToDescriptionConverter;
 import jasdl.bridge.seliteral.SELiteral;
 import jasdl.bridge.seliteral.SELiteralAllDifferentAssertion;
 import jasdl.bridge.seliteral.SELiteralClassAssertion;
@@ -32,6 +33,7 @@ import jasdl.util.JasdlException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.semanticweb.owl.inference.OWLReasonerException;
 import org.semanticweb.owl.model.OWLConstant;
 import org.semanticweb.owl.model.OWLDataProperty;
 import org.semanticweb.owl.model.OWLDescription;
@@ -130,22 +132,26 @@ public class ToAxiomConverter {
 	 * @throws JasdlException
 	 */
 	private Set<OWLIndividualAxiom> convert(SELiteralClassAssertion sl, boolean checkForExistence) throws JasdlException{
-		Set<OWLIndividual> is = new HashSet<OWLIndividual>();		
-		OWLDescription desc = sl.getOWLDescription();		
-		
-		if(sl.getLiteral().isGround()){
-			OWLIndividual i = sl.getOWLIndividual();
-			if(!checkForExistence || agent.getReasoner().hasType(i, desc)){
-				is.add(i);
+		try {
+			Set<OWLIndividual> is = new HashSet<OWLIndividual>();		
+			OWLDescription desc = sl.getOWLDescription();		
+			
+			if(sl.getLiteral().isGround()){
+				OWLIndividual i = sl.getOWLIndividual();
+				if(!checkForExistence || agent.getReasoner().hasType(i, desc, false)){
+					is.add(i);
+				}
+			}else{
+				is.addAll(agent.getReasoner().getIndividuals(desc, false));
+			}		
+			Set<OWLIndividualAxiom> axioms = new HashSet<OWLIndividualAxiom>();
+			for(OWLIndividual i : is){
+				axioms.add(agent.getOntologyManager().getOWLDataFactory().getOWLClassAssertionAxiom(i, desc));
 			}
-		}else{
-			is.addAll(agent.getReasoner().getIndividuals(desc, false));
-		}		
-		Set<OWLIndividualAxiom> axioms = new HashSet<OWLIndividualAxiom>();
-		for(OWLIndividual i : is){
-			axioms.add(agent.getOntologyManager().getOWLDataFactory().getOWLClassAssertionAxiom(i, desc));
+			return axioms;
+		} catch (OWLReasonerException e) {
+			throw new JasdlException("Unable to convert "+sl+" to axiom. Reason: "+e);
 		}
-		return axioms;
 	}	
 	
 	/**
@@ -156,33 +162,42 @@ public class ToAxiomConverter {
 	 * @throws JasdlException
 	 */
 	public Set<OWLIndividualAxiom> create(SELiteralAllDifferentAssertion sl, boolean checkForExistence) throws JasdlException{
-		Object[] is = sl.getOWLIndividuals().toArray();	
-		if(is.length == 0){
-			throw new JasdlException("All different assertion must contain some individuals! "+sl);
+		try {
+			Set<OWLIndividual> _is = sl.getOWLIndividuals();
+			Object[] is = _is.toArray();	
+			if(is.length == 0){
+				throw new JasdlException("All different assertion must contain some individuals! "+sl);
+			}
+	    	// check they are mutually distinct (if we are checking for existence)
+	    	boolean distinct = true;
+	    	if(checkForExistence){	        	
+	        	for(int i=0; i<is.length; i++){ 		       		
+	        		for(int j=i+1; j<is.length; j++){
+	        			// create a description that is satisfiable iff the two individuals are different. TODO: request in-built OWL-API support for this
+	        			OWLDifferentIndividualsAxiom axiom = agent.getOntologyManager().getOWLDataFactory().getOWLDifferentIndividualsAxiom(_is);
+	        			IndividualAxiomToDescriptionConverter conv = new IndividualAxiomToDescriptionConverter(agent.getOntologyManager().getOWLDataFactory());
+	        			axiom.accept(conv);        			
+						if(!agent.getReasoner().isSatisfiable(conv.getDescription())){//.isDifferentFrom((OWLIndividual)is[i], (OWLIndividual)is[j])){
+							distinct = false;
+							break;
+						}					
+	        		}
+	        		if(!distinct) break;
+	        	}   
+	    	}       
+	    	Set<OWLIndividualAxiom> axioms = new HashSet<OWLIndividualAxiom>();
+	    	Set<OWLIndividual> different = new HashSet<OWLIndividual>();
+	    	if(!checkForExistence || distinct){
+	    		for(int i=0; i<is.length; i++){ 
+	        		different.add((OWLIndividual)is[i]);
+	        	}
+	        	OWLDifferentIndividualsAxiom axiom = agent.getOntologyManager().getOWLDataFactory().getOWLDifferentIndividualsAxiom(different);        	
+	        	axioms.add(axiom);
+	    	}
+	    	return axioms;
+		} catch (OWLReasonerException e) {
+			throw new JasdlException("Unable to convert "+sl+" to axiom. Reason: "+e);
 		}
-    	// check they are mutually distinct (if we are checking for existence)
-    	boolean distinct = true;
-    	if(checkForExistence){	        	
-        	for(int i=0; i<is.length; i++){ 		       		
-        		for(int j=i+1; j<is.length; j++){
-        			if(!agent.getReasoner().isDifferentFrom((OWLIndividual)is[i], (OWLIndividual)is[j])){
-        				distinct = false;
-        				break;
-        			}
-        		}
-        		if(!distinct) break;
-        	}   
-    	}       
-    	Set<OWLIndividualAxiom> axioms = new HashSet<OWLIndividualAxiom>();
-    	Set<OWLIndividual> different = new HashSet<OWLIndividual>();
-    	if(!checkForExistence || distinct){
-    		for(int i=0; i<is.length; i++){ 
-        		different.add((OWLIndividual)is[i]);
-        	}
-        	OWLDifferentIndividualsAxiom axiom = agent.getOntologyManager().getOWLDataFactory().getOWLDifferentIndividualsAxiom(different);        	
-        	axioms.add(axiom);
-    	}
-    	return axioms;
 	}	
 	
 	/**
@@ -193,22 +208,26 @@ public class ToAxiomConverter {
 	 * @throws JasdlException
 	 */
 	public Set<OWLIndividualAxiom> create(SELiteralObjectPropertyAssertion sl, boolean checkForExistence) throws JasdlException{
-		Set<OWLIndividual> os = new HashSet<OWLIndividual>();
-		OWLIndividual s = sl.getSubject();
-		OWLObjectProperty p = sl.getPredicate();
-		if(sl.getLiteral().getTerm(RANGE).isGround()){
-			OWLIndividual o = sl.getObject();
-			if(!checkForExistence || agent.getReasoner().hasObjectPropertyRelationship(s, p, o)){
-				os.add(o);
+		try {
+			Set<OWLIndividual> os = new HashSet<OWLIndividual>();
+			OWLIndividual s = sl.getSubject();
+			OWLObjectProperty p = sl.getPredicate();
+			if(sl.getLiteral().getTerm(RANGE).isGround()){
+				OWLIndividual o = sl.getObject();
+				if(!checkForExistence || agent.getReasoner().hasObjectPropertyRelationship(s, p, o)){
+					os.add(o);
+				}
+			}else{
+				os.addAll(agent.getReasoner().getRelatedIndividuals(s, p));
 			}
-		}else{
-			os.addAll(agent.getReasoner().getRelatedIndividuals(s, p));
+			Set<OWLIndividualAxiom> axioms = new HashSet<OWLIndividualAxiom>();
+			for(OWLIndividual o : os){
+				axioms.add(agent.getOntologyManager().getOWLDataFactory().getOWLObjectPropertyAssertionAxiom(s, p, o));
+			}
+			return axioms;
+		} catch (OWLReasonerException e) {
+			throw new JasdlException("Unable to convert "+sl+" to axiom. Reason: "+e);
 		}
-		Set<OWLIndividualAxiom> axioms = new HashSet<OWLIndividualAxiom>();
-		for(OWLIndividual o : os){
-			axioms.add(agent.getOntologyManager().getOWLDataFactory().getOWLObjectPropertyAssertionAxiom(s, p, o));
-		}
-		return axioms;
 	}
 	
 	/**
@@ -219,22 +238,26 @@ public class ToAxiomConverter {
 	 * @throws JasdlException
 	 */
 	public Set<OWLIndividualAxiom> create(SELiteralDataPropertyAssertion sl, boolean checkForExistence) throws JasdlException{
-		Set<OWLConstant> os = new HashSet<OWLConstant>();
-		OWLIndividual s = sl.getSubject();
-		OWLDataProperty p = sl.getPredicate();
-		if(sl.getLiteral().getTerm(RANGE).isGround()){
-			OWLTypedConstant o = sl.getObject();
-			if(!checkForExistence || agent.getReasoner().hasDataPropertyRelationship(s, p, o)){
-				os.add(o);
+		try {
+			Set<OWLConstant> os = new HashSet<OWLConstant>();
+			OWLIndividual s = sl.getSubject();
+			OWLDataProperty p = sl.getPredicate();
+			if(sl.getLiteral().getTerm(RANGE).isGround()){
+				OWLTypedConstant o = sl.getObject();
+				if(!checkForExistence || agent.getReasoner().hasDataPropertyRelationship(s, p, o)){
+					os.add(o);
+				}
+			}else{
+				os.addAll(agent.getReasoner().getRelatedValues(s, p));
 			}
-		}else{
-			os.addAll(agent.getReasoner().getRelatedValues(s, p));
+			Set<OWLIndividualAxiom> axioms = new HashSet<OWLIndividualAxiom>();
+			for(OWLConstant o : os){
+				axioms.add(agent.getOntologyManager().getOWLDataFactory().getOWLDataPropertyAssertionAxiom(s, p, o));
+			}
+			return axioms;
+		} catch (OWLReasonerException e) {
+			throw new JasdlException("Unable to convert "+sl+" to axiom. Reason: "+e);
 		}
-		Set<OWLIndividualAxiom> axioms = new HashSet<OWLIndividualAxiom>();
-		for(OWLConstant o : os){
-			axioms.add(agent.getOntologyManager().getOWLDataFactory().getOWLDataPropertyAssertionAxiom(s, p, o));
-		}
-		return axioms;
 	}	
 	
 	

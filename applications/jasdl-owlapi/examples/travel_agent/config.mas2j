@@ -33,6 +33,13 @@ MAS dalt08 {
 	       [			
 			jasdl_useBeliefRevision = "true", // use experimental DL-based belief revision mechanism
 			
+			/*
+			 * To use FaCT++, set the below. Must have libFaCTPlusPlusJNI.so in /usr/lib (or the equivalent for Mac or Windows)
+			 * FaCT++ support is buggy and incomplete. Defaults to Pellet (org.mindswap.pellet.owlapi.Reasoner), which seems to work
+			 * must better
+			 * jasdl_reasonerClass = "uk.ac.manchester.cs.factplusplus.owlapi.Reasoner",
+			 */
+			
 		    jasdl_default_mapping_strategies="jasdl.bridge.alias.DecapitaliseMappingStrategy", // applied to incoming ontologies and those given no automapping
 
 	       	jasdl_ontologies="travel",

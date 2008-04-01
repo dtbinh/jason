@@ -41,6 +41,8 @@ import junit.framework.TestCase;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.semanticweb.owl.inference.OWLReasonerException;
+import org.semanticweb.owl.model.OWLOntology;
 
 /**
  * TODO: This is very out of date: needs tidying up and improving.
@@ -351,9 +353,15 @@ public class JasdlBeliefBaseTest extends TestCase{
 	/* AUXILIARY METHODS */
 	
 	public void checkConsistency(){
-		if(!agent.getReasoner().isConsistent()){
-			fail("Inconsistency detected");
-		}
+		try {
+			for(OWLOntology ontology : agent.getReasoner().getLoadedOntologies()){
+				if(!agent.getReasoner().isConsistent(ontology)){
+					fail("Inconsistency detected");
+				}	
+			}
+		} catch (OWLReasonerException e) {
+			e.printStackTrace();
+		}		
 	}
 	
 	public void addToBB(String functor, String params, boolean expected){

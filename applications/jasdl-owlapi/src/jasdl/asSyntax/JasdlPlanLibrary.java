@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.semanticweb.owl.inference.OWLReasonerAdapter;
+import org.semanticweb.owl.inference.OWLReasonerException;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDataProperty;
 import org.semanticweb.owl.model.OWLObject;
@@ -123,7 +124,7 @@ public class JasdlPlanLibrary extends PlanLibrary{
 		List<Trigger> tes = getMoreGeneralTriggers(agent, te);
 		List<Plan> moreGeneral = new Vector<Plan>();
 		for(Trigger generalised : tes){
-			List<Plan> relevant = super.getAllRelevant(generalised);
+			List<Plan> relevant = super.getCandidatePlans(generalised);
 			if(relevant != null){
 				moreGeneral.addAll(relevant);
 			}
@@ -174,15 +175,19 @@ public class JasdlPlanLibrary extends PlanLibrary{
 	 * @throws JasdlException
 	 */
 	public static List<OWLObject> generalise(JasdlAgent agent, OWLObject o) throws JasdlException{
-		List<OWLObject> os = new Vector<OWLObject>();
-		if(o instanceof OWLClass){
-			os.addAll(OWLReasonerAdapter.flattenSetOfSets(agent.getReasoner().getAncestorClasses((OWLClass)o)));
-		}else if(o instanceof OWLObjectProperty){
-			os.addAll(OWLReasonerAdapter.flattenSetOfSets(agent.getReasoner().getAncestorProperties((OWLObjectProperty)o)));
-		}else if(o instanceof OWLDataProperty){
-			os.addAll(OWLReasonerAdapter.flattenSetOfSets(agent.getReasoner().getAncestorProperties((OWLDataProperty)o)));
-		}	
-		return os;		
+		try {
+			List<OWLObject> os = new Vector<OWLObject>();
+			if(o instanceof OWLClass){
+				os.addAll(OWLReasonerAdapter.flattenSetOfSets(agent.getReasoner().getAncestorClasses((OWLClass)o)));
+			}else if(o instanceof OWLObjectProperty){
+				os.addAll(OWLReasonerAdapter.flattenSetOfSets(agent.getReasoner().getAncestorProperties((OWLObjectProperty)o)));
+			}else if(o instanceof OWLDataProperty){
+				os.addAll(OWLReasonerAdapter.flattenSetOfSets(agent.getReasoner().getAncestorProperties((OWLDataProperty)o)));
+			}	
+			return os;
+		} catch (OWLReasonerException e) {
+			throw new JasdlException("Unable to generalise "+o+". Reason: "+e);
+		}		
 	}	
 	
 

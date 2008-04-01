@@ -36,6 +36,18 @@ import org.semanticweb.owl.model.OWLOntology;
 public class SELiteral{
 	public static String ONTOLOGY_ANNOTATION_FUNCTOR = "o";
 	
+	/**
+	 * Should results of various operations be cached for later usage?
+	 * Tentatively, yes. May cause problems however;
+	 */
+	private static boolean USE_CACHING = true;
+	
+	protected Structure ontologyAnnotation = null;
+	
+	protected OWLIndividualAxiom axiom = null;
+	protected Set<OWLIndividualAxiom> axioms = null;
+	
+	
 	protected JasdlAgent agent;	
 	
 	protected Literal literal;	
@@ -54,27 +66,28 @@ public class SELiteral{
 	}
 	
 	private Structure getOntologyAnnotation() throws JasdlException{
-		Structure annot = null;
-		ListTerm os = literal.getAnnots(ONTOLOGY_ANNOTATION_FUNCTOR);
-		if(os.size() == 0){
-			throw new NotEnrichedException("Not semantically-enriched");
+		if(ontologyAnnotation == null || !USE_CACHING){
+			ListTerm os = literal.getAnnots(ONTOLOGY_ANNOTATION_FUNCTOR);
+			if(os.size() == 0){
+				throw new NotEnrichedException("Not semantically-enriched");
+			}
+			if(os.size() > 1){
+				throw new InvalidSELiteralException("Multiple ontology annotations present");
+			}
+			Term t = os.get(0);
+			if(!(t instanceof Structure)){
+				throw new InvalidSELiteralException("Invalid ontology annotation term");
+			}
+			ontologyAnnotation = (Structure)t;
+			
+			if(ontologyAnnotation.getArity() != 1){
+				throw new InvalidSELiteralException("Invalid ontology annotation arity");
+			}
 		}
-		if(os.size() > 1){
-			throw new InvalidSELiteralException("Multiple ontology annotations present");
-		}
-		Term t = os.get(0);
-		if(!(t instanceof Structure)){
-			throw new InvalidSELiteralException("Invalid ontology annotation term");
-		}
-		annot = (Structure)t;
-		
-		if(annot.getArity() != 1){
-			throw new InvalidSELiteralException("Invalid ontology annotation arity");
-		}
-		return annot;
+		return ontologyAnnotation;
 	}
 	
-	public OWLOntology getOntology() throws JasdlException{
+	public OWLOntology getOntology() throws JasdlException{		
 		Structure o = getOntologyAnnotation();
 		if(o.getTerm(0).isStructure()){ // Checking for atomicity directly does not seem to work
 			return agent.getLabelManager().getRight((Atom)o.getTerm(0));
@@ -132,14 +145,20 @@ public class SELiteral{
 	 * @return
 	 */
 	public OWLIndividualAxiom createAxiom() throws JasdlException{
-		return agent.getToAxiomConverter().create(this);
+		if(axiom == null || !USE_CACHING){
+			axiom = agent.getToAxiomConverter().create(this);
+		}
+		return axiom;
 	}
 	/**
 	 * Convenience method, calls AxiomFactory
 	 * @return
 	 */
 	public Set<OWLIndividualAxiom> getAxioms() throws JasdlException{
-		return agent.getToAxiomConverter().retrieve(this);
+		if(axioms == null || !USE_CACHING){
+			axioms = agent.getToAxiomConverter().retrieve(this);
+		}
+		return axioms;
 	}
 	
 	/**
@@ -157,20 +176,11 @@ public class SELiteral{
 	 * If not present, attempts to fetch from personal ontology.
 	 * If not present, instantiates in personal ontology.
 	 * Placed here for convenient (varying) usage by subclasses.
-	 * Validates since terms are mutable.
+	 * Validates and doesn't cache since terms are mutable.
 	 * @return
 	 * @throws UnknownMappingException
 	 */
 	public OWLIndividual getOWLIndividual(Term term) throws JasdlException{	
-		//agent.getLogger().info("term: "+term);
-		//if(term.isVar()){
-		//	term = ((VarTerm)term).getValue();
-		//}
-		
-		//if(!(term.isAtom())){
-		//	throw new InvalidSELiteralException(term+" must be atomic in literal "+literal);
-		//}
-		//Atom atom = (Atom);
 		Atom atom = new Atom(term.toString());
 		OWLIndividual i;
 		try {
