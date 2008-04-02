@@ -214,6 +214,10 @@ public class JasdlAgent extends JmcaAgent{
 
 
 	public List<Literal>[] brf(Literal beliefToAdd, Literal beliefToDel, Intention i)  throws RevisionFailedException {
+		// TODO: what annotations should revision contractions contain? all! (or none? - same effect)
+		// No! the same. -a[x] only undermines assertions leading to a[x]!
+		// if we are performing belief-revision all annotations will be gathered (shortcut - use none?) ensuring axiom will be obliterated
+		// annotations never solely lead to conflicts.
 		
 		if(!isBeliefRevisionEnabled()){ // if experimental feature is disabled
 			return super.brf(beliefToAdd, beliefToDel, i);

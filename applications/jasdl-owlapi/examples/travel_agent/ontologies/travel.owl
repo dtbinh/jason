@@ -46,7 +46,6 @@
     <owl:ObjectProperty rdf:about="#hasAccommodation">
         <rdfs:range rdf:resource="#Accommodation"/>
         <rdfs:domain rdf:resource="#Destination"/>
-        <rdfs:subPropertyOf rdf:resource="#hasThing"/>
     </owl:ObjectProperty>
     
 
@@ -56,7 +55,6 @@
     <owl:ObjectProperty rdf:about="#hasActivity">
         <rdfs:range rdf:resource="#Activity"/>
         <rdfs:domain rdf:resource="#Destination"/>
-        <rdfs:subPropertyOf rdf:resource="#hasThing"/>
         <owl:inverseOf rdf:resource="#isOfferedAt"/>
     </owl:ObjectProperty>
     
@@ -67,7 +65,6 @@
     <owl:ObjectProperty rdf:about="#hasContact">
         <rdfs:domain rdf:resource="#Activity"/>
         <rdfs:range rdf:resource="#Contact"/>
-        <rdfs:subPropertyOf rdf:resource="#hasThing"/>
     </owl:ObjectProperty>
     
 
@@ -76,7 +73,6 @@
 
     <owl:ObjectProperty rdf:about="#hasDestination">
         <rdfs:range rdf:resource="#Destination"/>
-        <rdfs:subPropertyOf rdf:resource="#hasThing"/>
     </owl:ObjectProperty>
     
 
@@ -87,7 +83,6 @@
         <rdf:type rdf:resource="&owl;TransitiveProperty"/>
         <rdfs:domain rdf:resource="#Destination"/>
         <rdfs:range rdf:resource="#Destination"/>
-        <rdfs:subPropertyOf rdf:resource="#hasThing"/>
     </owl:ObjectProperty>
     
 
@@ -98,24 +93,17 @@
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
         <rdfs:domain rdf:resource="#Accommodation"/>
         <rdfs:range rdf:resource="#AccommodationRating"/>
-        <rdfs:subPropertyOf rdf:resource="#hasThing"/>
     </owl:ObjectProperty>
-    
-
-
-    <!-- http://www.owl-ontologies.com/travel.owl#hasThing -->
-
-    <owl:ObjectProperty rdf:about="#hasThing"/>
     
 
 
     <!-- http://www.owl-ontologies.com/travel.owl#isLocatedAt -->
 
     <owl:ObjectProperty rdf:about="#isLocatedAt">
+        <rdf:type rdf:resource="&owl11;IrreflexiveProperty"/>
         <rdfs:domain rdf:resource="#Accommodation"/>
         <rdfs:range rdf:resource="#Destination"/>
         <owl:inverseOf rdf:resource="#hasAccommodation"/>
-        <rdfs:subPropertyOf rdf:resource="#hasThing"/>
     </owl:ObjectProperty>
     
 
@@ -127,7 +115,6 @@
             >Generalised to apply to accommodations as well</rdfs:comment>
         <rdfs:domain rdf:resource="#Activity"/>
         <rdfs:range rdf:resource="#Destination"/>
-        <rdfs:subPropertyOf rdf:resource="#hasThing"/>
     </owl:ObjectProperty>
     
 
@@ -138,7 +125,6 @@
         <rdfs:domain rdf:resource="#Destination"/>
         <rdfs:range rdf:resource="#Destination"/>
         <owl:inverseOf rdf:resource="#hasPart"/>
-        <rdfs:subPropertyOf rdf:resource="#hasThing"/>
     </owl:ObjectProperty>
     
 
@@ -158,15 +144,24 @@
 
     <owl:DatatypeProperty rdf:about="#hasCity">
         <rdfs:domain rdf:resource="#Contact"/>
-        <rdfs:subPropertyOf rdf:resource="#hasData"/>
         <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://www.owl-ontologies.com/travel.owl#hasData -->
+    <!-- http://www.owl-ontologies.com/travel.owl#hasDate -->
 
-    <owl:DatatypeProperty rdf:about="#hasData"/>
+    <owl:DatatypeProperty rdf:about="#hasDate">
+        <rdfs:range rdf:resource="&xsd;date"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#hasDateTime -->
+
+    <owl:DatatypeProperty rdf:about="#hasDateTime">
+        <rdfs:range rdf:resource="&xsd;dateTime"/>
+    </owl:DatatypeProperty>
     
 
 
@@ -175,7 +170,6 @@
     <owl:DatatypeProperty rdf:about="#hasEMail">
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
         <rdfs:domain rdf:resource="#Contact"/>
-        <rdfs:subPropertyOf rdf:resource="#hasData"/>
         <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     
@@ -188,7 +182,6 @@
         <rdfs:comment
             >Stated in local currency</rdfs:comment>
         <rdfs:domain rdf:resource="#Accommodation"/>
-        <rdfs:subPropertyOf rdf:resource="#hasData"/>
         <rdfs:range rdf:resource="&xsd;double"/>
     </owl:DatatypeProperty>
     
@@ -198,8 +191,15 @@
 
     <owl:DatatypeProperty rdf:about="#hasStreet">
         <rdfs:domain rdf:resource="#Contact"/>
-        <rdfs:subPropertyOf rdf:resource="#hasData"/>
         <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.owl-ontologies.com/travel.owl#hasTime -->
+
+    <owl:DatatypeProperty rdf:about="#hasTime">
+        <rdfs:range rdf:resource="&xsd;time"/>
     </owl:DatatypeProperty>
     
 
@@ -209,7 +209,6 @@
     <owl:DatatypeProperty rdf:about="#hasZipCode">
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
         <rdfs:domain rdf:resource="#Contact"/>
-        <rdfs:subPropertyOf rdf:resource="#hasData"/>
         <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     

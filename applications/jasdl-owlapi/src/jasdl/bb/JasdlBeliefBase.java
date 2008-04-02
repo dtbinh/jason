@@ -14,8 +14,7 @@ import jason.asSyntax.Literal;
 import jason.asSyntax.Term;
 import jason.bb.DefaultBeliefBase;
 
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -90,11 +89,13 @@ public class JasdlBeliefBase extends DefaultBeliefBase{
 	 */
 	@Override
 	public boolean remove(Literal l) {
+		
 		getLogger().fine("Contracting "+l);
 		try{			
 			SELiteral sl = agent.getSELiteralFactory().create(l);
 			OWLOntology ontology = sl.getOntology();
-			OWLIndividualAxiom axiom = sl.createAxiom();			
+			OWLIndividualAxiom axiom = sl.createAxiom();	
+			
 			
 			boolean result = false; // -> at least *something* must be removed for this to be true!
 			
@@ -102,29 +103,54 @@ public class JasdlBeliefBase extends DefaultBeliefBase{
 			List<OWLAxiom> contractList = contractor.contract(axiom, new TBoxAxiomKernelsetFilter(), new JasdlIncisionFunction(agent, sl));
 			
 			// NOTE: this technique only really makes sense with annotation gathering!
-			for(OWLAxiom contract : contractList){ // removals corresponds to l and all l's whose removal will undermine it
+			for(OWLAxiom contract : contractList){ // removals correspond to l and all assertions whose removal will undermine l
+				//agent.refreshReasoner();
 				
-				// for each annotation to this axiom, remove it if l has it
-				List<OWLAxiomAnnotationAxiom> annotationsToRemove = new Vector<OWLAxiomAnnotationAxiom>(); // to avoid concurrency issues
-				for(OWLAxiomAnnotationAxiom annotAxiom : contract.getAnnotationAxioms(ontology)){
-					Term annot = Literal.parse(annotAxiom.getAnnotation().getAnnotationValueAsConstant().getLiteral());
-					if(l.hasAnnot(annot)){
-						annotationsToRemove.add(annotAxiom);
-						result = true;
-					}
+				// fail if axiom not contained in ontology
+				if(!ontology.containsAxiom(contract)){
+					continue;
 				}
 				
-				for(OWLAxiom annotationToRemove : annotationsToRemove){
-					agent.getOntologyManager().applyChange(new RemoveAxiom(ontology, annotationToRemove));
+				// construct annot axiom->term map (avoids unecessary parsing of terms)
+				HashMap<OWLAxiomAnnotationAxiom, Term> annotAxiomToTermMap = new HashMap<OWLAxiomAnnotationAxiom, Term>();
+				for(OWLAxiomAnnotationAxiom annotAxiom : contract.getAnnotationAxioms(ontology)){
+					Term annotTerm = Literal.parse(annotAxiom.getAnnotation().getAnnotationValueAsConstant().getLiteral());
+					annotAxiomToTermMap.put(annotAxiom, annotTerm);
+				}
+				
+				// if l only has "o" annotations. Remember, "o" isn't stored in ontology
+				// note: literals without "o" are semantically-naive and so will be caught below
+				if(sl.getSemanticallyNaiveAnnotations().isEmpty()){
+					// remove axiom and all annotations
+					for(OWLAxiomAnnotationAxiom annotAxiom : annotAxiomToTermMap.keySet()){
+						agent.getOntologyManager().applyChange(new RemoveAxiom(ontology, annotAxiom));
+					}
+					agent.getOntologyManager().applyChange(new RemoveAxiom(ontology, contract));												
+					result = true;
+					continue;
 				}				
 				
-				// remove source(self) and source(percept). TODO: right thing to do?				
-				// remove assertion if no annotation axioms left
+				
+				// first check axiom has all annotations of l except for "o" (otherwise fail)
+				if(!annotAxiomToTermMap.values().containsAll(sl.getSemanticallyNaiveAnnotations())){		
+					continue;
+				}
+				
+				result = true;
+				
+				// remove all axiom annotations (implicitly possessed also by l)
+				for(OWLAxiomAnnotationAxiom annotAxiom : annotAxiomToTermMap.keySet()){
+					agent.getOntologyManager().applyChange(new RemoveAxiom(ontology, annotAxiom));
+				}									
+				
+				// remove source(self) and source(percept). TODO: right thing to do?		
+				
+				// if no annotation axioms left, remove assertion		
 				Set<OWLAxiomAnnotationAxiom> remaining = contract.getAnnotationAxioms(ontology);
 				if(remaining.isEmpty()){
 					agent.getOntologyManager().applyChange(new RemoveAxiom(ontology, contract));
-					result = true;
-				}
+				}		
+			
 			}
 			agent.refreshReasoner();
 			return result;

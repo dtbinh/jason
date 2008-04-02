@@ -18,6 +18,7 @@ import jason.asSyntax.DefaultTerm;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
+import jason.bb.BeliefBase;
 import jason.bb.DefaultBeliefBase;
 import jason.infra.centralised.CentralisedAgArch;
 import jason.mas2j.ClassParameters;
@@ -30,7 +31,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 
 import junit.framework.TestCase;
 
@@ -54,6 +54,8 @@ import org.semanticweb.owl.model.OWLOntology;
  * 
  * No thought it given to consistency of additions. This is dealt with by the brf before these methods are called.
  * A seperate test suite must be developed for belief bases employing the legacy rollback consistency assurance mechanism.
+ * 
+ * TODO: contruct special testing ontology to better cover all test cases
  * 
  * @author Tom Klapiscak
  *
@@ -102,30 +104,12 @@ public class JasdlBeliefBaseTest extends TestCase{
 		bb = (JasdlBeliefBase)agent.getBB();
 		
 		testbb = new DefaultBeliefBase();
-		
-		/*
-		// ensure initial state of testbb contained predefinitions from bb's ABox
-		// Add in reverse order, so iterator ordering is identical
-		List<Literal> state = new Vector<Literal>();
-		Iterator<Literal> bbit = bb.iterator();
-		while(bbit.hasNext()){
-			state.add(bbit.next());
-		}
-		Collections.reverse(state);
-		for(Literal l : state){
-			testbb.add(l);
-		}
-		*/
-		
-		
+				
 		// we are not worrying about ordering of iterator anymore
 		Iterator<Literal> bbit = bb.iterator();
 		while(bbit.hasNext()){
 			testbb.add(bbit.next());
-		}		
-		
-		
-		
+		}	
 		
 			
 	}
@@ -133,62 +117,170 @@ public class JasdlBeliefBaseTest extends TestCase{
 	@After
 	public void tearDown() throws Exception {
 	}
+	
+	
 
+	private Literal constructSELiteral(boolean sign, String functor, Term[] terms, Term[] annots, String label){
+		Literal l = new Literal(sign, functor);	
+		addO(l, label);
+		l.addTerms(Arrays.asList(terms));
+		if(annots!=null){
+			l.addAnnots(Arrays.asList(annots));
+		}
+		return l;
+	}
+	
+	private Literal constructSELiteral(boolean sign, String functor, Term[] terms, String[] _annots, String label){
+		Term[] annots = null;
+		if(_annots != null){
+			annots = new Term[_annots.length];
+			for(int i=0; i<_annots.length; i++){
+				annots[i] = DefaultTerm.parse(_annots[i]);
+			}		
+		}
+		return constructSELiteral(sign, functor, terms, annots, label);
+	}	
+	
+	private Literal constructClass(boolean sign, String functor, String i, String[] annots, String label){
+		return constructSELiteral(sign, functor, new Term[] {new Atom(i)}, annots, label);
+	}
+	
+	private Literal constructObjectProperty(boolean sign, String functor, String s, String o, String[] annots, String label){
+		return constructSELiteral(sign, functor, new Term[] {new Atom(s), new Atom(o)}, annots, label);
+	}
+	
+	private Literal constructDataProperty(boolean sign, String functor, String s, String o, String[] annots, String label){
+		return constructSELiteral(sign, functor, new Term[] {new Atom(s), DefaultTerm.parse(o)}, annots, label);
+	}
+	
+		
+	
+	
+	private Literal constructSELiteral(boolean sign, String functor, Term[] terms, String label){
+		return constructSELiteral(sign, functor, terms, (Term[])null, label);
+	}	
+	
+	private Literal constructClass(boolean sign, String functor, String i, String label){
+		return constructSELiteral(sign, functor, new Term[] {new Atom(i)}, label);
+	}
+	
+	private Literal constructObjectProperty(boolean sign, String functor, String s, String o, String label){
+		return constructSELiteral(sign, functor, new Term[] {new Atom(s), new Atom(o)}, label);
+	}
+	
+	private Literal constructDataProperty(boolean sign, String functor, String s, String o, String label){
+		return constructSELiteral(sign, functor, new Term[] {new Atom(s), DefaultTerm.parse(o)}, label);
+	}		
+	
+	/**
+	 * Adds the ontology annotation with the specified label to the supplied literal
+	 * @param l
+	 */
+	private void addO(Literal l, String label){
+		Structure o = new Structure(SELiteral.ONTOLOGY_ANNOTATION_FUNCTOR);
+		o.addTerm(new Atom(label));
+		l.addAnnot(o);
+	}	
+			
+	private static boolean[] signs = new boolean[] {true, false};
+	
+	
 	@Test
-	public void testAddLiteral() throws Exception{
+	public void testRemoveLiteral() throws Exception{
+		// contractor is tested more thoroughly elsewhere
 		
-		boolean[] signs = new boolean[] {true, false};
+		/** Testing annotation handling */
+		//for(boolean sign : signs){
+			boolean sign = true;
+			Literal l = constructClass(sign, "hotel", "a", TEST_ONTOLOGY_LABEL);
+			Literal l_x = constructClass(sign, "hotel", "a", new String[] {"x"}, TEST_ONTOLOGY_LABEL);
+			Literal l_xy = constructClass(sign, "hotel", "a", new String[] {"x", "y"}, TEST_ONTOLOGY_LABEL);
+			
+			testRemoveIndividualAssertion(l);	
+			testRemoveIndividualAssertion(l_x);
+			testRemoveIndividualAssertion(l_xy);
+			
+			testAddIndividualAssertion(l);
+			testRemoveIndividualAssertion(l);			
+			
+						
+			testAddIndividualAssertion(l_x);
+			testRemoveIndividualAssertion(l);
+			testRemoveIndividualAssertion(l_x);			
+			
+			testAddIndividualAssertion(l_x);
+			testRemoveIndividualAssertion(l_x);
+			testRemoveIndividualAssertion(l);
+			
+			
+			testAddIndividualAssertion(l_x);
+			testRemoveIndividualAssertion(l_xy);
+			testRemoveIndividualAssertion(l);
+			
+			testAddIndividualAssertion(l_x);
+			testRemoveIndividualAssertion(l);
+			testRemoveIndividualAssertion(l_xy);				
+			
+			
+			
+		//}
 		
+		
+		//l = constructClass();
+		
+	}
+	
+	
+	//@Test
+	public void notestAddLiteral() throws Exception{		
+		String[][] annotSets = new String[][] {new String[]{}, new String[] {"x"}, new String[] {"x", "y"} };
 		for(OWLOntology ontology : agent.getOntologyManager().getOntologies()){	
 			for(int run=0; run<=1; run++){	// run twice to ensure duplicate additions are rejected
 				for(boolean sign : signs){
-					for(OWLClass cls : ontology.getReferencedClasses()){
-						Alias alias = agent.getAliasManager().getLeft(cls);
-						String label = alias.getLabel().getFunctor();
-						String functor = alias.getFunctor().getFunctor();					
-						assertAddClass(sign, functor, "a", label);
-						assertAddClass(sign, functor, "b", label);
-					}
-					for(OWLObjectProperty oprop : ontology.getReferencedObjectProperties()){
-						Alias alias = agent.getAliasManager().getLeft(oprop);
-						String label = alias.getLabel().getFunctor();
-						String functor = alias.getFunctor().getFunctor();					
-						assertAddObjectProperty(sign, functor, "a", "b", label);
-						assertAddObjectProperty(sign, functor, "b", "a", label);
-						assertAddObjectProperty(sign, functor, "a", "a", label); // irreflexive properties shouldn't be rejected at this stage
-					}
-					
-					for(OWLDataProperty dprop : ontology.getReferencedDataProperties()){
-						Alias alias = agent.getAliasManager().getLeft(dprop);
-						String label = alias.getLabel().getFunctor();
-						String functor = alias.getFunctor().getFunctor();
-						XSDDataType typ = XSDDataTypeUtils.get(((OWLDataType)dprop.getRanges(ontology).toArray()[0]).toString());
-						if(typ == XSDDataType.XSD_BOOLEAN){
-							assertAddDataProperty(sign, functor, "a", "false", label);
-							assertAddDataProperty(sign, functor, "a", "true", label);
-						}else if(typ == XSDDataType.XSD_DATE){
-							assertAddDataProperty(sign, functor, "a", "\"2007-12-20\"", label);
-						}else if(typ == XSDDataType.XSD_DATETIME){
-							assertAddDataProperty(sign, functor, "a", "\"2007-12-20T20:16:55\"", label);
-						}else if(typ == XSDDataType.XSD_DOUBLE){
-							assertAddDataProperty(sign, functor, "a", "22.0", label);							
-						}else if(typ == XSDDataType.XSD_FLOAT){
-							assertAddDataProperty(sign, functor, "a", "0.5", label);	
-						}else if(typ == XSDDataType.XSD_INT){
-							assertAddDataProperty(sign, functor, "a", "22", label);
-						}else if(typ == XSDDataType.XSD_STRING){
-							assertAddDataProperty(sign, functor, "a", "\"Winchester\"", label);
-						}else if(typ == XSDDataType.XSD_TIME){
-							assertAddDataProperty(sign, functor, "a", "\"20:16:57\"", label);
+					for(String[] annots : annotSets){
+						for(OWLClass cls : ontology.getReferencedClasses()){
+							Alias alias = agent.getAliasManager().getLeft(cls);
+							String label = alias.getLabel().getFunctor();
+							String functor = alias.getFunctor().getFunctor();					
+							testAddIndividualAssertion(constructClass(sign, functor, "a", annots, label));
+							testAddIndividualAssertion(constructClass(sign, functor, "b", annots, label));
+						}
+						for(OWLObjectProperty oprop : ontology.getReferencedObjectProperties()){
+							Alias alias = agent.getAliasManager().getLeft(oprop);
+							String label = alias.getLabel().getFunctor();
+							String functor = alias.getFunctor().getFunctor();					
+							testAddIndividualAssertion(constructObjectProperty(sign, functor, "a", "b", annots, label));
+							testAddIndividualAssertion(constructObjectProperty(sign, functor, "b", "a", annots, label));
+							testAddIndividualAssertion(constructObjectProperty(sign, functor, "a", "a", annots, label)); // irreflexive properties shouldn't be rejected at this stage
+						}
+						
+						for(OWLDataProperty dprop : ontology.getReferencedDataProperties()){
+							Alias alias = agent.getAliasManager().getLeft(dprop);
+							String label = alias.getLabel().getFunctor();
+							String functor = alias.getFunctor().getFunctor();
+							XSDDataType typ = XSDDataTypeUtils.get(((OWLDataType)dprop.getRanges(ontology).toArray()[0]).toString());
+							if(typ == XSDDataType.XSD_BOOLEAN){
+								testAddIndividualAssertion(constructDataProperty(sign, functor, "a", "false", annots, label));
+								testAddIndividualAssertion(constructDataProperty(sign, functor, "a", "true", annots, label));
+							}else if(typ == XSDDataType.XSD_DATE){
+								testAddIndividualAssertion(constructDataProperty(sign, functor, "a", "\"2007-12-20\"", annots, label));
+							}else if(typ == XSDDataType.XSD_DATETIME){
+								testAddIndividualAssertion(constructDataProperty(sign, functor, "a", "\"2007-12-20T20:16:55\"", annots, label));						
+							}else if(typ == XSDDataType.XSD_FLOAT){
+								testAddIndividualAssertion(constructDataProperty(sign, functor, "a", "0.5", annots, label));	
+							}else if(typ == XSDDataType.XSD_INT){
+								testAddIndividualAssertion(constructDataProperty(sign, functor, "a", "22", annots, label));
+							}else if(typ == XSDDataType.XSD_STRING){
+								testAddIndividualAssertion(constructDataProperty(sign, functor, "a", "\"Winchester\"", annots, label));
+							}else if(typ == XSDDataType.XSD_TIME){
+								testAddIndividualAssertion(constructDataProperty(sign, functor, "a", "\"20:16:57\"", annots, label));
+							}
 						}
 					}
 					
 				}					
 			}
 		}
-						
-				
-		
 		
 		Set<Literal> expected = new HashSet<Literal>();
 		Iterator<Literal> testbbit = testbb.iterator();
@@ -201,109 +293,47 @@ public class JasdlBeliefBaseTest extends TestCase{
 		Iterator<Literal> bbit = bb.iterator();
 		while(bbit.hasNext()){
 			actual.add(bbit.next());
-		}
-		
+		}	
 		assertEquals(expected, actual);
 	}
 	
-	
-	/**
-	 * Constructs functor and annotations (including ontology annotation) of a SE-Literal.
-	 * @param sign
-	 * @param functor
-	 * @param annots
-	 * @return
-	 */
-	private Literal constructSELiteral(boolean sign, String functor, String label){
-		Literal l = new Literal(sign, functor);	
-		addO(l, label);
-		return l;
-	}
-	
-	/**
-	 * Adds the ontology annotation with the specified label to the supplied literal
-	 * @param l
-	 */
-	private void addO(Literal l, String label){
-		Structure o = new Structure(SELiteral.ONTOLOGY_ANNOTATION_FUNCTOR);
-		o.addTerm(new Atom(label));
-		l.addAnnot(o);
-	}	
-		
-	/**
-	 * Constructs SE-Literal, adds terms
-	 * recognises special cases (i.e. negated properties)
-	 * otherwise, ensures behaviour is identical to Jason's BB.
-	 * Additionally, tries with "x", then "y" annots added.
-	 * @param sign
-	 * @param functor
-	 * @param annots
-	 * @param is
-	 * @param expected
-	 */
-	private void assertAdd(boolean sign, String functor, List<Term> is, String label){
-		Term[][] annotSets = new Term[][] {new Term[]{}, new Term[] {new Atom("x")}, new Term[] {new Atom("x"), new Atom("y")} };
-		for(Term[] annots : annotSets){		
-			Literal l = constructSELiteral(sign, functor, label);
-			l.addTerms(is);
-			l.addAnnots(Arrays.asList(annots));
-			// special case: reject ~thing and ~nothing
-			if(!sign && (functor.equals("thing") || functor.equals("nothing"))){
-				assertFalse(bb.add(l));return;
-			}
-			//special case: reject negated property assertions
-			if(!sign && l.getArity() == 2){
-				assertFalse(bb.add(l));return;
-			}			
-			//System.out.println("Adding: "+l);		
-			assertEquals(testbb.add((Literal)l.clone()), bb.add((Literal)l.clone())); // cloning necessary since Jason's default bb.add affects l passed to it
+
+
+	private void testAddIndividualAssertion(Literal l){				
+		// special case: reject ~thing and ~nothing
+		if(l.negated() && (l.getFunctor().equals("thing") || l.getFunctor().equals("nothing"))){
+			assertFalse(bb.add(l));return;
 		}
+		//special case: reject negated property assertions
+		if(l.negated() && l.getArity() == 2){
+			assertFalse(bb.add(l));return;
+		}
+		System.out.print("Adding: "+l);
+		//cloning necessary since Jason's default bb.add affects l passed to it
+		boolean expected = testbb.add((Literal)l.clone());
+		boolean actual = bb.add((Literal)l.clone());			
+		assertEquals(expected, actual);
+		System.out.println(" ... Result: "+actual);
 	}
 	
-	
-	/**
-	 * Convenience method for testing class assertion additions (unary literals)
-	 * 
-	 * @param sign
-	 * @param functor
-	 * @param annots
-	 * @param i
-	 * @param expected
-	 */
-	private void assertAddClass(boolean sign, String functor, String i, String label){	
-		assertAdd(sign, functor, Collections.singletonList((Term)new Atom(i)), label);
-	}
-	
-	/**
-	 * Convenience method for testing class assertion additions (unary literals)
-	 * 
-	 * @param sign
-	 * @param functor
-	 * @param annots
-	 * @param i
-	 * @param expected
-	 */
-	private void assertAddDataProperty(boolean sign, String functor, String s, String o, String label){
-		assertAdd(sign, functor, Arrays.asList(new Term[] {new Atom(s), DefaultTerm.parse(o)}), label);
+
+	private void testRemoveIndividualAssertion(Literal l){				
+		// special case: reject ~thing and ~nothing
+		if(l.negated() && (l.getFunctor().equals("thing") || l.getFunctor().equals("nothing"))){
+			assertFalse(bb.remove(l));return;
+		}
+		//special case: reject negated property assertions
+		if(l.negated() && l.getArity() == 2){
+			assertFalse(bb.remove(l));return;
+		}
+		System.out.print("Removing: "+l);
+		boolean expected = testbb.remove((Literal)l.clone());
+		boolean actual = bb.remove((Literal)l.clone());		
+		assertEquals(expected, actual);
+		System.out.println(" ... Result: "+actual);		
 	}	
 	
-	/**
-	 * Convenience method for testing class assertion additions (unary literals)
-	 * 
-	 * @param sign
-	 * @param functor
-	 * @param annots
-	 * @param i
-	 * @param expected
-	 */
-	private void assertAddObjectProperty(boolean sign, String functor, String s, String o, String label){
-		assertAdd(sign, functor, Arrays.asList(new Term[] {new Atom(s), new Atom(o)}), label);
-	}	
 
-
-	@Test
-	public void testRemoveLiteral() {
-	}
 
 	@Test
 	public void testContainsLiteral() {
