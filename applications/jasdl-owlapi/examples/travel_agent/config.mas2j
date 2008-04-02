@@ -40,12 +40,12 @@ MAS dalt08 {
 			 * jasdl_reasonerClass = "uk.ac.manchester.cs.factplusplus.owlapi.Reasoner",
 			 */
 			
-		    jasdl_default_mapping_strategies="jasdl.bridge.alias.DecapitaliseMappingStrategy", // applied to incoming ontologies and those given no automapping
+		    jasdl_default_mapping_strategies="jasdl.bridge.mapping.aliasing.DecapitaliseMappingStrategy", // applied to incoming ontologies and those given no automapping
 
 	       	jasdl_ontologies="travel",
 			jasdl_travel_uri="http://www.dur.ac.uk/t.g.klapiscak/onts/travel.owl",
 			
-			/*jasdl_travel_mapping_strategies="jasdl.bridge.alias.DecapitaliseMappingStrategy",*/ // defaults can be overriden per-ontology here
+			/*jasdl_travel_mapping_strategies="jasdl.bridge.mapping.aliasing.DecapitaliseMappingStrategy",*/ // defaults can be overriden per-ontology here
 			jasdl_travel_mapping_manual="small_beach=beach", // these manual mappings will override any automatic mappings made by strategies,
 						
 			// static trust ratings, mainly for testing purposes - likely to change
@@ -61,17 +61,17 @@ MAS dalt08 {
 	       customer 
        	   customer.asl
 	       [			
-			/* jasdl_default_mapping_strategies="jasdl.bridge.alias.DecapitaliseMappingStrategy", */ // defaults to this
+			/* jasdl_default_mapping_strategies="jasdl.bridge.mapping.aliasing.DecapitaliseMappingStrategy", */ // defaults to this
 			jasdl_useBeliefRevision = "true",
 		   
 	       	jasdl_ontologies="holidays,places",
 			jasdl_holidays_uri="http://www.dur.ac.uk/t.g.klapiscak/onts/travel.owl",
-			jasdl_holidays_mapping_strategies="jasdl.bridge.alias.DecapitaliseMappingStrategy",
+			jasdl_holidays_mapping_strategies="jasdl.bridge.mapping.aliasing.DecapitaliseMappingStrategy",
 			jasdl_holidays_mapping_manual="small_beach=beach, luxuriousHotel=LuxuryHotel", // for demonstration of arbitrary primitive mappings being handled correctly
 				
 			
 			jasdl_places_uri="http://www.dur.ac.uk/t.g.klapiscak/onts/places.owl",
-			jasdl_places_mapping_strategies="jasdl.bridge.alias.DecapitaliseMappingStrategy"
+			jasdl_places_mapping_strategies="jasdl.bridge.mapping.aliasing.DecapitaliseMappingStrategy"
 			]
 	       agentArchClass jasdl.architecture.JasdlAgArch
 	       agentClass jasdl.asSemantics.JasdlAgent

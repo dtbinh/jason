@@ -59,7 +59,7 @@ public class OutgoingPropContProcessingStrategy implements PropContProcessingStr
 		
 		Literal result = l;
 		try{
-			SELiteral sl = agent.getSELiteralFactory().create(l);				
+			SELiteral sl = agent.getSELiteralFactory().construct(l);				
 
 			//	qualify o
 			sl.qualifyOntologyAnnotation();

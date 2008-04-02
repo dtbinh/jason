@@ -1,7 +1,7 @@
 package jasdl.asSemantics.parsing;
 import jasdl.asSemantics.JasdlAgent;
-import jasdl.bridge.alias.Alias;
-import jasdl.bridge.alias.AliasFactory;
+import jasdl.bridge.factory.AliasFactory;
+import jasdl.bridge.mapping.aliasing.Alias;
 import jason.asSyntax.Atom;
 
 import org.semanticweb.owl.expression.OWLEntityChecker;

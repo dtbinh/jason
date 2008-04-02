@@ -1,5 +1,6 @@
-package jasdl.bridge.alias;
+package jasdl.bridge.factory;
 
+import jasdl.bridge.mapping.aliasing.Alias;
 import jasdl.bridge.seliteral.SELiteral;
 import jasdl.util.JasdlException;
 import jason.asSyntax.Atom;

@@ -73,7 +73,7 @@ public class JasdlIncisionFunction implements IncisionFunction{
 		if(axiom.equals(toAddLiteral.createAxiom())){ // hack to get the annotations of the NOT YET ADDED toAdd axiom
 			sources = toAddLiteral.getLiteral().getSources();
 		}else{
-			SELiteral sl = agent.getToSELiteralConverter().convert((OWLIndividualAxiom)axiom); // kernel filter ensures axiom is an OWLIndividualAxiom
+			SELiteral sl = agent.getAxiomToSELiteralConverter().convert((OWLIndividualAxiom)axiom); // kernel filter ensures axiom is an OWLIndividualAxiom
 			sources = sl.getLiteral().getSources();
 		}		
 		agent.getLogger().finest("Sources of "+axiom+"="+sources);

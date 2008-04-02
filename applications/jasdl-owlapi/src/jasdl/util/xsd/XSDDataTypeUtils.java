@@ -17,8 +17,27 @@
  *  along with JASDL.  If not, see <http://www.gnu.org/licenses/>.
  *  
  */
-package jasdl.bridge.alias;
+package jasdl.util.xsd;
 
-public interface MappingStrategy {
-	public String apply(String input);
+
+import java.util.HashMap;
+
+public class XSDDataTypeUtils {
+	private static HashMap<String, XSDDataType> map = new HashMap<String, XSDDataType>();
+	
+	public static boolean isStringType(XSDDataType typ){
+		return (typ == XSDDataType.XSD_TIME || typ == XSDDataType.XSD_STRING || typ == XSDDataType.XSD_DATE || typ == XSDDataType.XSD_DATETIME);
+	}
+	
+	public static boolean isBooleanType(XSDDataType typ){
+		return typ==XSDDataType.XSD_BOOLEAN;
+	}
+	
+	public static XSDDataType get(String name){
+		return map.get(name);
+	}
+	
+	public static void put(String name, XSDDataType xsd){
+		map.put(name, xsd);
+	}
 }

@@ -53,7 +53,7 @@ public class JasdlPlanLibrary extends PlanLibrary{
 	@Override
 	public void add(Plan p) throws JasonException {
 		try{
-			agent.getSELiteralFactory().create(p.getTrigger().getLiteral());
+			agent.getSELiteralFactory().construct(p.getTrigger().getLiteral());
 			super.add(new SEPlan(agent, p));
 		}catch(NotEnrichedException e){
 			super.add(p);
@@ -142,7 +142,7 @@ public class JasdlPlanLibrary extends PlanLibrary{
 	 */
 	public static List<Trigger> getMoreGeneralTriggers(JasdlAgent agent, Trigger te) throws JasdlException{
 		Literal l = te.getLiteral();
-		SELiteral sl = agent.getSELiteralFactory().create(l);
+		SELiteral sl = agent.getSELiteralFactory().construct(l);
 		
 		if(l.negated()){
 			throw new JasdlException("JASDL cannot generalise strongly negated triggers");

@@ -2,10 +2,10 @@ package jasdl.asSemantics;
 
 import static jasdl.util.Common.DELIM;
 import static jasdl.util.Common.strip;
-import jasdl.bridge.alias.Alias;
-import jasdl.bridge.alias.AliasFactory;
-import jasdl.bridge.alias.DecapitaliseMappingStrategy;
-import jasdl.bridge.alias.MappingStrategy;
+import jasdl.bridge.factory.AliasFactory;
+import jasdl.bridge.mapping.aliasing.Alias;
+import jasdl.bridge.mapping.aliasing.DecapitaliseMappingStrategy;
+import jasdl.bridge.mapping.aliasing.MappingStrategy;
 import jasdl.util.JasdlConfigurationException;
 import jasdl.util.JasdlException;
 import jason.asSyntax.Atom;

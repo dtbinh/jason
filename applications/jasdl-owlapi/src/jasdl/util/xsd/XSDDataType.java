@@ -17,13 +17,41 @@
  *  along with JASDL.  If not, see <http://www.gnu.org/licenses/>.
  *  
  */
-package jasdl.bridge.alias;
+package jasdl.util.xsd;
 
 
-public class DecapitaliseMappingStrategy implements MappingStrategy {
+import java.util.HashMap;
 
-	public String apply(String input) {
-		return input.substring(0, 1).toLowerCase() + input.substring(1);
+/**
+ * Maps OWL-API datatype labels to enumeration elements
+ * This functionality should really be part of OWL-API!
+ * TODO: this is by no means yet exhaustive
+ * @author Tom Klapiscak
+ *
+ */
+public enum XSDDataType {
+	XSD_STRING("string"),
+	XSD_DATE("date"),
+	XSD_DATETIME("dateTime"),
+	XSD_TIME("time"),
+	XSD_BOOLEAN("boolean"),
+	XSD_FLOAT("float"),
+	XSD_INT("int"),
+	XSD_DOUBLE("double");
+	
+	private String name;
+	
+	
+	private XSDDataType(String name){
+		this.name = name;
+		XSDDataTypeUtils.put(name, this);
 	}
+	
+	public String toString(){
+		return name;
+	}
+	
 
+	
+	
 }

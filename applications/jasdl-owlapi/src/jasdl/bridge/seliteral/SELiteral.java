@@ -1,8 +1,8 @@
 package jasdl.bridge.seliteral;
 
 import jasdl.asSemantics.JasdlAgent;
-import jasdl.bridge.alias.Alias;
-import jasdl.bridge.alias.AliasFactory;
+import jasdl.bridge.factory.AliasFactory;
+import jasdl.bridge.mapping.aliasing.Alias;
 import jasdl.util.InvalidSELiteralException;
 import jasdl.util.JasdlException;
 import jasdl.util.NotEnrichedException;
@@ -149,7 +149,7 @@ public class SELiteral{
 	 */
 	public OWLIndividualAxiom createAxiom() throws JasdlException{
 		if(axiom == null || !USE_CACHING){
-			axiom = agent.getToAxiomConverter().create(this);
+			axiom = agent.getSELiteralToAxiomConverter().create(this);
 		}
 		return axiom;
 	}
@@ -159,7 +159,7 @@ public class SELiteral{
 	 */
 	public Set<OWLIndividualAxiom> getAxioms() throws JasdlException{
 		if(axioms == null || !USE_CACHING){
-			axioms = agent.getToAxiomConverter().retrieve(this);
+			axioms = agent.getSELiteralToAxiomConverter().retrieve(this);
 		}
 		return axioms;
 	}

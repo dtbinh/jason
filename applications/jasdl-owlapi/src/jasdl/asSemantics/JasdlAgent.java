@@ -9,18 +9,18 @@ import jasdl.bb.revision.BeliefBaseSemiRevisor;
 import jasdl.bb.revision.JasdlIncisionFunction;
 import jasdl.bb.revision.JasdlReasonerFactory;
 import jasdl.bb.revision.TBoxAxiomKernelsetFilter;
-import jasdl.bridge.AllDifferentPlaceholder;
-import jasdl.bridge.ToAxiomConverter;
-import jasdl.bridge.ToSELiteralConverter;
-import jasdl.bridge.alias.Alias;
-import jasdl.bridge.alias.AliasFactory;
-import jasdl.bridge.alias.AliasManager;
-import jasdl.bridge.alias.DefinitionManager;
-import jasdl.bridge.alias.MappingStrategy;
-import jasdl.bridge.label.LabelManager;
-import jasdl.bridge.label.OntologyURIManager;
+import jasdl.bridge.factory.AliasFactory;
+import jasdl.bridge.factory.AxiomToSELiteralConverter;
+import jasdl.bridge.factory.SELiteralFactory;
+import jasdl.bridge.factory.SELiteralToAxiomConverter;
+import jasdl.bridge.mapping.aliasing.Alias;
+import jasdl.bridge.mapping.aliasing.AliasManager;
+import jasdl.bridge.mapping.aliasing.AllDifferentPlaceholder;
+import jasdl.bridge.mapping.aliasing.DefinitionManager;
+import jasdl.bridge.mapping.aliasing.MappingStrategy;
+import jasdl.bridge.mapping.label.LabelManager;
+import jasdl.bridge.mapping.label.OntologyURIManager;
 import jasdl.bridge.seliteral.SELiteral;
-import jasdl.bridge.seliteral.SELiteralFactory;
 import jasdl.util.DuplicateMappingException;
 import jasdl.util.InvalidSELiteralException;
 import jasdl.util.JasdlException;
@@ -57,6 +57,7 @@ import org.semanticweb.owl.inference.OWLReasoner;
 import org.semanticweb.owl.inference.OWLReasonerException;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
+import org.semanticweb.owl.model.OWLDataFactory;
 import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.model.OWLEquivalentClassesAxiom;
@@ -77,8 +78,8 @@ public class JasdlAgent extends JmcaAgent{
 	private AliasManager aliasManager;
 	private LabelManager labelManager;
 	private SELiteralFactory seLiteralFactory;
-	private ToSELiteralConverter toSELiteralConverter;	
-	private ToAxiomConverter toAxiomConverter;
+	private AxiomToSELiteralConverter axiomToSELiteralConverter;	
+	private SELiteralToAxiomConverter SELiteralToAxiomConverter;
 	private OntologyURIManager logicalURIManager;
 	private OntologyURIManager physicalURIManager;
 	private ManchesterOWLSyntaxOWLObjectRendererImpl manchesterObjectRenderer;
@@ -111,8 +112,8 @@ public class JasdlAgent extends JmcaAgent{
 		definitionManager = new DefinitionManager();
 		
 		seLiteralFactory = new SELiteralFactory(this);
-		toAxiomConverter = new ToAxiomConverter(this);
-		toSELiteralConverter = new ToSELiteralConverter(this);
+		SELiteralToAxiomConverter = new SELiteralToAxiomConverter(this);
+		axiomToSELiteralConverter = new AxiomToSELiteralConverter(this);
 		
 		knownAgentNames = new Vector<String>();
 		trustMap = new HashMap<Atom, Float>();
@@ -132,33 +133,6 @@ public class JasdlAgent extends JmcaAgent{
 		// override plan library
 		setPL( new JasdlPlanLibrary(this) );
 		
-	}
-	
-	public void setReasoner(OWLReasoner reasoner){
-		this.reasoner = reasoner;
-	}	
-	
-	public void addKnownAgentName(String name){
-		knownAgentNames.add(name);
-	}
-	
-	public List<String> getKnownAgentNames(){
-		return knownAgentNames;
-	}
-	
-	
-	public void setReasonerLogLevel(org.apache.log4j.Level level){
-		if(reasoner instanceof org.mindswap.pellet.owlapi.Reasoner){
-			org.mindswap.pellet.owlapi.Reasoner pellet = (org.mindswap.pellet.owlapi.Reasoner)reasoner;		
-			Log4JLogger abox_logger = (Log4JLogger)pellet.getKB().getABox().log;
-			abox_logger.getLogger().setLevel(level);
-	
-			Log4JLogger taxonomy_logger = (Log4JLogger)pellet.getKB().getTaxonomy().log;
-			taxonomy_logger.getLogger().setLevel(level);
-	
-			Log4JLogger kb_logger = (Log4JLogger)pellet.getKB().log;
-			kb_logger.getLogger().setLevel(level);
-		}
 	}
 	
 	
@@ -192,7 +166,7 @@ public class JasdlAgent extends JmcaAgent{
 		List<Literal> bels = new Vector<Literal>();		
 		for(OWLOntology ontology : ontologyManager.getOntologies()){
 			for(OWLIndividualAxiom axiom : ontology.getIndividualAxioms()){				
-				Literal l = toSELiteralConverter.convert(axiom).getLiteral();			
+				Literal l = axiomToSELiteralConverter.convert(axiom).getLiteral();			
 				bels.add(l);	
 			}
 		}
@@ -236,7 +210,7 @@ public class JasdlAgent extends JmcaAgent{
 		}else if(beliefToAdd != null){
 			try{				
 				getLogger().fine("Revise: +"+beliefToAdd);	
-				SELiteral sl = getSELiteralFactory().create(beliefToAdd);
+				SELiteral sl = getSELiteralFactory().construct(beliefToAdd);
 				OWLAxiom axiomToAdd = sl.createAxiom();				
 				BeliefBaseSemiRevisor bbrev = new BeliefBaseSemiRevisor(axiomToAdd, getOntologyManager(), new JasdlReasonerFactory(), getLogger());
 				List<OWLAxiom> contractList = bbrev.revise(new TBoxAxiomKernelsetFilter(), new JasdlIncisionFunction(this, sl));
@@ -244,7 +218,7 @@ public class JasdlAgent extends JmcaAgent{
 				// will only have reached here if new belief is accepted.
 				addList.add(beliefToAdd);
 				for(OWLAxiom contract : contractList){
-					removeList.add(toSELiteralConverter.convert((OWLIndividualAxiom)contract).getLiteral());
+					removeList.add(axiomToSELiteralConverter.convert((OWLIndividualAxiom)contract).getLiteral());
 				}
 				revisionApplied = true;
 			}catch(RevisionFailedException e){
@@ -579,6 +553,21 @@ public class JasdlAgent extends JmcaAgent{
 		}
 	}
 	
+	
+	public void setReasonerLogLevel(org.apache.log4j.Level level){
+		if(reasoner instanceof org.mindswap.pellet.owlapi.Reasoner){
+			org.mindswap.pellet.owlapi.Reasoner pellet = (org.mindswap.pellet.owlapi.Reasoner)reasoner;		
+			Log4JLogger abox_logger = (Log4JLogger)pellet.getKB().getABox().log;
+			abox_logger.getLogger().setLevel(level);
+	
+			Log4JLogger taxonomy_logger = (Log4JLogger)pellet.getKB().getTaxonomy().log;
+			taxonomy_logger.getLogger().setLevel(level);
+	
+			Log4JLogger kb_logger = (Log4JLogger)pellet.getKB().log;
+			kb_logger.getLogger().setLevel(level);
+		}
+	}	
+	
 	/**
 	 * *Must* be unique within society!
 	 * @return
@@ -586,19 +575,14 @@ public class JasdlAgent extends JmcaAgent{
 	public String getAgentName(){
 		return getTS().getUserAgArch().getAgName();
 	}
-
 	
 	public List<MappingStrategy> getDefaultMappingStrategies() {
 		return defaultMappingStrategies;
 	}
 
-
-
 	public void setDefaultMappingStrategies(List<MappingStrategy> defaultMappingStrategies) {
 		this.defaultMappingStrategies = defaultMappingStrategies;
 	}
-
-
 
 	public Atom getPersonalOntologyLabel(){
 		return new Atom("self");		
@@ -611,7 +595,6 @@ public class JasdlAgent extends JmcaAgent{
 	public URI getPersonalOntologyURI(Atom label) {
 		return URI.create("http://www.dur.ac.uk/t.g.klapiscak/self"+label+".owl");
 	}	
-
 
 	public AliasManager getAliasManager() {
 		return aliasManager;
@@ -637,8 +620,6 @@ public class JasdlAgent extends JmcaAgent{
 		return definitionManager;
 	}
 
-
-
 	public OWLReasoner getReasoner() {
 		return reasoner;
 	}
@@ -647,12 +628,12 @@ public class JasdlAgent extends JmcaAgent{
 		return seLiteralFactory;
 	}
 	
-	public ToAxiomConverter getToAxiomConverter() {
-		return toAxiomConverter;
+	public SELiteralToAxiomConverter getSELiteralToAxiomConverter() {
+		return SELiteralToAxiomConverter;
 	}
 	
-	public ToSELiteralConverter getToSELiteralConverter() {
-		return toSELiteralConverter;
+	public AxiomToSELiteralConverter getAxiomToSELiteralConverter() {
+		return axiomToSELiteralConverter;
 	}
 
 	public ManchesterOWLSyntaxOWLObjectRendererImpl getManchesterObjectRenderer() {
@@ -666,7 +647,31 @@ public class JasdlAgent extends JmcaAgent{
 	public ManchesterOWLSyntaxDescriptionParser getManchesterURIDescriptionParser() {
 		return manchesterURIDescriptionParser;
 	}
+	
+	public boolean isBeliefRevisionEnabled() {
+		return beliefRevisionEnabled;
+	}
 
+	public void setBeliefRevisionEnabled(boolean beliefRevisionEnabled) {
+		this.beliefRevisionEnabled = beliefRevisionEnabled;
+	}
+	
+	public OWLDataFactory getOWLDataFactory(){
+		return getOntologyManager().getOWLDataFactory();
+	}
+	
+	public void setReasoner(OWLReasoner reasoner){
+		this.reasoner = reasoner;
+	}	
+	
+	public void addKnownAgentName(String name){
+		knownAgentNames.add(name);
+	}
+	
+	public List<String> getKnownAgentNames(){
+		return knownAgentNames;
+	}
+	
 	public void setTrustRating(Atom name, float trust){
 		trustMap.remove(name);
 		trustMap.put(name, trust);
@@ -676,18 +681,6 @@ public class JasdlAgent extends JmcaAgent{
 		return trustMap.get(name);
 	}
 
-
-
-
-
-	public boolean isBeliefRevisionEnabled() {
-		return beliefRevisionEnabled;
-	}
-
-	public void setBeliefRevisionEnabled(boolean beliefRevisionEnabled) {
-		this.beliefRevisionEnabled = beliefRevisionEnabled;
-	}
-	
 	
 	
 

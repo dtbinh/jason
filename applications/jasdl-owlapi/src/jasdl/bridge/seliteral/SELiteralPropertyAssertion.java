@@ -5,7 +5,7 @@ import static jasdl.util.Common.DOMAIN;
 import org.semanticweb.owl.model.OWLIndividual;
 
 import jasdl.asSemantics.JasdlAgent;
-import jasdl.bridge.alias.AliasFactory;
+import jasdl.bridge.factory.AliasFactory;
 import jasdl.util.JasdlException;
 import jason.asSyntax.Literal;
 

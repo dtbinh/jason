@@ -41,7 +41,7 @@ public class JasdlBeliefBase extends DefaultBeliefBase{
 		getLogger().fine("Adding "+l);
 		try{
 
-			SELiteral sl = agent.getSELiteralFactory().create(l); 
+			SELiteral sl = agent.getSELiteralFactory().construct(l); 
 			OWLIndividualAxiom axiom = sl.createAxiom();
 			OWLOntology ontology = sl.getOntology();
 						
@@ -92,7 +92,7 @@ public class JasdlBeliefBase extends DefaultBeliefBase{
 		
 		getLogger().fine("Contracting "+l);
 		try{			
-			SELiteral sl = agent.getSELiteralFactory().create(l);
+			SELiteral sl = agent.getSELiteralFactory().construct(l);
 			OWLOntology ontology = sl.getOntology();
 			OWLIndividualAxiom axiom = sl.createAxiom();	
 			
@@ -157,8 +157,8 @@ public class JasdlBeliefBase extends DefaultBeliefBase{
 		}catch(NotEnrichedException e){			
 			return super.remove(l); // semantically-naive, use standard Jason mechanisms
 		}catch(Exception e){
-			getLogger().warning("Exception caught removing SELiteral "+l+" from belief base: ");
-			e.printStackTrace();
+			getLogger().fine("Exception caught removing SELiteral "+l+" from belief base: ");
+			//e.printStackTrace();
 			return false;
 		}
 	}
@@ -167,7 +167,7 @@ public class JasdlBeliefBase extends DefaultBeliefBase{
 	public Literal contains(Literal l) {	
 		agent.getLogger().fine("Contains: "+l);
 		try {
-			SELiteral sl = agent.getSELiteralFactory().create(l);
+			SELiteral sl = agent.getSELiteralFactory().construct(l);
 			OWLIndividualAxiom axiom = sl.createAxiom();
 			if(sl.getOntology().containsAxiom(axiom)){
 				Iterator<Literal> it = getCandidateBeliefs(l, null);
@@ -184,6 +184,7 @@ public class JasdlBeliefBase extends DefaultBeliefBase{
 		}
 	}	
 	
+
 	
 
 	@Override
@@ -195,10 +196,10 @@ public class JasdlBeliefBase extends DefaultBeliefBase{
 		
 		Set<Literal> relevant = new HashSet<Literal>();
 		try{			
-			SELiteral sl = agent.getSELiteralFactory().create(l);
-			Set<OWLIndividualAxiom> axioms = sl.getAxioms();
+			SELiteral sl = agent.getSELiteralFactory().construct(l);
+			Set<OWLIndividualAxiom> axioms = sl.getAxioms(); // <- really just a wrapper for this method
 			for(OWLIndividualAxiom axiom : axioms){
-				SELiteral found = agent.getToSELiteralConverter().convert(axiom);
+				SELiteral found = agent.getAxiomToSELiteralConverter().convert(axiom);
 				
 				// hack, gets around non-consistent ordering of OWLDifferentIndividualAxiom individuals
 				// -- just check list membership is equivalent (i.e. treat as sets)
@@ -211,9 +212,7 @@ public class JasdlBeliefBase extends DefaultBeliefBase{
 					}
 				}
 				
-				relevant.add(found.getLiteral());
-				
-				
+				relevant.add(found.getLiteral());				
 				
 			}
 			getLogger().fine("... found: "+relevant);
