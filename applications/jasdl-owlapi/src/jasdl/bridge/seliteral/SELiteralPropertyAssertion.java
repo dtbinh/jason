@@ -6,7 +6,7 @@ import org.semanticweb.owl.model.OWLIndividual;
 
 import jasdl.asSemantics.JasdlAgent;
 import jasdl.bridge.factory.AliasFactory;
-import jasdl.util.JasdlException;
+import jasdl.util.exception.JasdlException;
 import jason.asSyntax.Literal;
 
 public abstract class SELiteralPropertyAssertion extends SELiteral{

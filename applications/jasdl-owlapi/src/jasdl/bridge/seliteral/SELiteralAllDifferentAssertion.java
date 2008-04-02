@@ -1,8 +1,8 @@
 package jasdl.bridge.seliteral;
 
 import jasdl.asSemantics.JasdlAgent;
-import jasdl.util.InvalidSELiteralException;
-import jasdl.util.JasdlException;
+import jasdl.util.exception.InvalidSELiteralException;
+import jasdl.util.exception.JasdlException;
 import jason.asSyntax.ListTerm;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Term;

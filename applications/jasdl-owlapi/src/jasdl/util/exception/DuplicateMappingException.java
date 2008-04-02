@@ -17,13 +17,13 @@
  *  along with JASDL.  If not, see <http://www.gnu.org/licenses/>.
  *  
  */
-package jasdl.util;
+package jasdl.util.exception;
 
 import jason.JasonException;
 
 
-public class JasdlConfigurationException extends JasdlException {
-	public JasdlConfigurationException(String message){
+public class DuplicateMappingException extends JasdlException {
+	public DuplicateMappingException(String message){
 		super(message);
 	}
 }

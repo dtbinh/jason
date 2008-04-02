@@ -1,23 +1,25 @@
 package jasdl.asSemantics;
 
 import static jasdl.util.Common.DELIM;
+import static jasdl.util.Common.getCurrentDir;
 import static jasdl.util.Common.strip;
 import jasdl.bridge.factory.AliasFactory;
 import jasdl.bridge.mapping.aliasing.Alias;
 import jasdl.bridge.mapping.aliasing.DecapitaliseMappingStrategy;
 import jasdl.bridge.mapping.aliasing.MappingStrategy;
-import jasdl.util.JasdlConfigurationException;
-import jasdl.util.JasdlException;
+import jasdl.util.exception.JasdlConfigurationException;
+import jasdl.util.exception.JasdlException;
 import jason.asSyntax.Atom;
 import jason.runtime.Settings;
 
 import java.lang.reflect.Constructor;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
+import java.util.logging.Level;
 
-import org.apache.log4j.Level;
 import org.semanticweb.owl.inference.OWLReasoner;
 import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.model.OWLOntology;
@@ -60,17 +62,13 @@ public class JasdlConfigurator {
 	}
 	
 	public void configure(Settings stts) throws JasdlException{
-		try{
-			loadReasoner(stts);
-			loadDefaultMappingStrategies(stts);
-			setUseBeliefRevision(stts);			
-			loadOntologies(stts);
-			applyManualMappings(stts);
-			loadKnownAgents(stts);
-			loadTrustRatings(stts);			
-		}catch(JasdlException e){
-			throw new JasdlException("JASDL agent encountered error during configuration. Reason: "+e);
-		}
+		loadReasoner(stts);
+		loadDefaultMappingStrategies(stts);
+		setUseBeliefRevision(stts);			
+		loadOntologies(stts);
+		applyManualMappings(stts);
+		loadKnownAgents(stts);
+		loadTrustRatings(stts);			
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -89,7 +87,7 @@ public class JasdlConfigurator {
 				throw new JasdlException("Unknown reasoner class: "+reasonerClass);
 			}else{
 				agent.setReasoner(reasoner);
-				agent.setReasonerLogLevel(Level.FATAL);
+				agent.setReasonerLogLevel(org.apache.log4j.Level.FATAL);
 			}
 		}catch (Throwable e) {
 			throw new JasdlException("Error instantiating reasoner "+reasonerClass+". Reason: "+e);
@@ -116,19 +114,30 @@ public class JasdlConfigurator {
 	 * @param stts	.mas2j settings
 	 * @throws JasdlException	if instantiation of an ontology fails
 	 */
-	private void loadOntologies(Settings stts) throws JasdlException{
+	private void loadOntologies(Settings stts) throws JasdlConfigurationException{
 		String[] labels = splitUserParameter( stts, MAS2J_PREFIX + MAS2J_ONTOLOGIES );
 		for(String label : labels){
 			if(reservedOntologyLabels.contains(label)){
-				throw new JasdlException(label+" is a reserved ontology label");
+				throw new JasdlConfigurationException(label+" is a reserved ontology label");
 			}			
 			String _uri = prepareUserParameter( stts, MAS2J_PREFIX + "_" + label + MAS2J_URI );
 			URI uri = null;
 			try {
-				uri = new URI(_uri);
+				try{
+					uri = new URI(_uri);					
+					if(!uri.isAbsolute()){
+						throw new URISyntaxException("", "");
+					}					
+				}catch(URISyntaxException urie){					
+					_uri = "file://"+getCurrentDir()+_uri;					
+					uri = new URI(_uri); // try relative path
+					agent.getLogger().fine("Loaded ontology "+_uri+" from relative uri");
+				}
 				agent.loadOntology(new Atom(label), uri, getMappingStrategies(stts, new Atom(label)));
 			} catch (Exception e) {
-				throw new JasdlException("Unable to instantiate ontology "+_uri+" (\""+label+"\"). Reason: "+e);
+				String msg = "Unable to instantiate ontology \""+_uri+"\" ("+label+")";
+				agent.getLogger().log(Level.SEVERE, msg, e);
+				throw new JasdlConfigurationException(msg+" - "+e);
 			}			
 		}
 	}

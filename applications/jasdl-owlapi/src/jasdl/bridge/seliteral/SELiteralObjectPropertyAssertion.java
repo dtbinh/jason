@@ -3,7 +3,7 @@ package jasdl.bridge.seliteral;
 import static jasdl.util.Common.DOMAIN;
 import static jasdl.util.Common.RANGE;
 import jasdl.asSemantics.JasdlAgent;
-import jasdl.util.JasdlException;
+import jasdl.util.exception.JasdlException;
 import jason.asSyntax.Literal;
 
 import org.semanticweb.owl.model.OWLIndividual;

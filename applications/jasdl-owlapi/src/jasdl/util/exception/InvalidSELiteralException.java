@@ -17,13 +17,13 @@
  *  along with JASDL.  If not, see <http://www.gnu.org/licenses/>.
  *  
  */
-package jasdl.util;
+package jasdl.util.exception;
 
 import jason.JasonException;
 
 
-public class JasdlException extends JasonException {
-	public JasdlException(String message){
+public class InvalidSELiteralException extends JasdlException {
+	public InvalidSELiteralException(String message){
 		super(message);
 	}
 }

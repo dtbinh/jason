@@ -1,7 +1,7 @@
 package jasdl.bridge.mapping.label;
 
 import jasdl.bridge.mapping.MappingManager;
-import jasdl.util.DuplicateMappingException;
+import jasdl.util.exception.DuplicateMappingException;
 import jason.asSyntax.Atom;
 
 import java.util.HashSet;

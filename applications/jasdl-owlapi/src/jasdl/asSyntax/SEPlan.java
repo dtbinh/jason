@@ -20,7 +20,7 @@
 package jasdl.asSyntax;
 
 import jasdl.asSemantics.JasdlAgent;
-import jasdl.util.JasdlException;
+import jasdl.util.exception.JasdlException;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.Plan;
 import jason.asSyntax.Trigger;

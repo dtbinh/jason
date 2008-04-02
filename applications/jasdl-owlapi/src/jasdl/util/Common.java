@@ -19,8 +19,9 @@
  */
 package jasdl.util;
 
-import jason.asSyntax.Literal;
 import jason.asSyntax.Trigger;
+
+import java.io.File;
 
 
 public class Common {
@@ -57,6 +58,19 @@ public class Common {
 		}else{
 			return Trigger.TEOperator.del;
 		}
+	}
+	
+	public static String getCurrentDir()
+	{
+		File dir1 = new File (".");
+		String strCurrentDir = "";
+		try {
+			strCurrentDir = dir1.getCanonicalPath();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		return strCurrentDir;
 	}
 	
 

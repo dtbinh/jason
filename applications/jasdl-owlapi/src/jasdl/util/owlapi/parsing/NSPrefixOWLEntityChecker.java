@@ -1,4 +1,4 @@
-package jasdl.asSemantics.parsing;
+package jasdl.util.owlapi.parsing;
 import jasdl.asSemantics.JasdlAgent;
 import jasdl.bridge.factory.AliasFactory;
 import jasdl.bridge.mapping.aliasing.Alias;
@@ -18,11 +18,11 @@ import org.semanticweb.owl.model.OWLObjectProperty;
  * @author Tom Klapiscak
  *
  */
-public class NSPrefixEntityChecker implements OWLEntityChecker{
+public class NSPrefixOWLEntityChecker implements OWLEntityChecker{
 		
 		private JasdlAgent agent;
 
-		public NSPrefixEntityChecker(JasdlAgent agent){
+		public NSPrefixOWLEntityChecker(JasdlAgent agent){
 			this.agent = agent;
 		}
 

@@ -1,8 +1,6 @@
 package jasdl.asSemantics;
 
 import static jasdl.util.Common.strip;
-import jasdl.asSemantics.parsing.NSPrefixEntityChecker;
-import jasdl.asSemantics.parsing.URIEntityChecker;
 import jasdl.asSyntax.JasdlPlanLibrary;
 import jasdl.bb.JasdlBeliefBase;
 import jasdl.bb.revision.BeliefBaseSemiRevisor;
@@ -21,11 +19,14 @@ import jasdl.bridge.mapping.aliasing.MappingStrategy;
 import jasdl.bridge.mapping.label.LabelManager;
 import jasdl.bridge.mapping.label.OntologyURIManager;
 import jasdl.bridge.seliteral.SELiteral;
-import jasdl.util.DuplicateMappingException;
-import jasdl.util.InvalidSELiteralException;
-import jasdl.util.JasdlException;
-import jasdl.util.NotEnrichedException;
-import jasdl.util.UnknownMappingException;
+import jasdl.util.exception.DuplicateMappingException;
+import jasdl.util.exception.InvalidSELiteralException;
+import jasdl.util.exception.JasdlException;
+import jasdl.util.exception.NotEnrichedException;
+import jasdl.util.exception.UnknownMappingException;
+import jasdl.util.owlapi.parsing.NSPrefixOWLEntityChecker;
+import jasdl.util.owlapi.parsing.URIOWLEntityChecker;
+import jasdl.util.owlapi.rendering.URIOWLObjectRenderer;
 import jason.JasonException;
 import jason.RevisionFailedException;
 import jason.architecture.AgArch;
@@ -66,7 +67,6 @@ import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyChangeException;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyManager;
-import org.semanticweb.owl.util.ShortFormProvider;
 
 import uk.ac.manchester.cs.owl.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
 
@@ -119,16 +119,10 @@ public class JasdlAgent extends JmcaAgent{
 		trustMap = new HashMap<Atom, Float>();
 		
 		manchesterObjectRenderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
-		manchesterObjectRenderer.setShortFormProvider(new ShortFormProvider(){
-			public void dispose() {			
-			}
-			public String getShortForm(OWLEntity entity) {
-				return entity.getURI().toString();
-			}			
-		}); // we want fully qualified entity references
+		manchesterObjectRenderer.setShortFormProvider(new URIOWLObjectRenderer());
 		
-		manchesterNsPrefixDescriptionParser = new ManchesterOWLSyntaxDescriptionParser(ontologyManager.getOWLDataFactory(), new NSPrefixEntityChecker(this));
-		manchesterURIDescriptionParser = new ManchesterOWLSyntaxDescriptionParser(ontologyManager.getOWLDataFactory(), new URIEntityChecker(this));
+		manchesterNsPrefixDescriptionParser = new ManchesterOWLSyntaxDescriptionParser(ontologyManager.getOWLDataFactory(), new NSPrefixOWLEntityChecker(this));
+		manchesterURIDescriptionParser = new ManchesterOWLSyntaxDescriptionParser(ontologyManager.getOWLDataFactory(), new URIOWLEntityChecker(this));
 				
 		// override plan library
 		setPL( new JasdlPlanLibrary(this) );

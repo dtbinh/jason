@@ -1,7 +1,7 @@
 package jasdl.bridge.mapping;
 
-import jasdl.util.DuplicateMappingException;
-import jasdl.util.UnknownMappingException;
+import jasdl.util.exception.DuplicateMappingException;
+import jasdl.util.exception.UnknownMappingException;
 
 import java.util.HashMap;
 import java.util.Set;

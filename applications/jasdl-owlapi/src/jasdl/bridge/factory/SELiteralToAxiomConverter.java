@@ -27,8 +27,8 @@ import jasdl.bridge.seliteral.SELiteralAllDifferentAssertion;
 import jasdl.bridge.seliteral.SELiteralClassAssertion;
 import jasdl.bridge.seliteral.SELiteralDataPropertyAssertion;
 import jasdl.bridge.seliteral.SELiteralObjectPropertyAssertion;
-import jasdl.util.InvalidSELiteralException;
-import jasdl.util.JasdlException;
+import jasdl.util.exception.InvalidSELiteralException;
+import jasdl.util.exception.JasdlException;
 
 import java.util.HashSet;
 import java.util.Set;

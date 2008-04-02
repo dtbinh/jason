@@ -2,7 +2,7 @@ package jasdl.bb.revision;
 
 import jasdl.asSemantics.JasdlAgent;
 import jasdl.bridge.seliteral.SELiteral;
-import jasdl.util.JasdlException;
+import jasdl.util.exception.JasdlException;
 import jason.asSyntax.Atom;
 import jason.asSyntax.ListTerm;
 import jason.asSyntax.Term;

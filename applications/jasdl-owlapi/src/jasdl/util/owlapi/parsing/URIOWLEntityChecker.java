@@ -1,4 +1,4 @@
-package jasdl.asSemantics.parsing;
+package jasdl.util.owlapi.parsing;
 
 import jasdl.asSemantics.JasdlAgent;
 
@@ -18,11 +18,11 @@ import org.semanticweb.owl.model.OWLObjectProperty;
  * @author tom
  *
  */
-public class URIEntityChecker implements OWLEntityChecker{
+public class URIOWLEntityChecker implements OWLEntityChecker{
 
 	private JasdlAgent agent;
 
-	public URIEntityChecker(JasdlAgent agent){
+	public URIOWLEntityChecker(JasdlAgent agent){
 		this.agent = agent;
 	}
 

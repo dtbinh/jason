@@ -20,7 +20,7 @@
 package jasdl.architecture;
 
 import jasdl.asSemantics.JasdlAgent;
-import jasdl.util.JasdlException;
+import jasdl.util.exception.JasdlException;
 import jason.architecture.AgArch;
 import jason.asSemantics.Message;
 import jason.asSyntax.ListTerm;

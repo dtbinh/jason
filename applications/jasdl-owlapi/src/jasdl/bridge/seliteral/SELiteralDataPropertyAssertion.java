@@ -4,10 +4,10 @@ import static jasdl.util.Common.RANGE;
 import static jasdl.util.Common.strip;
 import static jasdl.util.Common.surroundedBy;
 import jasdl.asSemantics.JasdlAgent;
-import jasdl.util.InvalidSELiteralException;
-import jasdl.util.JasdlException;
-import jasdl.util.xsd.XSDDataType;
-import jasdl.util.xsd.XSDDataTypeUtils;
+import jasdl.util.exception.InvalidSELiteralException;
+import jasdl.util.exception.JasdlException;
+import jasdl.util.owlapi.xsd.XSDDataType;
+import jasdl.util.owlapi.xsd.XSDDataTypeUtils;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Term;
 

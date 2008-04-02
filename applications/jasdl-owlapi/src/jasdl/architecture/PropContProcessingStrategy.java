@@ -20,7 +20,7 @@
 package jasdl.architecture;
 
 import jasdl.asSemantics.JasdlAgent;
-import jasdl.util.JasdlException;
+import jasdl.util.exception.JasdlException;
 import jason.asSyntax.Literal;
 
 public interface PropContProcessingStrategy {

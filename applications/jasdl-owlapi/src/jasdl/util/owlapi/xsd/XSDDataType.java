@@ -17,7 +17,7 @@
  *  along with JASDL.  If not, see <http://www.gnu.org/licenses/>.
  *  
  */
-package jasdl.util.xsd;
+package jasdl.util.owlapi.xsd;
 
 
 import java.util.HashMap;

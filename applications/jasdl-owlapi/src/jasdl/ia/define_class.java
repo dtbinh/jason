@@ -21,7 +21,7 @@ package jasdl.ia;
 
 import static jasdl.util.Common.strip;
 import jasdl.asSemantics.JasdlAgent;
-import jasdl.util.JasdlException;
+import jasdl.util.exception.JasdlException;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
