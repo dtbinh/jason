@@ -89,7 +89,7 @@ public class JasdlConfigurator {
 				throw new JasdlException("Unknown reasoner class: "+reasonerClass);
 			}else{
 				agent.setReasoner(reasoner);
-				agent.setReasonerLogLevel(Level.WARN);
+				agent.setReasonerLogLevel(Level.FATAL);
 			}
 		}catch (Throwable e) {
 			throw new JasdlException("Error instantiating reasoner "+reasonerClass+". Reason: "+e);
