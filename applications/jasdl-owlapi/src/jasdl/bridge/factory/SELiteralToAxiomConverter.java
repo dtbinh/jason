@@ -21,7 +21,6 @@ package jasdl.bridge.factory;
 
 import static jasdl.util.Common.RANGE;
 import jasdl.asSemantics.JasdlAgent;
-import jasdl.bb.revision.IndividualAxiomToDescriptionConverter;
 import jasdl.bridge.seliteral.SELiteral;
 import jasdl.bridge.seliteral.SELiteralAllDifferentAssertion;
 import jasdl.bridge.seliteral.SELiteralClassAssertion;
@@ -42,6 +41,8 @@ import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLIndividualAxiom;
 import org.semanticweb.owl.model.OWLObjectProperty;
 import org.semanticweb.owl.model.OWLTypedConstant;
+
+import bebops.common.IndividualAxiomToDescriptionConverter;
 
 
 /**

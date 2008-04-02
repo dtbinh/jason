@@ -1,10 +1,6 @@
 package jasdl.bb;
 
 import jasdl.asSemantics.JasdlAgent;
-import jasdl.bb.revision.BeliefBaseContractor;
-import jasdl.bb.revision.JasdlIncisionFunction;
-import jasdl.bb.revision.JasdlReasonerFactory;
-import jasdl.bb.revision.TBoxAxiomKernelsetFilter;
 import jasdl.bridge.seliteral.SELiteral;
 import jasdl.bridge.seliteral.SELiteralAllDifferentAssertion;
 import jasdl.util.exception.JasdlException;
@@ -31,6 +27,8 @@ import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLIndividualAxiom;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.RemoveAxiom;
+
+import bebops.contraction.BeliefBaseContractor;
 
 public class JasdlBeliefBase extends DefaultBeliefBase{
 	

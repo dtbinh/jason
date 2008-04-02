@@ -84,9 +84,10 @@
 	?ruralArea(somewhere)[o(travel)];
 	
 	
-	+isLocatedAt(x, x)[o(travel)]; // rejected since isLocated at is irreflexive
+	
 	
 	.print("DL-based belief revision is enabled"); // without, the above test-goal will fail, since legacy mechanism simply removes incoming inconsistent beliefs
+	
 	
 	// since the classes destination and and contact are disjoint (and ruralArea is a subclass of destination),
 	// and since we trust ben less than tom, the belief addition below will fail (and tom's assertion above will persist),

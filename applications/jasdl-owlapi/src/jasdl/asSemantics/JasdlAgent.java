@@ -3,10 +3,9 @@ package jasdl.asSemantics;
 import static jasdl.util.Common.strip;
 import jasdl.asSyntax.JasdlPlanLibrary;
 import jasdl.bb.JasdlBeliefBase;
-import jasdl.bb.revision.BeliefBaseSemiRevisor;
-import jasdl.bb.revision.JasdlIncisionFunction;
-import jasdl.bb.revision.JasdlReasonerFactory;
-import jasdl.bb.revision.TBoxAxiomKernelsetFilter;
+import jasdl.bb.JasdlIncisionFunction;
+import jasdl.bb.JasdlReasonerFactory;
+import jasdl.bb.TBoxAxiomKernelsetFilter;
 import jasdl.bridge.factory.AliasFactory;
 import jasdl.bridge.factory.AxiomToSELiteralConverter;
 import jasdl.bridge.factory.SELiteralFactory;
@@ -69,6 +68,8 @@ import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyManager;
 
 import uk.ac.manchester.cs.owl.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRendererImpl;
+import bebops.semirevision.BeliefBaseSemiRevisor;
+import bebops.util.exception.BebopsRevisionFailedException;
 
 public class JasdlAgent extends JmcaAgent{	
 	
@@ -215,8 +216,8 @@ public class JasdlAgent extends JmcaAgent{
 					removeList.add(axiomToSELiteralConverter.convert((OWLIndividualAxiom)contract).getLiteral());
 				}
 				revisionApplied = true;
-			}catch(RevisionFailedException e){
-				throw e; // propagate upwards
+			}catch(BebopsRevisionFailedException e){
+				throw new RevisionFailedException(); // propagate upwards
 			}catch(NotEnrichedException e){
 				// can't perform DL-based belief revision on SN-Literals
 				addList.add(beliefToAdd);
