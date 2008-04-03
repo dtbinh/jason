@@ -15,7 +15,7 @@ import org.semanticweb.owl.model.OWLIndividualAxiom;
 
 import bebops.common.IncisionFunction;
 
-public class JasdlIncisionFunction implements IncisionFunction{	
+public class JasdlIncisionFunction extends IncisionFunction{	
 	
 
 	private JasdlAgent agent;
@@ -39,23 +39,21 @@ public class JasdlIncisionFunction implements IncisionFunction{
 	 * Currently calculated using ASSERTED source annotations only.
 	 * No source annotation is taken as trust = 0;
 	 */
-	public Set<OWLAxiom> apply(Set<Set<OWLAxiom>> kernelset) {
+	public Set<OWLAxiom> applyToOne(Set<OWLAxiom> akernel){
 		try{
 			Set<OWLAxiom> chosen = new HashSet<OWLAxiom>();
-			for(Set<OWLAxiom> akernel : kernelset){			
-				if(!akernel.isEmpty()){
-					OWLAxiom leastTrusted = null; // guaranteed to take a value 
-					float minTrustRating = 1f;					
-					for(OWLAxiom axiom : akernel){
-						float trustRating = getTrustRating(axiom);
-						agent.getLogger().finest("Trust rating of "+axiom+"="+trustRating);
-						if(trustRating <= minTrustRating){
-							minTrustRating = trustRating;
-							leastTrusted = axiom;
-						}
+			if(!akernel.isEmpty()){
+				OWLAxiom leastTrusted = null; // guaranteed to take a value 
+				float minTrustRating = 1f;					
+				for(OWLAxiom axiom : akernel){
+					float trustRating = getTrustRating(axiom);
+					agent.getLogger().finest("Trust rating of "+axiom+"="+trustRating);
+					if(trustRating <= minTrustRating){
+						minTrustRating = trustRating;
+						leastTrusted = axiom;
 					}
-					chosen.add(leastTrusted);
-				}				
+				}
+				chosen.add(leastTrusted);
 			}
 			return chosen;
 		}catch(Exception e){
@@ -66,6 +64,7 @@ public class JasdlIncisionFunction implements IncisionFunction{
 	
 	/**
 	 * Currently returns the trust rating of the most trusted source. Future work will look at better ways of calculating this.
+	 * TODO: Essentially duplicating work here. Annotation gathering (performed by AxiomToSELiteralConverter) requires axiom-pinponting - so does contraction.
 	 * @param axiom
 	 * @return
 	 * @throws JasdlException

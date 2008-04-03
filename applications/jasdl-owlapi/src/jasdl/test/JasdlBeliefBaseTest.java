@@ -165,7 +165,10 @@ public class JasdlBeliefBaseTest extends TestCase{
 	 */
 	private static int NUM_ENTITIES_TEST_ADD = 3;
 	@Test
-	public void testAddLiteral() throws Exception{		
+	public void testAddLiteral() throws Exception{
+		// ensure annotation gathering disabled for this test - we are only checking handling of annotation additions is correct
+		agent.setAnnotationGatheringEnabled(false);
+		
 		Atom[][] annotSets = new Atom[][] {new Atom[]{}, new Atom[] {new Atom("x")}, new Atom[] {new Atom("x"), new Atom("y")} }; // TODO: No real reason to check annotation handling for ALL types of entity - exactly the same code is used
 		for(OWLOntology ontology : agent.getOntologyManager().getOntologies()){	// test against all known ontologies
 			for(int run=0; run<=1; run++){	// run twice to ensure duplicate additions are rejected

@@ -19,12 +19,12 @@
  */
 
 !start(total).
-!start(ubb1).!example_UBB_1.!end(ubb1).
-!start(ubb2).!example_UBB_2.!end(ubb2).
+!start(ubb1).!example_UBB.!end(ubb1).
+!start(ubb2).!example_brf.!end(ubb2).
 !start(qbb).!example_QBB.!end(qbb).
 !start(rpp).!example_RPP.!end(rpp).
 !start(all_different).!example_all_different.!end(all_different).
-//!example_annotation_gathering.
+!start(annnotation_gathering).!example_annotation_gathering.!end(annnotation_gathering).
 !start(ksaa).!example_KSAA.!end(ksaa).
 //!end(total) is within example_KSAA_complete to allow inter-agent communication to finish
 
@@ -42,9 +42,9 @@
 	.print("Execution time for counter ",A,": ",TotalTime,"s").
 
 @example_ubb_1[atomic]
-+!example_UBB_1
++!example_UBB
 	<-
-	.print("Example: Updating Belief Base 1");
+	.print("Example: Updating Belief Base");
 	+hotel(hilton)[o(travel)];						// hilton is a hotel
 	+hasRating(hilton, threeStarRating)[o(travel)];	// hilton has three-star rating
 	+town(london)[o(travel)];
@@ -58,12 +58,23 @@
 	+museums(scienceMuseum)[o(travel)];
 	+hasActivity(london, scienceMuseum)[o(travel)];	
 	+hotel(travel_lodge)[o(travel)];
-	.print("Completed: Updating Belief Base 1").
+	.print("Completed: Updating Belief Base").
+
+@example_brf[atomic]
++!example_brf
+	<-
+	jasdl.ia.is_belief_revision_enabled(true);
+	!example_brf_continue.
 	
-@example_ubb_2[atomic]
-+!example_UBB_2
+@example_brf_fail[atomic]
+-!example_brf
+	<-
+	.print("Belief revision feature disabled, skipping").
+	
+@example_brf_continue[atomic]
++!example_brf_continue
 	<-	
-	.print("Example: Updating Belief Base 2");	
+	.print("Example: Belief Revision");	
 	
 	jasdl.ia.define_class(tiny, "travel:urbanArea and travel:hasActivity max 1 travel:activity");
 	+tiny(newcastle)[o(self), source(tom)];	
@@ -83,25 +94,19 @@
 	+ruralArea(somewhere)[o(travel), source(tom)];
 	?ruralArea(somewhere)[o(travel)];
 	
-	
-	
-	
-	.print("DL-based belief revision is enabled"); // without, the above test-goal will fail, since legacy mechanism simply removes incoming inconsistent beliefs
-	
-	
 	// since the classes destination and and contact are disjoint (and ruralArea is a subclass of destination),
 	// and since we trust ben less than tom, the belief addition below will fail (and tom's assertion above will persist),
 	// thus failing the whole plan.
 	+contact(somewhere)[o(travel), source(ben)];
 	
-	.print("Failed: Updating Belief Base 2").
+	.print("Failed: Belief Revision").
 
-@example_UBB_2_failure[atomic]
--!example_UBB_2
+@example_brf_continue_fail[atomic]
+-!example_brf_continue
 	<-
 	// Notice this does not hold, since belief revision rejected the less trusted assertion made by ben.
 	?~contact(somewhere)[o(travel)];
-	.print("Completed: Updating Belief Base 2").
+	.print("Completed: Belief Revision").
 	
 @example_qbb[atomic, breakpoint]
 +!example_QBB
@@ -157,18 +162,22 @@
 @example_all_different[atomic]
 +!example_all_different
 	<-
-	.print("Example: all_different assertion");	
+	
+	
+	.print("Example: all_different assertion");
 	+destination(butlins)[o(travel)];
 	+hotel(butlins_hotel)[o(travel)];
 	+hasAccommodation(butlins, butlins_hotel)[o(travel)];	
 	+yoga(butlins_yoga)[o(travel)];
-	+sunbathing(butlins_sunbathing)[o(travel)];		
+	+sunbathing(butlins_sunbathing)[o(travel)];	
 	+hasActivity(butlins, butlins_yoga)[o(travel)];
+	//jasdl.ia.all_different([butlins_yoga, butlins_sunbathing], travel);	- DEPRECATED (see below)	
 	+hasActivity(butlins, butlins_sunbathing)[o(travel)];	
-	//jasdl.ia.all_different([butlins_yoga, butlins_sunbathing], travel);	- DEPRECATED (see below)
-	+all_different([butlins_yoga, butlins_sunbathing])[o(self), something]; // all_different now represented as an se-literal. We can now query, inspect and send these assertions
+	+all_different([butlins_yoga, butlins_sunbathing])[o(self)]; // all_different now represented as an se-literal. We can now query, inspect and send these assertions
+	
 	// Query below will not succeed unless butlins_yoga and butlins_sunbathing are different individuals since family destination requires min 2 *different* activities.
 	// Note: OWL doesn't make UNA and since these individuals do not belong to disjoint classes, therefore they must be explicitly asserted as different.
+	
 	?familyDestination(butlins)[o(travel)];
 	?all_different([butlins_yoga, butlins_sunbathing, hilton])[o(self)];
 	/* ?all_different([hilton, fourSeasons])[o(travel)]; */  // Will fail, since hilton and fourSeasons cannot be established as distinct
@@ -177,6 +186,17 @@
 	
 @example_annotation_gathering[atomic]
 +!example_annotation_gathering
+	<-
+	jasdl.ia.is_annotation_gathering_enabled(true); // why does True not fail immediately? possible Jason bug?
+	!example_annotation_gathering_continue.
+	
+@example_annotation_gathering_fail[atomic]
+-!example_annotation_gathering
+	<-
+	.print("Annotation gathering feature disabled, skipping").
+
+@example_annotation_gathering_continue[atomic]
++!example_annotation_gathering_continue
 	<-
 	.print("Example: annotation gathering");
 	+ruralArea(kingsworthy)[o(travel), annotation];
@@ -190,9 +210,10 @@
 	+urbanArea(x)[o(travel), source(tom)];
 	+ruralArea(y)[o(travel), source(ben)];
 	// because knowledge from tom and ben contributed to the inference that x and y are distinct
-	?all_different([x,y])[o(travel), source(tom), source(ben)]; 
+	?all_different([x,y])[o(self), source(tom), source(ben)]; 
 	
 	// notice "something" annotation is gathered (added in !example_all_different) here since it all_different assertion contributes to this inference
+	+all_different([butlins_yoga, butlins_sunbathing])[o(self), something];
 	?familyDestination(butlins)[o(travel), something]; 
 	
 	.print("Complete: annotation gathering").

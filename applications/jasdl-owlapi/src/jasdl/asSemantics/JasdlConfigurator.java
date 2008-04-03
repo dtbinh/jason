@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
 
+import org.mindswap.pellet.PelletOptions;
 import org.semanticweb.owl.inference.OWLReasoner;
 import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.model.OWLOntology;
@@ -34,12 +35,13 @@ public class JasdlConfigurator {
 	public static String MAS2J_TRUSTRATING				= "_trustRating";
 	public static String MAS2J_KNOWNAGENTS				= "_knownAgents";
 	public static String MAS2J_USEBELIEFREVISION		= "_useBeliefRevision";
+	public static String MAS2J_USEANNOTATIONGATHERING	= "_useAnnotationGathering";
 	public static String MAS2J_REASONERCLASS			= "_reasonerClass";
 	
 	public static List<MappingStrategy> DEFAULT_MAPPING_STRATEGIES = Arrays.asList( new MappingStrategy[] { new DecapitaliseMappingStrategy()} );
 	public static String DEFAULT_REASONER_CLASS = "org.mindswap.pellet.owlapi.Reasoner";
 	public static boolean DEFAULT_USEBELIEFREVISION = false;
-	
+	public static boolean DEFAULT_USEANNOTATIONGATHERING = false;
 	
 	
 	/**
@@ -65,6 +67,7 @@ public class JasdlConfigurator {
 		loadReasoner(stts);
 		loadDefaultMappingStrategies(stts);
 		setUseBeliefRevision(stts);			
+		setUseAnnotationGathering(stts);
 		loadOntologies(stts);
 		applyManualMappings(stts);
 		loadKnownAgents(stts);
@@ -107,6 +110,16 @@ public class JasdlConfigurator {
 			agent.setBeliefRevisionEnabled(DEFAULT_USEBELIEFREVISION);
 		}
 	}
+	
+	private void setUseAnnotationGathering(Settings stts) throws JasdlException{
+		try{
+			// set whether to use belief revision or not
+			String useAnnotationGathering = prepareUserParameter(stts, MAS2J_PREFIX + MAS2J_USEANNOTATIONGATHERING);
+			agent.setAnnotationGatheringEnabled(Boolean.parseBoolean(useAnnotationGathering));
+		}catch(JasdlConfigurationException e){
+			agent.setAnnotationGatheringEnabled(DEFAULT_USEANNOTATIONGATHERING);
+		}
+	}	
 	
 	
 	/**

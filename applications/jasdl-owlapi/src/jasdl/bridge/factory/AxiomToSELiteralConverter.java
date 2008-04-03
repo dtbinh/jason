@@ -1,6 +1,8 @@
 package jasdl.bridge.factory;
 
 import jasdl.asSemantics.JasdlAgent;
+import jasdl.bb.JasdlReasonerFactory;
+import jasdl.bb.TBoxAxiomKernelsetFilter;
 import jasdl.bridge.mapping.aliasing.Alias;
 import jasdl.bridge.mapping.aliasing.AllDifferentPlaceholder;
 import jasdl.bridge.seliteral.SELiteral;
@@ -17,18 +19,25 @@ import jason.asSyntax.Term;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
+import java.util.logging.Logger;
 
+import org.semanticweb.owl.inference.OWLReasonerException;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLAxiomAnnotationAxiom;
 import org.semanticweb.owl.model.OWLClassAssertionAxiom;
 import org.semanticweb.owl.model.OWLConstant;
 import org.semanticweb.owl.model.OWLDataPropertyAssertionAxiom;
 import org.semanticweb.owl.model.OWLDifferentIndividualsAxiom;
+import org.semanticweb.owl.model.OWLException;
 import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLIndividualAxiom;
 import org.semanticweb.owl.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owl.model.OWLOntologyChangeException;
+import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLTypedConstant;
+
+import bebops.pinpointing.KernelOperator;
 
 
 /**
@@ -50,7 +59,8 @@ public class AxiomToSELiteralConverter {
 	 */
 	private JasdlAgent agent;
 	
-	public AxiomToSELiteralConverter(JasdlAgent agent){
+	
+	public AxiomToSELiteralConverter(JasdlAgent agent) throws OWLReasonerException, OWLOntologyCreationException, OWLOntologyChangeException{
 		this.agent = agent;
 	}
 	
@@ -59,16 +69,50 @@ public class AxiomToSELiteralConverter {
 	 * TODO: Shift to a factory?
 	 * @param sl
 	 */
-	public static List<Term> getAssertedAnnotations(OWLAxiom axiom, OWLOntology ontology){
+	public List<Term> getAssertedAnnotations(OWLAxiom axiom){
 		List<Term> result = new Vector<Term>();
-		// get annotations
-		Set<OWLAxiomAnnotationAxiom> annotAxioms = axiom.getAnnotationAxioms(ontology);
-		for(OWLAxiomAnnotationAxiom annotAxiom : annotAxioms){ // remember, possibly semantically-naive payload!
-			Term annot = Literal.parse(annotAxiom.getAnnotation().getAnnotationValueAsConstant().getLiteral());
-			result.add(annot);
+		// get annotations from all known ontologies
+		for(OWLOntology ontology : agent.getOntologyManager().getOntologies()){
+			Set<OWLAxiomAnnotationAxiom> annotAxioms = axiom.getAnnotationAxioms(ontology);
+			for(OWLAxiomAnnotationAxiom annotAxiom : annotAxioms){ // remember, possibly semantically-naive payload!
+				Term annot = Literal.parse(annotAxiom.getAnnotation().getAnnotationValueAsConstant().getLiteral());
+				result.add(annot);
+			}
 		}
 		return result;
 	}
+	
+	public List<Term> getInferredAnnotations(OWLAxiom axiom) throws JasdlException{
+		try {
+			List<Term> annots = new Vector<Term>();
+			KernelOperator kernelOperator = new KernelOperator(agent.getOntologyManager(), new JasdlReasonerFactory());			
+			//Set<OWLAxiom> supportingAxioms = OWLReasonerAdapter.flattenSetOfSets((kernelOperator.apply(axiom, true)));
+			Set<OWLAxiom> supportingAxioms = (new TBoxAxiomKernelsetFilter()).applyToOne((kernelOperator.applySingle(axiom, true)));
+			getLogger().finest("Explanation for "+axiom+": "+supportingAxioms);
+			for(OWLAxiom supportingAxiom : supportingAxioms){
+				annots.addAll(getAssertedAnnotations(supportingAxiom));
+			}
+			getLogger().finest("Annotations: "+annots);
+			return annots;
+		} catch (OWLException e) {
+			throw new JasdlException("Annotation gathering failed for "+axiom, e);
+		}
+	}
+	
+	
+	/**
+	 * Utility method to get the annotations of an axiom as an array of terms within the ontology referenced by alias
+	 * @param alias
+	 * @param axiom
+	 * @return
+	 * @throws UnknownMappingException
+	 */
+	private Term[] getAnnots(Alias alias, OWLAxiom axiom) throws JasdlException{	
+		List<Term> annots = getAssertedAnnotations(axiom);
+		if(agent.isAnnotationGatheringEnabled()) annots.addAll(getInferredAnnotations(axiom)); // optional, experimental feature
+		return (Term[])annots.toArray(new Term[annots.size()]);
+	}		
+	
 	
 	
 	/**
@@ -176,18 +220,10 @@ public class AxiomToSELiteralConverter {
 		return agent.getSELiteralFactory().construct(alias, is, getAnnots(alias, axiom));
 	}
 	
-	/**
-	 * Utility method to get the annotations of an axiom as an array of terms within the ontology referenced by alias
-	 * @param alias
-	 * @param axiom
-	 * @return
-	 * @throws UnknownMappingException
-	 */
-	private Term[] getAnnots(Alias alias, OWLAxiom axiom) throws UnknownMappingException{
-		OWLOntology ontology = agent.getLabelManager().getRight(alias.getLabel());	
-		List<Term> collection = getAssertedAnnotations(axiom, ontology);
-		return (Term[])collection.toArray(new Term[collection.size()]);
-	}	
+	public Logger getLogger(){
+		return agent.getLogger();
+	}
+
 	
 
 }

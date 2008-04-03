@@ -2,11 +2,15 @@
 	<property name="jason.dir" 	value="../.."/>
 	<property name="apps.dir"	value="${jason.dir}/applications"/>
 	<property name="jmca.dir" 	value="${apps.dir}/jmca"/>
+	<property name="bebops.dir" 	value="${apps.dir}/bebops"/>
+	<property name="bebops.jar" 	value="${bebops.dir}/lib/bebops.jar"/>
 	<property name="asunit.dir" 	value="${apps.dir}/as-unit-test"/>
 	<property name="source.dir" 	value="${basedir}/src" />
 	<property name="build.dir" 	value="${basedir}/bin" />
 	<property name="apidocs.dir" 	value="${basedir}/doc/api" />
-	<property name="jar.file" 	value="${basedir}/lib/jasdl.jar" />
+	<property name="lib.dir" 	value="${basedir}/lib" />
+	<property name="jasdl.jar" 	value="${lib.dir}/jasdl.jar" />
+	
 	
 
 	<path id="project.classpath">
@@ -26,21 +30,27 @@
 	<target name="init">
 		<tstamp/>
 		<mkdir dir="${build.dir}"/>
+		<available file="${bebops.dir}" type="dir" property="bebops.available"/>
 	</target>
 
-	<target name="compile" depends="init">
+	<target name="bebops" depends="init" if="bebops.available">
+		<ant dir="${bebops.dir}" inheritAll="false"/>
+		<copy file="${bebops.jar}" todir="${lib.dir}"/>
+	</target>
+
+	<target name="compile" depends="init, bebops">
 		<javac srcdir="src" destdir="${build.dir}" debug="true" deprecation="true" optimize="true" nowarn="true" source="1.5" target="1.5">
 			<classpath refid="project.classpath" />
 		</javac>
 	</target>
 
 	<target name="jar" depends="compile">
-		<jar destfile="${jar.file}" basedir="./bin" includes="**/*.class"/>
+		<jar destfile="${jasdl.jar}" basedir="./bin" includes="**/*.class"/>
 	</target>
 
 	<target name="clean">
 		<delete dir="${build.dir}"/>
-		<delete file="${jar.file}"/>
+		<delete file="${jasdl.jar}"/>
 		<delete dir="${apidocs.dir}"/>
 	</target>
 

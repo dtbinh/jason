@@ -45,7 +45,8 @@ public class JasdlBeliefBase extends DefaultBeliefBase{
 						
 			boolean containsAxiom = ontology.containsAxiom(axiom);
 			if(!containsAxiom){
-				agent.getOntologyManager().applyChange(new AddAxiom(ontology, axiom));	
+				agent.getOntologyManager().applyChange(new AddAxiom(ontology, axiom));
+				agent.refreshReasoner();
 			}
 			
 			boolean containsAllAnnots = true;
@@ -55,13 +56,16 @@ public class JasdlBeliefBase extends DefaultBeliefBase{
 				if(!ontology.containsAxiom(annotAxiom)){
 					containsAllAnnots = false;
 					agent.getOntologyManager().applyChange(new AddAxiom(ontology, annotAxiom));
+					agent.refreshReasoner();
 				}
-			}			
+			}
 			
-			if(!containsAxiom || !containsAllAnnots){
-				agent.refreshReasoner();			
-				if(!agent.isBeliefRevisionEnabled()){ // if brf disabled, resort to legacy consistency maintenance mechanism 
-					if(!agent.getReasoner().isConsistent(ontology)){
+			
+			
+			if(!containsAxiom || !containsAllAnnots){				
+				if(!agent.isBeliefRevisionEnabled()){ // if brf disabled, resort to legacy consistency maintenance mechanism 					
+					if(!agent.isBBConsistent()){
+						getLogger().info("legacy consistency assurance: rejected "+axiom);
 						RemoveAxiom rem = new RemoveAxiom(ontology, axiom);
 						agent.getOntologyManager().applyChange(rem);
 						agent.refreshReasoner();
@@ -191,6 +195,8 @@ public class JasdlBeliefBase extends DefaultBeliefBase{
 		l.apply(un);
 		
 		getLogger().fine("Getting relevancies for "+l);
+		
+		
 		
 		Set<Literal> relevant = new HashSet<Literal>();
 		try{			

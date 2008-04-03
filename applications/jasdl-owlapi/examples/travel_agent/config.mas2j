@@ -32,6 +32,7 @@ MAS dalt08 {
        	   travel_agent.asl
 	       [			
 			jasdl_useBeliefRevision = "true", // use experimental DL-based belief revision mechanism
+			jasdl_useAnnotationGathering = "true", // use experimental annotation gathering mechanism
 			
 			/*
 			 * To use FaCT++, set the below. Must have libFaCTPlusPlusJNI.so in /usr/lib (or the equivalent for Mac or Windows)

@@ -98,10 +98,12 @@ public class JasdlAgent extends JmcaAgent{
 	private HashMap<Atom, Float> trustMap;
 	
 	private boolean beliefRevisionEnabled;
+	private boolean annotationGatheringEnabled;
 	private List<MappingStrategy> defaultMappingStrategies = JasdlConfigurator.DEFAULT_MAPPING_STRATEGIES;
 
 	
-	public JasdlAgent(){
+	
+	public JasdlAgent() throws Exception{
 		super();
 		
 		// instantiate managers
@@ -160,7 +162,7 @@ public class JasdlAgent extends JmcaAgent{
 	public List<Literal> getABoxState() throws JasdlException{
 		List<Literal> bels = new Vector<Literal>();		
 		for(OWLOntology ontology : ontologyManager.getOntologies()){
-			for(OWLIndividualAxiom axiom : ontology.getIndividualAxioms()){				
+			for(OWLIndividualAxiom axiom : ontology.getIndividualAxioms()){	
 				Literal l = axiomToSELiteralConverter.convert(axiom).getLiteral();			
 				bels.add(l);	
 			}
@@ -184,10 +186,12 @@ public class JasdlAgent extends JmcaAgent{
 
 	public List<Literal>[] brf(Literal beliefToAdd, Literal beliefToDel, Intention i)  throws RevisionFailedException {
 		// TODO: what annotations should revision contractions contain? all! (or none? - same effect)
+		
 		// No! the same. -a[x] only undermines assertions leading to a[x]!
 		// if we are performing belief-revision all annotations will be gathered (shortcut - use none?) ensuring axiom will be obliterated
 		// annotations never solely lead to conflicts.
 		
+		// TODO: these is a bug hiding in this somewhere. Using below causes strange failures
 		if(!isBeliefRevisionEnabled()){ // if experimental feature is disabled
 			return super.brf(beliefToAdd, beliefToDel, i);
 		}
@@ -210,13 +214,19 @@ public class JasdlAgent extends JmcaAgent{
 				BeliefBaseSemiRevisor bbrev = new BeliefBaseSemiRevisor(axiomToAdd, getOntologyManager(), new JasdlReasonerFactory(), getLogger());
 				List<OWLAxiom> contractList = bbrev.revise(new TBoxAxiomKernelsetFilter(), new JasdlIncisionFunction(this, sl));
 				
-				// will only have reached here if new belief is accepted.
-				addList.add(beliefToAdd);
+				
 				for(OWLAxiom contract : contractList){
 					removeList.add(axiomToSELiteralConverter.convert((OWLIndividualAxiom)contract).getLiteral());
 				}
-				revisionApplied = true;
+				if(!removeList.isEmpty()){
+					getLogger().info("brf: contracted "+removeList);
+					revisionApplied = true;						
+				}
+				
+				addList.add(beliefToAdd); // will only reach here if belief accepted (or bef is disabled)
+				
 			}catch(BebopsRevisionFailedException e){
+				getLogger().info("brf: rejected "+e.getMessage());
 				throw new RevisionFailedException(); // propagate upwards
 			}catch(NotEnrichedException e){
 				// can't perform DL-based belief revision on SN-Literals
@@ -233,6 +243,7 @@ public class JasdlAgent extends JmcaAgent{
 		
 		// Need to perform removals before additions so our ontology instance never becomes inconsistent		
 		for(Literal removed : removeList){
+			
 			boolean ok = false;
 			if(revisionApplied){
 				ok = true;
@@ -246,7 +257,8 @@ public class JasdlAgent extends JmcaAgent{
 	            }
 	            ok = believes(removed, u);
 	            if(ok) removed.apply(u);
-			}			
+			}	
+				
             if(ok){	
 				if(getBB().remove(removed)){
 					if(toReturn == null){
@@ -545,7 +557,8 @@ public class JasdlAgent extends JmcaAgent{
 			}
 		} catch (OWLReasonerException e) {
 			throw new JasdlException("Unable to refresh reasoner. Reason: "+e);
-		}
+		}			
+
 	}
 	
 	
@@ -561,7 +574,23 @@ public class JasdlAgent extends JmcaAgent{
 			Log4JLogger kb_logger = (Log4JLogger)pellet.getKB().log;
 			kb_logger.getLogger().setLevel(level);
 		}
-	}	
+	}
+	
+	/**
+	 *  For some reason, use of pellet's isConsistent(OWLOntology) method causes strange behaviour.
+	 *  So we wrap it's isConsistent() method here.
+	 *  TODO: resolve this issue properly
+	 * @return
+	 * @throws JasdlException
+	 */
+	public boolean isBBConsistent() throws JasdlException{
+		if(getReasoner() instanceof org.mindswap.pellet.owlapi.Reasoner){
+			return((org.mindswap.pellet.owlapi.Reasoner)getReasoner()).isConsistent();
+		}else{
+			//TODO: FaCT++
+			throw new JasdlException("isBBConsistent not implemented for FaCT++ reasoner");
+		}
+	}
 	
 	/**
 	 * *Must* be unique within society!
@@ -676,6 +705,19 @@ public class JasdlAgent extends JmcaAgent{
 		return trustMap.get(name);
 	}
 
+
+
+	public boolean isAnnotationGatheringEnabled() {
+		return annotationGatheringEnabled;
+	}
+
+
+
+	public void setAnnotationGatheringEnabled(boolean annotationGatheringEnabled) {
+		this.annotationGatheringEnabled = annotationGatheringEnabled;
+	}
+
+	
 	
 	
 
