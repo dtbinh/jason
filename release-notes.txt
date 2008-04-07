@@ -1,28 +1,32 @@
--------------
-version 1.0.2
--------------
+-----------
+version 1.1
+-----------
 
 New features
-. Performance improvements: in general, an application runs 30%
+. Performance improvements: in general, applications run 30%
   faster.
 
 . Arithmetic functions: math.abs, math.max, ...
   see doc/index.html and demo/function for more information
 
-. Compiler warns about singleton variables in plans and rules
-  (see plugin options to disable this feature)
+. Compiler warns about "singleton variables" in plans and rules
+  (see plugin options to disable this feature). If you don't use
+  anonymous variables for logical variables whose contents will
+  not be used, you may want to disable this feature.
 
 . Terms can be logical expressions, as in the following
   example of .findall usage:
      .findall(X, (a(X) & X > 10), L)
 
-. A list of goals can be sent by achieve performative:
+. A list of goals can be sent with the "achieve" performative:
      .send(bob,achieve,[g1,g2,g3])
+  Note that each will become a separate intention of bob (if
+  the message is accepted).
 
 New example:
-. the Jason team used in the Agent Contest 2007 was added in the
-  examples (directory gold-miners-II)
-. a GUI is added in the IPD example
+. the Jason team used in the Agent Contest 2007 was added to the
+  examples (folder gold-miners-II)
+. a GUI was added to the IPD example
 
 New demo:
 . function: shows how to create new arithmetic functions.
@@ -32,12 +36,12 @@ New internal actions:
 . .union, .intersection and .difference of sets.
 
 Bugs fixed:
-. the internal action .concat does not clone the lists properly
-. +?b(X) plans does not "return" the X value
-. +!A catch events like +p
-. JDBC belief base does not work with null values
-. The MAS does not stop running when the "stop" button is pressed
-. The parser allows to mix initial beliefs and goals with plans.
+. the internal action .concat did not clone the lists properly
+. +?b(X) plans did not "return" the X value (bug in 1.0.1 only)
+. +!A used to catch events of the form +p
+. JDBC belief base did not work with null values
+. The MAS did not stop running when the "stop" button is pressed
+. The parser allowed mixing initial beliefs and goals with plans.
 
 
 -------------
