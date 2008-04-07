@@ -20,8 +20,8 @@ New features
 
 . A list of goals can be sent with the "achieve" performative:
      .send(bob,achieve,[g1,g2,g3])
-  Note that each will become a separate intention of bob (if
-  the message is accepted).
+  Note that each goal will become a separate intention of bob 
+  (if the message is accepted).
 
 New example:
 . the Jason team used in the Agent Contest 2007 was added to the
