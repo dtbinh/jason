@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: JasonIDE Plug-in
 Bundle-SymbolicName: net.sourceforge.jasonide;singleton:=true
-Bundle-Version: 1.0.1
+Bundle-Version: 1.1.1
 Bundle-Activator: net.sourceforge.jasonide.Activator
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
