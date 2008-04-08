@@ -160,7 +160,9 @@ public class ACProxy extends ACAgent implements Runnable {
     		lpos.addTerm(new NumberTermImpl(step));
 			percepts.add(lpos);
 
-			            int enemyId = 1;
+			arq.getModel().clearCowsList();
+			
+			int enemyId = 1;
 			// add in perception what is around
 			NodeList nl = perception.getElementsByTagName("cell");
 			for (int i=0; i < nl.getLength(); i++) {

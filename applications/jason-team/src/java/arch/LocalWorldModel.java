@@ -2,6 +2,8 @@ package arch;
 
 import jason.environment.grid.Location;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import env.WorldModel;
@@ -18,6 +20,8 @@ public class LocalWorldModel extends WorldModel {
     int                       minVisited = 0; // min value for near least visited
     
     private Random			  random = new Random();
+    
+    List<Location> cows = new ArrayList<Location>();
     
     //private Logger            logger   = Logger.getLogger("jasonTeamSimLocal.mas2j." + LocalWorldModel.class.getName());
 
@@ -40,6 +44,33 @@ public class LocalWorldModel extends WorldModel {
         }
     }
 
+    public void clearCowsList() {
+        cows.clear();
+    }
+    public void addCow(int x, int y) {
+        add(WorldModel.COW, x, y);
+        cows.add(new Location(x,y));        
+    }
+    public void addCow(Location l) {
+        addCow(l.x, l.y);
+    }
+    public List<Location> getCows() {
+        return cows;
+    }
+
+    public Location nearFree(Location l) throws Exception {
+        int w = 1;
+        while (true) {
+            for (int x=l.x-w; x<=l.x+w;x++)
+                if (isFree(x,l.y))
+                    return new Location(x,l.y);
+            for (int y=l.y-w; y<=l.y+w;y++)
+                if (isFree(l.x,y))
+                    return new Location(l.x,y);
+            w++;
+        }
+    }
+    
     public int getVisited(Location l) {
     	return visited[l.x][l.y];
     }

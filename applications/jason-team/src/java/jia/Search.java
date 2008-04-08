@@ -22,19 +22,32 @@ public class Search {
 	final LocalWorldModel model;
     final Location        from, to;
     final boolean         considerAgentsAsObstacles;
-    int[]                 actionsOrder;    
+    final boolean         considerCorralAsObstacles;
+    final boolean         considerCowsAsObstacles;
+    WorldModel.Move[]     actionsOrder;    
     int                   nbStates = 0;
     AgArch                agArch;
     
-    static final int[] defaultActions = { 1, 2, 3, 4, 5, 6, 7, 8 }; // initial order of actions
+    public static final WorldModel.Move[] defaultActions = {  // initial order of actions
+              WorldModel.Move.west,
+              WorldModel.Move.east,
+              WorldModel.Move.north,
+              WorldModel.Move.northeast,
+              WorldModel.Move.northwest,
+              WorldModel.Move.south,
+              WorldModel.Move.southeast,
+              WorldModel.Move.southwest
+    }; 
 
     Logger logger = Logger.getLogger(Search.class.getName());
     
-    Search(LocalWorldModel m, Location from, Location to, int[] actions, boolean considerAgentsAsObstacles, AgArch agArch) {
+    public Search(LocalWorldModel m, Location from, Location to, WorldModel.Move[] actions, boolean considerAgentsAsObstacles, boolean considerCorralAsObstacles, boolean considerCowsAsObstacles, AgArch agArch) {
     	this.model = m;
     	this.from  = from;
     	this.to    = to;
     	this.considerAgentsAsObstacles = considerAgentsAsObstacles;
+        this.considerCorralAsObstacles = considerCorralAsObstacles;
+        this.considerCowsAsObstacles   = considerCowsAsObstacles;
     	this.agArch = agArch;
     	if (actions != null) {
     		this.actionsOrder = actions;
@@ -45,14 +58,14 @@ public class Search {
 
     /** used normally to discover the distance from 'from' to 'to' */
     Search(LocalWorldModel m, Location from, Location to, AgArch agArch) {
-    	this(m,from,to,null,false, agArch);
+    	this(m,from,to,null,false, false, false, agArch);
     }
     
     public Nodo search() throws Exception { 
     	Busca searchAlg = new AEstrela();
     	//searchAlg.ssetMaxAbertos(1000);
-    	GridState root = new GridState(from, WorldModel.Move.skip, this);
-    	root.setIsRoot();
+    	GridState root = new GridState(from, WorldModel.Move.skip, this, 1);
+    	root.setAsRoot();
         return searchAlg.busca(root);
     }
     
@@ -113,22 +126,24 @@ final class GridState implements Estado, Heuristica {
     final Search          ia;
     final int             hashCode;
     boolean               isRoot = false;
+    int                   cost = 1;
     
-    public GridState(Location l, WorldModel.Move op, Search ia) {
-        this.pos = l;
-        this.op  = op;
-        this.ia  = ia;
-        hashCode = pos.hashCode();
+    public GridState(Location l, WorldModel.Move op, Search ia, int cost) {
+        this.pos  = l;
+        this.op   = op;
+        this.ia   = ia;
+        this.cost = cost;
+        hashCode  = pos.hashCode();
         
         ia.nbStates++;
     }
     
-    public void setIsRoot() {
+    public void setAsRoot() {
     	isRoot = true;
     }
     
     public int custo() {
-        return 1;
+        return cost;
     }
 
     public boolean ehMeta() {
@@ -140,7 +155,7 @@ final class GridState implements Estado, Heuristica {
     }
 
     public int h() {
-        return pos.distance(ia.to);
+        return pos.maxBorder(ia.to);
     }
     
     public List<Estado> sucessores() {
@@ -148,22 +163,13 @@ final class GridState implements Estado, Heuristica {
         if (ia.nbStates > 50000) {
         	ia.logger.info("*** It seems I am in a loop!");
         	return s; 
-        } else if (!ia.agArch.isRunning()) {
+        } else if (ia.agArch != null && !ia.agArch.isRunning()) {
             return s;
         }
                 
         // all directions
         for (int a = 0; a < ia.actionsOrder.length; a++) {
-        	switch (ia.actionsOrder[a]) {
-        	case 1: suc(s,new Location(pos.x-1,pos.y), WorldModel.Move.west); break;
-        	case 2: suc(s,new Location(pos.x+1,pos.y), WorldModel.Move.east); break;
-        	case 3: suc(s,new Location(pos.x,pos.y-1), WorldModel.Move.north); break;
-            case 4: suc(s,new Location(pos.x+1,pos.y-1), WorldModel.Move.northeast); break;
-            case 5: suc(s,new Location(pos.x-1,pos.y-1), WorldModel.Move.northwest); break;
-        	case 6: suc(s,new Location(pos.x,pos.y+1), WorldModel.Move.south); break;
-            case 7: suc(s,new Location(pos.x+1,pos.y+1), WorldModel.Move.southeast); break;
-            case 8: suc(s,new Location(pos.x-1,pos.y+1), WorldModel.Move.southwest); break;
-        	}
+            suc(s, WorldModel.getNewLocationForAction(pos, ia.actionsOrder[a]), ia.actionsOrder[a]);
         }
         
         // if it is root state, sort the option by least visited
@@ -172,18 +178,51 @@ final class GridState implements Estado, Heuristica {
         }
         return s;
     }
-    
+
     private void suc(List<Estado> s, Location newl, WorldModel.Move op) {
 
-        if (ia.model.isFreeOfObstacle(newl) && !ia.model.hasObject(WorldModel.CORRAL, newl)) {
-        	if (ia.considerAgentsAsObstacles) {
-        		if ((ia.model.isFree(WorldModel.AGENT,newl) && ia.model.isFree(WorldModel.COW,newl)) || ia.from.distance(newl) > 3) {
-        			s.add(new GridState(newl,op,ia));
-        		}
-        	} else {
-                s.add(new GridState(newl,op,ia));
+        if (!ia.model.inGrid(newl))
+            return;
+        if (ia.model.hasObject(WorldModel.OBSTACLE, newl)) 
+            return;
+        if (ia.considerCorralAsObstacles && ia.model.hasObject(WorldModel.CORRAL, newl)) 
+            return;
+        if (ia.considerAgentsAsObstacles && ia.model.hasObject(WorldModel.AGENT,newl) && ia.from.maxBorder(newl) <= 2) 
+            return;
+        if (ia.considerCowsAsObstacles   && ia.model.hasObject(WorldModel.COW,newl)   && ia.from.maxBorder(newl) <= 2) 
+            return;
+
+        int cost = 1;
+        
+        if (ia.considerCowsAsObstacles) { 
+            cost += countCowsBeside(newl,1);
+            cost += countCowsBeside(newl,2);
+        }
+
+        s.add(new GridState(newl,op,ia, cost));
+    }
+    
+    private int countCowsBeside(Location l, int d) {
+        int c = 0;
+        for (int x = l.x-d; x <= l.x+d; x++) {
+            for (int y = l.y-d; y <= l.y+d; y++) {
+                if (ia.model.hasObject(WorldModel.COW, x, y)) {
+                    c++;
+                }
             }
-    	}
+        }
+        return c;
+        /*
+        if (ia.model.hasObject(WorldModel.COW, l.x, l.y)) c++;
+        if (ia.model.hasObject(WorldModel.COW, l.x+1, l.y)) c++;
+        if (ia.model.hasObject(WorldModel.COW, l.x-1, l.y)) c++;
+        if (ia.model.hasObject(WorldModel.COW, l.x, l.y+1)) c++;
+        if (ia.model.hasObject(WorldModel.COW, l.x, l.y-1)) c++;
+        if (ia.model.hasObject(WorldModel.COW, l.x+1, l.y+1)) c++;
+        if (ia.model.hasObject(WorldModel.COW, l.x-1, l.y+1)) c++;
+        if (ia.model.hasObject(WorldModel.COW, l.x+1, l.y-1)) c++;
+        if (ia.model.hasObject(WorldModel.COW, l.x-1, l.y-1)) c++;
+        */
     }
     
     public boolean equals(Object o) {

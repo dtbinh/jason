@@ -237,9 +237,8 @@ public class CowboyArch extends IdentifyCrashed {
         return l;
     }
 
-	
     void cowPerceived(int x, int y) {
-    	model.add(WorldModel.COW, x, y);
+    	model.addCow(x,y);
     }
 
     void enemyPerceived(int x, int y) {

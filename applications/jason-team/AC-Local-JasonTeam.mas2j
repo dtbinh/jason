@@ -42,5 +42,5 @@ MAS miners {
 		      agentClass     agent.SelectEvent 
 		      beliefBaseClass agent.UniqueBelsBB("gsize(_,_)","steps(_)","cell(_,_,key)","corral(_,_,_,_)","pratio(_)");
 
-    aslSourcePath: "src/asl";              
+    aslSourcePath: "src/asl";
 }

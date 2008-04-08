@@ -11,9 +11,10 @@ import jason.environment.grid.Location;
 import java.util.Random;
 import java.util.logging.Level;
 
+import busca.Nodo;
+
 import arch.CowboyArch;
 import arch.LocalWorldModel;
-import busca.Nodo;
 import env.WorldModel;
 
 /** 
@@ -24,8 +25,14 @@ import env.WorldModel;
  */
 public class direction extends DefaultInternalAction {
     
-    int[]      actionsOrder = { 1, 2, 3, 4, 5, 6, 7, 8}; // initial order of actions
+    WorldModel.Move[] actionsOrder = new WorldModel.Move[WorldModel.nbActions];
     Random     random = new Random();
+    
+    public direction() {
+        for (int i=0; i<WorldModel.nbActions; i++) {
+            actionsOrder[i] = Search.defaultActions[i];
+        }
+    }
     
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] terms) throws Exception {
@@ -50,11 +57,11 @@ public class direction extends DefaultInternalAction {
                 // randomly change the place of two actions in actionsOrder
                 int i1 = random.nextInt(WorldModel.nbActions);
                 int i2 = random.nextInt(WorldModel.nbActions);
-                int temp = actionsOrder[i2];
+                WorldModel.Move temp = actionsOrder[i2];
                 actionsOrder[i2] = actionsOrder[i1];
                 actionsOrder[i1] = temp;
                 
-                Search astar    = new Search(model, from, to, actionsOrder, true, ts.getUserAgArch());
+                Search astar    = new Search(model, from, to, actionsOrder, true, true, true, ts.getUserAgArch());
                 Nodo   solution = astar.search();
                 if (solution != null) {
                 	WorldModel.Move m = astar.firstAction(solution);

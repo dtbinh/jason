@@ -77,6 +77,10 @@ public class WorldModel extends GridWorldModel {
         return l.x >= corralUL.x && l.x <= corralDR.x &&
                l.y >= corralUL.y && l.y <= corralDR.y;
     }
+    
+    public Location getCorralCenter() {
+        return new Location( (corralUL.x + corralDR.x)/2, (corralUL.y + corralDR.y)/2);
+    }
 
     public int getCowsBlue() {
     	return cowsBlue;
@@ -228,4 +232,19 @@ public class WorldModel extends GridWorldModel {
     	
     	return s.toString();
     }
+
+    public static Location getNewLocationForAction(Location pos, WorldModel.Move action) {
+        switch (action) {
+        case west     : return new Location(pos.x-1,pos.y);
+        case east     : return new Location(pos.x+1,pos.y);
+        case north    : return new Location(pos.x,pos.y-1);
+        case northeast: return new Location(pos.x+1,pos.y-1);
+        case northwest: return new Location(pos.x-1,pos.y-1);
+        case south    : return new Location(pos.x,pos.y+1);
+        case southeast: return new Location(pos.x+1,pos.y+1);
+        case southwest: return new Location(pos.x-1,pos.y+1);
+        }
+        return null;
+    }
+
 }

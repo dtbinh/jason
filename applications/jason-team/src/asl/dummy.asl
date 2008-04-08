@@ -33,13 +33,31 @@ random_pos(X,Y) :-
 !move.
 
 
+/* -- reaction to cows -- */
+
++pos(_,_,_)                  // new cycle
+   : cell(_,_,cow(_))        // I see cows
+  <- jia.herd_position(X,Y); // compute new location
+     .print("COWS! going to ",X,",",Y);
+     -+target(X,Y).          // go to there
+     
+
+/* -- what todo when arrive at location */
+
++!decide_target                  // chose a new random pos
+   : not cell(_,_,cow(_))
+  <- ?random_pos(NX,NY);
+     -+target(NX,NY).
++!decide_target.
+
 /* -- plans to move to a destination represented in the belief target(X,Y) 
    -- (it is a kind of persistent goal)
 */
 
 // if the target is changed, "restart" move
-+target(_,_)
++target(NX,NY)
   <- .drop_desire(move);
+      jia.set_target(NX,NY);
      !!move.
 
 // I still do not know my location
@@ -55,9 +73,7 @@ random_pos(X,Y) :-
       (not target(_,_) |  // I have no target OR
        target(X,Y)     |  // I am at target OR
        (target(BX,BY) & jia.direction(X, Y, BX, BY, skip))) // is impossible to go to target
-   <- ?random_pos(NX,NY);
-      jia.set_target(NX,NY);
-      -+target(NX,NY).
+   <- !decide_target.
    
 // does one step towards target  
 +!move 
