@@ -8,6 +8,7 @@
 	<property name="jasonJar"     value="${basedir}/lib/jason.jar" />
 	<property name="jadeJar"      value="${basedir}/lib/jade.jar" />
 	<property name="jadeHttpJar"  value="${basedir}/lib/http.jar" />
+	<property name="jadeToolsJar" value="${basedir}/lib/jadeTools.jar" />
 	<property name="jasonSJar"    value="${basedir}/lib/s-jason.jar" />
 
 	<property name="build.dir" value="${basedir}/bin/classes" />
@@ -26,6 +27,7 @@
 		<pathelement location="${saciJar}" />
 		<pathelement location="${jadeJar}" />
 		<pathelement location="${jadeHttpJar}" />
+		<pathelement location="${jadeToolsJar}" />
 	</path>
 
 	<path id="project.classpath">
