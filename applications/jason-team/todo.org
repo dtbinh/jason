@@ -1,3 +1,4 @@
+* faster simulator
 * develop a team of dummies to play against
 ** what is a dummy strategy?
 * base components

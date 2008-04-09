@@ -142,7 +142,10 @@ public class ACArchitecture extends CowboyArch {
         }
 	    
 	    void newCycle() {
-            logger.info("last action sent is "+lastActionInCurrentCycle+". The following was not sent: "+toExecute);
+	        String w = "";
+	        if (lastActionInCurrentCycle == null) w = "*** "; 
+            logger.info(w+"Last sent action was "+lastActionInCurrentCycle+" for cycle "+getCycle()+". The following was not sent: "+toExecute);
+            
             setLastAct(lastActionInCurrentCycle);
             lastActionInCurrentCycle = null;
             

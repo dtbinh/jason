@@ -18,6 +18,8 @@ import busca.Nodo;
 import env.WorldModel;
 
 public class Search {
+
+    public static final  int DIST_FOR_AG_OBSTACLE = 2;
     
 	final LocalWorldModel model;
     final Location        from, to;
@@ -187,9 +189,9 @@ final class GridState implements Estado, Heuristica {
             return;
         if (ia.considerCorralAsObstacles && ia.model.hasObject(WorldModel.CORRAL, newl)) 
             return;
-        if (ia.considerAgentsAsObstacles && ia.model.hasObject(WorldModel.AGENT,newl) && ia.from.maxBorder(newl) <= 2) 
+        if (ia.considerAgentsAsObstacles && ia.model.hasObject(WorldModel.AGENT,newl) && ia.from.maxBorder(newl) <= Search.DIST_FOR_AG_OBSTACLE) 
             return;
-        if (ia.considerCowsAsObstacles   && ia.model.hasObject(WorldModel.COW,newl)   && ia.from.maxBorder(newl) <= 2) 
+        if (ia.considerCowsAsObstacles   && ia.model.hasObject(WorldModel.COW,newl)   && ia.from.maxBorder(newl) <= Search.DIST_FOR_AG_OBSTACLE) 
             return;
 
         int cost = 1;

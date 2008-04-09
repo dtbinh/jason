@@ -30,9 +30,13 @@ public class herd_position extends DefaultInternalAction {
             
             LocalWorldModel model = ((CowboyArch)ts.getUserAgArch()).getModel();
             
-            Location agTarget = model.nearFree(getAgTarget(model));
-            return un.unifies(terms[0], new NumberTermImpl(agTarget.x)) && 
-                   un.unifies(terms[1], new NumberTermImpl(agTarget.y));
+            
+            Location agTarget = getAgTarget(model);
+            if (agTarget != null) {
+                agTarget = model.nearFree(agTarget);
+                return un.unifies(terms[0], new NumberTermImpl(agTarget.x)) && 
+                       un.unifies(terms[1], new NumberTermImpl(agTarget.y));
+            }
         } catch (Throwable e) {
             ts.getLogger().log(Level.SEVERE, "herd_position error: "+e, e);    		
         }

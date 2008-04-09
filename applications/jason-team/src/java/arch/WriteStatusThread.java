@@ -100,6 +100,7 @@ public class WriteStatusThread extends Thread {
     }
     
     public String shortActionFormat(String act) {
+        if (act == null) return "";
         if (act.equals(WorldModel.Move.east.toString()))        return "e ";
         if (act.equals(WorldModel.Move.northeast.toString()))   return "ne";
         if (act.equals(WorldModel.Move.southeast.toString()))   return "se";

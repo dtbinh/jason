@@ -59,7 +59,7 @@ public class LocalWorldModel extends WorldModel {
     }
 
     public Location nearFree(Location l) throws Exception {
-        int w = 1;
+        int w = 0;
         while (true) {
             for (int x=l.x-w; x<=l.x+w;x++)
                 if (isFree(x,l.y))

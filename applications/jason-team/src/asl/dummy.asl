@@ -24,9 +24,17 @@
 // find a free random location	  
 random_pos(X,Y) :- 
    pos(AgX,AgY,_) &
-   jia.random(RX,40)   & X = (RX-20)+AgX & X > 0 &
-   jia.random(RY,40,5) & Y = (RY-20)+AgY &
-   not jia.obstacle(X,Y).  
+   jia.random(RX,40)   & RX > 5 & X = (RX-20)+AgX & X > 0 &
+   jia.random(RY,40,5) & RY > 5 & Y = (RY-20)+AgY &
+   not jia.obstacle(X,Y).
+
+// whether some location X,Y has an agent and I am near that location
+agent_in_target :-
+   pos(AgX,AgY,_) &
+   target(TX,TY) &
+   (cell(TX,TY,ally(_)) | cell(TX,TY,enemy(_)) | cell(TX,TY,cow(_))) &
+   jia.dist(TX,TY,AgX,AgY,D) &
+   D <= 2. // this number should be the same used by A* (DIST_FOR_AG_OBSTACLE constant)
    
 /* -- initial goal */
 
@@ -40,6 +48,11 @@ random_pos(X,Y) :-
   <- jia.herd_position(X,Y); // compute new location
      .print("COWS! going to ",X,",",Y);
      -+target(X,Y).          // go to there
+
++pos(_,_,_)                  
+   : not cell(_,_,cow(_))    // I see no cow
+  <- -target(_,_); 
+     !move.
      
 
 /* -- what todo when arrive at location */
@@ -47,8 +60,11 @@ random_pos(X,Y) :-
 +!decide_target                  // chose a new random pos
    : not cell(_,_,cow(_))
   <- ?random_pos(NX,NY);
+     .print("New random target: ",NX,",",NY);
      -+target(NX,NY).
-+!decide_target.
++!decide_target
+  <- .print("No need for a new target, consider last herding location.");
+     do(skip). // send an action so that the simulator does not wait for me.
 
 /* -- plans to move to a destination represented in the belief target(X,Y) 
    -- (it is a kind of persistent goal)
@@ -70,8 +86,10 @@ random_pos(X,Y) :-
 // find a new destination
 +!move 
     : pos(X,Y,_) &
-      (not target(_,_) |  // I have no target OR
-       target(X,Y)     |  // I am at target OR
+      (not target(_,_)   |  // I have no target OR
+       target(X,Y)       |  // I am at target OR
+       jia_obstacle(X,Y) |  // An obstacle was discovered in the target
+       agent_in_target   |  // there is an agent in the target
        (target(BX,BY) & jia.direction(X, Y, BX, BY, skip))) // is impossible to go to target
    <- !decide_target.
    
