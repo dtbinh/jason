@@ -62,11 +62,9 @@ public class LocalWorldModel extends WorldModel {
         int w = 0;
         while (true) {
             for (int x=l.x-w; x<=l.x+w;x++)
-                if (isFree(x,l.y))
-                    return new Location(x,l.y);
-            for (int y=l.y-w; y<=l.y+w;y++)
-                if (isFree(l.x,y))
-                    return new Location(l.x,y);
+                for (int y=l.y-w; y<=l.y+w;y++)
+                    if (isFree(x,y))
+                        return new Location(x,y);
             w++;
         }
     }

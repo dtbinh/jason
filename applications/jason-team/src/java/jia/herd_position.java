@@ -13,7 +13,7 @@ import java.util.logging.Level;
 
 import arch.CowboyArch;
 import arch.LocalWorldModel;
-import env.WorldModel;
+import busca.Nodo;
 
 /** 
  * Gives a good location to herd cows
@@ -30,7 +30,6 @@ public class herd_position extends DefaultInternalAction {
             
             LocalWorldModel model = ((CowboyArch)ts.getUserAgArch()).getModel();
             
-            
             Location agTarget = getAgTarget(model);
             if (agTarget != null) {
                 agTarget = model.nearFree(agTarget);
@@ -44,6 +43,29 @@ public class herd_position extends DefaultInternalAction {
     }
     
     public Location getAgTarget(LocalWorldModel model) throws Exception {
+        List<Vec> cows = new ArrayList<Vec>();
+        for (Location c: model.getCows()) {
+            cows.add(new Vec(model, c));
+        }
+        if (cows.isEmpty())
+            return null;
+        
+        Vec.cluster(cows, 3); // find center/clusterise
+
+        Vec mean = Vec.mean(cows);
+        
+        // run A* to see the cluster target in n steps
+        Search s = new Search(model, mean.getLocation(model), model.getCorralCenter(), null, false, false, false, null);
+        List<Nodo> np = s.normalPath(s.search());
+        
+        int stepsFromCenter = (int)Vec.max(cows).sub(mean).magnitude()+1;
+        int n = Math.min(stepsFromCenter, np.size());
+
+        Vec ctarget = new Vec(model, s.getNodeLocation(np.get(n)));
+        Vec agTarget = mean.sub(ctarget).add(mean); // .product(1.5)
+        return agTarget.getLocation(model);
+
+        /*
         List<Vec> cowsTarget = new ArrayList<Vec>();
         for (Location c: model.getCows()) {
             Search s = new Search(model, c, model.getCorralCenter(), null, false, false, false, null);
@@ -66,6 +88,7 @@ public class herd_position extends DefaultInternalAction {
         } else {
             return null;
         }
+        */
     }
 }
 

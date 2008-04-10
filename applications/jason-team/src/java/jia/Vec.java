@@ -64,6 +64,15 @@ public class Vec {
         return max;
     }
 
+    public static void cluster(List<Vec> vs, int maxstddev) {
+        Vec stddev = Vec.stddev(vs);
+        // remove max if stddev is too big
+        while (stddev.magnitude() > maxstddev) {
+            vs.remove(Vec.max(vs));
+            stddev = Vec.stddev(vs);
+        }
+    }
+
     public static Vec mean(List<Vec> vs) {
         if (vs.isEmpty())
             return new Vec(0,0);
@@ -75,9 +84,6 @@ public class Vec {
         return new Vec(x/vs.size(), y/vs.size());  
     }
     
-    
-    
-
     public static Vec stddev(List<Vec> vs) {
         if (vs.isEmpty())
             return new Vec(0,0);

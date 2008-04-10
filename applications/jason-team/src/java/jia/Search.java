@@ -6,6 +6,7 @@ import jason.environment.grid.Location;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -69,6 +70,19 @@ public class Search {
     	GridState root = new GridState(from, WorldModel.Move.skip, this, 1);
     	root.setAsRoot();
         return searchAlg.busca(root);
+    }
+    
+    public List<Nodo> normalPath(Nodo n) {
+        List<Nodo> r = new LinkedList<Nodo>();
+        while (n != null) {
+            r.add(0,n);
+            n = n.getPai();
+        }
+        return r;
+    }
+    
+    public Location getNodeLocation(Nodo n) {
+        return ((GridState)n.getEstado()).pos;
     }
     
     public WorldModel.Move firstAction(Nodo solution) {

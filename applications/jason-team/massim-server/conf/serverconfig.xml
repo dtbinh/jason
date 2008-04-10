@@ -12,14 +12,17 @@
 			   xmlobserverpath="."
 			   xmlstatisticsobserver="massim.simulation.GridSimulationXMLStatisticsObserver"
 			   file-simulationlog="./log"
-			   visualisationobserver="massim.simulation.GridSimulationVisualizationObserver"
+			   visualisationobserver=""
 			   >
 			
+
+<!--			   visualisationobserver="massim.simulation.GridSimulationVisualizationObserver"  -->
+
 			<configuration
 				      xmlns:meta="http://www.tu-clausthal.de/"
 				      sizex="70"
 				      sizey="70"
-				      maxNumberOfSteps="500"
+				      maxNumberOfSteps="700"
 				      
 				      numberOfAgents="12"
 				      numberOfObstacles="200"
