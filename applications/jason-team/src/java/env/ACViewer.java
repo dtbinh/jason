@@ -118,12 +118,12 @@ public class ACViewer extends Thread {
     public void run() {
         while (true) {
             try {
+                sleep(500);
                 File lastFile = getLastFile(getLastFile(massimServerBackupDir));
                 if (lastFile != null) {
                     logger.info("getting scenario from "+lastFile); 
                     updateWorld(lastFile);
                 }
-                sleep(500);
             } catch (InterruptedException e) {
                 return;
             } catch (NoSuchElementException e) {

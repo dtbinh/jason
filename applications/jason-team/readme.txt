@@ -13,25 +13,28 @@
 To run this team:
 
 1. update sources of Jason
-   cd Jason-svn
-   svn update
-   ant plugin
+     cd Jason-svn
+     svn update
+     ant plugin
    
 2. run massim-server
-   cd applications/jason-team/massim-server
-   ./startServer.sh
+     cd applications/jason-team/massim-server
+     ./startServer.sh
 
-3. run massim-agents (6 agents developed by the ContestTeam)
-   cd ../massim-agents
-   ./startAgents.sh
+3. run dummies (written in Jason)
+     ant -f dummies.xml
+ 
+   or those written by the Contest developers  
+     cd ../massim-agents
+     ./startAgents.sh
 
-4. run Jason dummies (for now we do not have a team)
+4. run Jason team 
    a. by JasonIDE
       	 ../../bin/jason.sh
       open an run  AC-Local-JasonTeam.mas2j
 
-   b. by Ant (only after run once by JasonIDE)
-         ant -f bin/build.xml
+   b. by Ant
+         ant -f gauchos.xml
 
 5. start the simulation
    go to shell running startServer.sh and press ENTER

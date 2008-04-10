@@ -6,38 +6,38 @@
  *
  */
 
-MAS jason_cowboys {
+MAS dummies {
     infrastructure: Centralised
 	
     agents:
- 		gaucho1 dummy.asl
-		      [verbose=1, gui=yes, write_status=yes, ac_sim_back_dir="./massim-server/backup",
-		       host="localhost", port=12300, username=participant1, password="1"] 
+ 		dummy1 dummy.asl
+		      [verbose=1, gui=no, write_status=no, ac_sim_back_dir="",
+		       host="localhost", port=12300, username=botagent1, password="1"] 
               agentArchClass arch.ACArchitecture
 		      agentClass     agent.SelectEvent 
 		      beliefBaseClass agent.UniqueBelsBB("gsize(_,_)","steps(_)","cell(_,_,key)","corral(_,_,_,_)","pratio(_)");
- 		gaucho2 dummy.asl
-		      [verbose=1,host="localhost", port=12300, username=participant2, password="2"] 
+ 		dummy2 dummy.asl
+		      [verbose=1,host="localhost", port=12300, username=botagent2, password="2"] 
               agentArchClass arch.ACArchitecture
 		      agentClass     agent.SelectEvent 
 		      beliefBaseClass agent.UniqueBelsBB("gsize(_,_)","steps(_)","cell(_,_,key)","corral(_,_,_,_)","pratio(_)");
- 		gaucho3 dummy.asl
-		      [verbose=1,host="localhost", port=12300, username=participant3, password="3"] 
+ 		dummy3 dummy.asl
+		      [verbose=1,host="localhost", port=12300, username=botagent3, password="3"] 
               agentArchClass arch.ACArchitecture
 		      agentClass     agent.SelectEvent 
 		      beliefBaseClass agent.UniqueBelsBB("gsize(_,_)","steps(_)","cell(_,_,key)","corral(_,_,_,_)","pratio(_)");
- 		gaucho4 dummy.asl
-		      [verbose=1,host="localhost", port=12300, username=participant4, password="4"] 
+ 		dummy4 dummy.asl
+		      [verbose=1,host="localhost", port=12300, username=botagent4, password="4"] 
               agentArchClass arch.ACArchitecture
 		      agentClass     agent.SelectEvent 
 		      beliefBaseClass agent.UniqueBelsBB("gsize(_,_)","steps(_)","cell(_,_,key)","corral(_,_,_,_)","pratio(_)");
- 		gaucho5 dummy.asl
-		      [verbose=1,host="localhost", port=12300, username=participant5, password="5"] 
+ 		dummy5 dummy.asl
+		      [verbose=1,host="localhost", port=12300, username=botagent5, password="5"] 
               agentArchClass arch.ACArchitecture
 		      agentClass     agent.SelectEvent 
 		      beliefBaseClass agent.UniqueBelsBB("gsize(_,_)","steps(_)","cell(_,_,key)","corral(_,_,_,_)","pratio(_)");
- 		gaucho6 dummy.asl
-		      [verbose=1,host="localhost", port=12300, username=participant6, password="6"] 
+ 		dummy6 dummy.asl
+		      [verbose=1,host="localhost", port=12300, username=botagent6, password="6"] 
               agentArchClass arch.ACArchitecture
 		      agentClass     agent.SelectEvent 
 		      beliefBaseClass agent.UniqueBelsBB("gsize(_,_)","steps(_)","cell(_,_,key)","corral(_,_,_,_)","pratio(_)");

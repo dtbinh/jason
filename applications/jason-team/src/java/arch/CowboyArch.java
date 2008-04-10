@@ -111,7 +111,7 @@ public class CowboyArch extends IdentifyCrashed {
         if (gui) { 
             view = new WorldView("Herding (view of cowboy "+(getMyId()+1)+") -- against "+opponent,model);
         }
-        if (massimBackDir != null) { 
+        if (massimBackDir != null && massimBackDir.length() > 0) { 
             acView = new ACViewer(massimBackDir, w, h);
             acView.setPriority(Thread.MIN_PRIORITY);
             acView.start();
