@@ -23,9 +23,9 @@ public class TestExample {
     }
     
     @Test
-    public void testBels() {
-        ag.assertBel("b(20)",0);
-        ag.assertBel("not b",0);
+    public void testInitialBels() {
+        ag.assertBel("b(20)",0);       // agent must believe "b(20)" without any reasoning
+        ag.assertBel("not b",0); 
         ag.assertBel("not b(5)",0);
         ag.assertBel("b(10) & b(20) & not b(60)",0);
     }
