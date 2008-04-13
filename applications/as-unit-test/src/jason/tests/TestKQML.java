@@ -19,7 +19,8 @@ public class TestKQML {
         // defines the agent's AgentSpeak code
         bob.parseAScode(
                 "+!simple_send <- .send(maria, tell, vl(10)); "+ 
-                "                 .send(maria, achieve, goto(10,2)). " +
+                "                 .send(maria, achieve, goto(10,2)); " +
+                "                 .send(maria, tell, loves(maria,bob)[source(maria), source(mog)]). " +
                 
                 "+!send_ask1   <- .send(maria, askOne, vl(_), vl(X)); " +
                 "                 .send(maria, askOne, vl(_)); " + 
@@ -56,9 +57,10 @@ public class TestKQML {
     @Test
     public void testSend() {
         bob.addGoal("simple_send");
-        bob.assertIdle(5);            // bob sent the messages
-        maria.assertBel("vl(10)", 5); // maria received tell
-        maria.assertAct("act(10,2,bob)", 5); // maria received achieved
+        bob.assertIdle(5);                         // bob sent the messages
+        maria.assertBel("vl(10)[source(bob)]", 5); // maria received tell
+        maria.assertAct("act(10,2,bob)", 5);       // maria received achieved
+        maria.assertBel("loves(maria,bob)[source(bob)[source(maria),source(mog)]]", 5); 
     }
 
     @Test
@@ -92,7 +94,7 @@ public class TestKQML {
         bob.addGoal("simple_send");
         bob.addGoal("send_askAll1");
         bob.assertIdle(10); 
-        maria.assertIdle(10); 
+        maria.assertIdle(15); 
         bob.assertPrint("[vl(10),vl(1),vl(2)]", 5);
         
         bob.addGoal("send_askAll2");

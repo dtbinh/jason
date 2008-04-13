@@ -1,6 +1,13 @@
------------
-version 1.1
------------
+-------------
+version 1.1.1
+-------------
+
+Bugs fixed:
+. use nested source annotations in communication 
+
+-------------
+version 1.1.0
+-------------
 
 New features
 . Performance improvements: in general, applications run 30%
