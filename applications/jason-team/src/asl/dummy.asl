@@ -45,26 +45,27 @@ agent_in_target :-
 
 +pos(_,_,_)                  // new cycle
    : cell(_,_,cow(_))        // I see cows
-  <- jia.herd_position(X,Y); // compute new location
-     .print("COWS! going to ",X,",",Y);
-     -+target(X,Y).          // go to there
-
-+pos(_,_,_)                  
-   : not cell(_,_,cow(_))    // I see no cow
-  <- -target(_,_); 
-     !move.
+  <- !decide_target. 
      
 
 /* -- what todo when arrive at location */
+
++!decide_target                  
+   : jia.herd_position(X,Y) &              // compute new location
+     (not target(_,_) | (target(TX,TY) & (TX \== X | TY \== Y))) // no target OR new target?     
+  <- .print("COWS! going to ",X,",",Y," previous target ",TX,",",TY);
+     -+target(X,Y).
 
 +!decide_target                  // chose a new random pos
    : not cell(_,_,cow(_))
   <- ?random_pos(NX,NY);
      .print("New random target: ",NX,",",NY);
      -+target(NX,NY).
+
 +!decide_target
   <- .print("No need for a new target, consider last herding location.");
      do(skip). // send an action so that the simulator does not wait for me.
+
 
 /* -- plans to move to a destination represented in the belief target(X,Y) 
    -- (it is a kind of persistent goal)
@@ -73,7 +74,7 @@ agent_in_target :-
 // if the target is changed, "restart" move
 +target(NX,NY)
   <- .drop_desire(move);
-      jia.set_target(NX,NY);
+     jia.set_target(NX,NY);
      !!move.
 
 // I still do not know my location

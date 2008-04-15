@@ -33,11 +33,12 @@ public class TestBasicHerding {
     public void scenario1() {
         cowboy = new Vec(3,5);
         
-        cows = new Vec[4];
+        cows = new Vec[5];
         cows[0] = new Vec(6,7);
         cows[1] = new Vec(5,30);
         cows[2] = new Vec(4,8);
         cows[3] = new Vec(5,10);
+        cows[4] = new Vec(0,1);
 
         for (int i=0; i<cows.length; i++)
             model.addCow(cows[i].getLocation(model));
@@ -153,14 +154,8 @@ public class TestBasicHerding {
         }
 
         // find center/clusterise
+        cowsTarget = Vec.cluster(cowsTarget, 2);
         Vec stddev = Vec.stddev(cowsTarget);
-        assertEquals(new Vec(0,9), stddev);
-        
-        // remove max if stddev is too big
-        while (stddev.magnitude() > 3) {
-            cowsTarget.remove(Vec.max(cowsTarget));
-            stddev = Vec.stddev(cowsTarget);
-        }
         assertTrue(stddev.magnitude() < 3);
         
         Vec mean   = Vec.mean(cowsTarget);
@@ -194,9 +189,7 @@ public class TestBasicHerding {
         }
 
         // find center/clusterise
-        Vec.cluster(cowsTarget, 3);
-        Vec stddev = Vec.stddev(cowsTarget);
-        assertTrue(stddev.magnitude() < 3);
+        cowsTarget = Vec.cluster(cowsTarget, 2);
         
         Vec mean   = Vec.mean(cowsTarget);
         assertEquals(new Vec(9,1), mean);

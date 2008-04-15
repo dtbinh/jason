@@ -50,7 +50,7 @@ public class herd_position extends DefaultInternalAction {
         if (cows.isEmpty())
             return null;
         
-        Vec.cluster(cows, 3); // find center/clusterise
+        cows = Vec.cluster(cows, 2); // find center/clusterise
 
         Vec mean = Vec.mean(cows);
         

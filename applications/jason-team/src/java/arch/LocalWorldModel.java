@@ -60,11 +60,17 @@ public class LocalWorldModel extends WorldModel {
 
     public Location nearFree(Location l) throws Exception {
         int w = 0;
+        List<Location> options = new ArrayList<Location>();
         while (true) {
-            for (int x=l.x-w; x<=l.x+w;x++)
-                for (int y=l.y-w; y<=l.y+w;y++)
-                    if (isFree(x,y))
-                        return new Location(x,y);
+        	options.clear();
+        	for (int x=l.x-w; x<=l.x+w;x++) {
+        		if (isFree(x,l.y-w)) 
+        			options.add(new Location(x,l.y-w));
+        		if (isFree(x,l.y+w))
+        			options.add(new Location(x,l.y+w));
+        	}
+        	if (!options.isEmpty()) 
+        		return options.get(random.nextInt(options.size()));
             w++;
         }
     }
