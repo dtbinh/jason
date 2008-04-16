@@ -5,6 +5,7 @@ version 1.1.1
 Bugs fixed:
 . use nested source annotations in communication 
 . add "source(self)" in goals without source
+. correctly handle failure event caused by no relevant plans 
 
 
 -------------

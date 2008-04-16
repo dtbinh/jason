@@ -42,26 +42,22 @@ public class IdentifyCrashed extends AgArch {
     
     @Override
     public List<Literal> perceive() {
-        agThread = Thread.currentThread(); 
-        doPercept();
+        agThread = Thread.currentThread();
+        agDidPerceive();
         return super.perceive();
     }
     
-    private synchronized void doPercept() {
+    public synchronized void agDidPerceive() {
         didPercept = true;
         notifyAll();
     }
     
-    public boolean didPercept() {
-        return didPercept;
+    private synchronized void waitPerceive() throws InterruptedException {
+        wait(maxCycleTime);
     }
-    
+
     public boolean isCrashed() {
         return !didPercept;
-    }
-    
-    private synchronized void waitPercept() throws InterruptedException {
-        wait(maxCycleTime);
     }
 
     @Override
@@ -78,7 +74,7 @@ public class IdentifyCrashed extends AgArch {
         dead = true;
 
         // gives some time to TS get the change in state
-        waitPercept();
+        waitPerceive();
         try {
             if (isCrashed()) {
                 return fix2();
@@ -94,17 +90,23 @@ public class IdentifyCrashed extends AgArch {
 
     /** try to fix the agent: approach 2: interrupt the agent thread */
     protected boolean fix2() throws Exception {
-        getTS().getLogger().warning("fix2: I am still dead! Interrupting the agent thread...");
-        // try to interrupt the agent thread.
-        agThread.interrupt();
+        if (agThread != null) {
+            getTS().getLogger().warning("fix2: I am still dead! Interrupting the agent thread...");
+            // try to interrupt the agent thread.
+            
+            agThread.interrupt();
         
-        waitPercept();
-        if (isCrashed()) {
-            getTS().getLogger().warning("Interrupt doesn't work!!! The agent remains dead!");
-            return fix3();
+            waitPerceive();
+            if (isCrashed()) {
+                getTS().getLogger().warning("Interrupt doesn't work!!! The agent remains dead!");
+                return fix3();
+            } else {
+                getTS().getLogger().warning("fix2: I am Ok now!");
+                return true;
+            }
         } else {
-            getTS().getLogger().warning("fix2: I am Ok now!");
-            return true;
+            getTS().getLogger().warning("fix2: can not be used (thread == null).");
+            return fix3();            
         }
     }
     

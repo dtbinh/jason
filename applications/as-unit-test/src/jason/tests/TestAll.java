@@ -8,8 +8,10 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
     BugVarsInInitBels.class,
     TestAddLogExprInBB.class,
+    TestGoalSource.class, 
     TestKQML.class,
-    TestVarInContext.class /*,
-    TestPlanbodyAsTerm.class*/
+    /* TestPlanbodyAsTerm.class, */
+    TestPlanFailure.class,
+    TestVarInContext.class
  })
 public class TestAll { }
