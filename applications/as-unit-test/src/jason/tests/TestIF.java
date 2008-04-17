@@ -18,7 +18,7 @@ public class TestIF {
         ag.parseAScode(
                 "b(3). " +
                 "+!test1 <- a1; "+
-                "           .conditional(b(X), {jason.asunit.print(X); b1}, {jason.asunit.print(no);b2}); "+
+                "           .if( b(X), {jason.asunit.print(X); b1}, {jason.asunit.print(no)}); "+
                 "           a2. "+
                 "+!test2 <- -b(_); !test1. "
         );
@@ -36,7 +36,6 @@ public class TestIF {
     public void test2() {
         ag.addGoal("test2");
         ag.assertPrint("no", 5);
-        ag.assertAct("b2", 5);
         ag.assertAct("a2", 5);
     }
 }

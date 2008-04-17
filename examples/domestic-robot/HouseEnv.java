@@ -62,7 +62,7 @@ public class HouseEnv extends Environment {
 
     @Override
 	public boolean executeAction(String ag, Structure action) {
-		logger.fine("Agent "+ag+" doing "+action+" in the environment");
+		System.out.println("["+ag+"] doing: "+action);
         boolean result = false;
 		if (action.equals(of)) { // of = open(fridge)
             result = model.openFridge();
