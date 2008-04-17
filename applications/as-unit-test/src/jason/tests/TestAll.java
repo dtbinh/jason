@@ -9,8 +9,9 @@ import org.junit.runners.Suite.SuiteClasses;
     BugVarsInInitBels.class,
     TestAddLogExprInBB.class,
     TestGoalSource.class, 
+    TestIF.class, 
     TestKQML.class,
-    /* TestPlanbodyAsTerm.class, */
+    TestPlanbodyAsTerm.class,
     TestPlanFailure.class,
     TestVarInContext.class
  })
