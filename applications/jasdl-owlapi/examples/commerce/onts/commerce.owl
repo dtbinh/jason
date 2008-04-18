@@ -1,0 +1,583 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY owl11 "http://www.w3.org/2006/12/owl11#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY owl11xml "http://www.w3.org/2006/12/owl11-xml#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+    <!ENTITY commerce "http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#" >
+]>
+
+
+<rdf:RDF xmlns="http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#"
+     xml:base="http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:owl11="http://www.w3.org/2006/12/owl11#"
+     xmlns:owl11xml="http://www.w3.org/2006/12/owl11-xml#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:commerce="http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#">
+    <owl:Ontology rdf:about=""/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#contains -->
+
+    <owl:ObjectProperty rdf:about="#contains">
+        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
+        <rdfs:range rdf:resource="#Ingredient"/>
+        <rdfs:domain rdf:resource="#Product"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#hasBrand -->
+
+    <owl:ObjectProperty rdf:about="#hasBrand">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="#Product"/>
+        <rdfs:domain rdf:resource="#Purchase"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#hasCustomer -->
+
+    <owl:ObjectProperty rdf:about="#hasCustomer">
+        <rdf:type rdf:resource="&owl;InverseFunctionalProperty"/>
+        <rdfs:domain rdf:resource="#Order"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#hasOrder -->
+
+    <owl:ObjectProperty rdf:about="#hasOrder">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:range rdf:resource="#Order"/>
+        <owl:inverseOf rdf:resource="#hasCustomer"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#includes -->
+
+    <owl:ObjectProperty rdf:about="#includes">
+        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
+        <rdfs:domain rdf:resource="#Order"/>
+        <rdfs:range rdf:resource="#Purchase"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#hasInStock -->
+
+    <owl:DatatypeProperty rdf:about="#hasInStock">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="#Product"/>
+        <rdfs:range rdf:resource="&xsd;integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#hasPrice -->
+
+    <owl:DatatypeProperty rdf:about="#hasPrice">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="#Product"/>
+        <rdfs:range rdf:resource="&xsd;double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#hasQuantity -->
+
+    <owl:DatatypeProperty rdf:about="#hasQuantity">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="#Purchase"/>
+        <rdfs:range rdf:resource="&xsd;integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#hasVolume -->
+
+    <owl:DatatypeProperty rdf:about="#hasVolume">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="#Product"/>
+        <rdfs:range rdf:resource="&xsd;double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#hasWeight -->
+
+    <owl:DatatypeProperty rdf:about="#hasWeight">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="#Product"/>
+        <rdfs:range rdf:resource="&xsd;double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#Allergen -->
+
+    <owl:Class rdf:about="#Allergen">
+        <rdfs:subClassOf rdf:resource="#Ingredient"/>
+        <rdfs:comment
+            >Ingredients that are common allergens</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#Beef -->
+
+    <owl:Class rdf:about="#Beef">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#contains"/>
+                <owl:hasValue rdf:resource="#BeefIngredient"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="#Meat"/>
+        <owl:disjointWith rdf:resource="#Chicken"/>
+        <owl:disjointWith rdf:resource="#Lamb"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#Bread -->
+
+    <owl:Class rdf:about="#Bread">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#contains"/>
+                <owl:hasValue rdf:resource="#Gluten"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="#Grocery"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#Butter -->
+
+    <owl:Class rdf:about="#Butter">
+        <rdfs:subClassOf rdf:resource="#Dairy"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#Chicken -->
+
+    <owl:Class rdf:about="#Chicken">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#contains"/>
+                <owl:hasValue rdf:resource="#ChickenIngredient"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="#Meat"/>
+        <owl:disjointWith rdf:resource="#Lamb"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#ContainsGluten -->
+
+    <owl:Class rdf:about="#ContainsGluten">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="#contains"/>
+                        <owl:hasValue rdf:resource="#Gluten"/>
+                    </owl:Restriction>
+                    <rdf:Description rdf:about="#Grocery"/>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+    </owl:Class>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#ContainsLactose -->
+
+    <owl:Class rdf:about="#ContainsLactose">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="#contains"/>
+                        <owl:hasValue rdf:resource="#Lactose"/>
+                    </owl:Restriction>
+                    <rdf:Description rdf:about="#Grocery"/>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+    </owl:Class>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#ContainsMeat -->
+
+    <owl:Class rdf:about="#ContainsMeat">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#Grocery"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="#contains"/>
+                        <owl:someValuesFrom rdf:resource="#MeatIngredient"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+    </owl:Class>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#ContainsNuts -->
+
+    <owl:Class rdf:about="#ContainsNuts">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="#contains"/>
+                        <owl:hasValue rdf:resource="#Nuts"/>
+                    </owl:Restriction>
+                    <rdf:Description rdf:about="#Grocery"/>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+    </owl:Class>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#Cream -->
+
+    <owl:Class rdf:about="#Cream">
+        <rdfs:subClassOf rdf:resource="#Dairy"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#Dairy -->
+
+    <owl:Class rdf:about="#Dairy">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#contains"/>
+                <owl:hasValue rdf:resource="#Lactose"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="#Grocery"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#Fish -->
+
+    <owl:Class rdf:about="#Fish">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#contains"/>
+                <owl:hasValue rdf:resource="#FishIngredient"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="#Meat"/>
+        <owl:disjointWith rdf:resource="#Beef"/>
+        <owl:disjointWith rdf:resource="#Chicken"/>
+        <owl:disjointWith rdf:resource="#Lamb"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#Grocery -->
+
+    <owl:Class rdf:about="#Grocery">
+        <rdfs:subClassOf rdf:resource="#Product"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#InStock -->
+
+    <owl:Class rdf:about="#InStock">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#Product"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="#hasInStock"/>
+                        <owl:someValuesFrom>
+                            <rdf:Description>
+                                <rdf:type rdf:resource="&owl;DataRange"/>
+                                <owl11:minInclusive rdf:datatype="&xsd;int">1</owl11:minInclusive>
+                                <owl11:onDataRange rdf:resource="&xsd;int"/>
+                            </rdf:Description>
+                        </owl:someValuesFrom>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="#Product"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#Ingredient -->
+
+    <owl:Class rdf:about="#Ingredient">
+        <rdfs:subClassOf rdf:resource="#Grocery"/>
+        <rdfs:comment
+            >Ingredients that must be noted since some people cannot eat them</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#Lamb -->
+
+    <owl:Class rdf:about="#Lamb">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#contains"/>
+                <owl:hasValue rdf:resource="#LambIngredient"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="#Meat"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#Meat -->
+
+    <owl:Class rdf:about="#Meat">
+        <rdfs:subClassOf rdf:resource="#Grocery"/>
+        <owl:disjointWith rdf:resource="#Vegetable"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#MeatIngredient -->
+
+    <owl:Class rdf:about="#MeatIngredient">
+        <rdfs:subClassOf rdf:resource="#Ingredient"/>
+        <rdfs:comment
+            >Types of meat that food may contain</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#Milk -->
+
+    <owl:Class rdf:about="#Milk">
+        <rdfs:subClassOf rdf:resource="#Dairy"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#Order -->
+
+    <owl:Class rdf:about="#Order">
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+        <rdfs:comment
+            >A set of purchases</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#Product -->
+
+    <owl:Class rdf:about="#Product">
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="#hasVolume"/>
+                        <owl:someValuesFrom rdf:resource="&xsd;double"/>
+                    </owl:Restriction>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="#hasWeight"/>
+                        <owl:someValuesFrom rdf:resource="&xsd;double"/>
+                    </owl:Restriction>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#Purchase -->
+
+    <owl:Class rdf:about="#Purchase">
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#ReadyMeal -->
+
+    <owl:Class rdf:about="#ReadyMeal">
+        <rdfs:subClassOf rdf:resource="#Grocery"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#ShepherdsPie -->
+
+    <owl:Class rdf:about="#ShepherdsPie">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#contains"/>
+                <owl:hasValue rdf:resource="#BeefIngredient"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="#ReadyMeal"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#Vegetable -->
+
+    <owl:Class rdf:about="#Vegetable">
+        <rdfs:subClassOf rdf:resource="#Grocery"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#VegetableCurry -->
+
+    <owl:Class rdf:about="#VegetableCurry">
+        <rdfs:subClassOf rdf:resource="#ReadyMeal"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.w3.org/2002/07/owl#Thing -->
+
+    <owl:Class rdf:about="&owl;Thing"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#BeefIngredient -->
+
+    <MeatIngredient rdf:about="#BeefIngredient"/>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#ChickenIngredient -->
+
+    <MeatIngredient rdf:about="#ChickenIngredient"/>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#FishIngredient -->
+
+    <MeatIngredient rdf:about="#FishIngredient"/>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#Gluten -->
+
+    <Allergen rdf:about="#Gluten"/>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#Lactose -->
+
+    <Allergen rdf:about="#Lactose"/>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#LambIngredient -->
+
+    <MeatIngredient rdf:about="#LambIngredient"/>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#Nuts -->
+
+    <Allergen rdf:about="#Nuts"/>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#sdfsdf -->
+
+    <Product rdf:about="#sdfsdf">
+        <hasInStock rdf:datatype="&xsd;int">1</hasInStock>
+    </Product>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDifferent"/>
+        <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="#BeefIngredient"/>
+            <rdf:Description rdf:about="#LambIngredient"/>
+            <rdf:Description rdf:about="#Gluten"/>
+            <rdf:Description rdf:about="#ChickenIngredient"/>
+            <rdf:Description rdf:about="#FishIngredient"/>
+            <rdf:Description rdf:about="#Nuts"/>
+            <rdf:Description rdf:about="#Lactose"/>
+        </owl:distinctMembers>
+    </rdf:Description>
+</rdf:RDF>

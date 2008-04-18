@@ -40,16 +40,46 @@
 	// bundle([h_1...h_n]) demonstrates how JASDL deals with nested se-content
 	// in particular, this query bundles together an arbitrary number of queries into a single message
 	.send(Source, askOne, bundle( [ luxuriousHotel(H1)[o(holidays)], hotel(H2)[o(holidays)], activity(H3)[o(holidays)], hotelNearMuseums(H4)[o(self)] ] ), Response); // use to "query" to sender of this luxuriousHotel (travel_agent)
-	.print("Bundled query response: ", Response);	
+	.print("Bundled query response: ", Response);
+	
+	.send(Source, tell, hotel(hilton)[o(holidays)]);
 	
 	// ontology refered to by "places" is not known by travel_agent, but will be instantiated at run-time so it can usefully deal with this message
 	.send(Source, tell, building(travel_lodge)[o(places)]);
-	.send(Source, askOne, building(travel_lodge)[o(places)], _, 1000); // ensure information has been recieved by sender (travel_agent)	
-	
+	.send(Source, askOne, building(travel_lodge)[o(places)], building(travel_lodge)[o(places)], 1000); // ensure information has been recieved by sender (travel_agent)	
+		
 	// demonstrates use of class definitions that mix entities from different ontologies
 	jasdl.ia.define_class(buildingAndHotel, "places:building and holidays:hotel");
 	.send(Source, askOne, buildingAndHotel(BuildingAndHotel)[o(self)], buildingAndHotel(BuildingAndHotel)[o(self)]);
 	.print(BuildingAndHotel, " is a building and a hotel");
+	
+	// demonstrates JASDL's ability to handle arbitrary individual aliasing
+	jasdl.ia.define_class(singleStarHotel, "holidays:hotel and holidays:hasRating value holidays:singleStarRating");
+	.send(Source, askOne,
+		singleStarHotel(SingleStarHotel)[o(self)],
+		singleStarHotel(SingleStarHotel)[o(self)]);	
+	
+	.send(Source, askOne,
+		accommodationRating(singleStarRating)[o(holidays)],
+		accommodationRating(singleStarRating)[o(holidays)]);
+	
+	.send(Source, askOne,
+		hasRating(SingleStarHotel, singleStarRating)[o(holidays)],
+		hasRating(SingleStarHotel, singleStarRating)[o(holidays)]); 
+	
+	.print(SingleStarHotel, " is a hotel rated with a single star");
+	
+	.send(Source, askOne, 
+		all_different([singleStarRating, twoStarRating, threeStarRating])[o(holidays)],
+		all_different([singleStarRating, twoStarRating, threeStarRating])[o(holidays)]);
+		
+	// Demonstrates usage of complex data ranges in Manchester OWL syntax
+	jasdl.ia.define_class(affordableHotel, "holidays:hotel and holidays:hasPricePerNight some double [<= 15]");
+	Q10 = affordableHotel(AffordableHotel)[o(self)];
+	.send(Source, askOne, Q10, Q10);
+	.print(AffordableHotel, " is an affordable hotel");
+	
+	// Demonstrates generalisation on incoming synchronous askOne messages when using JASDL's extended .send IA
 	
 	.send(Source, tell, example_KSAA_complete).
 

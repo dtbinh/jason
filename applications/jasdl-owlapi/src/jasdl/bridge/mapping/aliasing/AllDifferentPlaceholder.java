@@ -1,3 +1,22 @@
+/* 
+ *  Copyright (C) 2008 Thomas Klapiscak (t.g.klapiscak@durham.ac.uk)
+ *  
+ *  This file is part of JASDL.
+ *
+ *  JASDL is free software: you can redistribute it and/or modify
+ *  it under the terms of the Lesser GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  JASDL is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  Lesser GNU General Public License for more details.
+ *
+ *  You should have received a copy of the Lesser GNU General Public License
+ *  along with JASDL.  If not, see <http://www.gnu.org/licenses/>.
+ *  
+ */
 package jasdl.bridge.mapping.aliasing;
 
 import jason.asSyntax.Atom;
@@ -21,20 +40,22 @@ import org.semanticweb.owl.model.OWLObjectVisitor;
 import org.semanticweb.owl.model.OWLOntology;
 
 /**
- * Since the all_different has no concrete entity associated with it, we create a "placeholder" so that it remains consistent with
+ * Since all_different has no concrete entity associated with it, we create a "placeholder" so that it remains consistent with
  * JASDL's mapping mechanisms. Entities of this type will be intercepted and dealt with differently.
  * Associated with an ontology label which determines hash-code - required since each ontology must have its own placeholder to reference
- * @author tom
+ * @author Tom Klapiscak
  *
  */
 public class AllDifferentPlaceholder implements OWLEntity {
+	public static URI ALL_DIFFERENT_PLACEHOLDER_URI = URI.create("http://all/different.owl#placeholder");
+
 	private Atom label;
-	
-	public AllDifferentPlaceholder(Atom label){
+
+	public AllDifferentPlaceholder(Atom label) {
 		this.label = label;
 	}
-	
-	public void accept(OWLEntityVisitor visitor) {		
+
+	public void accept(OWLEntityVisitor visitor) {
 	}
 
 	public Set<OWLAnnotationAxiom> getAnnotationAxioms(OWLOntology ontology) {
@@ -50,24 +71,24 @@ public class AllDifferentPlaceholder implements OWLEntity {
 	}
 
 	public void accept(OWLObjectVisitor visitor) {
-		
+
 	}
 
-	public void accept(OWLNamedObjectVisitor visitor) {		
+	public void accept(OWLNamedObjectVisitor visitor) {
 	}
 
 	public URI getURI() {
-		return null;
+		return ALL_DIFFERENT_PLACEHOLDER_URI;
 	}
-	
-	public boolean equals(Object other){
-		if(!(other instanceof AllDifferentPlaceholder)){
+
+	public boolean equals(Object other) {
+		if (!(other instanceof AllDifferentPlaceholder)) {
 			return false;
 		}
-		return label.equals(((AllDifferentPlaceholder)other).label);
+		return label.equals(((AllDifferentPlaceholder) other).label);
 	}
-	
-	public int hashCode(){
+
+	public int hashCode() {
 		return label.hashCode();
 	}
 

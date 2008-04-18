@@ -33,11 +33,12 @@ MAS dalt08 {
 	       [			
 			jasdl_useBeliefRevision = "true", // use experimental DL-based belief revision mechanism
 			jasdl_useAnnotationGathering = "true", // use experimental annotation gathering mechanism
+			jasdl_useContraction = "true",
 			
 			/*
 			 * To use FaCT++, set the below. Must have libFaCTPlusPlusJNI.so in /usr/lib (or the equivalent for Mac or Windows)
 			 * FaCT++ support is buggy and incomplete. Defaults to Pellet (org.mindswap.pellet.owlapi.Reasoner), which seems to work
-			 * must better
+			 * must better. Annotation gathering requires Pellet.
 			 * jasdl_reasonerClass = "uk.ac.manchester.cs.factplusplus.owlapi.Reasoner",
 			 */
 			
@@ -55,9 +56,9 @@ MAS dalt08 {
 			jasdl_tom_trustRating="0.9",
 			jasdl_ben_trustRating="0.4"
 	       ]
-	       agentArchClass jasdl.architecture.JasdlAgArch
-	       agentClass jasdl.asSemantics.JasdlAgent
-	       beliefBaseClass jasdl.bb.JasdlBeliefBase	       
+	       agentArchClass jasdl.architecture.JASDLAgArch
+	       agentClass jasdl.asSemantics.JASDLAgent
+	       beliefBaseClass jasdl.bb.JASDLBeliefBase	       
 	       #1;
 		   
 	       customer 
@@ -65,20 +66,22 @@ MAS dalt08 {
 	       [			
 			/* jasdl_default_mapping_strategies="jasdl.bridge.mapping.aliasing.DecapitaliseMappingStrategy", */ // defaults to this
 			jasdl_useBeliefRevision = "true",
+			jasdl_useAnnotationGathering = "true",
+			jasdl_useContraction = "true",
 		   
 	       	jasdl_ontologies="holidays,places",
 			jasdl_holidays_uri="/ontologies/travel.owl",
 			jasdl_holidays_mapping_strategies="jasdl.bridge.mapping.aliasing.DecapitaliseMappingStrategy",
-			jasdl_holidays_mapping_manual="small_beach=beach, luxuriousHotel=LuxuryHotel", // for demonstration of arbitrary primitive mappings being handled correctly
+			jasdl_holidays_mapping_manual="small_beach=beach, luxuriousHotel=LuxuryHotel, singleStarRating=OneStarRating", // for demonstration of arbitrary primitive mappings being handled correctly
 				
 			
 			jasdl_places_uri="/ontologies/places.owl",
 			jasdl_places_mapping_strategies="jasdl.bridge.mapping.aliasing.DecapitaliseMappingStrategy"
 			]
-	       agentArchClass jasdl.architecture.JasdlAgArch
-	       agentClass jasdl.asSemantics.JasdlAgent
-	       beliefBaseClass jasdl.bb.JasdlBeliefBase	       
-	       #1;		   
+	       agentArchClass jasdl.architecture.JASDLAgArch
+	       agentClass jasdl.asSemantics.JASDLAgent
+	       beliefBaseClass jasdl.bb.JASDLBeliefBase	     
+	       #1;
 		   
 		 classpath: "../../lib/**/*.jar";"../../../jmca/lib/jmca.jar";
 }

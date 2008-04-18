@@ -19,7 +19,6 @@
  */
 package jasdl.bridge.mapping.aliasing;
 
-
 public class DecapitaliseMappingStrategy implements MappingStrategy {
 
 	public String apply(String input) {

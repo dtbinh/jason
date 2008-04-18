@@ -20,7 +20,7 @@
 
 !start(total).
 !start(ubb1).!example_UBB.!end(ubb1).
-!start(ubb2).!example_brf.!end(ubb2).
+!start(brf).!example_brf.!end(brf).
 !start(qbb).!example_QBB.!end(qbb).
 !start(rpp).!example_RPP.!end(rpp).
 !start(all_different).!example_all_different.!end(all_different).
@@ -58,6 +58,8 @@
 	+museums(scienceMuseum)[o(travel)];
 	+hasActivity(london, scienceMuseum)[o(travel)];	
 	+hotel(travel_lodge)[o(travel)];
+	+hasPricePerNight(travel_lodge, 10)[o(travel)];
+	+hasRating(travel_lodge, oneStarRating)[o(travel)];
 	.print("Completed: Updating Belief Base").
 
 @example_brf[atomic]
@@ -81,7 +83,6 @@
 	+hasActivity(newcastle, ax)[o(travel), source(tom)];
 	+hasActivity(newcastle, bx)[o(travel), source(ben)];	
 	+all_different([ax, bx])[o(self), source(tom)];	
-	
 	
 	+city(somewhere)[o(travel), source(ben)];
 	+town(somewhere)[o(travel), source(ben)];
@@ -217,6 +218,10 @@
 	?familyDestination(butlins)[o(travel), something]; 
 	
 	.print("Complete: annotation gathering").
+	
+-!example_annotation_gathering_continue
+	<-
+	.print("Failed: annotation gathering").
 	
 	
 @example_KSAA_complete[atomic]

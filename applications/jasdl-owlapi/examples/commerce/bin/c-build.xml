@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<project name ="custombuild" basedir="..">
+	<!-- Ensure we are using the latest build of Jason -->
+	<property name="jasonJar" value="../../../../lib/jason.jar"/>
+	
+	<import file="build.xml"/>
+	
+	<target name="user-init">		
+		<ant dir="../../../../" inheritAll="false" target="plugin"/>
+		<ant dir="../../../jmca" inheritAll="false"/>
+		<ant dir="../.." inheritAll="false"/>
+	</target>
+	
+	<target name="user-end">
+	</target>
+</project>

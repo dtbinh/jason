@@ -20,8 +20,8 @@
 package jasdl.ia;
 
 import static jasdl.util.Common.strip;
-import jasdl.asSemantics.JasdlAgent;
-import jasdl.util.exception.JasdlException;
+import jasdl.asSemantics.JASDLAgent;
+import jasdl.util.exception.JASDLException;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
@@ -44,44 +44,39 @@ import org.coode.manchesterowlsyntax.ManchesterOWLSyntaxDescriptionParser;
  */
 public class define_class extends DefaultInternalAction {
 
+	private Logger logger = Logger.getLogger("jasdl." + define_class.class.getName());
 
-    private Logger logger = Logger.getLogger("jasdl."+define_class.class.getName());
+	@Override
+	public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
+		try {
+			// class name ATOM
+			Term _classname = args[0];
+			if (!_classname.isAtom()) {
+				throw new JASDLException("first argument must be a Atom containing a valid class name");
+			}
+			Atom classname = (Atom) _classname;
 
-    @Override
-    public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
-        try { 	
-        	// class name ATOM
-        	Term _classname = args[0];
-        	if(!_classname.isAtom()){
-        		throw new JasdlException("first argument must be a Atom containing a valid class name");
-        	}        		
-        	Atom classname = (Atom)_classname;
-        	
-        	// concat expression strings / atoms, with limited validity checks
-        	String expr = "";
-        	for(int i = 1; i<args.length; i++){
-        		if(args[i].isString()){
-        			expr+=strip(args[i].toString(), "\"");
-        		}else if(args[i].isAtom()){
-        			expr+=args[i].toString();
-        		}else{
-        			throw new JasdlException("Invalid expression component: "+args[i]);
-        		}
-        	}        	
-        	
-        	JasdlAgent agent = (JasdlAgent)ts.getAg();
-        	
-        	agent.defineClass(classname, expr, agent.getManchesterNsPrefixDescriptionParser());
-        	
- 
-            return true;
-        } catch (Exception e) {
-        	logger.warning("Error in internal action 'jasdl.ia.define_class'! Reason:");        	e.printStackTrace();
-            
-            return false;
-        }       
-    }
-    
-    
-    
+			// concat expression strings / atoms, with limited validity checks
+			String expr = "";
+			for (int i = 1; i < args.length; i++) {
+				if (args[i].isString()) {
+					expr += strip(args[i].toString(), "\"");
+				} else {
+					expr += args[i].toString();
+				}
+			}
+
+			JASDLAgent agent = (JASDLAgent) ts.getAg();
+
+			agent.getJom().defineClass(classname, expr, agent.getJom().getManchesterNsPrefixDescriptionParser());
+
+			return true;
+		} catch (Exception e) {
+			logger.warning("Error in internal action 'jasdl.ia.define_class'! Reason:");
+			e.printStackTrace();
+
+			return false;
+		}
+	}
+
 }

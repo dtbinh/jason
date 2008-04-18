@@ -19,15 +19,15 @@
  */
 package jasdl.bridge.factory;
 
-import static jasdl.util.Common.RANGE;
-import jasdl.asSemantics.JasdlAgent;
+import jasdl.JASDLParams;
+import jasdl.asSemantics.JASDLAgent;
 import jasdl.bridge.seliteral.SELiteral;
 import jasdl.bridge.seliteral.SELiteralAllDifferentAssertion;
 import jasdl.bridge.seliteral.SELiteralClassAssertion;
 import jasdl.bridge.seliteral.SELiteralDataPropertyAssertion;
 import jasdl.bridge.seliteral.SELiteralObjectPropertyAssertion;
-import jasdl.util.exception.InvalidSELiteralException;
-import jasdl.util.exception.JasdlException;
+import jasdl.util.exception.JASDLInvalidSELiteralException;
+import jasdl.util.exception.JASDLException;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -43,7 +43,6 @@ import org.semanticweb.owl.model.OWLObjectProperty;
 import org.semanticweb.owl.model.OWLTypedConstant;
 
 import bebops.common.IndividualAxiomToDescriptionConverter;
-
 
 /**
  * Accepts an arbitrary SEliteral and, depending on its type, creates an OWLIndividualAxiom encoding of it.
@@ -73,197 +72,195 @@ import bebops.common.IndividualAxiomToDescriptionConverter;
  * @author Tom Klapiscak
  *
  */
-public class SELiteralToAxiomConverter {	
-	
-	private JasdlAgent agent;
+public class SELiteralToAxiomConverter {
 
-	public SELiteralToAxiomConverter(JasdlAgent agent){
+	private JASDLAgent agent;
+
+	public SELiteralToAxiomConverter(JASDLAgent agent) {
 		this.agent = agent;
 	}
-	
-	
-	public Set<OWLIndividualAxiom> retrieve(SELiteral sl) throws JasdlException{
-		return convert(sl, true);
-	}
-	
-	/**
-	 * <b>Create</b> an axiomatic encoding of sl. Specific type of axiom dependent on specific type of sl.
-	 * sl must be <b>ground</b>
-	 * @param sl		the SE-Literal to encode
-	 * @return			a single encoding of sl - regardless of whether it is entailed or not
-	 * @throws JasdlException
-	 */
-	public OWLIndividualAxiom create(SELiteral sl) throws JasdlException{
-		if(!sl.getLiteral().isGround()){
-			throw new JasdlException("Cannot create an axiom from unground SELiteral "+sl);
-		}		
-		Set<OWLIndividualAxiom> axioms = convert(sl, false);
-		if(axioms.isEmpty()){
-			throw new JasdlException("Error creating axiom from "+sl);
-		}
-		return (OWLIndividualAxiom)axioms.toArray()[0];
-	}	
-	
+
 	/**
 	 * Polymorphically apply a factory method dependent on the specific type of sl
 	 * @param sl				the SE-Literal to encode
 	 * @param checkForExistence	if true, results will only be returned in they are entailed - if false, a successful encoding will guarantee a result
 	 * @return					a set of entailments matching sl
-	 * @throws JasdlException
+	 * @throws JASDLException
 	 */
-	private Set<OWLIndividualAxiom> convert(SELiteral sl, boolean checkForExistence) throws JasdlException{
-		if(sl instanceof SELiteralClassAssertion){
-			return convert((SELiteralClassAssertion)sl, checkForExistence);
-		}else if(sl instanceof SELiteralObjectPropertyAssertion){
-			return create((SELiteralObjectPropertyAssertion)sl, checkForExistence);
-		}else if(sl instanceof SELiteralDataPropertyAssertion){
-			return create((SELiteralDataPropertyAssertion)sl, checkForExistence);
-		}else if(sl instanceof SELiteralAllDifferentAssertion){
-			return create((SELiteralAllDifferentAssertion)sl, checkForExistence);
-		}else{
-			throw new InvalidSELiteralException("JASDL does not know how to handle SELiterals like "+sl);
+	private Set<OWLIndividualAxiom> convert(SELiteral sl, boolean checkForExistence) throws JASDLException {
+		if (sl instanceof SELiteralClassAssertion) {
+			return convert((SELiteralClassAssertion) sl, checkForExistence);
+		} else if (sl instanceof SELiteralObjectPropertyAssertion) {
+			return create((SELiteralObjectPropertyAssertion) sl, checkForExistence);
+		} else if (sl instanceof SELiteralDataPropertyAssertion) {
+			return create((SELiteralDataPropertyAssertion) sl, checkForExistence);
+		} else if (sl instanceof SELiteralAllDifferentAssertion) {
+			return create((SELiteralAllDifferentAssertion) sl, checkForExistence);
+		} else {
+			throw new JASDLInvalidSELiteralException("JASDL does not know how to handle SELiterals like " + sl);
 		}
 	}
-	
+
+	/**
+	 * <b>Create</b> an axiomatic encoding of sl. Specific type of axiom dependent on specific type of sl.
+	 * sl must be <b>ground</b>
+	 * @param sl		the SE-Literal to encode
+	 * @return			a single encoding of sl - regardless of whether it is entailed or not
+	 * @throws JASDLException
+	 */
+	public OWLIndividualAxiom create(SELiteral sl) throws JASDLException {
+		if (!sl.getLiteral().isGround()) {
+			throw new JASDLException("Cannot create an axiom from unground SELiteral " + sl);
+		}
+		Set<OWLIndividualAxiom> axioms = convert(sl, false);
+		if (axioms.isEmpty()) {
+			throw new JASDLException("Error creating axiom from " + sl);
+		}
+		return (OWLIndividualAxiom) axioms.toArray()[0];
+	}
+
+	/**
+	 * <b>Retrieve</b> a set of axioms corresponding to all possible entailements of sl.
+	 */
+	public Set<OWLIndividualAxiom> retrieve(SELiteral sl) throws JASDLException {
+		return convert(sl, true);
+	}
+
 	/**
 	 * Convert a unary SELiteral (asserting a class membership of an individual) to its axiomatic encoding
 	 * @param sl				the SELiteral to convert
 	 * @param checkForExistence	if true, results will only be returned in they are entailed - if false, a successful encoding will guarantee a result
 	 * @return					an axiomatic encoding of sl
-	 * @throws JasdlException
+	 * @throws JASDLException
 	 */
-	private Set<OWLIndividualAxiom> convert(SELiteralClassAssertion sl, boolean checkForExistence) throws JasdlException{
+	private Set<OWLIndividualAxiom> convert(SELiteralClassAssertion sl, boolean checkForExistence) throws JASDLException {
 		try {
-			Set<OWLIndividual> is = new HashSet<OWLIndividual>();		
-			OWLDescription desc = sl.getOWLDescription();		
-			
-			if(sl.getLiteral().isGround()){
+			Set<OWLIndividual> is = new HashSet<OWLIndividual>();
+			OWLDescription desc = sl.getOWLDescription();
+
+			if (sl.getLiteral().isGround()) {
 				OWLIndividual i = sl.getOWLIndividual();
-				if(!checkForExistence || agent.getReasoner().hasType(i, desc, false)){
+				if (!checkForExistence || agent.getReasoner().hasType(i, desc, false)) {
 					is.add(i);
 				}
-			}else{
+			} else {
 				is.addAll(agent.getReasoner().getIndividuals(desc, false));
-			}		
+			}
 			Set<OWLIndividualAxiom> axioms = new HashSet<OWLIndividualAxiom>();
-			for(OWLIndividual i : is){
+			for (OWLIndividual i : is) {
 				axioms.add(agent.getOntologyManager().getOWLDataFactory().getOWLClassAssertionAxiom(i, desc));
 			}
 			return axioms;
 		} catch (OWLReasonerException e) {
-			throw new JasdlException("Unable to convert "+sl+" to axiom. Reason: "+e);
+			throw new JASDLException("Unable to convert " + sl + " to axiom. Reason: " + e);
 		}
-	}	
-	
+	}
+
 	/**
 	 * Convert a unary all_different SELiteral (asserting distinctness of a set of individuals) to its axiomatic encoding
 	 * @param sl				the SELiteral to convert
 	 * @param checkForExistence	if true, results will only be returned in they are entailed - if false, a successful encoding will guarantee a result
 	 * @return					an axiomatic encoding of sl
-	 * @throws JasdlException
+	 * @throws JASDLException
 	 */
-	public Set<OWLIndividualAxiom> create(SELiteralAllDifferentAssertion sl, boolean checkForExistence) throws JasdlException{
+	public Set<OWLIndividualAxiom> create(SELiteralAllDifferentAssertion sl, boolean checkForExistence) throws JASDLException {
 		try {
 			Set<OWLIndividual> _is = sl.getOWLIndividuals();
-			Object[] is = _is.toArray();	
-			if(is.length == 0){
-				throw new JasdlException("All different assertion must contain some individuals! "+sl);
+			Object[] is = _is.toArray();
+			if (is.length == 0) {
+				throw new JASDLException("All different assertion must contain some individuals! " + sl);
 			}
-	    	// check they are mutually distinct (if we are checking for existence)
-	    	boolean distinct = true;
-	    	if(checkForExistence){	        	
-	        	for(int i=0; i<is.length; i++){ 		       		
-	        		for(int j=i+1; j<is.length; j++){
-	        			// create a description that is satisfiable iff the two individuals are different. TODO: request in-built OWL-API support for this
-	        			OWLDifferentIndividualsAxiom axiom = agent.getOntologyManager().getOWLDataFactory().getOWLDifferentIndividualsAxiom(_is);
-	        			IndividualAxiomToDescriptionConverter conv = new IndividualAxiomToDescriptionConverter(agent.getOntologyManager().getOWLDataFactory());
-	        			axiom.accept(conv);        			
-						if(!agent.getReasoner().isSatisfiable(conv.getDescription())){//.isDifferentFrom((OWLIndividual)is[i], (OWLIndividual)is[j])){
+			// check they are mutually distinct (if we are checking for existence)
+			boolean distinct = true;
+			if (checkForExistence) {
+				for (int i = 0; i < is.length; i++) {
+					for (int j = i + 1; j < is.length; j++) {
+						// create a description that is satisfiable iff the two individuals are different. TODO: request in-built OWL-API support for this
+						OWLDifferentIndividualsAxiom axiom = agent.getOntologyManager().getOWLDataFactory().getOWLDifferentIndividualsAxiom(_is);
+						IndividualAxiomToDescriptionConverter conv = new IndividualAxiomToDescriptionConverter(agent.getOntologyManager().getOWLDataFactory(), agent.getReasoner());
+						axiom.accept(conv);
+						if (!agent.getReasoner().isSatisfiable(conv.getDescription())) {//.isDifferentFrom((OWLIndividual)is[i], (OWLIndividual)is[j])){
 							distinct = false;
 							break;
-						}					
-	        		}
-	        		if(!distinct) break;
-	        	}   
-	    	}       
-	    	Set<OWLIndividualAxiom> axioms = new HashSet<OWLIndividualAxiom>();
-	    	Set<OWLIndividual> different = new HashSet<OWLIndividual>();
-	    	if(!checkForExistence || distinct){
-	    		for(int i=0; i<is.length; i++){ 
-	        		different.add((OWLIndividual)is[i]);
-	        	}
-	        	OWLDifferentIndividualsAxiom axiom = agent.getOntologyManager().getOWLDataFactory().getOWLDifferentIndividualsAxiom(different);        	
-	        	axioms.add(axiom);
-	    	}
-	    	return axioms;
+						}
+					}
+					if (!distinct)
+						break;
+				}
+			}
+			Set<OWLIndividualAxiom> axioms = new HashSet<OWLIndividualAxiom>();
+			Set<OWLIndividual> different = new HashSet<OWLIndividual>();
+			if (!checkForExistence || distinct) {
+				for (int i = 0; i < is.length; i++) {
+					different.add((OWLIndividual) is[i]);
+				}
+				OWLDifferentIndividualsAxiom axiom = agent.getOntologyManager().getOWLDataFactory().getOWLDifferentIndividualsAxiom(different);
+				axioms.add(axiom);
+			}
+			return axioms;
 		} catch (OWLReasonerException e) {
-			throw new JasdlException("Unable to convert "+sl+" to axiom. Reason: "+e);
+			throw new JASDLException("Unable to convert " + sl + " to axiom. Reason: " + e);
 		}
-	}	
-	
+	}
+
 	/**
 	 * Convert a binary SELiteral (asserting that two individuals are related by an object property) to its axiomatic encoding
 	 * @param sl				the SELiteral to convert
 	 * @param checkForExistence	if true, results will only be returned in they are entailed - if false, a successful encoding will guarantee a result
 	 * @return					an axiomatic encoding of sl
-	 * @throws JasdlException
+	 * @throws JASDLException
 	 */
-	public Set<OWLIndividualAxiom> create(SELiteralObjectPropertyAssertion sl, boolean checkForExistence) throws JasdlException{
+	public Set<OWLIndividualAxiom> create(SELiteralObjectPropertyAssertion sl, boolean checkForExistence) throws JASDLException {
 		try {
 			Set<OWLIndividual> os = new HashSet<OWLIndividual>();
 			OWLIndividual s = sl.getSubject();
 			OWLObjectProperty p = sl.getPredicate();
-			if(sl.getLiteral().getTerm(RANGE).isGround()){
+			if (sl.getLiteral().getTerm(JASDLParams.RANGE).isGround()) {
 				OWLIndividual o = sl.getObject();
-				if(!checkForExistence || agent.getReasoner().hasObjectPropertyRelationship(s, p, o)){
+				if (!checkForExistence || agent.getReasoner().hasObjectPropertyRelationship(s, p, o)) {
 					os.add(o);
 				}
-			}else{
+			} else {
 				os.addAll(agent.getReasoner().getRelatedIndividuals(s, p));
 			}
 			Set<OWLIndividualAxiom> axioms = new HashSet<OWLIndividualAxiom>();
-			for(OWLIndividual o : os){
+			for (OWLIndividual o : os) {
 				axioms.add(agent.getOntologyManager().getOWLDataFactory().getOWLObjectPropertyAssertionAxiom(s, p, o));
 			}
 			return axioms;
 		} catch (OWLReasonerException e) {
-			throw new JasdlException("Unable to convert "+sl+" to axiom. Reason: "+e);
+			throw new JASDLException("Unable to convert " + sl + " to axiom. Reason: " + e);
 		}
 	}
-	
+
 	/**
 	 * Convert a binary SELiteral (asserting that an individual is related to a datatype literal) to its axiomatic encoding
 	 * @param sl				the SELiteral to convert
 	 * @param checkForExistence	if true, results will only be returned in they are entailed - if false, a successful encoding will guarantee a result
 	 * @return					an axiomatic encoding of sl
-	 * @throws JasdlException
+	 * @throws JASDLException
 	 */
-	public Set<OWLIndividualAxiom> create(SELiteralDataPropertyAssertion sl, boolean checkForExistence) throws JasdlException{
+	public Set<OWLIndividualAxiom> create(SELiteralDataPropertyAssertion sl, boolean checkForExistence) throws JASDLException {
 		try {
 			Set<OWLConstant> os = new HashSet<OWLConstant>();
 			OWLIndividual s = sl.getSubject();
 			OWLDataProperty p = sl.getPredicate();
-			if(sl.getLiteral().getTerm(RANGE).isGround()){
+			if (sl.getLiteral().getTerm(JASDLParams.RANGE).isGround()) {
 				OWLTypedConstant o = sl.getObject();
-				if(!checkForExistence || agent.getReasoner().hasDataPropertyRelationship(s, p, o)){
+				if (!checkForExistence || agent.getReasoner().hasDataPropertyRelationship(s, p, o)) {
 					os.add(o);
 				}
-			}else{
+			} else {
 				os.addAll(agent.getReasoner().getRelatedValues(s, p));
 			}
 			Set<OWLIndividualAxiom> axioms = new HashSet<OWLIndividualAxiom>();
-			for(OWLConstant o : os){
+			for (OWLConstant o : os) {
 				axioms.add(agent.getOntologyManager().getOWLDataFactory().getOWLDataPropertyAssertionAxiom(s, p, o));
 			}
 			return axioms;
 		} catch (OWLReasonerException e) {
-			throw new JasdlException("Unable to convert "+sl+" to axiom. Reason: "+e);
+			throw new JASDLException("Unable to convert " + sl + " to axiom. Reason: " + e);
 		}
-	}	
-	
-	
-	
-	
-	
-	
+	}
+
 }

@@ -19,13 +19,11 @@
  */
 package jasdl.asSyntax;
 
-import jasdl.asSemantics.JasdlAgent;
-import jasdl.util.exception.JasdlException;
+import jasdl.asSemantics.JASDLAgent;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.Plan;
 import jason.asSyntax.Trigger;
-
-import java.util.List;
+import jasdl.bridge.DLUnifier;
 
 /**
  * <p>A plan whose trigger is associated with a semantically-enriched literal.</p>
@@ -36,38 +34,31 @@ import java.util.List;
  */
 public class SEPlan extends Plan {
 	private static final long serialVersionUID = 1L;
-	private JasdlAgent agent;
-	
-	public SEPlan(JasdlAgent agent, Plan p){
+
+	private JASDLAgent agent;
+
+	public SEPlan(JASDLAgent agent, Plan p) {
 		super(p.getLabel(), p.getTrigger(), p.getContext(), p.getBody());
 		this.agent = agent;
 	}
-	
-	
-	
+
 	@Override
 	public Unifier isRelevant(Trigger te) {
-		Unifier un = super.isRelevant(te);
-		if(un != null){ // plan is specifically relevant to deal with the trigger
+		Unifier un = super.isRelevant(te); // better solution? extend unifier?
+		if (un != null) { // plan is specifically relevant to deal with the trigger
 			return un;
-		}					
-		try {
-			// add te of result_of(te) as an annotation?
-			List<Trigger> moreGeneralTriggers = JasdlPlanLibrary.getMoreGeneralTriggers(agent, te);
-			for(Trigger moreGeneralTrigger : moreGeneralTriggers){
-				un = super.isRelevant(moreGeneralTrigger);
-				if(un != null){ // plan is generally relevant to deal with trigger
-					return un; // found a unification for this candidate, no need to continue
-				}
-			}
-		} catch (JasdlException e) {
-			agent.getLogger().warning("Relevancy check failed for plan: "+this+"\n against trigger: "+te);
 		}
-		return null;
+		DLUnifier dlun = new DLUnifier(agent);
+		if (dlun.unifiesNoUndo(getTrigger(), te)) { // <- plan's trigger subsumes incoming
+			return dlun;
+		} else {
+			return null;
+		}
 	}
-	
+
 	@Override
-	public Object clone(){
-		return new SEPlan(agent, (Plan)super.clone());
+	public Object clone() {
+		return new SEPlan(agent, (Plan) super.clone());
 	}
+
 }

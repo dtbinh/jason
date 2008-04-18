@@ -23,55 +23,45 @@ import jason.asSyntax.Trigger;
 
 import java.io.File;
 
-
 public class Common {
 
-	public static String DELIM=",";
-	public static int DOMAIN = 0;
-	public static int RANGE = 1;
-	/**
-	 * Prefix to use when creating unique ontology labels
-	 */
-	public static String ANON_ONTOLOGY_LABEL_PREFIX = "_ontology_";
-	
-	public static boolean surroundedBy(String text, String match){
+	public static boolean surroundedBy(String text, String match) {
 		return text.startsWith(match) && text.endsWith(match);
 	}
-	
-	public static String strip(String text, String remove){
-		if(text == null){ return null; }
-		if(surroundedBy(text, remove)){
+
+	public static String strip(String text, String remove) {
+		if (text == null) {
+			return null;
+		}
+		if (surroundedBy(text, remove)) {
 			return text.substring(remove.length(), text.length() - remove.length());
-		}else{
+		} else {
 			return text;
 		}
 	}
-	
+
 	/**
-	 * Probably should be a part of jason's Trigger class?
+	 * TODO: Probably should be a part of jason's Trigger class?
 	 * @param trigger
 	 * @return
 	 */
-	public static Trigger.TEOperator getTEOp(Trigger trigger){
-		if(trigger.isAddition()){
+	public static Trigger.TEOperator getTEOp(Trigger trigger) {
+		if (trigger.isAddition()) {
 			return Trigger.TEOperator.add;
-		}else{
+		} else {
 			return Trigger.TEOperator.del;
 		}
 	}
-	
-	public static String getCurrentDir()
-	{
-		File dir1 = new File (".");
+
+	public static String getCurrentDir() {
+		File dir1 = new File(".");
 		String strCurrentDir = "";
 		try {
 			strCurrentDir = dir1.getCanonicalPath();
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return strCurrentDir;
 	}
-	
 
 }

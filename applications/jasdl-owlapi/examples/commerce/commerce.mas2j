@@ -1,0 +1,60 @@
+/* Jason Project */
+
+MAS commerce {
+
+    infrastructure: Centralised
+
+    environment: commerce.env.CommerceEnvironment
+
+    agents:
+		shop1
+		[
+		jasdl_ontologies="c,s",
+		jasdl_c_uri="/onts/commerce.owl",
+		jasdl_s_uri="/onts/society.owl"
+		]
+		#1
+	    agentArchClass jasdl.architecture.JASDLAgArch
+	    agentClass jasdl.asSemantics.JASDLAgent
+	    beliefBaseClass jasdl.bb.JASDLBeliefBase; 
+		
+		delivery_van
+		[
+		jasdl_ontologies="c,s",
+		jasdl_c_uri="/onts/commerce.owl",
+		jasdl_s_uri="/onts/society.owl"
+		]
+		#2
+	    agentArchClass jasdl.architecture.JASDLAgArch
+	    agentClass jasdl.asSemantics.JASDLAgent
+	    beliefBaseClass jasdl.bb.JASDLBeliefBase; 
+		
+		customer
+		[
+		jasdl_ontologies="c,s",
+		jasdl_c_uri="/onts/commerce.owl",
+		jasdl_s_uri="/onts/society.owl"
+		]
+		#3
+	    agentArchClass jasdl.architecture.JASDLAgArch
+	    agentClass jasdl.asSemantics.JASDLAgent
+	    beliefBaseClass jasdl.bb.JASDLBeliefBase; 
+		
+		pa
+		[
+		jasdl_ontologies="c,s",
+		jasdl_c_uri="/onts/commerce.owl",
+		jasdl_s_uri="/onts/society.owl"
+		]
+		#3
+	    agentArchClass jasdl.architecture.JASDLAgArch
+	    agentClass jasdl.asSemantics.JASDLAgent
+	    beliefBaseClass jasdl.bb.JASDLBeliefBase; 
+
+		
+		classpath: 	"../../lib/**/*.jar";			// JASDL's libraries
+					"../../../jmca/lib/jmca.jar";	// JMCA
+					
+		aslSourcePath: "src/asl";
+}
+

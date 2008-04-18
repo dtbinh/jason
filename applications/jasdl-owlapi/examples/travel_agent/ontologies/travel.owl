@@ -100,6 +100,7 @@
     <!-- http://www.owl-ontologies.com/travel.owl#isLocatedAt -->
 
     <owl:ObjectProperty rdf:about="#isLocatedAt">
+        <rdf:type rdf:resource="&owl11;AntisymmetricProperty"/>
         <rdf:type rdf:resource="&owl11;IrreflexiveProperty"/>
         <rdfs:domain rdf:resource="#Accommodation"/>
         <rdfs:range rdf:resource="#Destination"/>

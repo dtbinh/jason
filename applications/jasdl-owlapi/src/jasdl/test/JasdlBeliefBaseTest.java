@@ -1,18 +1,33 @@
+/* 
+ *  Copyright (C) 2008 Thomas Klapiscak (t.g.klapiscak@durham.ac.uk)
+ *  
+ *  This file is part of JASDL.
+ *
+ *  JASDL is free software: you can redistribute it and/or modify
+ *  it under the terms of the Lesser GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  JASDL is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  Lesser GNU General Public License for more details.
+ *
+ *  You should have received a copy of the Lesser GNU General Public License
+ *  along with JASDL.  If not, see <http://www.gnu.org/licenses/>.
+ *  
+ */
 package jasdl.test;
 
-import static jasdl.asSemantics.JasdlConfigurator.MAS2J_ONTOLOGIES;
-import static jasdl.asSemantics.JasdlConfigurator.MAS2J_PREFIX;
-import static jasdl.asSemantics.JasdlConfigurator.MAS2J_URI;
-import static jasdl.asSemantics.JasdlConfigurator.MAS2J_USEBELIEFREVISION;
-import jasdl.architecture.JasdlAgArch;
-import jasdl.asSemantics.JasdlAgent;
-import jasdl.bb.JasdlBeliefBase;
+import jasdl.JASDLParams;
+import jasdl.architecture.JASDLAgArch;
+import jasdl.asSemantics.JASDLAgent;
+import jasdl.bb.JASDLBeliefBase;
 import jasdl.bridge.factory.AliasFactory;
 import jasdl.bridge.mapping.aliasing.Alias;
 import jasdl.bridge.seliteral.SELiteral;
-import jasdl.util.exception.JasdlException;
-import jasdl.util.owlapi.xsd.XSDDataType;
-import jasdl.util.owlapi.xsd.XSDDataTypeUtils;
+import jasdl.util.exception.JASDLException;
+import jasdl.util.owlapi.xsd.XSDVocabularyUtils;
 import jason.architecture.AgArch;
 import jason.architecture.AgArchInfraTier;
 import jason.asSyntax.Atom;
@@ -27,6 +42,7 @@ import jason.mas2j.ClassParameters;
 import jason.runtime.Settings;
 
 import java.lang.reflect.Constructor;
+import java.net.URI;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -43,7 +59,7 @@ import org.semanticweb.owl.model.OWLDataProperty;
 import org.semanticweb.owl.model.OWLDataType;
 import org.semanticweb.owl.model.OWLObjectProperty;
 import org.semanticweb.owl.model.OWLOntology;
-
+import org.semanticweb.owl.vocab.XSDVocabulary;
 
 /**
  * Tests that behaviour of JASDL's BB is identical to that of Jason's default BB.
@@ -60,19 +76,29 @@ import org.semanticweb.owl.model.OWLOntology;
  * @author Tom Klapiscak
  *
  */
-public class JasdlBeliefBaseTest extends TestCase{	
-	
+public class JasdlBeliefBaseTest extends TestCase {
+
 	public static String JASDL_AG_ARCH_CLASS = "jasdl.architecture.JasdlAgArch";
+
 	public static String JASDL_AGENT_CLASS = "jasdl.asSemantics.JasdlAgent";
+
 	public static String JASDL_BELIEF_BASE_CLASS = "jasdl.bb.JasdlBeliefBase";
-	
+
 	public static Atom TEST_ONTOLOGY_LABEL = new Atom("test");
-	public static String TEST_ONTOLOGY_URI = "http://www.dur.ac.uk/t.g.klapiscak/onts/travel.owl";
-	
-	protected JasdlAgArch arch;
-	protected JasdlAgent agent;	
-	protected JasdlBeliefBase bb;
+
+	private URI TEST_ONTOLOGY_URI = getClass().getResource("travel.owl").toURI();
+
+	protected JASDLAgArch arch;
+
+	protected JASDLAgent agent;
+
+	protected JASDLBeliefBase bb;
+
 	protected DefaultBeliefBase testbb;
+
+	public JasdlBeliefBaseTest() throws Exception {
+
+	}
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -87,240 +113,237 @@ public class JasdlBeliefBaseTest extends TestCase{
 	public void setUp() throws Exception {
 		// Use default manual mappings, mapping strategies and reasoner class. No known agents + trust ratings
 		Settings stts = new Settings();
-		stts.addOption(MAS2J_PREFIX + MAS2J_ONTOLOGIES, TEST_ONTOLOGY_LABEL.getFunctor());
-		stts.addOption(MAS2J_PREFIX + "_" + TEST_ONTOLOGY_LABEL + MAS2J_URI, TEST_ONTOLOGY_URI);
-		stts.addOption(MAS2J_PREFIX + MAS2J_USEBELIEFREVISION, "true");		// Must be enabled (we don't want legacy consistency assurance!) - remember brf is skipped by this
-		
+		stts.addOption(JASDLParams.MAS2J_PREFIX + JASDLParams.MAS2J_ONTOLOGIES, TEST_ONTOLOGY_LABEL.getFunctor());
+		stts.addOption(JASDLParams.MAS2J_PREFIX + "_" + TEST_ONTOLOGY_LABEL + JASDLParams.MAS2J_URI, TEST_ONTOLOGY_URI.toString());
+		stts.addOption(JASDLParams.MAS2J_PREFIX + JASDLParams.MAS2J_USEBELIEFREVISION, "true"); // Must be enabled (we don't want legacy consistency assurance!) - remember brf is skipped by this
+
 		// load arch
 		Class cls = Class.forName(JASDL_AG_ARCH_CLASS);
 		Constructor ct = cls.getConstructor(new Class[] {});
-		AgArch arch = (AgArch)ct.newInstance(new Object[] {});		
+		AgArch arch = (AgArch) ct.newInstance(new Object[] {});
 		AgArchInfraTier archInfraTier = new CentralisedAgArch();
-		arch.setArchInfraTier(archInfraTier);		
+		arch.setArchInfraTier(archInfraTier);
 		arch.initAg(JASDL_AGENT_CLASS, new ClassParameters(JASDL_BELIEF_BASE_CLASS), null, stts);
-		
-		agent = (JasdlAgent)arch.getTS().getAg();
-		bb = (JasdlBeliefBase)agent.getBB();
-		
+
+		agent = (JASDLAgent) arch.getTS().getAg();
+		bb = (JASDLBeliefBase) agent.getBB();
+
 		testbb = new DefaultBeliefBase();
-				
+
 		// we are not worrying about ordering of iterator anymore
 		Iterator<Literal> bbit = bb.iterator();
-		while(bbit.hasNext()){
+		while (bbit.hasNext()) {
 			testbb.add(bbit.next());
-		}	
-		
-			
+		}
+
 	}
 
 	@After
 	public void tearDown() throws Exception {
 	}
-	
-	
 
-
-	
-	private void testAddIndividualAssertion(boolean sign, Atom functor, Term[] terms, Term[] annots, Atom label) throws JasdlException{
-		try{
-			testAddIndividualAssertion(agent.getSELiteralFactory().construct(sign, functor, terms, annots, label));			
-		}catch(JasdlException e){}
+	private void testAddIndividualAssertion(boolean sign, Atom functor, Term[] terms, Term[] annots, Atom label) throws JASDLException {
+		try {
+			testAddIndividualAssertion(agent.getSELiteralFactory().construct(sign, functor, terms, annots, label));
+		} catch (JASDLException e) {
+		}
 	}
-	
-	private void testAddIndividualAssertion(SELiteral sl) throws JasdlException{
-		Literal l = sl.getLiteral();
-		System.out.print("Adding: "+l);
-		//cloning necessary since Jason's default bb.add affects l passed to it
-		boolean expected = testbb.add((Literal)l.clone());
-		boolean actual = bb.add((Literal)l.clone());			
-		assertEquals(expected, actual);
-		System.out.println(" ... Result: "+actual);
-	}	
-	
 
-	private void testRemoveIndividualAssertion(boolean sign, Atom functor, Term[] terms, Term[] annots, Atom label) throws JasdlException{
-		try{
-			testRemoveIndividualAssertion(agent.getSELiteralFactory().construct(sign, functor, terms, annots, label));			
-		}catch(JasdlException e){}
+	private void testAddIndividualAssertion(SELiteral sl) throws JASDLException {
+		Literal l = sl.getLiteral();
+		System.out.print("Adding: " + l);
+		//cloning necessary since Jason's default bb.add affects l passed to it
+		boolean expected = testbb.add((Literal) l.clone());
+		boolean actual = bb.add((Literal) l.clone());
+		assertEquals(expected, actual);
+		System.out.println(" ... Result: " + actual);
 	}
-	
-	private void testRemoveIndividualAssertion(SELiteral sl) throws JasdlException{
-		Literal l = sl.getLiteral();
-		System.out.print("Adding: "+l);
-		//cloning necessary since Jason's default bb.add affects l passed to it
-		boolean expected = testbb.remove((Literal)l.clone());
-		boolean actual = bb.remove((Literal)l.clone());			
-		assertEquals(expected, actual);
-		System.out.println(" ... Result: "+actual);
-	}	
-			
-	private static boolean[] signs = new boolean[] {true, false};
-	
 
-	
-	
+	private void testRemoveIndividualAssertion(boolean sign, Atom functor, Term[] terms, Term[] annots, Atom label) throws JASDLException {
+		try {
+			testRemoveIndividualAssertion(agent.getSELiteralFactory().construct(sign, functor, terms, annots, label));
+		} catch (JASDLException e) {
+		}
+	}
+
+	private void testRemoveIndividualAssertion(SELiteral sl) throws JASDLException {
+		Literal l = sl.getLiteral();
+		System.out.print("Removing: " + l);
+		//cloning necessary since Jason's default bb.add affects l passed to it
+		boolean expected = testbb.remove((Literal) l.clone());
+		boolean actual = bb.remove((Literal) l.clone());
+		assertEquals(expected, actual);
+		System.out.println(" ... Result: " + actual);
+	}
+
+	private static boolean[] signs = new boolean[] { true, false };
+
 	/**
 	 * Number of entities (classes and object and datatype properties) to test BB add method against (per ontology)
 	 * (Little point in testing it for ALL entities in an ontology)
 	 */
 	private static int NUM_ENTITIES_TEST_ADD = 3;
+
 	@Test
-	public void testAddLiteral() throws Exception{
+	public void testAddLiteral() throws Exception {
 		// ensure annotation gathering disabled for this test - we are only checking handling of annotation additions is correct
-		agent.setAnnotationGatheringEnabled(false);
-		
-		Atom[][] annotSets = new Atom[][] {new Atom[]{}, new Atom[] {new Atom("x")}, new Atom[] {new Atom("x"), new Atom("y")} }; // TODO: No real reason to check annotation handling for ALL types of entity - exactly the same code is used
-		for(OWLOntology ontology : agent.getOntologyManager().getOntologies()){	// test against all known ontologies
-			for(int run=0; run<=1; run++){	// run twice to ensure duplicate additions are rejected
-				for(boolean sign : signs){ // run for both positive and negative literals (l and ~l)
-					for(Atom[] annots : annotSets){
+		agent.getConfig().setAnnotationGatheringEnabled(false);
+
+		Atom[][] annotSets = new Atom[][] { new Atom[] {}, new Atom[] { new Atom("x") }, new Atom[] { new Atom("x"), new Atom("y") } }; // TODO: No real reason to check annotation handling for ALL types of entity - exactly the same code is used
+		for (OWLOntology ontology : agent.getOntologyManager().getOntologies()) { // test against all known ontologies
+			for (int run = 0; run <= 1; run++) { // run twice to ensure duplicate additions are rejected
+				for (boolean sign : signs) { // run for both positive and negative literals (l and ~l)
+					for (Atom[] annots : annotSets) {
 						int i;
-						i=0;
-						for(OWLClass cls : ontology.getReferencedClasses()){
-							if(i==NUM_ENTITIES_TEST_ADD) break;
+						i = 0;
+						for (OWLClass cls : ontology.getReferencedClasses()) {
+							if (i == NUM_ENTITIES_TEST_ADD)
+								break;
 							Alias alias = agent.getAliasManager().getLeft(cls);
 							Atom label = alias.getLabel();
-							Atom functor = alias.getFunctor();					
-							testAddIndividualAssertion(sign, functor, new Atom[] {new Atom("a")}, annots, label);
+							Atom functor = alias.getFunctor();
+							testAddIndividualAssertion(sign, functor, new Atom[] { new Atom("a") }, annots, label);
 							i++;
 						}
-						i=0;
-						for(OWLObjectProperty oprop : ontology.getReferencedObjectProperties()){
-							if(i==NUM_ENTITIES_TEST_ADD) break;
+						i = 0;
+						for (OWLObjectProperty oprop : ontology.getReferencedObjectProperties()) {
+							if (i == NUM_ENTITIES_TEST_ADD)
+								break;
 							Alias alias = agent.getAliasManager().getLeft(oprop);
 							Atom label = alias.getLabel();
-							Atom functor = alias.getFunctor();			
+							Atom functor = alias.getFunctor();
 							Atom a = new Atom("a");
 							Atom b = new Atom("b");
-							testAddIndividualAssertion(sign, functor, new Atom[] {a, b}, annots, label);
-							testAddIndividualAssertion(sign, functor, new Atom[] {b, a}, annots, label); // anti-symmetric properties shouldn't be rejected at this stage
-							testAddIndividualAssertion(sign, functor, new Atom[] {a, a}, annots, label); // irreflexive properties shouldn't be rejected at this stage
+							testAddIndividualAssertion(sign, functor, new Atom[] { a, b }, annots, label);
+							testAddIndividualAssertion(sign, functor, new Atom[] { b, a }, annots, label); // anti-symmetric properties shouldn't be rejected at this stage
+							testAddIndividualAssertion(sign, functor, new Atom[] { a, a }, annots, label); // irreflexive properties shouldn't be rejected at this stage
 							i++;
 						}
-						i=0;
-						for(OWLDataProperty dprop : ontology.getReferencedDataProperties()){
-							if(i==NUM_ENTITIES_TEST_ADD) break;
+						i = 0;
+						for (OWLDataProperty dprop : ontology.getReferencedDataProperties()) {
+							if (i == NUM_ENTITIES_TEST_ADD)
+								break;
 							Alias alias = agent.getAliasManager().getLeft(dprop);
 							Atom label = alias.getLabel();
 							Atom functor = alias.getFunctor();
-							XSDDataType typ = XSDDataTypeUtils.get(((OWLDataType)dprop.getRanges(ontology).toArray()[0]).toString());
-							if(typ == XSDDataType.XSD_STRING){
-								testAddIndividualAssertion(sign, functor, new Term[] {new Atom("a"), new StringTermImpl("Winchester")}, annots, label);
+							//TODO: Complex data ranges?
+							XSDVocabulary typ = XSDVocabularyUtils.getByName(((OWLDataType) dprop.getRanges(ontology).toArray()[0]).toString());
+							if (XSDVocabularyUtils.requiresStringTermRepresentation(typ)) {
+								testAddIndividualAssertion(sign, functor, new Term[] { new Atom("a"), new StringTermImpl("Winchester") }, annots, label);
 							}
 							/*
-							// NOT NECESSARY, AS LONG AS SELITERAL WORKS FOR ALL TYPES OF DATATYPE PROPERTY, THIS WILL (SAME CODE IS USED)
-							if(typ == XSDDataType.XSD_BOOLEAN){
-								testAddIndividualAssertion(constructDataProperty(sign, functor, "a", "false", annots, label));
-								testAddIndividualAssertion(constructDataProperty(sign, functor, "a", "true", annots, label));
-							}else if(typ == XSDDataType.XSD_DATE){
-								testAddIndividualAssertion(constructDataProperty(sign, functor, "a", "\"2007-12-20\"", annots, label));
-							}else if(typ == XSDDataType.XSD_DATETIME){
-								testAddIndividualAssertion(constructDataProperty(sign, functor, "a", "\"2007-12-20T20:16:55\"", annots, label));						
-							}else if(typ == XSDDataType.XSD_FLOAT){
-								testAddIndividualAssertion(constructDataProperty(sign, functor, "a", "0.5", annots, label));	
-							}else if(typ == XSDDataType.XSD_INT){
-								testAddIndividualAssertion(constructDataProperty(sign, functor, "a", "22", annots, label));
-							}else if(typ == XSDDataType.XSD_STRING){
-								testAddIndividualAssertion(constructDataProperty(sign, functor, "a", "\"Winchester\"", annots, label));
-							}else if(typ == XSDDataType.XSD_TIME){
-								testAddIndividualAssertion(constructDataProperty(sign, functor, "a", "\"20:16:57\"", annots, label));
-							}
-							*/
+							 // NOT NECESSARY, AS LONG AS SELITERAL WORKS FOR ALL TYPES OF DATATYPE PROPERTY, THIS WILL (SAME CODE IS USED)
+							 if(typ == XSDDataType.XSD_BOOLEAN){
+							 testAddIndividualAssertion(constructDataProperty(sign, functor, "a", "false", annots, label));
+							 testAddIndividualAssertion(constructDataProperty(sign, functor, "a", "true", annots, label));
+							 }else if(typ == XSDDataType.XSD_DATE){
+							 testAddIndividualAssertion(constructDataProperty(sign, functor, "a", "\"2007-12-20\"", annots, label));
+							 }else if(typ == XSDDataType.XSD_DATETIME){
+							 testAddIndividualAssertion(constructDataProperty(sign, functor, "a", "\"2007-12-20T20:16:55\"", annots, label));						
+							 }else if(typ == XSDDataType.XSD_FLOAT){
+							 testAddIndividualAssertion(constructDataProperty(sign, functor, "a", "0.5", annots, label));	
+							 }else if(typ == XSDDataType.XSD_INT){
+							 testAddIndividualAssertion(constructDataProperty(sign, functor, "a", "22", annots, label));
+							 }else if(typ == XSDDataType.XSD_STRING){
+							 testAddIndividualAssertion(constructDataProperty(sign, functor, "a", "\"Winchester\"", annots, label));
+							 }else if(typ == XSDDataType.XSD_TIME){
+							 testAddIndividualAssertion(constructDataProperty(sign, functor, "a", "\"20:16:57\"", annots, label));
+							 }
+							 */
 							i++;
 
-					}
+						}
 						// All different assertion
 						//TODO: below only uses a single individuals, ordering of all_different individuals important for literal equality
 						// (see hack in BB.getCandidateBeliefs)
 						ListTerm list = new ListTermImpl();
 						list.add(new Atom("a"));
-						testAddIndividualAssertion(sign, AliasFactory.OWL_ALL_DIFFERENT_FUNCTOR, new Term[] {list}, annots, agent.getPersonalOntologyLabel());
+						testAddIndividualAssertion(sign, JASDLParams.OWL_ALL_DIFFERENT_FUNCTOR, new Term[] { list }, annots, agent.getJom().getPersonalOntologyLabel());
 					}
-					
-				}					
+
+				}
 			}
 		}
-		
+
 		Set<Literal> expected = new HashSet<Literal>();
 		Iterator<Literal> testbbit = testbb.iterator();
-		
-		while(testbbit.hasNext()){
+
+		while (testbbit.hasNext()) {
 			expected.add(testbbit.next());
 		}
-		
+
 		Set<Literal> actual = new HashSet<Literal>();
 		Iterator<Literal> bbit = bb.iterator();
-		while(bbit.hasNext()){
+		while (bbit.hasNext()) {
 			actual.add(bbit.next());
-		}	
+		}
 		assertEquals(expected, actual);
 	}
-	
-	
+
 	private static int NUM_ENTITIES_TEST_REMOVE = 3;
+
 	@Test
-	public void testRemoveLiteral() throws Exception{
-	
-		
-		for(boolean sign : signs){
-			
-			/** Testing annotation handling () */		
+	public void testRemoveLiteral() throws Exception {
+
+		for (boolean sign : signs) {
+
+			/** Testing annotation handling () */
 			Atom a = new Atom("a");
 			Atom b = new Atom("b");
 			Atom hotel = new Atom("hotel");
 			SELiteral l = agent.getSELiteralFactory().construct(sign, hotel, a, new Atom[0], TEST_ONTOLOGY_LABEL);
-			SELiteral l_x = agent.getSELiteralFactory().construct(sign, hotel, a, new Atom[] {new Atom("x")}, TEST_ONTOLOGY_LABEL);
-			SELiteral l_xy = agent.getSELiteralFactory().construct(sign, hotel, a, new Atom[] {new Atom("x"), new Atom("y")}, TEST_ONTOLOGY_LABEL);
-			SELiteral l_y = agent.getSELiteralFactory().construct(sign, hotel, a, new Atom[] {new Atom("y")}, TEST_ONTOLOGY_LABEL);
-			
-			testRemoveIndividualAssertion(l);	
+			SELiteral l_x = agent.getSELiteralFactory().construct(sign, hotel, a, new Atom[] { new Atom("x") }, TEST_ONTOLOGY_LABEL);
+			SELiteral l_xy = agent.getSELiteralFactory().construct(sign, hotel, a, new Atom[] { new Atom("x"), new Atom("y") }, TEST_ONTOLOGY_LABEL);
+			SELiteral l_y = agent.getSELiteralFactory().construct(sign, hotel, a, new Atom[] { new Atom("y") }, TEST_ONTOLOGY_LABEL);
+
+			testRemoveIndividualAssertion(l);
 			testRemoveIndividualAssertion(l_x);
 			testRemoveIndividualAssertion(l_xy);
-			
+
 			testAddIndividualAssertion(l);
-			testRemoveIndividualAssertion(l);			
-						
+			testRemoveIndividualAssertion(l);
+
 			testAddIndividualAssertion(l_x);
 			testRemoveIndividualAssertion(l);
-			testRemoveIndividualAssertion(l_x);			
-			
+			testRemoveIndividualAssertion(l_x);
+
 			testAddIndividualAssertion(l_x);
 			testRemoveIndividualAssertion(l_x);
 			testRemoveIndividualAssertion(l);
-			
-			
+
 			testAddIndividualAssertion(l_x);
 			testRemoveIndividualAssertion(l_xy);
 			testRemoveIndividualAssertion(l);
-			
+
 			testAddIndividualAssertion(l_x);
 			testRemoveIndividualAssertion(l);
 			testRemoveIndividualAssertion(l_xy);
-			
+
 			testAddIndividualAssertion(l_xy);
 			testRemoveIndividualAssertion(l_xy);
-			
+
 			testAddIndividualAssertion(l_xy);
 			testRemoveIndividualAssertion(l);
-			
+
 			testAddIndividualAssertion(l_xy);
 			testRemoveIndividualAssertion(l_x);
 			testRemoveIndividualAssertion(l_xy);
 			testRemoveIndividualAssertion(l_y);
 			testRemoveIndividualAssertion(l_xy);
 			testRemoveIndividualAssertion(l_y);
-			testRemoveIndividualAssertion(l);	
-			
+			testRemoveIndividualAssertion(l);
+
 		}
 		/** Test removals work for other types of entities **/
 		// (no need to check annotation handling, exactly the same code is used)
 		// this is unnecessary, literal translation is tested elsewhere
 		// and except for that, exactly the same code is used
-		for(OWLOntology ontology : agent.getOntologyManager().getOntologies()){	// test against all known ontologies
+		for (OWLOntology ontology : agent.getOntologyManager().getOntologies()) { // test against all known ontologies
 			int i;
-			i=0;
-			for(OWLObjectProperty oprop : ontology.getReferencedObjectProperties()){
-				if(i==NUM_ENTITIES_TEST_REMOVE) break;
+			i = 0;
+			for (OWLObjectProperty oprop : ontology.getReferencedObjectProperties()) {
+				if (i == NUM_ENTITIES_TEST_REMOVE)
+					break;
 				Alias alias = agent.getAliasManager().getLeft(oprop);
 				Atom label = alias.getLabel();
 				Atom functor = alias.getFunctor();
@@ -329,16 +352,10 @@ public class JasdlBeliefBaseTest extends TestCase{
 				testRemoveIndividualAssertion(k);
 			}
 		}
-		
+
 		/** (Briefly) test it integrates correctly with contractor (contractor is tested more thoroughly elsewhere) **/
-		
-		
-	}	
 
-
-
-	
-
+	}
 
 	@Test
 	public void testContainsLiteral() {
