@@ -6,6 +6,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({
+    BugListReturnUnification.class,
     BugVarsInInitBels.class,
     TestAddLogExprInBB.class,
     TestGoalSource.class, 

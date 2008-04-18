@@ -12,6 +12,7 @@ Bugs fixed:
 . add "source(self)" in goals without source
 . correctly handle failure event caused by no relevant plans 
 . timeout in .wait does not cause a runtime exception
+. unification in return of ! and ?
 
 
 -------------

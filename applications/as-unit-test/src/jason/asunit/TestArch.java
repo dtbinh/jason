@@ -93,7 +93,7 @@ public class TestArch extends CentralisedAgArch implements Runnable {
     }
     
     public void print(String s) {
-        //System.out.println(s);
+        System.out.println(s);
         output.append(s+"\n");
     }
     
