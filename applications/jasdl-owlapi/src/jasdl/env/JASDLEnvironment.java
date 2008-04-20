@@ -44,25 +44,23 @@ import org.mindswap.pellet.owlapi.Reasoner;
 public class JASDLEnvironment extends Environment {
 	private ProtocolProcessor processor;
 
-	private JASDLOntologyManager jasdlOntologyManager;
+	private JASDLOntologyManager jom;
 
-	private SELiteralFactory SELiteralFactory;
 
 	@Override
 	public void init(String[] args) {
 		super.init(args);
-		jasdlOntologyManager = new JASDLOntologyManager(Logger.getLogger(this.getClass().getName()));
-		jasdlOntologyManager.setReasoner(new Reasoner(jasdlOntologyManager.getOntologyManager()));
-		SELiteralFactory = new SELiteralFactory(jasdlOntologyManager);
-		processor = new ProtocolProcessor(jasdlOntologyManager, JASDLParams.DEFAULT_MAPPING_STRATEGIES, SELiteralFactory);
+		jom = new JASDLOntologyManager(Logger.getLogger(this.getClass().getName()));
+		jom.setReasoner(new Reasoner(jom.getOntologyManager()));
+		processor = new ProtocolProcessor(jom, JASDLParams.DEFAULT_MAPPING_STRATEGIES);
 	}
 
-	public JASDLOntologyManager getJasdlOntologyManager() {
-		return jasdlOntologyManager;
+	public JASDLOntologyManager getJom() {
+		return jom;
 	}
 
 	public SELiteralFactory getSELiteralFactory() {
-		return SELiteralFactory;
+		return jom.getSELiteralFactory();
 	}
 
 	public void addPercept(Literal per) {

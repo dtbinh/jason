@@ -37,6 +37,7 @@ import org.semanticweb.owl.model.OWLOntology;
 
 /**
  * Generates a anonymous, guaranteed unique individual.
+ * Prefixed with agent name to guarantee uniqueness within entire agent society.
  * 
  * @author Tom Klapiscak
  * 
@@ -55,6 +56,8 @@ public class get_anonymous_individual extends DefaultInternalAction {
 			}
 
 			JASDLAgent agent = (JASDLAgent) ts.getAg();
+			
+			String prefix = agent.getAgentName() + "_" + JASDLParams.ANONYMOUS_INDIVIDUAL_PREFIX;
 
 			// collate all known anonymous individuals
 			Set<Atom> anonymousIndividualFunctors = new HashSet<Atom>();
@@ -62,13 +65,13 @@ public class get_anonymous_individual extends DefaultInternalAction {
 				for (OWLIndividual i : ontology.getReferencedIndividuals()) {
 					Alias alias = agent.getAliasManager().getLeft(i);
 					Atom functor = alias.getFunctor();
-					if (functor.toString().startsWith(JASDLParams.ANONYMOUS_INDIVIDUAL_PREFIX)) {
+					if (functor.toString().startsWith(prefix)) {
 						anonymousIndividualFunctors.add(functor);
 					}
 				}
 			}
 
-			un.unifies(args[0], new Atom(JASDLParams.ANONYMOUS_INDIVIDUAL_PREFIX + anonymousIndividualFunctors.size()));
+			un.unifies(args[0], new Atom(prefix + anonymousIndividualFunctors.size()));
 			return true;
 
 		} catch (Exception e) {

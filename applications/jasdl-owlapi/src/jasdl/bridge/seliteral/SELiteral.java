@@ -36,6 +36,7 @@ import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.Set;
 
 import org.semanticweb.owl.model.AddAxiom;
@@ -47,7 +48,6 @@ import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLIndividualAxiom;
 import org.semanticweb.owl.model.OWLObject;
 import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyChangeException;
 
 import uk.ac.manchester.cs.owl.OWLLabelAnnotationImpl;
 
@@ -181,39 +181,47 @@ public class SELiteral {
 	 * @return
 	 * @throws JASDLUnknownMappingException
 	 */
-	public OWLIndividual getOWLIndividual(Term term) throws JASDLInvalidSELiteralException, JASDLDuplicateMappingException, JASDLUnknownMappingException {
+	public OWLIndividual getOWLIndividual(Term term) throws JASDLException {
 		Atom atom = new Atom(term.toString());
-		OWLIndividual i;
-		try {
-			i = (OWLIndividual) jom.getAliasManager().getRight(AliasFactory.INSTANCE.create(atom, jom.getLabelManager().getLeft(getOntology())));
-		} catch (JASDLUnknownMappingException e1) {
-			Alias alias = AliasFactory.INSTANCE.create(atom, jom.getPersonalOntologyLabel()); // <- look in personal ontology
-			try {
-				i = (OWLIndividual) jom.getAliasManager().getRight(alias);
-			} catch (JASDLUnknownMappingException e2) {
-				// Instantiate and map the individual if not known
-				OWLOntology ontology = getOntology();
-				// Clashes (with different types of resource) don't matter thanks to OWL1.1's punning features
-				//TODO: what about clashes with individuals (different alias, same uri)
-				URI uri = URI.create(ontology.getURI() + "#" + atom);
-				i = jom.getOntologyManager().getOWLDataFactory().getOWLIndividual(uri);
-				jom.getAliasManager().put(alias, i);
-				
-				//OWLAxiom axiom = jom.getOWLDataFactory().getOWLDifferentIndividualsAxiom(Collections.singleton(i));
-				
-				OWLAnnotation a = new OWLLabelAnnotationImpl(jom.getOWLDataFactory(), jom.getOWLDataFactory().getOWLTypedConstant(""));
-				OWLAxiom axiom = jom.getOWLDataFactory().getOWLEntityAnnotationAxiom(i, a);
-				try {
-					jom.getOntologyManager().applyChange(new AddAxiom(ontology, axiom)); // <- add this "redundant" axiom to ensure we have a reference to this individuals in the ontology (for toEntity method and description parsing)
-				} catch (OWLOntologyChangeException e) {
-					throw new JASDLInvalidSELiteralException("Error instantiating owl individual from " + term, e);
-				}
-				
-
+		OWLIndividual i = null;
+		
+		
+		// search across all known ontologies for an individual by this name (functor only)		
+		for(OWLOntology tryOntology : jom.getReasoner().getLoadedOntologies()){
+			try{
+				i = (OWLIndividual) jom.getAliasManager().getRight(
+						AliasFactory.INSTANCE.create(atom, jom.getLabelManager().getLeft(tryOntology)));
+			}catch(JASDLUnknownMappingException e){				
 			}
-		} catch (ClassCastException e) {
-			throw new JASDLInvalidSELiteralException(atom + " does not refer to an individual");
+		}	
+		
+		
+		// we can't find one, define a new individual within the ontology referenced by this SE-Literal		
+		if(i == null){
+			// get the ontology of this SE-Literal
+			OWLOntology ontology = getOntology();
+			
+			// instantiate a new alias mapping for this individual
+			Alias newIndividualAlias = AliasFactory.INSTANCE.create(atom, getOntologyLabel());
+			URI uri = URI.create(ontology.getURI() + "#" + atom);
+			
+			jom.getLogger().info("Instantiating individual ("+newIndividualAlias+") "+uri);
+			
+			i = jom.getOntologyManager().getOWLDataFactory().getOWLIndividual(uri);
+			jom.getAliasManager().put(newIndividualAlias, i);
+			
+			// create a semantically-meaningless empty annotation axiom so this individual is referenced within the ontology
+			OWLAnnotation a = new OWLLabelAnnotationImpl(jom.getOWLDataFactory(), jom.getOWLDataFactory().getOWLTypedConstant(""));
+			OWLAxiom axiom = jom.getOWLDataFactory().getOWLEntityAnnotationAxiom(i, a);
+			try {
+				jom.getOntologyManager().applyChange(new AddAxiom(ontology, axiom)); // <- add this "redundant" axiom to ensure we have a reference to this individuals in the ontology (for toEntity method and description parsing)
+				jom.refreshReasoner();
+			} catch (Exception e) {
+				throw new JASDLInvalidSELiteralException("Error instantiating owl individual from " + term, e);
+			}
 		}
+		
+		
 		return i;
 	}
 
@@ -275,5 +283,5 @@ public class SELiteral {
 	public String toString() {
 		return literal.toString();
 	}
-
+	
 }

@@ -20,14 +20,14 @@
 package jasdl.bridge.factory;
 
 import jasdl.JASDLParams;
-import jasdl.asSemantics.JASDLAgent;
+import jasdl.bridge.JASDLOntologyManager;
 import jasdl.bridge.seliteral.SELiteral;
 import jasdl.bridge.seliteral.SELiteralAllDifferentAssertion;
 import jasdl.bridge.seliteral.SELiteralClassAssertion;
 import jasdl.bridge.seliteral.SELiteralDataPropertyAssertion;
 import jasdl.bridge.seliteral.SELiteralObjectPropertyAssertion;
-import jasdl.util.exception.JASDLInvalidSELiteralException;
 import jasdl.util.exception.JASDLException;
+import jasdl.util.exception.JASDLInvalidSELiteralException;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -74,10 +74,10 @@ import bebops.common.IndividualAxiomToDescriptionConverter;
  */
 public class SELiteralToAxiomConverter {
 
-	private JASDLAgent agent;
+	private JASDLOntologyManager jom;
 
-	public SELiteralToAxiomConverter(JASDLAgent agent) {
-		this.agent = agent;
+	public SELiteralToAxiomConverter(JASDLOntologyManager jom) {
+		this.jom = jom;
 	}
 
 	/**
@@ -140,15 +140,15 @@ public class SELiteralToAxiomConverter {
 
 			if (sl.getLiteral().isGround()) {
 				OWLIndividual i = sl.getOWLIndividual();
-				if (!checkForExistence || agent.getReasoner().hasType(i, desc, false)) {
+				if (!checkForExistence || jom.getReasoner().hasType(i, desc, false)) {
 					is.add(i);
 				}
 			} else {
-				is.addAll(agent.getReasoner().getIndividuals(desc, false));
+				is.addAll(jom.getReasoner().getIndividuals(desc, false));
 			}
 			Set<OWLIndividualAxiom> axioms = new HashSet<OWLIndividualAxiom>();
 			for (OWLIndividual i : is) {
-				axioms.add(agent.getOntologyManager().getOWLDataFactory().getOWLClassAssertionAxiom(i, desc));
+				axioms.add(jom.getOntologyManager().getOWLDataFactory().getOWLClassAssertionAxiom(i, desc));
 			}
 			return axioms;
 		} catch (OWLReasonerException e) {
@@ -176,10 +176,10 @@ public class SELiteralToAxiomConverter {
 				for (int i = 0; i < is.length; i++) {
 					for (int j = i + 1; j < is.length; j++) {
 						// create a description that is satisfiable iff the two individuals are different. TODO: request in-built OWL-API support for this
-						OWLDifferentIndividualsAxiom axiom = agent.getOntologyManager().getOWLDataFactory().getOWLDifferentIndividualsAxiom(_is);
-						IndividualAxiomToDescriptionConverter conv = new IndividualAxiomToDescriptionConverter(agent.getOntologyManager().getOWLDataFactory(), agent.getReasoner());
+						OWLDifferentIndividualsAxiom axiom = jom.getOntologyManager().getOWLDataFactory().getOWLDifferentIndividualsAxiom(_is);
+						IndividualAxiomToDescriptionConverter conv = new IndividualAxiomToDescriptionConverter(jom.getOntologyManager().getOWLDataFactory(), jom.getReasoner());
 						axiom.accept(conv);
-						if (!agent.getReasoner().isSatisfiable(conv.getDescription())) {//.isDifferentFrom((OWLIndividual)is[i], (OWLIndividual)is[j])){
+						if (!jom.getReasoner().isSatisfiable(conv.getDescription())) {//.isDifferentFrom((OWLIndividual)is[i], (OWLIndividual)is[j])){
 							distinct = false;
 							break;
 						}
@@ -194,7 +194,7 @@ public class SELiteralToAxiomConverter {
 				for (int i = 0; i < is.length; i++) {
 					different.add((OWLIndividual) is[i]);
 				}
-				OWLDifferentIndividualsAxiom axiom = agent.getOntologyManager().getOWLDataFactory().getOWLDifferentIndividualsAxiom(different);
+				OWLDifferentIndividualsAxiom axiom = jom.getOntologyManager().getOWLDataFactory().getOWLDifferentIndividualsAxiom(different);
 				axioms.add(axiom);
 			}
 			return axioms;
@@ -217,15 +217,15 @@ public class SELiteralToAxiomConverter {
 			OWLObjectProperty p = sl.getPredicate();
 			if (sl.getLiteral().getTerm(JASDLParams.RANGE).isGround()) {
 				OWLIndividual o = sl.getObject();
-				if (!checkForExistence || agent.getReasoner().hasObjectPropertyRelationship(s, p, o)) {
+				if (!checkForExistence || jom.getReasoner().hasObjectPropertyRelationship(s, p, o)) {
 					os.add(o);
 				}
 			} else {
-				os.addAll(agent.getReasoner().getRelatedIndividuals(s, p));
+				os.addAll(jom.getReasoner().getRelatedIndividuals(s, p));
 			}
 			Set<OWLIndividualAxiom> axioms = new HashSet<OWLIndividualAxiom>();
 			for (OWLIndividual o : os) {
-				axioms.add(agent.getOntologyManager().getOWLDataFactory().getOWLObjectPropertyAssertionAxiom(s, p, o));
+				axioms.add(jom.getOntologyManager().getOWLDataFactory().getOWLObjectPropertyAssertionAxiom(s, p, o));
 			}
 			return axioms;
 		} catch (OWLReasonerException e) {
@@ -247,15 +247,15 @@ public class SELiteralToAxiomConverter {
 			OWLDataProperty p = sl.getPredicate();
 			if (sl.getLiteral().getTerm(JASDLParams.RANGE).isGround()) {
 				OWLTypedConstant o = sl.getObject();
-				if (!checkForExistence || agent.getReasoner().hasDataPropertyRelationship(s, p, o)) {
+				if (!checkForExistence || jom.getReasoner().hasDataPropertyRelationship(s, p, o)) {
 					os.add(o);
 				}
 			} else {
-				os.addAll(agent.getReasoner().getRelatedValues(s, p));
+				os.addAll(jom.getReasoner().getRelatedValues(s, p));
 			}
 			Set<OWLIndividualAxiom> axioms = new HashSet<OWLIndividualAxiom>();
 			for (OWLConstant o : os) {
-				axioms.add(agent.getOntologyManager().getOWLDataFactory().getOWLDataPropertyAssertionAxiom(s, p, o));
+				axioms.add(jom.getOntologyManager().getOWLDataFactory().getOWLDataPropertyAssertionAxiom(s, p, o));
 			}
 			return axioms;
 		} catch (OWLReasonerException e) {

@@ -19,11 +19,15 @@
  */
 package jasdl.asSyntax;
 
+import jasdl.JASDLParams;
 import jasdl.asSemantics.JASDLAgent;
-import jason.asSemantics.Unifier;
-import jason.asSyntax.Plan;
-import jason.asSyntax.Trigger;
 import jasdl.bridge.DLUnifier;
+import jason.asSemantics.Unifier;
+import jason.asSyntax.Literal;
+import jason.asSyntax.Plan;
+import jason.asSyntax.Term;
+import jason.asSyntax.Trigger;
+import jason.asSyntax.VarTerm;
 
 /**
  * <p>A plan whose trigger is associated with a semantically-enriched literal.</p>
@@ -32,7 +36,7 @@ import jasdl.bridge.DLUnifier;
  * @author Tom Klapiscak
  *
  */
-public class SEPlan extends Plan {
+public class SEPlan extends Plan{
 	private static final long serialVersionUID = 1L;
 
 	private JASDLAgent agent;
@@ -44,12 +48,23 @@ public class SEPlan extends Plan {
 
 	@Override
 	public Unifier isRelevant(Trigger te) {
-		Unifier un = super.isRelevant(te); // better solution? extend unifier?
+		Unifier un = super.isRelevant(te);
 		if (un != null) { // plan is specifically relevant to deal with the trigger
 			return un;
 		}
 		DLUnifier dlun = new DLUnifier(agent);
 		if (dlun.unifiesNoUndo(getTrigger(), te)) { // <- plan's trigger subsumes incoming
+
+			Literal causeWithAnnots = (Literal)te.getLiteral().clone();		
+			dlun.unifiesNoUndo(new VarTerm(JASDLParams.JASDL_TG_CAUSE_RETAIN_ANNOTS), causeWithAnnots);
+			
+			Literal causeNoAnnots = (Literal)te.getLiteral().clone();
+			Term o = causeNoAnnots.getAnnots(JASDLParams.ONTOLOGY_ANNOTATION_FUNCTOR).get(0);			
+			causeNoAnnots.clearAnnots();
+			causeNoAnnots.addAnnot(o);			
+			dlun.unifiesNoUndo(new VarTerm(JASDLParams.JASDL_TG_CAUSE), causeNoAnnots);
+			
+			
 			return dlun;
 		} else {
 			return null;

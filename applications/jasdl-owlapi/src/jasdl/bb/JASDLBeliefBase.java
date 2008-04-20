@@ -146,7 +146,7 @@ public class JASDLBeliefBase extends DefaultBeliefBase {
 				BeliefBaseContractor contractor = new BeliefBaseContractor(agent.getOntologyManager(), new JASDLReasonerFactory(), agent.getLogger());
 				removeList = contractor.contract(axiom, new JASDLKernelsetFilter(), new JASDLIncisionFunction(agent, sl));
 			}else{
-				getLogger().fine("Removing " + l);
+				getLogger().info("Removing " + l);
 				removeList = (List<OWLAxiom>)Collections.singletonList(axiom);
 			}
 			
@@ -322,8 +322,9 @@ public class JASDLBeliefBase extends DefaultBeliefBase {
 
 			return relevant.iterator(); // semantically-naive, use standard Jason mechanisms
 		} catch (Exception e) {
-			getLogger().warning("Exception caught getting candidate beleifs for SELiteral " + l + " from belief base: ");
-			e.printStackTrace();
+			//getLogger().warning("Exception caught getting candidate beliefs for SELiteral " + l + " from belief base: ");
+			//e.printStackTrace();
+			// failed, allow a complex test goal to be generated without printing an exception TODO: is this wise?
 		}
 		return relevant.iterator();
 	}
@@ -345,12 +346,7 @@ public class JASDLBeliefBase extends DefaultBeliefBase {
 
 		// add all SE-Literals (asserted)
 		try {
-			for (OWLOntology ontology : agent.getOntologyManager().getOntologies()) {
-				for (OWLIndividualAxiom axiom : ontology.getIndividualAxioms()) {
-					Literal l = agent.axiomToSELiteralConverter.convert(axiom).getLiteral();
-					bels.add(l);
-				}
-			}
+			bels.addAll(agent.getJom().getAllSELiterals());
 		} catch (JASDLException e) {
 			getLogger().warning("Exception caught while retrieving ABox state: " + e);
 		}

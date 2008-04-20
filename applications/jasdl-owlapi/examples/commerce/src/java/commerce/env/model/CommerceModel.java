@@ -51,7 +51,11 @@ public class CommerceModel{
     	shop1.addProductToCatalogue(new Product("bread", "kingsmill", 1.6, 750), 58);
     	shop1.addProductToCatalogue(new Product("milk", "cravendale", 0.9, 500), 33);
     	
+    	ModelShop shop2 = new ModelShop(new Atom("shop2"), new Point(5, 3), this, env);
+    	shop2.addProductToCatalogue(new Product("beef", "farmer_jims_rump_steak", 1.4, 800), 22);
+    	
     	addObject(shop1);    	
+    	addObject(shop2);
     	addObject(new ModelCustomer(new Atom("customer1"), new Point(10, 10), this, env));
     	addObject(new ModelCustomer(new Atom("customer2"), new Point(15, 8), this, env));
     	addObject(new ModelCustomer(new Atom("customer3"), new Point(19, 3), this, env));
@@ -59,6 +63,8 @@ public class CommerceModel{
     	addObject(new ModelDeliveryVan(new Atom("delivery_van2"), new Point(3, 4), this, env, shop1));
     	addObject(new ModelPA(new Atom("pa1"), new Point(0, 0), this, env));
     	addObject(new ModelPA(new Atom("pa2"), new Point(0, 0), this, env));
+    	
+    	updateObjects();
     	
 	}
 	

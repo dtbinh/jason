@@ -75,10 +75,17 @@
     
 
 
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#includedIn -->
+
+    <owl:ObjectProperty rdf:about="#includedIn">
+        <owl:inverseOf rdf:resource="#includes"/>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#includes -->
 
     <owl:ObjectProperty rdf:about="#includes">
-        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
         <rdfs:domain rdf:resource="#Order"/>
         <rdfs:range rdf:resource="#Purchase"/>
     </owl:ObjectProperty>
@@ -116,12 +123,31 @@
     
 
 
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#hasProductDescription -->
+
+    <owl:DatatypeProperty rdf:about="#hasProductDescription">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="#Purchase"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#hasQuantity -->
 
     <owl:DatatypeProperty rdf:about="#hasQuantity">
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
         <rdfs:domain rdf:resource="#Purchase"/>
         <rdfs:range rdf:resource="&xsd;integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#hasShopDescription -->
+
+    <owl:DatatypeProperty rdf:about="#hasShopDescription">
+        <rdfs:domain rdf:resource="#Purchase"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
     </owl:DatatypeProperty>
     
 
@@ -334,31 +360,6 @@
     <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#Grocery -->
 
     <owl:Class rdf:about="#Grocery">
-        <rdfs:subClassOf rdf:resource="#Product"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#InStock -->
-
-    <owl:Class rdf:about="#InStock">
-        <owl:equivalentClass>
-            <owl:Class>
-                <owl:intersectionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="#Product"/>
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="#hasInStock"/>
-                        <owl:someValuesFrom>
-                            <rdf:Description>
-                                <rdf:type rdf:resource="&owl;DataRange"/>
-                                <owl11:minInclusive rdf:datatype="&xsd;int">1</owl11:minInclusive>
-                                <owl11:onDataRange rdf:resource="&xsd;int"/>
-                            </rdf:Description>
-                        </owl:someValuesFrom>
-                    </owl:Restriction>
-                </owl:intersectionOf>
-            </owl:Class>
-        </owl:equivalentClass>
         <rdfs:subClassOf rdf:resource="#Product"/>
     </owl:Class>
     

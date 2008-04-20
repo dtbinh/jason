@@ -19,8 +19,8 @@
  */
 package jasdl.bridge.seliteral;
 
-import static jasdl.util.Common.strip;
-import static jasdl.util.Common.surroundedBy;
+import static jasdl.util.JASDLCommon.strip;
+import static jasdl.util.JASDLCommon.surroundedBy;
 import jasdl.JASDLParams;
 import jasdl.bridge.JASDLOntologyManager;
 import jasdl.util.exception.JASDLInvalidSELiteralException;

@@ -19,7 +19,7 @@
  */
 package jasdl.ia;
 
-import static jasdl.util.Common.strip;
+import static jasdl.util.JASDLCommon.strip;
 import jasdl.asSemantics.JASDLAgent;
 import jasdl.util.exception.JASDLException;
 import jason.asSemantics.DefaultInternalAction;

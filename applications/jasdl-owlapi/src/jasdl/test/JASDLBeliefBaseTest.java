@@ -76,13 +76,13 @@ import org.semanticweb.owl.vocab.XSDVocabulary;
  * @author Tom Klapiscak
  *
  */
-public class JasdlBeliefBaseTest extends TestCase {
+public class JASDLBeliefBaseTest extends TestCase {
 
-	public static String JASDL_AG_ARCH_CLASS = "jasdl.architecture.JasdlAgArch";
+	public static String JASDL_AG_ARCH_CLASS = "jasdl.architecture.JASDLAgArch";
 
-	public static String JASDL_AGENT_CLASS = "jasdl.asSemantics.JasdlAgent";
+	public static String JASDL_AGENT_CLASS = "jasdl.asSemantics.JASDLAgent";
 
-	public static String JASDL_BELIEF_BASE_CLASS = "jasdl.bb.JasdlBeliefBase";
+	public static String JASDL_BELIEF_BASE_CLASS = "jasdl.bb.JASDLBeliefBase";
 
 	public static Atom TEST_ONTOLOGY_LABEL = new Atom("test");
 
@@ -96,7 +96,7 @@ public class JasdlBeliefBaseTest extends TestCase {
 
 	protected DefaultBeliefBase testbb;
 
-	public JasdlBeliefBaseTest() throws Exception {
+	public JASDLBeliefBaseTest() throws Exception {
 
 	}
 

@@ -19,10 +19,12 @@
  */
 package jasdl.bridge;
 
-import static jasdl.util.Common.strip;
+import static jasdl.util.JASDLCommon.strip;
 import jasdl.JASDLParams;
-import jasdl.asSemantics.JASDLAgent;
 import jasdl.bridge.factory.AliasFactory;
+import jasdl.bridge.factory.AxiomToSELiteralConverter;
+import jasdl.bridge.factory.SELiteralFactory;
+import jasdl.bridge.factory.SELiteralToAxiomConverter;
 import jasdl.bridge.mapping.aliasing.Alias;
 import jasdl.bridge.mapping.aliasing.AliasManager;
 import jasdl.bridge.mapping.aliasing.AllDifferentPlaceholder;
@@ -30,11 +32,12 @@ import jasdl.bridge.mapping.aliasing.DefinitionManager;
 import jasdl.bridge.mapping.aliasing.MappingStrategy;
 import jasdl.bridge.mapping.label.LabelManager;
 import jasdl.bridge.mapping.label.OntologyURIManager;
+import jasdl.util.JASDLCommon;
 import jasdl.util.exception.JASDLDuplicateMappingException;
-import jasdl.util.exception.JASDLInvalidSELiteralException;
 import jasdl.util.exception.JASDLException;
+import jasdl.util.exception.JASDLInvalidSELiteralException;
 import jasdl.util.exception.JASDLUnknownMappingException;
-import jasdl.util.owlapi.parsing.NSPrefixOWLEntityChecker;
+import jasdl.util.owlapi.parsing.NsPrefixOWLEntityChecker;
 import jasdl.util.owlapi.parsing.URIOWLEntityChecker;
 import jasdl.util.owlapi.rendering.NsPrefixOWLObjectShortFormProvider;
 import jasdl.util.owlapi.rendering.URIOWLObjectShortFormProvider;
@@ -55,6 +58,7 @@ import org.mindswap.pellet.owlapi.Reasoner;
 import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.inference.OWLReasoner;
 import org.semanticweb.owl.inference.OWLReasonerException;
+import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDataFactory;
@@ -62,6 +66,7 @@ import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.model.OWLEquivalentClassesAxiom;
 import org.semanticweb.owl.model.OWLException;
+import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLIndividualAxiom;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyChangeException;
@@ -102,7 +107,16 @@ public class JASDLOntologyManager {
 
 	private ManchesterOWLSyntaxDescriptionParser manchesterNsPrefixDescriptionParser;
 
-	private ManchesterOWLSyntaxDescriptionParser manchesterURIDescriptionParser;
+	private ManchesterOWLSyntaxDescriptionParser manchesterURIDescriptionParser;	
+
+	private SELiteralFactory seLiteralFactory;
+	
+	private AxiomToSELiteralConverter axiomToSELiteralConverter;
+
+	private SELiteralToAxiomConverter SELiteralToAxiomConverter;
+	
+	private boolean annotationGatheringEnabled;
+	
 
 	public JASDLOntologyManager(Logger logger) {
 		this.logger = logger;
@@ -112,18 +126,46 @@ public class JASDLOntologyManager {
 		ontologyManager = OWLManager.createOWLOntologyManager();
 		physicalURIManager = new OntologyURIManager();
 		logicalURIManager = new OntologyURIManager();
+		
+		seLiteralFactory = new SELiteralFactory(this);
+		SELiteralToAxiomConverter = new SELiteralToAxiomConverter(this);
+		axiomToSELiteralConverter = new AxiomToSELiteralConverter(this);
 
 		definitionManager = new DefinitionManager();
 
 		manchesterURIOWLObjectRenderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
-		manchesterURIOWLObjectRenderer.setShortFormProvider(new URIOWLObjectShortFormProvider());
+		manchesterURIOWLObjectRenderer.setShortFormProvider(new URIOWLObjectShortFormProvider(this));
 
 		manchesterNsPrefixOWLObjectRenderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
 		manchesterNsPrefixOWLObjectRenderer.setShortFormProvider(new NsPrefixOWLObjectShortFormProvider(this));
 
-		manchesterNsPrefixDescriptionParser = new ManchesterOWLSyntaxDescriptionParser(getOntologyManager().getOWLDataFactory(), new NSPrefixOWLEntityChecker(this));
+		manchesterNsPrefixDescriptionParser = new ManchesterOWLSyntaxDescriptionParser(getOntologyManager().getOWLDataFactory(), new NsPrefixOWLEntityChecker(this));
 		manchesterURIDescriptionParser = new ManchesterOWLSyntaxDescriptionParser(getOntologyManager().getOWLDataFactory(), new URIOWLEntityChecker(this));
 
+	}
+	
+	
+	public List<Literal> getAllSELiterals() throws JASDLException{
+		List<Literal> bels = new Vector<Literal>();
+		for (OWLOntology ontology : getOntologyManager().getOntologies()) {
+			for (OWLIndividualAxiom axiom : ontology.getIndividualAxioms()) {
+				Literal l = getAxiomToSELiteralConverter().convert(axiom).getLiteral();
+				bels.add(l);
+			}
+		}
+		return bels;
+	}
+	
+	public void setAnnotationGatheringEnabled(boolean b) {
+		this.annotationGatheringEnabled = b;
+	}
+	
+	public boolean isAnnotationGatheringEnabled() {
+		return annotationGatheringEnabled;
+	}
+	
+	public SELiteralFactory getSELiteralFactory(){
+		return seLiteralFactory;
 	}
 
 	public Atom getPersonalOntologyLabel() {
@@ -136,6 +178,14 @@ public class JASDLOntologyManager {
 
 	public void setPersonalOntologyURI(URI personalOntologyURI) {
 		this.personalOntologyURI = personalOntologyURI;
+	}
+	
+	public SELiteralToAxiomConverter getSELiteralToAxiomConverter() {
+		return SELiteralToAxiomConverter;
+	}
+
+	public AxiomToSELiteralConverter getAxiomToSELiteralConverter() {
+		return axiomToSELiteralConverter;
 	}
 
 	/**
@@ -378,20 +428,29 @@ public class JASDLOntologyManager {
 
 	public OWLDescription defineClass(Atom functor, Atom label, String expression, ManchesterOWLSyntaxDescriptionParser parser) throws JASDLException, OWLException {
 		Alias alias = AliasFactory.INSTANCE.create(functor, label);
-		if (getAliasManager().isKnownLeft(alias)) {
-			// throw new DuplicateMappingException("New class definition with alias "+alias+" overlaps with an existing ontological entity");
-			/** As of 14/04/2008 - new class definitions with clashing aliases override old ones */
-			abolishDefinedClass(alias);
-		}
+		
+		
+
+	
 
 		expression = expression.replace("\\\"", "\""); // drop quote escape characters
 
 		OWLDescription desc;
 		try {
+			getLogger().fine("Parsing expression: "+expression);
+						
 			desc = parser.parse(expression);
 		} catch (Exception e) {
 			throw new JASDLException("Could not parse expression " + expression, e);
 		}
+	
+		
+		if (getAliasManager().isKnownLeft(alias)) {
+			// throw new DuplicateMappingException("New class definition with alias "+alias+" overlaps with an existing ontological entity");
+			/** As of 14/04/2008 - new class definitions with clashing aliases override old ones */
+			abolishDefinedClass(alias);
+		}
+		
 
 		// We need this class to be named for parsing.
 		// Create an equivalent class and add this instead with alias as fragment.
@@ -403,7 +462,7 @@ public class JASDLOntologyManager {
 		OWLClass naming = getOWLDataFactory().getOWLClass(uri);
 		OWLEquivalentClassesAxiom axiom = getOWLDataFactory().getOWLEquivalentClassesAxiom(naming, desc);
 		try {
-			getOntologyManager().addAxioms(ontology, Collections.singleton(axiom));
+			getOntologyManager().applyChange(new AddAxiom(ontology, axiom));
 		} catch (OWLOntologyChangeException e) {
 			throw new JASDLException("Error adding " + uri + " naming of " + desc + " to " + label, e);
 		}
@@ -417,17 +476,30 @@ public class JASDLOntologyManager {
 		return desc;
 	}
 
-	public void abolishDefinedClass(Alias alias) throws JASDLUnknownMappingException, OWLException {
-		OWLOntology ontology = getLabelManager().getRight(alias.getLabel());
-
+	public void abolishDefinedClass(Alias alias) throws JASDLException, OWLException {
+		OWLOntology ontology = getLabelManager().getRight(alias.getLabel());		
+		
 		OWLClass naming = (OWLClass) getAliasManager().getRight(alias);
-		OWLDescription desc = (OWLDescription) getDefinitionManager().getRight(naming);
-
+		OWLDescription desc = (OWLDescription) getDefinitionManager().getRight(naming);	
+		
+		Set<OWLIndividual> instances = getReasoner().getIndividuals(naming, true);
+		
+		for(OWLIndividual instance : instances){
+			OWLAxiom namingInstanceAxiom = getOWLDataFactory().getOWLClassAssertionAxiom(instance, naming);
+			getOntologyManager().applyChange(new RemoveAxiom(ontology, namingInstanceAxiom));
+			OWLAxiom descInstanceAxiom = getOWLDataFactory().getOWLClassAssertionAxiom(instance, desc);
+			getOntologyManager().applyChange(new RemoveAxiom(ontology, descInstanceAxiom));
+		}
+		
+		instances = getReasoner().getIndividuals(naming, false);		
+		
 		OWLAxiom axiom = getOWLDataFactory().getOWLEquivalentClassesAxiom(naming, desc);
 		getOntologyManager().applyChange(new RemoveAxiom(ontology, axiom));
 
 		getAliasManager().removeByLeft(alias);
 		getDefinitionManager().removeByLeft(naming);
+		
+		refreshReasoner();
 
 	}
 

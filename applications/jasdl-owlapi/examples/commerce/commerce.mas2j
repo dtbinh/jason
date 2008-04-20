@@ -7,13 +7,13 @@ MAS commerce {
     environment: commerce.env.CommerceEnvironment
 
     agents:
-		shop1
+		shop
 		[
 		jasdl_ontologies="c,s",
 		jasdl_c_uri="/onts/commerce.owl",
 		jasdl_s_uri="/onts/society.owl"
 		]
-		#1
+		#2
 	    agentArchClass jasdl.architecture.JASDLAgArch
 	    agentClass jasdl.asSemantics.JASDLAgent
 	    beliefBaseClass jasdl.bb.JASDLBeliefBase; 

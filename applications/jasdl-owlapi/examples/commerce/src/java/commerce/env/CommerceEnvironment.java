@@ -1,7 +1,7 @@
 package commerce.env;
 // Environment code for project commerce.mas2j
 
-import static jasdl.util.Common.getCurrentDir;
+import static jasdl.util.JASDLCommon.getCurrentDir;
 import jasdl.bridge.factory.AliasFactory;
 import jasdl.bridge.mapping.aliasing.Alias;
 import jasdl.bridge.mapping.aliasing.DecapitaliseMappingStrategy;
@@ -21,14 +21,17 @@ import java.awt.Point;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Vector;
 import java.util.logging.Logger;
 
 import commerce.env.model.CommerceModel;
 import commerce.env.model.ModelAgent;
+import commerce.env.model.ModelCustomer;
 import commerce.env.model.ModelDeliveryVan;
 import commerce.env.model.ModelObject;
 import commerce.env.model.ModelShop;
 import commerce.exception.ModelAgentException;
+import commerce.ui.customer.CustomerUIFrame;
 
 
 
@@ -38,7 +41,7 @@ import commerce.exception.ModelAgentException;
  * @author tom
  *
  */
-public class CommerceEnvironment extends JASDLEnvironment {
+public class CommerceEnvironment extends JASDLEnvironment{
 
 
 	public Atom s = new Atom("s");
@@ -57,11 +60,20 @@ public class CommerceEnvironment extends JASDLEnvironment {
     	super.init(args);
     	
     	model = new CommerceModel(new Dimension(20, 20), this);
+    	
     	view = new CommerceView(model);
+    	    	
+    	CustomerUIFrame customerUIFrame = new CustomerUIFrame(this);
+    	// for each customer set-up a UI Panel
+    	for(ModelObject o : model.getObjects()){
+    		if(o instanceof ModelCustomer){
+    			customerUIFrame.addCustomer((ModelCustomer)o);
+    		}
+    	}
     	
     	try {
-			getJasdlOntologyManager().loadOntology(c, URI.create("file://"+getCurrentDir()+"/onts/commerce.owl"), mappingStrategies);
-			getJasdlOntologyManager().loadOntology(s, URI.create("file://"+getCurrentDir()+"/onts/society.owl"), mappingStrategies);
+			getJom().loadOntology(c, URI.create("file://"+getCurrentDir()+"/onts/commerce.owl"), mappingStrategies);
+			getJom().loadOntology(s, URI.create("file://"+getCurrentDir()+"/onts/society.owl"), mappingStrategies);
 			
 		} catch (JASDLException e) {
 			e.printStackTrace();
@@ -69,9 +81,10 @@ public class CommerceEnvironment extends JASDLEnvironment {
 		
     	    	
     	updatePercepts();
+    	
     }   
     
-    
+
     private void updatePercepts(){
     	synchronized(model.getObjects()){ 
 	    	try{    	  	
@@ -116,7 +129,6 @@ public class CommerceEnvironment extends JASDLEnvironment {
     @Override
     public boolean executeAction(String agName, Structure action) {
     	Logger agentLogger = Logger.getLogger(agName);
-    	
     	try{
     		Term[] terms = new Term[action.getTerms().size()];
     		int i=0;
@@ -155,6 +167,16 @@ public class CommerceEnvironment extends JASDLEnvironment {
 	    		}
 	    	}
 	    	
+	    	if(agent instanceof ModelCustomer){
+	    		ModelCustomer customer = (ModelCustomer)agent;
+	    		if(action.getFunctor().equals("request_product")){
+	    			customer.request(terms[0].toString(), terms[1].toString(), (int)((NumberTerm)terms[2]).solve());
+	    		}
+	    		if(action.getFunctor().equals("approve")){
+	    			return customer.approve(terms[0].toString());
+	    		}
+	    	}
+	    	
 	    	
 	    	
     	}catch(ModelAgentException e){
@@ -164,7 +186,7 @@ public class CommerceEnvironment extends JASDLEnvironment {
     	}finally{
     		updatePercepts();
     	}
-		agentLogger.fine("Completed action "+action);
+		agentLogger.info("Completed action "+action);
 		return true;
     }
 

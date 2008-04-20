@@ -24,33 +24,38 @@ import jasdl.bridge.mapping.aliasing.Alias;
 import jasdl.util.exception.JASDLException;
 
 import org.semanticweb.owl.model.OWLEntity;
-import org.semanticweb.owl.util.ShortFormProvider;
 
 /**
  * Renders entity in JASDL's ns prefix format, e.g.
- * http://.../travel.owl#Hotel  ->  travel:hotel  (assuming travel is Hotel's ontology label and hotel is Hotel's alias)
+ * http://.../travel.owl#Hotel  ->  travel:hotel  (assuming travel is Hotel's ontology label and hotel is Hotel's alias).
+ *
+ *
+ * Extends NormalisingOWLObjectShortForm provider to ensure run-time defined classes are normalised.
  * @author tom
  *
  */
-public class NsPrefixOWLObjectShortFormProvider implements ShortFormProvider {
+public class NsPrefixOWLObjectShortFormProvider extends NormalisingOWLObjectShortFormProvider {
 
-	private JASDLOntologyManager jasdlOntologyManager;
-
-	public NsPrefixOWLObjectShortFormProvider(JASDLOntologyManager jasdlOntologyManager) {
-		this.jasdlOntologyManager = jasdlOntologyManager;
+	public NsPrefixOWLObjectShortFormProvider(JASDLOntologyManager jom) {
+		super(jom);		
 	}
 
 	public void dispose() {
 	}
 
 	public String getShortForm(OWLEntity entity) {
-		try {
-			Alias alias = jasdlOntologyManager.getAliasManager().getLeft(entity);
-			return alias.getLabel() + ":" + alias.getFunctor();
-		} catch (JASDLException e) {
-			jasdlOntologyManager.getLogger().warning("Exception caught attempting to render " + entity + ". Reason: ");
-			e.printStackTrace();
-			return null;
+		String shortForm = super.getShortForm(entity);
+		if(shortForm != null){
+			// run-time defined class, has been normalised
+			return shortForm;
+		}else{
+			try {			
+				Alias alias = jom.getAliasManager().getLeft(entity);
+				return alias.getLabel() + ":" + alias.getFunctor();
+			} catch (JASDLException e) {
+				throw new RuntimeException("Exception caught attempting to render " + entity, e);
+			}
 		}
 	}
+		
 }

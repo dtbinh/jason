@@ -19,14 +19,31 @@
  */
 package jasdl.util.owlapi.rendering;
 
+import jasdl.bridge.JASDLOntologyManager;
+import jasdl.bridge.mapping.aliasing.Alias;
+import jasdl.util.exception.JASDLException;
+import jasdl.util.exception.JASDLUnknownMappingException;
+
+import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.util.ShortFormProvider;
 
-public class URIOWLObjectShortFormProvider implements ShortFormProvider {
+public class URIOWLObjectShortFormProvider extends NormalisingOWLObjectShortFormProvider {
+	
+	public URIOWLObjectShortFormProvider(JASDLOntologyManager jom) {
+		super(jom);		
+	}
+
 	public void dispose() {
 	}
 
 	public String getShortForm(OWLEntity entity) {
-		return entity.getURI().toString();
+		String shortForm = super.getShortForm(entity);
+		if(shortForm != null){
+			// run-time defined class, has been normalised
+			return shortForm;
+		}else{		
+			return entity.getURI().toString();
+		}
 	}
 }

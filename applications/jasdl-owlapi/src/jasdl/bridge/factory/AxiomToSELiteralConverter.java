@@ -19,14 +19,14 @@
  */
 package jasdl.bridge.factory;
 
-import jasdl.asSemantics.JASDLAgent;
 import jasdl.bb.bebops.JASDLKernelsetFilter;
 import jasdl.bb.bebops.JASDLReasonerFactory;
+import jasdl.bridge.JASDLOntologyManager;
 import jasdl.bridge.mapping.aliasing.Alias;
 import jasdl.bridge.mapping.aliasing.AllDifferentPlaceholder;
 import jasdl.bridge.seliteral.SELiteral;
-import jasdl.util.exception.JASDLInvalidSELiteralException;
 import jasdl.util.exception.JASDLException;
+import jasdl.util.exception.JASDLInvalidSELiteralException;
 import jasdl.util.owlapi.xsd.XSDVocabularyUtils;
 import jason.asSyntax.Atom;
 import jason.asSyntax.DefaultTerm;
@@ -80,12 +80,12 @@ import bebops.pinpointing.KernelOperator;
 public class AxiomToSELiteralConverter {
 
 	/**
-	 * The agent this converter is working on behalf of. Required for access to managers.
+	 * The jom this converter is working on behalf of. Required for access to managers.
 	 */
-	private JASDLAgent agent;
+	private JASDLOntologyManager jom;
 
-	public AxiomToSELiteralConverter(JASDLAgent agent) throws OWLReasonerException, OWLOntologyCreationException, OWLOntologyChangeException {
-		this.agent = agent;
+	public AxiomToSELiteralConverter(JASDLOntologyManager jom){
+		this.jom = jom;
 	}
 
 	/**
@@ -96,7 +96,7 @@ public class AxiomToSELiteralConverter {
 	public List<Term> getAssertedAnnotations(OWLAxiom axiom) {
 		List<Term> result = new Vector<Term>();
 		// get annotations from all known ontologies
-		for (OWLOntology ontology : agent.getOntologyManager().getOntologies()) {
+		for (OWLOntology ontology : jom.getOntologyManager().getOntologies()) {
 			Set<OWLAxiomAnnotationAxiom> annotAxioms = axiom.getAnnotationAxioms(ontology);
 			for (OWLAxiomAnnotationAxiom annotAxiom : annotAxioms) { // remember, possibly semantically-naive payload!
 				Term annot = Literal.parse(annotAxiom.getAnnotation().getAnnotationValueAsConstant().getLiteral());
@@ -113,7 +113,7 @@ public class AxiomToSELiteralConverter {
 	public List<Term> getInferredAnnotations(OWLAxiom axiom) throws JASDLException {
 		try {
 			List<Term> annots = new Vector<Term>();
-			KernelOperator kernelOperator = new KernelOperator(agent.getOntologyManager(), new JASDLReasonerFactory(), agent.getLogger());
+			KernelOperator kernelOperator = new KernelOperator(jom.getOntologyManager(), new JASDLReasonerFactory(), jom.getLogger());
 			//Set<OWLAxiom> supportingAxioms = OWLReasonerAdapter.flattenSetOfSets((kernelOperator.getKernelSet(axiom, true)));
 			Set<OWLAxiom> supportingAxioms = (new JASDLKernelsetFilter()).filterSingleKernel((kernelOperator.getAllSupports(axiom)));
 			getLogger().fine("Explanation for " + axiom + ": " + supportingAxioms);
@@ -134,7 +134,7 @@ public class AxiomToSELiteralConverter {
 	 */
 	private Term[] getAnnots(Alias alias, OWLAxiom axiom) throws JASDLException {
 		List<Term> annots = getAssertedAnnotations(axiom);
-		if (agent.getConfig().isAnnotationGatheringEnabled())
+		if (jom.isAnnotationGatheringEnabled())
 			annots.addAll(getInferredAnnotations(axiom)); // optional, experimental feature
 		return (Term[]) annots.toArray(new Term[annots.size()]);
 	}
@@ -166,9 +166,9 @@ public class AxiomToSELiteralConverter {
 	 * @throws JASDLException
 	 */
 	public SELiteral convert(OWLClassAssertionAxiom axiom) throws JASDLException {
-		Alias alias = agent.getAliasManager().getLeft(axiom.getDescription());
-		Atom individual = agent.getAliasManager().getLeft(axiom.getIndividual()).getFunctor(); // TODO: what if individual is previously undefined? possible?		
-		return agent.getSELiteralFactory().construct(alias, individual, getAnnots(alias, axiom));
+		Alias alias = jom.getAliasManager().getLeft(axiom.getDescription());
+		Atom individual = jom.getAliasManager().getLeft(axiom.getIndividual()).getFunctor(); // TODO: what if individual is previously undefined? possible?		
+		return jom.getSELiteralFactory().construct(alias, individual, getAnnots(alias, axiom));
 	}
 
 	/**
@@ -178,10 +178,10 @@ public class AxiomToSELiteralConverter {
 	 * @throws JASDLException
 	 */
 	public SELiteral convert(OWLObjectPropertyAssertionAxiom axiom) throws JASDLException {
-		Alias alias = agent.getAliasManager().getLeft(axiom.getProperty().asOWLObjectProperty());
-		Atom subject = agent.getAliasManager().getLeft(axiom.getSubject()).getFunctor();
-		Atom object = agent.getAliasManager().getLeft(axiom.getObject()).getFunctor();
-		return agent.getSELiteralFactory().construct(alias, subject, object, getAnnots(alias, axiom));
+		Alias alias = jom.getAliasManager().getLeft(axiom.getProperty().asOWLObjectProperty());
+		Atom subject = jom.getAliasManager().getLeft(axiom.getSubject()).getFunctor();
+		Atom object = jom.getAliasManager().getLeft(axiom.getObject()).getFunctor();
+		return jom.getSELiteralFactory().construct(alias, subject, object, getAnnots(alias, axiom));
 	}
 
 	/**
@@ -191,8 +191,8 @@ public class AxiomToSELiteralConverter {
 	 * @throws JASDLException
 	 */
 	public SELiteral convert(OWLDataPropertyAssertionAxiom axiom) throws JASDLException {
-		Alias alias = agent.getAliasManager().getLeft(axiom.getProperty().asOWLDataProperty());
-		Atom subject = agent.getAliasManager().getLeft(axiom.getSubject()).getFunctor();
+		Alias alias = jom.getAliasManager().getLeft(axiom.getProperty().asOWLDataProperty());
+		Atom subject = jom.getAliasManager().getLeft(axiom.getSubject()).getFunctor();
 		Term object;
 		OWLConstant constant = axiom.getObject();
 		if (constant.isTyped()) {
@@ -214,7 +214,7 @@ public class AxiomToSELiteralConverter {
 		} else {
 			throw new JASDLException("JASDL does not support untyped data ranges such as: " + axiom);
 		}
-		return agent.getSELiteralFactory().construct(alias, subject, object, getAnnots(alias, axiom));
+		return jom.getSELiteralFactory().construct(alias, subject, object, getAnnots(alias, axiom));
 	}
 
 	/**
@@ -232,7 +232,7 @@ public class AxiomToSELiteralConverter {
 		Atom label = null;
 		int j = 0;
 		for (OWLIndividual i : _is) {
-			Alias iAlias = agent.getAliasManager().getLeft(i);
+			Alias iAlias = jom.getAliasManager().getLeft(i);
 			if (label == null) {
 				// hack, get a reference back to ontology by examining one of the individuals
 				label = iAlias.getLabel();
@@ -240,12 +240,12 @@ public class AxiomToSELiteralConverter {
 			is[j] = iAlias.getFunctor();
 			j++;
 		}
-		Alias alias = agent.getAliasManager().getLeft(new AllDifferentPlaceholder(label));
-		return agent.getSELiteralFactory().construct(alias, is, getAnnots(alias, axiom));
+		Alias alias = jom.getAliasManager().getLeft(new AllDifferentPlaceholder(label));
+		return jom.getSELiteralFactory().construct(alias, is, getAnnots(alias, axiom));
 	}
 
 	public Logger getLogger() {
-		return agent.getLogger();
+		return jom.getLogger();
 	}
 
 	/**
@@ -262,7 +262,7 @@ public class AxiomToSELiteralConverter {
 		 // because knowledge from tom and ben contributed to the inference that x and y are distinct
 		 ?all_different([x,y])[o(self), source(tom), source(ben)]; <- THIS		 
 		 */
-		if (!(agent.getReasoner() instanceof org.mindswap.pellet.owlapi.Reasoner)) {
+		if (!(jom.getReasoner() instanceof org.mindswap.pellet.owlapi.Reasoner)) {
 			throw new JASDLException("This feature requires the Pellet reasoner");
 		}
 
@@ -274,14 +274,14 @@ public class AxiomToSELiteralConverter {
 
 			List<Term> annots = new Vector<Term>();
 
-			Reasoner pellet = (org.mindswap.pellet.owlapi.Reasoner) agent.getReasoner();
+			Reasoner pellet = (org.mindswap.pellet.owlapi.Reasoner) jom.getReasoner();
 			pellet.refresh();
 
 			pellet.getKB().setDoExplanation(true);
 			HashMap<OWLAxiom, Set<OWLOntology>> supports = new HashMap<OWLAxiom, Set<OWLOntology>>();
 			while (pellet.isEntailed(axiom)) {
 
-				//SatisfiabilityConverter conv = new SatisfiabilityConverter(agent.getOWLDataFactory());				
+				//SatisfiabilityConverter conv = new SatisfiabilityConverter(jom.getOWLDataFactory());				
 				//pellet.getKB().setDoExplanation( true );	
 				//pellet.isSatisfiable(conv.convert(axiom));	// lets see if this is less buggy than generating explanations using isEntailed. NO!
 
@@ -298,7 +298,7 @@ public class AxiomToSELiteralConverter {
 							}
 							supports.put(support, os);
 							os.add(o);
-							agent.getOntologyManager().applyChange(new RemoveAxiom(o, support));
+							jom.getOntologyManager().applyChange(new RemoveAxiom(o, support));
 						}
 					}
 				}
@@ -310,7 +310,7 @@ public class AxiomToSELiteralConverter {
 				annots.addAll(getAssertedAnnotations(support));
 				// add it back to all necessary ontologies
 				for (OWLOntology o : supports.get(support)) {
-					agent.getOntologyManager().applyChange(new AddAxiom(o, support));
+					jom.getOntologyManager().applyChange(new AddAxiom(o, support));
 				}
 			}
 			pellet.refresh();

@@ -19,8 +19,8 @@
  */
 package jasdl.asSemantics;
 
-import static jasdl.util.Common.getCurrentDir;
-import static jasdl.util.Common.strip;
+import static jasdl.util.JASDLCommon.getCurrentDir;
+import static jasdl.util.JASDLCommon.strip;
 import jasdl.JASDLParams;
 import jasdl.bridge.factory.AliasFactory;
 import jasdl.bridge.mapping.aliasing.Alias;
@@ -52,8 +52,6 @@ public class JASDLAgentConfigurator {
 	private HashMap<Atom, Float> trustMap;
 
 	private boolean beliefRevisionEnabled;
-
-	private boolean annotationGatheringEnabled;
 	
 	private boolean contractionEnabled;
 
@@ -200,7 +198,7 @@ public class JASDLAgentConfigurator {
 	}
 
 	public void setAnnotationGatheringEnabled(boolean b) {
-		this.annotationGatheringEnabled = b;
+		agent.getJom().setAnnotationGatheringEnabled(b);
 	}
 
 	/**
@@ -364,7 +362,7 @@ public class JASDLAgentConfigurator {
 	}
 
 	public boolean isAnnotationGatheringEnabled() {
-		return annotationGatheringEnabled;
+		return agent.getJom().isAnnotationGatheringEnabled();
 	}
 
 	public boolean isBeliefRevisionEnabled() {

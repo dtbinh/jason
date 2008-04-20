@@ -33,13 +33,6 @@ import java.util.logging.Logger;
 
 /**
  * @author Tom Klapiscak
- * 
- * Usage jasdl.ia.define_class(classname, classexpr, label), where:
- * 	- classname is an atomic name used to refer to this class in future. Must begin with a lowercase letter and not clash with any AgentSpeak keyword
- *  - classexpr is a expression defining this class
- *  
- *  Changed class name to atom only - forces valid alias syntax
- *
  */
 public class get_individual extends DefaultInternalAction {
 

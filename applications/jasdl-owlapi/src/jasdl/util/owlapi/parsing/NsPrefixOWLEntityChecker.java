@@ -36,11 +36,11 @@ import org.semanticweb.owl.model.OWLObjectProperty;
  * @author Tom Klapiscak
  *
  */
-public class NSPrefixOWLEntityChecker extends XSDDatatypeChecker {
+public class NsPrefixOWLEntityChecker extends XSDDatatypeChecker {
 
 	private JASDLOntologyManager jasdlOntologyManager;
 
-	public NSPrefixOWLEntityChecker(JASDLOntologyManager jasdlOntologyManager) {
+	public NsPrefixOWLEntityChecker(JASDLOntologyManager jasdlOntologyManager) {
 		super(jasdlOntologyManager.getOntologyManager().getOWLDataFactory());
 		this.jasdlOntologyManager = jasdlOntologyManager;
 	}

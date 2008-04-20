@@ -10,6 +10,10 @@ import jasdl.bridge.mapping.aliasing.MappingStrategy;
 import jason.asSyntax.Atom;
 
 public class JASDLParams {
+	public static String JASDL_TG_CAUSE_RETAIN_ANNOTS = "JASDL_TG_CAUSE_RETAIN_ANNOTS";
+	
+	public static String JASDL_TG_CAUSE = "JASDL_TG_CAUSE";
+	
 	/**
 	 * Functor of the structure containing the ontology label which maps to the ontology a SE-Literal refers to
 	 */

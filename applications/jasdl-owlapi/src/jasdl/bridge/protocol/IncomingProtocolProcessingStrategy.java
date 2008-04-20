@@ -19,7 +19,7 @@
  */
 package jasdl.bridge.protocol;
 
-import static jasdl.util.Common.strip;
+import static jasdl.util.JASDLCommon.strip;
 import jasdl.JASDLParams;
 import jasdl.bridge.JASDLOntologyManager;
 import jasdl.bridge.mapping.aliasing.Alias;

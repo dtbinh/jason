@@ -25,10 +25,10 @@ public class ProtocolProcessor {
 	 * Sets up using default processing strategies
 	 *
 	 */
-	public ProtocolProcessor(JASDLOntologyManager jom, List<MappingStrategy> mappingStrategies, SELiteralFactory seLiteralFactory) {
+	public ProtocolProcessor(JASDLOntologyManager jom, List<MappingStrategy> mappingStrategies) {
 		this.jom = jom;
 		this.incomingStrategy = new IncomingProtocolProcessingStrategy(mappingStrategies);
-		this.outgoingStrategy = new OutgoingProtocolProcessingStrategy(seLiteralFactory);
+		this.outgoingStrategy = new OutgoingProtocolProcessingStrategy(jom.getSELiteralFactory());
 	}
 
 	public ProtocolProcessor(JASDLOntologyManager jom, ProtocolProcessingStrategy incomingStrategy, ProtocolProcessingStrategy outgoingStrategy) {

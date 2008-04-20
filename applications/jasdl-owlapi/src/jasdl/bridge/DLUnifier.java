@@ -19,27 +19,22 @@
  */
 package jasdl.bridge;
 
+import jasdl.JASDLParams;
 import jasdl.asSemantics.JASDLAgent;
 import jasdl.bridge.seliteral.SELiteral;
-import jasdl.util.exception.JASDLException;
+import jasdl.util.JASDLCommon;
 import jasdl.util.exception.JASDLNotEnrichedException;
 import jason.asSemantics.Unifier;
 import jason.asSemantics.VarsCluster;
 import jason.asSyntax.Atom;
+import jason.asSyntax.ListTerm;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Pred;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 import jason.asSyntax.VarTerm;
 
-import java.util.Set;
-
-import org.semanticweb.owl.inference.OWLReasonerAdapter;
-import org.semanticweb.owl.model.OWLDataProperty;
-import org.semanticweb.owl.model.OWLDescription;
-import org.semanticweb.owl.model.OWLException;
 import org.semanticweb.owl.model.OWLObject;
-import org.semanticweb.owl.model.OWLObjectProperty;
 
 /**
  * Extends Jason's standard unifier to generalise unification of SE-Literals to include ontological rules. Specifically,
@@ -62,6 +57,8 @@ public class DLUnifier extends Unifier {
 
 	@Override
 	protected boolean unifyTerms(Term t1g, Term t2g) {
+		agent.getLogger().finest("Apply DL-unification to "+t1g+" and "+t2g);
+		
 		// if args are expressions, apply them and use their values
 		if (t1g.isArithExpr()) {
 			t1g = (Term) t1g.clone();
@@ -105,7 +102,7 @@ public class DLUnifier extends Unifier {
 
 			// both are var (not unnamedvar) with no value, like X=Y
 			// we must ensure that these vars will form a cluster
-			if (!t1gv.isUnnamedVar() && !t2gv.isUnnamedVar()) {
+			if (!t1gv.isUnnamedVar() && !t2gv.isUnnamedVar()) {						
 				VarTerm t1c = (VarTerm) t1gv.clone();
 				VarTerm t2c = (VarTerm) t2gv.clone();
 				VarsCluster cluster = new VarsCluster(t1c, t2c, this);
@@ -197,10 +194,24 @@ public class DLUnifier extends Unifier {
 
 		/** DL-Unification considers subsumed functors of SE-Literals unifiable */
 		try {
+			
 			SELiteral sl1 = null;
 			SELiteral sl2 = null;
 
 			if (t1islit) {
+				/**
+				 * TODO: Fix this NASTY HACK
+				 * Jason adds all annotations of selected event to plan clone trigger of newly instantiated means.
+				 * This is not normally a problem in Jason. However, since valid SE-Literals may only have a single "o"
+				 * annotation, this causes a rejection here. This fix simply deletes the last (i.e. added "later") "o"
+				 * annotation on the left-most literal (since this is where the trigger of the intended means plan clone will
+				 * be).
+				 */
+				ListTerm os = ((Literal)t1s).getAnnots(JASDLParams.ONTOLOGY_ANNOTATION_FUNCTOR);
+				if(os.size() == 2){
+					((Literal)t1s).delAnnot(os.get(1));
+				}
+				
 				try {
 					sl1 = agent.getSELiteralFactory().construct((Literal) t1s);
 					//agent.getAliasManager().getRight(x);
@@ -232,7 +243,7 @@ public class DLUnifier extends Unifier {
 				agent.getLogger().finest("Both SE-Literals: " + sl1 + " and " + sl2);
 				OWLObject o1 = sl1.toOWLObject();
 				OWLObject o2 = sl2.toOWLObject();
-				if (!subsumes(agent, o1, o2)) {
+				if (!JASDLCommon.subsumes(agent.getJom(), o1, o2)) {
 					agent.getLogger().finest("... failed because first doesn't subsume second");
 					return false;
 				}
@@ -258,53 +269,6 @@ public class DLUnifier extends Unifier {
 		return true;
 	}
 
-	/**
-	 * Convenience method that returns true if o1 subsumes o2. Behaves polymorphically dependant on types of the supplied objects
-	 * (classes or object/data properties).
-	 * @param agent
-	 * @param o1
-	 * @param o2
-	 * @return
-	 * @throws OWLException
-	 * @throws JASDLException
-	 */
-	public static boolean subsumes(JASDLAgent agent, OWLObject o1, OWLObject o2) throws OWLException, JASDLException {
 
-		if (o1 instanceof OWLDescription && o2 instanceof OWLDescription) {
-			OWLDescription d1 = (OWLDescription) o1;
-			OWLDescription d2 = (OWLDescription) o2;
-
-			if (agent.getReasoner().isEquivalentClass(d1, d2) || agent.getReasoner().isSubClassOf(d2, d1)) {
-				return true;
-			}
-
-		} else if (o1 instanceof OWLObjectProperty && o2 instanceof OWLObjectProperty) {
-			OWLObjectProperty p1 = (OWLObjectProperty) o1;
-			OWLObjectProperty p2 = (OWLObjectProperty) o1;
-
-			if (p1.equals(p2)) {
-				return true;
-			}
-
-			Set<OWLObjectProperty> subProperties = OWLReasonerAdapter.flattenSetOfSets(agent.getReasoner().getAncestorProperties(p1));
-			if (subProperties.contains(p2)) {
-				return true;
-			}
-
-		} else if (o1 instanceof OWLDataProperty && o2 instanceof OWLDataProperty) {
-			OWLDataProperty p1 = (OWLDataProperty) o1;
-			OWLDataProperty p2 = (OWLDataProperty) o1;
-
-			if (p1.equals(p2)) {
-				return true;
-			}
-
-			Set<OWLDataProperty> subProperties = OWLReasonerAdapter.flattenSetOfSets(agent.getReasoner().getAncestorProperties(p1));
-			if (subProperties.contains(p2)) {
-				return true;
-			}
-		}
-		return false;
-	}
 
 }

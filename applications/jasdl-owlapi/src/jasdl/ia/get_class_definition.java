@@ -84,6 +84,8 @@ public class get_class_definition extends DefaultInternalAction {
 
 			}
 
+			expression = expression.replace("\n", " ");
+			
 			return un.unifies(args[1], new StringTermImpl(expression));
 
 		} catch (Exception e) {

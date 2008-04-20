@@ -21,24 +21,31 @@ package jasdl.asSyntax;
 
 import jasdl.asSemantics.JASDLAgent;
 import jasdl.bridge.seliteral.SELiteral;
+import jasdl.util.JASDLCommon;
 import jasdl.util.exception.JASDLException;
+import jasdl.util.exception.JASDLInvalidSELiteralException;
 import jasdl.util.exception.JASDLNotEnrichedException;
 import jason.JasonException;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Plan;
 import jason.asSyntax.PlanLibrary;
+import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 import jason.asSyntax.Trigger;
 
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 import java.util.logging.Logger;
 
+import org.semanticweb.owl.model.OWLException;
+
 /**
- * TODO: What about lists with nested SE-Literals? Prohibit?
- * @author tom
+ * 
+ * SE-Plans are ordered most specific -> most general, ensuring the most specific option is generalised to.
+ * TODO: write tests
+ * 
+ * @author Tom Klapiscak
  *
  */
 public class JASDLPlanLibrary extends PlanLibrary {
@@ -48,24 +55,113 @@ public class JASDLPlanLibrary extends PlanLibrary {
 	/**
 	 * Keep track of SE Plans for generating candidate relevances for incoming triggers containing SE-Literals
 	 */
-	private Set<SEPlan> sePlans;
+	private LinkedList<SEPlan> sePlans;
 
 	public JASDLPlanLibrary(JASDLAgent agent) {
 		this.agent = agent;
-		sePlans = new HashSet<SEPlan>();
+		sePlans = new LinkedList<SEPlan>();
 	}
+
 
 	@Override
 	public void add(Plan p) throws JasonException {
 		// All plan who's trigger contains a SE-Literal is added as an SE-Plan so DL-unification can be performed when checking its relevance
 		if (containsSELiteral(p.getTrigger().getLiteral())) {
 			SEPlan sePlan = new SEPlan(agent, p);
-			sePlans.add(sePlan);
+			
+			try {
+				insertSEPlan(sePlan);
+			} catch (OWLException e) {
+				throw new JasonException("Error placing SE-Plan "+p, e);
+			}
+			
 			super.add(sePlan);
 		} else {
 			super.add(p);
 		}
 	}
+	
+	/**
+	 * Inserts an SE-Plan according to its specificity (most specific first).
+	 * TODO: Is this not better placed within a JMCA option selection strategy?
+	 */	
+	private void insertSEPlan(SEPlan unplaced) throws JASDLException, OWLException{
+		int i = 0;
+		for(SEPlan placed : sePlans){			
+			Literal x = unplaced.getTrigger().getLiteral();
+			Literal y = placed.getTrigger().getLiteral();
+			boolean xIsMoreSpecific = isMoreSpecific(x, y);
+			getLogger().finest("Is "+x+" more specific than "+y+"? "+xIsMoreSpecific);
+			if(xIsMoreSpecific) break;
+			i++;
+		}
+		sePlans.add(i, unplaced);
+	}
+	
+	
+	public List<SEPlan> getSEPlans(){
+		return sePlans;
+	}
+	
+	/**
+	 * Semantically naive literals are always considered more specific than semantically enriched.
+	 * Do not need to consider incomparable literals (those with different arities or those with different semantic enrichment state)
+	 * since one can never generalise to the other.
+	 * 
+	 * Algorithm functions as follows:
+	 * 
+	 * Terminal cases:
+	 * if either x or y is not a structure, they are incomparable (different arities (at least one has no terms))
+	 * If arity(x)!=arity(y) then they are considered incomparable and we (arbitrarily) return arity(x)<arity(y)
+	 * If SN(x) and SE(y) then we return true
+	 * if SE(x) and SN(y) then we return false
+	 * if SE(x) and SE(y) then we return subsumes(y, x) (i.e. true if x is more specific)
+	 * 
+	 * Recursive case:
+	 * score=0
+	 * if SN(x) and SN(y) then
+	 * 		for each term of x and y in parallel
+	 * 			if isMoreSpecific(x, y) then score++ else score--
+	 * 
+	 * if score>=0 then we return true (i.e. x has a greater number of more specific terms than y) else false
+	 *
+	 */
+	private boolean isMoreSpecific(Term _x, Term _y) throws JASDLException, OWLException{
+		if(!_x.isStructure() || !_y.isStructure()) return false;		
+		Structure x = (Structure)_x;
+		Structure y = (Structure)_y;
+		
+		if(x.getArity() != y.getArity()) return false;
+		SELiteral sx = null;
+		SELiteral sy = null;
+		
+		try {
+			if(x.isLiteral()) sx = agent.getSELiteralFactory().construct((Literal)x);
+		} catch (JASDLInvalidSELiteralException e) {
+		}
+		
+		try {
+			if(y.isLiteral()) sy = agent.getSELiteralFactory().construct((Literal)y);
+		} catch (JASDLInvalidSELiteralException e) {
+		}
+		
+		if((sx == null && sy != null) || (sx != null && sy == null)) return false;
+		
+		if(sx != null && sy != null) return JASDLCommon.subsumes(agent.getJom(), sy.toOWLObject(), sx.toOWLObject());
+		
+		// both sx and sy are semantically-naive and have equivalent arities
+		int score = 0;
+		for(int i=0; i<x.getArity(); i++){
+			Term xt = x.getTerm(i);
+			Term yt = y.getTerm(i);
+			
+			if(isMoreSpecific(xt, yt)) score++; else score--;
+			
+		}
+		
+		if(score>=0) return true; else return false;
+	}
+	
 
 	@Override
 	public List<Plan> getCandidatePlans(Trigger te) {
@@ -77,6 +173,8 @@ public class JASDLPlanLibrary extends PlanLibrary {
 				candidates = new Vector<Plan>();
 			}
 			candidates.addAll(sePlans);
+			
+			
 		}
 		return candidates;
 

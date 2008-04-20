@@ -22,6 +22,7 @@ package jasdl.asSemantics;
 
 import jasdl.JASDLParams;
 import jasdl.asSyntax.JASDLPlanLibrary;
+import jasdl.asSyntax.SEPlan;
 import jasdl.bb.JASDLBeliefBase;
 import jasdl.bb.bebops.JASDLIncisionFunction;
 import jasdl.bb.bebops.JASDLKernelsetFilter;
@@ -35,7 +36,6 @@ import jasdl.bridge.mapping.aliasing.MappingStrategy;
 import jasdl.bridge.mapping.label.LabelManager;
 import jasdl.bridge.mapping.label.OntologyURIManager;
 import jasdl.bridge.seliteral.SELiteral;
-import jasdl.util.exception.JASDLConfigurationException;
 import jasdl.util.exception.JASDLException;
 import jasdl.util.exception.JASDLNotEnrichedException;
 import jason.JasonException;
@@ -61,7 +61,6 @@ import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLDataFactory;
 import org.semanticweb.owl.model.OWLDescription;
-import org.semanticweb.owl.model.OWLIndividualAxiom;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyManager;
 import org.semanticweb.owl.model.RemoveAxiom;
@@ -88,11 +87,8 @@ public class JASDLAgent extends JmcaAgent {
 
 	private JASDLOntologyManager jom;
 
-	private SELiteralFactory seLiteralFactory;
 
-	public AxiomToSELiteralConverter axiomToSELiteralConverter;
 
-	private SELiteralToAxiomConverter SELiteralToAxiomConverter;
 
 	private JASDLAgentConfigurator config;
 
@@ -102,12 +98,12 @@ public class JASDLAgent extends JmcaAgent {
 		// instantiate utility classes
 		jom = new JASDLOntologyManager(getLogger());
 		config = new JASDLAgentConfigurator(this);
-		seLiteralFactory = new SELiteralFactory(getJom());
-		SELiteralToAxiomConverter = new SELiteralToAxiomConverter(this);
-		axiomToSELiteralConverter = new AxiomToSELiteralConverter(this);
+
 
 		// override plan library
 		setPL(new JASDLPlanLibrary(this));
+		
+		
 
 	}
 
@@ -122,6 +118,11 @@ public class JASDLAgent extends JmcaAgent {
 		config.preInitConfigure(stts);
 		TransitionSystem ts = super.initAg(arch, bb, src, stts);
 		config.postInitConfigure(stts);
+		
+
+		for(SEPlan se : ((JASDLPlanLibrary)getPL()).getSEPlans()){
+			getLogger().finest(se.getTrigger().toString());
+		}
 
 		return ts;
 	}
@@ -275,6 +276,10 @@ public class JASDLAgent extends JmcaAgent {
 		return getTS().getUserAgArch().getAgName();
 	}
 
+	public SELiteralFactory getSELiteralFactory(){
+		return getJom().getSELiteralFactory();
+	}
+	
 	public List<MappingStrategy> getDefaultMappingStrategies() {
 		return config.getDefaultMappingStrategies();
 	}
@@ -307,16 +312,12 @@ public class JASDLAgent extends JmcaAgent {
 		return getJom().getReasoner();
 	}
 
-	public SELiteralFactory getSELiteralFactory() {
-		return seLiteralFactory;
-	}
-
 	public SELiteralToAxiomConverter getSELiteralToAxiomConverter() {
-		return SELiteralToAxiomConverter;
+		return getJom().getSELiteralToAxiomConverter();
 	}
 
 	public AxiomToSELiteralConverter getAxiomToSELiteralConverter() {
-		return axiomToSELiteralConverter;
+		return getJom().getAxiomToSELiteralConverter();
 	}
 
 	public OWLDataFactory getOWLDataFactory() {

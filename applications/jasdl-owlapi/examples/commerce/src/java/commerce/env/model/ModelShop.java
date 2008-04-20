@@ -9,7 +9,9 @@ import java.awt.Color;
 import java.awt.Point;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import commerce.env.CommerceEnvironment;
 import commerce.exception.ModelShopException;
@@ -75,7 +77,10 @@ public class ModelShop extends ModelAgent {
 	 */
 	@Override
 	public void addPercepts() throws JASDLException {
-		super.addPercepts();		
+		super.addPercepts();
+		
+		List<Atom> differentIndividuals = new Vector<Atom>();
+		
 		for(Product product : catalogue){
 			
 			// add product
@@ -123,10 +128,22 @@ public class ModelShop extends ModelAgent {
 							new NumberTermImpl(product.RRP),
 							new Term[0],
 							env.c)
-						.getLiteral());			
-			
-			
+						.getLiteral());	
+						
+			differentIndividuals.add(new Atom(product.brand));
 		}
+		
+		// enter all products into an all_different assertion
+		Atom[] is = (Atom[]) differentIndividuals.toArray(new Atom[differentIndividuals.size()]);
+		env.addPercept(
+			getId().toString(),
+			env.getSELiteralFactory().construct(
+					true,
+					is,
+					new Atom[0],
+					env.c)
+				.getLiteral());
+		
 	}
 
 	protected float getOffset(){

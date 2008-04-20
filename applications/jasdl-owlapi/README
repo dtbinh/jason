@@ -20,4 +20,18 @@ must be run in-situ within the Jason trunk. All necessary ant tasks will be perf
 Please refer to /trunk/jason/applications/jasdl-owlapi/examples/travel_agent/config.mas2j for an example of how to configure JASDL agents.
 
 
+*** Known issues ***
+
+The -+ operator does not function properly. Until this problem is fixed the operation must be performed in two steps as shown here:
+-+a;
+becomes:
+-a;
++a;
+
+When TG is applied to complex test goals, unifications do not propagate correctly
+
+Trigger generalisation is not properly applied when searching for an suitable failure event for intended means that are not in the top level of an intention.
+
+
+
 Thank you for your interest in JASDL!

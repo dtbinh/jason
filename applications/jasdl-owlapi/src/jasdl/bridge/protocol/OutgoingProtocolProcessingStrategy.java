@@ -24,6 +24,7 @@ import jasdl.bridge.JASDLOntologyManager;
 import jasdl.bridge.factory.SELiteralFactory;
 import jasdl.bridge.seliteral.SELiteral;
 import jasdl.bridge.seliteral.SELiteralAllDifferentAssertion;
+import jasdl.util.JASDLCommon;
 import jasdl.util.exception.JASDLException;
 import jasdl.util.exception.JASDLNotEnrichedException;
 import jasdl.util.exception.JASDLUnknownMappingException;
@@ -40,7 +41,6 @@ import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLOntology;
@@ -69,7 +69,7 @@ public class OutgoingProtocolProcessingStrategy implements ProtocolProcessingStr
 			SELiteral sl = SELiteralFactory.construct(l);
 
 			OWLEntity entity = (OWLEntity) sl.toOWLObject();
-			String expression = normaliseExpression(jom.getManchesterURIOWLObjectRenderer().render(entity), jom);
+			String expression = jom.getManchesterURIOWLObjectRenderer().render(entity);
 
 			StringTerm expressionTerm = new StringTermImpl(expression);
 
@@ -163,44 +163,6 @@ public class OutgoingProtocolProcessingStrategy implements ProtocolProcessingStr
 		return result;
 	}
 
-	/**
-	 * Returns an expression in which all references to run-time defined classes have been (recursuvely) replaced 
-	 * with the rendering of their anonymous descriptions, thus ensuring this rendering only refers to predefined classes. 
-	 * @param expression		expression to normalise
-	 * @param agent
-	 * @return					normalised form of expression
-	 * @throws JASDLException
-	 */
-	private String normaliseExpression(String expression, JASDLOntologyManager jasdlOntologyManager) throws JASDLException {
-		String[] tokens = expression.toString().split("[ |\n]");
-		String newExpression = "";
-		for (String token : tokens) {
-			try {
-				URI entityURI = new URI(token);
-				OWLEntity entity = jasdlOntologyManager.toEntity(entityURI);
-				if (entity.isOWLClass()) {
-					try {
-						OWLDescription desc = jasdlOntologyManager.getDefinitionManager().getRight(entity.asOWLClass());
-						String rendering = jasdlOntologyManager.getManchesterURIOWLObjectRenderer().render(desc);
-						newExpression += "(" + normaliseExpression(rendering, jasdlOntologyManager) + ")";
-					} catch (JASDLUnknownMappingException e1) {
-						// this is a predefined class
-						newExpression += token;
-					}
-				} else {
-					// this is a predefined non-class entity (property, individual, etc)
-					newExpression += token;
-				}
-			} catch (URISyntaxException e) {
-				// this is (probably) a keyword
-				newExpression += " " + token + " ";
-			} catch (JASDLUnknownMappingException e2) {
-				// this is (probably) a keyword
-				newExpression += " " + token + " ";
-			}
 
-		}
-		return newExpression;
-	}
 
 }
