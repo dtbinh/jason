@@ -28,16 +28,7 @@ random_pos(X,Y) :-
    jia.random(RY,40,5) & RY > 5 & Y = (RY-20)+AgY &
    not jia.obstacle(X,Y).
 
-// whether some location X,Y has an agent and I am near that location
-/*
-agent_in_target :-
-   pos(AgX,AgY,_) &
-   target(TX,TY) &
-   (cell(TX,TY,ally(_)) | cell(TX,TY,enemy(_)) | cell(TX,TY,cow(_))) &
-   jia.dist(TX,TY,AgX,AgY,D) &
-   D <= 2. // this number should be the same used by A* (DIST_FOR_AG_OBSTACLE constant)
-*/
-   
+
 /* -- initial goal */
 
 !decide_target.
@@ -65,8 +56,7 @@ agent_in_target :-
      !decide_target.
 
 +!decide_target                  
-   : jia.herd_position(six,X,Y) //&             // compute new location
-     //(not target(_,_) | (target(TX,TY) & (TX \== X | TY \== Y))) // no target OR new target
+   : jia.herd_position(six,X,Y) 
   <- .print("COWS! going to ",X,",",Y); //," previous target ",TX,",",TY);
      -+goal(herd);
      -+target(X,Y).
@@ -78,10 +68,6 @@ agent_in_target :-
      -+goal(search);
      -+target(NX,NY).
   
-//+!decide_target
-//  <- .print("No need for a new target, consider last herding location.");
-//     do(skip). // send an action so that the simulator does not wait for me.
-
 
 /* -- plans to move to a destination represented in the belief target(X,Y) 
    -- (it is a kind of persistent goal)
@@ -120,17 +106,6 @@ agent_in_target :-
    <- do(D);  // this action will "block" the intention until it is sent to the simulator (in the end of the cycle)
       !!move. // continue moving
   
-// find a new destination
-/*+!move 
-    : pos(X,Y,_) &
-      (not target(_,_)   |  // I have no target OR
-       target(X,Y)       |  // I am at target OR
-       jia_obstacle(X,Y) |  // An obstacle was discovered in the target
-       agent_in_target   |  // there is an agent in the target
-       (target(BX,BY) & jia.direction(X, Y, BX, BY, skip))) // is impossible to go to target
-   <- !decide_target.
-*/
-
 // in case of failure, move
 -!move
    <- .current_intention(I); .println("failure in move, intention: ",I);
@@ -143,6 +118,7 @@ agent_in_target :-
      !decide_target.
 
 /* -- tests -- */
+
 
 +gsize(Weight,Height) <- .println("gsize  = ",Weight,",",Height).
 +steps(MaxSteps)      <- .println("steps  = ",MaxSteps).

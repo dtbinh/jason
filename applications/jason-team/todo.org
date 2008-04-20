@@ -1,8 +1,10 @@
 * faster simulator
-* develop a team of dummies to play against
+* DONE develop a team of dummies to play against
+  CLOSED: [2008-04-20 Sun 22:23]
 ** what is a dummy strategy?
 * base components
-** Vectors (operations)
+** DONE Vectors (operations)
+   CLOSED: [2008-04-20 Sun 22:23]
 * new scenarios
 * team formations (moise+ representation of the team)
 ** Structure (we have something from the proposal)
