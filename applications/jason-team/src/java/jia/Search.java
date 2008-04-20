@@ -211,36 +211,13 @@ final class GridState implements Estado, Heuristica {
         int cost = 1;
         
         if (ia.considerCowsAsObstacles) { 
-            cost += countCowsBeside(newl,1);
-            cost += countCowsBeside(newl,2);
+            cost += ia.model.countObjInArea(WorldModel.CORRAL, newl,1);
+            cost += ia.model.countObjInArea(WorldModel.CORRAL, newl,2);
         }
 
         s.add(new GridState(newl,op,ia, cost));
     }
-    
-    private int countCowsBeside(Location l, int d) {
-        int c = 0;
-        for (int x = l.x-d; x <= l.x+d; x++) {
-            for (int y = l.y-d; y <= l.y+d; y++) {
-                if (ia.model.hasObject(WorldModel.COW, x, y)) {
-                    c++;
-                }
-            }
-        }
-        return c;
-        /*
-        if (ia.model.hasObject(WorldModel.COW, l.x, l.y)) c++;
-        if (ia.model.hasObject(WorldModel.COW, l.x+1, l.y)) c++;
-        if (ia.model.hasObject(WorldModel.COW, l.x-1, l.y)) c++;
-        if (ia.model.hasObject(WorldModel.COW, l.x, l.y+1)) c++;
-        if (ia.model.hasObject(WorldModel.COW, l.x, l.y-1)) c++;
-        if (ia.model.hasObject(WorldModel.COW, l.x+1, l.y+1)) c++;
-        if (ia.model.hasObject(WorldModel.COW, l.x-1, l.y+1)) c++;
-        if (ia.model.hasObject(WorldModel.COW, l.x+1, l.y-1)) c++;
-        if (ia.model.hasObject(WorldModel.COW, l.x-1, l.y-1)) c++;
-        */
-    }
-    
+        
     public boolean equals(Object o) {
         if (o != null && o instanceof GridState) {
             GridState m = (GridState)o;

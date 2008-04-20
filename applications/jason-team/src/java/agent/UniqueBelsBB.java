@@ -45,7 +45,7 @@ public class UniqueBelsBB extends DefaultBeliefBase {
 			Literal linbb = null;
 			boolean remove = false;
 
-			Iterator<Literal> relevant = getRelevant(bel);
+			Iterator<Literal> relevant = getCandidateBeliefs(bel, null);
 			if (relevant != null) {
 			    final int kbArity = kb.getArity();
 				while (relevant.hasNext() && !remove) {

@@ -160,7 +160,7 @@ public class ACProxy extends ACAgent implements Runnable {
     		lpos.addTerm(new NumberTermImpl(step));
 			percepts.add(lpos);
 
-			arq.getModel().clearCowsList();
+			arq.initKnownCows();
 			
 			int enemyId = 1;
 			// add in perception what is around
@@ -211,12 +211,13 @@ public class ACProxy extends ACAgent implements Runnable {
 				}
 			}
 	
-			//if (logger.isLoggable(Level.FINE)) 
-			logger.info("Request action for "+lpos+" / "+rid + " percepts: "+percepts);
 			
             arq.perceptionRatioPerceived(maxx);
+			arq.sendCowsToTeam();
 			arq.startNextStep(step, percepts);
 			
+			//if (logger.isLoggable(Level.FINE)) 
+			logger.info("Request action for "+lpos+" / percepts: "+percepts);			
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "error processing request",e);
 		}

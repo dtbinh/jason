@@ -29,42 +29,58 @@ random_pos(X,Y) :-
    not jia.obstacle(X,Y).
 
 // whether some location X,Y has an agent and I am near that location
+/*
 agent_in_target :-
    pos(AgX,AgY,_) &
    target(TX,TY) &
    (cell(TX,TY,ally(_)) | cell(TX,TY,enemy(_)) | cell(TX,TY,cow(_))) &
    jia.dist(TX,TY,AgX,AgY,D) &
    D <= 2. // this number should be the same used by A* (DIST_FOR_AG_OBSTACLE constant)
+*/
    
 /* -- initial goal */
 
-!move.
+!decide_target.
 
 
-/* -- reaction to cows -- */
+/* -- reaction to some perceptions -- */
 
+// revise target when see first cow
 +pos(_,_,_)                  // new cycle
-   : cell(_,_,cow(_))        // I see cows
+   : goal(search) & cell(_,_,cow(_))  // I see cows and was searching
+  <- !decide_target. 
+
+// revise target each 4 steps
++pos(Step,_,_)                  // new cycle
+   : Step mod 4 == 0
   <- !decide_target. 
      
 
-/* -- what todo when arrive at location */
+/* -- decide a new target -- */
+
++!decide_target
+   : not pos(_,_,_)
+  <- .print("waiting my location....");
+     .wait("+pos(_,_,_)");
+     !decide_target.
 
 +!decide_target                  
-   : jia.herd_position(X,Y) &              // compute new location
-     (not target(_,_) | (target(TX,TY) & (TX \== X | TY \== Y))) // no target OR new target?     
-  <- .print("COWS! going to ",X,",",Y," previous target ",TX,",",TY);
+   : jia.herd_position(six,X,Y) //&             // compute new location
+     //(not target(_,_) | (target(TX,TY) & (TX \== X | TY \== Y))) // no target OR new target
+  <- .print("COWS! going to ",X,",",Y); //," previous target ",TX,",",TY);
+     -+goal(herd);
      -+target(X,Y).
 
 +!decide_target                  // chose a new random pos
    : not cell(_,_,cow(_))
   <- ?random_pos(NX,NY);
      .print("New random target: ",NX,",",NY);
+     -+goal(search);
      -+target(NX,NY).
-
-+!decide_target
-  <- .print("No need for a new target, consider last herding location.");
-     do(skip). // send an action so that the simulator does not wait for me.
+  
+//+!decide_target
+//  <- .print("No need for a new target, consider last herding location.");
+//     do(skip). // send an action so that the simulator does not wait for me.
 
 
 /* -- plans to move to a destination represented in the belief target(X,Y) 
@@ -84,16 +100,18 @@ agent_in_target :-
      .wait("+pos(_,_,_)");
      !move.
 
-// find a new destination
++!move
+   : not target(_,_)
+  <- .print("waiting my target....");
+     .wait("+target(_,_)");
+     !move.
+
 +!move 
-    : pos(X,Y,_) &
-      (not target(_,_)   |  // I have no target OR
-       target(X,Y)       |  // I am at target OR
-       jia_obstacle(X,Y) |  // An obstacle was discovered in the target
-       agent_in_target   |  // there is an agent in the target
-       (target(BX,BY) & jia.direction(X, Y, BX, BY, skip))) // is impossible to go to target
-   <- !decide_target.
-   
+   : pos(X,Y,_) & target(X,Y)  // I am at target
+  <- -+at_target;
+     do(skip);
+     !!move.
+  
 // does one step towards target  
 +!move 
     : pos(X,Y,_) & 
@@ -101,18 +119,28 @@ agent_in_target :-
       jia.direction(X, Y, BX, BY, D) // jia.direction finds one action D (using A*) towards the target
    <- do(D);  // this action will "block" the intention until it is sent to the simulator (in the end of the cycle)
       !!move. // continue moving
+  
+// find a new destination
+/*+!move 
+    : pos(X,Y,_) &
+      (not target(_,_)   |  // I have no target OR
+       target(X,Y)       |  // I am at target OR
+       jia_obstacle(X,Y) |  // An obstacle was discovered in the target
+       agent_in_target   |  // there is an agent in the target
+       (target(BX,BY) & jia.direction(X, Y, BX, BY, skip))) // is impossible to go to target
+   <- !decide_target.
+*/
 
 // in case of failure, move
 -!move
    <- .current_intention(I); .println("failure in move, intention: ",I);
       !move.
 
-
 +restart 
   <- .print("*** restart ***"); 
      .drop_all_desires;
      .abolish(target(_,_));
-     !move.
+     !decide_target.
 
 /* -- tests -- */
 

@@ -10,10 +10,12 @@ import arch.LocalWorldModel;
 
 public class Vec implements Cloneable {
     
-    public final int x,y;
+    public final double x,y;
     public final double r,t;
     
-    public Vec(int x, int y) {
+    public static final double PI2 = 2.0 * Math.PI;
+    
+    public Vec(double x, double y) {
         this.x = x;
         this.y = y;
         this.r = Math.sqrt(x*x + y*y);
@@ -28,13 +30,13 @@ public class Vec implements Cloneable {
         this.t = Math.atan2(y,x);
     }
     
-    public int getX() { return x; }
-    public int getY() { return y; }
+    public int getX() { return (int)Math.round(x); }
+    public int getY() { return (int)Math.round(y); }
     public double magnitude() { return r; }
     public double angle() { return t; }
     
-    public Location getLocation(LocalWorldModel model) { 
-        return new Location(x, model.getHeight()-y-1); 
+    public Location getLocation(LocalWorldModel model) {
+        return new Location(getX(), model.getHeight()-getY()-1); 
     }
     
     public Vec add(Vec v) {
@@ -46,6 +48,11 @@ public class Vec implements Cloneable {
     public Vec product(double e) {
         return new Vec((int)(x * e), (int)(y *e));
     }
+    public Vec newAngle(double t) {
+		while (t > PI2) t = t - PI2;
+		while (t < 0)   t = t + PI2;
+		return new Vec(r*Math.cos(t), r*Math.sin(t));    	
+    }
     
     @Override
     public boolean equals(Object o) {
@@ -53,7 +60,7 @@ public class Vec implements Cloneable {
         if (o == this) return true;
         if (o instanceof Vec) {
             Vec v = (Vec)o;
-            return (x == v.x) && (y == v.y);
+            return (getX() == v.getX()) && (getY() == v.getY());
         }
         return false;
     }
@@ -151,6 +158,6 @@ public class Vec implements Cloneable {
     
     @Override
     public String toString() {
-        return x + "," + y;
+        return getX() + "," + getY();
     }
 }

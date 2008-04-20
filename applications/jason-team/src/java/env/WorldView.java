@@ -202,6 +202,7 @@ public class WorldView extends GridWorldView {
         case WorldModel.COW:    drawCow(g, x, y);  break;
         case WorldModel.ENEMY:   drawEnemy(g, x, y);  break;
         case WorldModel.TARGET:  drawTarget(g, x, y);  break;
+        case WorldModel.FORPLACE:  drawFormPlace(g, x, y);  break;
         }
     }
 
@@ -266,6 +267,15 @@ public class WorldView extends GridWorldView {
         g.setColor(Color.white);
         g.drawRect(x * cellSizeW + 3, y * cellSizeH + 3, cellSizeW - 6, cellSizeH - 6);
         g.setColor(Color.darkGray);
+        g.drawRect(x * cellSizeW + 4, y * cellSizeH + 4, cellSizeW - 8, cellSizeH - 8);
+    }
+
+    public void drawFormPlace(Graphics g, int x, int y) {
+        g.setColor(Color.green);
+        g.drawRect(x * cellSizeW + 2, y * cellSizeH + 2, cellSizeW - 4, cellSizeH - 4);
+        g.setColor(Color.lightGray);
+        g.drawRect(x * cellSizeW + 3, y * cellSizeH + 3, cellSizeW - 6, cellSizeH - 6);
+        g.setColor(Color.gray);
         g.drawRect(x * cellSizeW + 4, y * cellSizeH + 4, cellSizeW - 8, cellSizeH - 8);
     }
 

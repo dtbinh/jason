@@ -3,8 +3,11 @@ package arch;
 import jason.environment.grid.Location;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import env.WorldModel;
 
@@ -21,7 +24,7 @@ public class LocalWorldModel extends WorldModel {
     
     private Random			  random = new Random();
     
-    List<Location> cows = new ArrayList<Location>();
+    Set<Location> cows = new HashSet<Location>();
     
     //private Logger            logger   = Logger.getLogger("jasonTeamSimLocal.mas2j." + LocalWorldModel.class.getName());
 
@@ -44,7 +47,8 @@ public class LocalWorldModel extends WorldModel {
         }
     }
 
-    public void clearCowsList() {
+    public void clearCows() {
+    	removeAll(WorldModel.COW);
         cows.clear();
     }
     public void addCow(int x, int y) {
@@ -54,7 +58,7 @@ public class LocalWorldModel extends WorldModel {
     public void addCow(Location l) {
         addCow(l.x, l.y);
     }
-    public List<Location> getCows() {
+    public Collection<Location> getCows() {
         return cows;
     }
 
@@ -73,6 +77,18 @@ public class LocalWorldModel extends WorldModel {
         		return options.get(random.nextInt(options.size()));
             w++;
         }
+    }
+    
+    public int countObjInArea(int obj, Location startPoint, int size) {
+        int c = 0;
+        for (int x = startPoint.x-size; x <= startPoint.x+size; x++) {
+            for (int y = startPoint.y-size; y <= startPoint.y+size; y++) {
+                if (hasObject(obj, x, y)) {
+                    c++;
+                }
+            }
+        }
+        return c;
     }
     
     public int getVisited(Location l) {

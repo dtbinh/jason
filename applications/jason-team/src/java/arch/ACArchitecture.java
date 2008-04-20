@@ -144,7 +144,10 @@ public class ACArchitecture extends CowboyArch {
 	    
 	    void newCycle() {
 	        String w = "";
-	        if (lastActionInCurrentCycle == null) w = "*** "; 
+	        if (lastActionInCurrentCycle == null) {
+	        	w = "*** ";
+	        	addRestart();
+	        }
             logger.info(w+"Last sent action was "+lastActionInCurrentCycle+" for cycle "+getCycle()+". The following was not sent: "+toExecute);
             
             setLastAct(lastActionInCurrentCycle);

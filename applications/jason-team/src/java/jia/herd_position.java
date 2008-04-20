@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import arch.CowboyArch;
 import arch.LocalWorldModel;
 import busca.Nodo;
+import env.WorldModel;
 
 /** 
  * Gives a good location to herd cows
@@ -24,17 +25,31 @@ public class herd_position extends DefaultInternalAction {
     
     public static final double maxStdDev = 3;
     
+    public enum Formation { 
+    	one { int[] getAngles() { return new int[] { 0 }; } }, 
+    	six { int[] getAngles() { return new int[] { 10, -10, 30, -30, 60, -60 }; } };
+    	abstract int[] getAngles();
+    };
+    
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] terms) throws Exception {
         try {
+        	CowboyArch arch       = (CowboyArch)ts.getUserAgArch();
+            LocalWorldModel model = arch.getModel();
+            if (model == null)
+            	return false;
             
-            LocalWorldModel model = ((CowboyArch)ts.getUserAgArch()).getModel();
-            
-            Location agTarget = getAgTarget(model);
+            Location agLoc        = model.getAgPos(arch.getMyId());
+
+            // update GUI
+            if (arch.hasGUI())
+            	setFormationLoc(model, Formation.valueOf(terms[0].toString()));
+
+            Location agTarget = getAgTarget(model,Formation.valueOf(terms[0].toString()), agLoc);
             if (agTarget != null) {
-                agTarget = model.nearFree(agTarget);
-                return un.unifies(terms[0], new NumberTermImpl(agTarget.x)) && 
-                       un.unifies(terms[1], new NumberTermImpl(agTarget.y));
+            	agTarget = nearFreeForAg(model, agLoc, agTarget);
+                return un.unifies(terms[1], new NumberTermImpl(agTarget.x)) && 
+                       un.unifies(terms[2], new NumberTermImpl(agTarget.y));
             }
         } catch (Throwable e) {
             ts.getLogger().log(Level.SEVERE, "herd_position error: "+e, e);    		
@@ -42,7 +57,34 @@ public class herd_position extends DefaultInternalAction {
         return false;
     }
     
-    public Location getAgTarget(LocalWorldModel model) throws Exception {
+    public Location getAgTarget(LocalWorldModel model, Formation formation, Location ag) throws Exception {
+        Location r = null;
+        List<Location> locs = formationPlaces(model, formation);
+	        if (locs != null) {
+	        for (Location l : locs) {
+	        	r = l;
+	            if (ag.equals(l) || // I am there
+	                model.countObjInArea(WorldModel.AGENT, l, 1) == 0) { // someone else is there
+	        		break;
+	        	}
+	        }
+        }
+        return r;
+    }
+
+    public void setFormationLoc(LocalWorldModel model, Formation formation) throws Exception {
+    	model.removeAll(WorldModel.FORPLACE);
+        List<Location> locs = formationPlaces(model, formation);
+        if (locs != null) {
+	        for (Location l : locs) {
+	            if (model.inGrid(l)) {
+	            	model.add(WorldModel.FORPLACE, l);
+	            }
+	    	}
+        }
+    }
+    
+    private List<Location> formationPlaces(LocalWorldModel model, Formation formation) throws Exception {
         List<Vec> cows = new ArrayList<Vec>();
         for (Location c: model.getCows()) {
             cows.add(new Vec(model, c));
@@ -61,34 +103,48 @@ public class herd_position extends DefaultInternalAction {
         int stepsFromCenter = (int)Vec.max(cows).sub(mean).magnitude()+1;
         int n = Math.min(stepsFromCenter, np.size());
 
-        Vec ctarget = new Vec(model, s.getNodeLocation(np.get(n)));
-        Vec agTarget = mean.sub(ctarget).add(mean); // .product(1.5)
-        return agTarget.getLocation(model);
+        Vec cowstarget = new Vec(model, s.getNodeLocation(np.get(n)));
+        Vec agsTarget  = mean.sub(cowstarget);
+        Vec agTarget   = agsTarget;
+        List<Location> r = new ArrayList<Location>();
+        for (int angle: formation.getAngles()) {
+        	double nt = angle * (Math.PI / 180);
+        	for (double varangle = nt; nt < 180; nt += 5) {
+            	agTarget = agsTarget.newAngle(agsTarget.angle() + varangle);
+                Location l = agTarget.add(mean).getLocation(model);
 
-        /*
-        List<Vec> cowsTarget = new ArrayList<Vec>();
-        for (Location c: model.getCows()) {
-            Search s = new Search(model, c, model.getCorralCenter(), null, false, false, false, null);
-            Location cowTarget = WorldModel.getNewLocationForAction(c, s.firstAction(s.search()));
-            cowsTarget.add(new Vec(model, cowTarget));
+                // if l is in the path of cows, continue with next varangle
+                boolean inpath = false;
+                for (Nodo pn: np) {
+                	if (l.equals(s.getNodeLocation(pn))) {
+                		inpath = true;
+                		break;
+                	}
+                }
+                if (!inpath) {
+                	r.add(l);
+                	break;
+                }
+        	}
         }
-        
-        Vec stddev = Vec.stddev(cowsTarget);
-        
-        // remove max if stddev is too big
-        while (stddev.magnitude() > maxStdDev) {
-            cowsTarget.remove(Vec.max(cowsTarget));
-            stddev = Vec.stddev(cowsTarget);
+        return r;    	
+    }
+    
+    public Location nearFreeForAg(LocalWorldModel model, Location ag, Location t) throws Exception {
+        // run A* to get the path from ag to t
+        Search s = new Search(model, t, ag, null, false, false, true, null);
+        List<Nodo> np = s.normalPath(s.search());
+    	
+        int i = 0;
+        for (Nodo n: np) {
+        	if (model.isFree(s.getNodeLocation(n))) {
+        		return s.getNodeLocation(n);
+        	}
+        	i++;
+        	if (i > 3) // do not go to far from target
+        		break;
         }
-        
-        Vec mean = Vec.mean(cowsTarget);
-        if (mean.magnitude() > 0) {
-            double incvalue = (Vec.max(cowsTarget).sub(mean).magnitude()+2) / mean.magnitude();
-            return mean.product(incvalue+1).getLocation(model);
-        } else {
-            return null;
-        }
-        */
+        return model.nearFree(t);
     }
 }
 

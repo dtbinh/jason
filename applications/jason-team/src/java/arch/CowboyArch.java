@@ -13,6 +13,7 @@ import jason.environment.grid.Location;
 import jason.mas2j.ClassParameters;
 import jason.runtime.Settings;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -83,6 +84,10 @@ public class CowboyArch extends IdentifyCrashed {
         simId = id;
     }
 
+    public boolean hasGUI() {
+    	return gui;
+    }
+    
 	public int getMyId() {
 		if (myId < 0) {
 			myId = getAgId(getAgName());
@@ -162,7 +167,8 @@ public class CowboyArch extends IdentifyCrashed {
              lo3 = new Location(-1,-1), 
              lo4 = new Location(-1,-1),
              lo5 = new Location(-1,-1),
-             lo6 = new Location(-1,-1);
+             lo6 = new Location(-1,-1),
+             lo7 = new Location(-1,-1);
 
 
     Location oldLoc;
@@ -203,6 +209,7 @@ public class CowboyArch extends IdentifyCrashed {
 			}
 		}
 		
+		lo7 = lo6;
         lo6 = lo5;
         lo5 = lo4;
         lo4 = lo3;
@@ -211,22 +218,26 @@ public class CowboyArch extends IdentifyCrashed {
         lo1 = new Location(x,y);
 
         if (isRobotFrozen()) {
-        	try {
-	        	logger.info("** Arch adding restart for "+getAgName());
-        	    getTS().getC().create();
-        		
-	        	getTS().getAg().getBB().abolish(new Literal("restart").getPredicateIndicator());
-	        	getTS().getAg().addBel(new Literal("restart"));
-	        	lo2 = new Location(-1,-1); // to not restart again in the next cycle
-        	} catch (Exception e) {
-            	logger.info("Error in restart!"+ e);
-        	}
+        	addRestart();
         }
 	}
 	
 	/** returns true if the agent do not move in the last 5 location perception */
 	public boolean isRobotFrozen() {
-		return lo1.equals(lo2) && lo2.equals(lo3) && lo3.equals(lo4) && lo4.equals(lo5) && lo5.equals(lo6);
+		return lo1.equals(lo2) && lo2.equals(lo3) && lo3.equals(lo4) && lo4.equals(lo5) && lo5.equals(lo6) && lo6.equals(lo7);
+	}
+
+	protected void addRestart() {
+    	try {
+        	logger.info("** Arch adding restart for "+getAgName());
+    	    getTS().getC().create();
+    		
+        	getTS().getAg().getBB().abolish(new Literal("restart").getPredicateIndicator());
+        	getTS().getAg().addBel(new Literal("restart"));
+        	lo2 = new Location(-1,-1); // to not restart again in the next cycle
+    	} catch (Exception e) {
+        	logger.info("Error in restart!"+ e);
+    	}
 	}
 	
     public static Literal createCellPerception(int x, int y, Term obj) {
@@ -237,8 +248,22 @@ public class CowboyArch extends IdentifyCrashed {
         return l;
     }
 
+    private static final Literal cowstoclean = Literal.parseLiteral("cell(_,_,cow(_))");
+    synchronized void initKnownCows() throws RevisionFailedException {
+    	model.clearCows();
+    	getTS().getAg().abolish(cowstoclean, null); 
+    }
     void cowPerceived(int x, int y) {
     	model.addCow(x,y);
+    }
+    
+    void sendCowsToTeam() {
+		try {
+			Message m = new Message("tell-cows", null, null, model.getCows());
+			broadcast(m);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}    	
     }
 
     void enemyPerceived(int x, int y) {
@@ -276,8 +301,9 @@ public class CowboyArch extends IdentifyCrashed {
     	}
     }
     
+	@SuppressWarnings("unchecked")
 	@Override
-    public void checkMail() {
+	synchronized public void checkMail() {
 	    try {
     		super.checkMail();
     		
@@ -286,38 +312,45 @@ public class CowboyArch extends IdentifyCrashed {
     		Iterator<Message> im = getTS().getC().getMailBox().iterator();
     		while (im.hasNext()) {
     			Message m  = im.next();
-    			String  ms = m.getPropCont().toString();
-    			if (ms.startsWith("cell") && ms.endsWith("obstacle)") && model != null) {
-    				Literal p = (Literal)m.getPropCont();
-    				int x = (int)((NumberTerm)p.getTerm(0)).solve();
-    				int y = (int)((NumberTerm)p.getTerm(1)).solve();
-    				if (model.inGrid(x,y)) {
-    					model.add(WorldModel.OBSTACLE, x, y);
-    					if (acView != null) acView.addObject(WorldModel.OBSTACLE, x, y);
+    			if (m.getIlForce().equals("tell-cows")) {
+    				for (Location l: (Collection<Location>)m.getPropCont()) {
+    					cowPerceived(l.x, l.y);
     				}
     				im.remove();
-    				//getTS().getAg().getLogger().info("received obs="+p);
-    				
-    			} else if (ms.startsWith("my_status") && model != null) {
-    				// update others location
-    				Literal p = Literal.parseLiteral(m.getPropCont().toString());
-    				int x = (int)((NumberTerm)p.getTerm(0)).solve();
-    				int y = (int)((NumberTerm)p.getTerm(1)).solve();
-    				if (model.inGrid(x,y)) {
-    					try {
-    						int agid = getAgId(m.getSender());
-    						model.setAgPos(agid, x, y);
-    						if (acView != null) acView.getModel().setAgPos(agid, x, y);
-    						model.incVisited(x, y);
-    						//getTS().getAg().getLogger().info("ag pos "+getMinerId(m.getSender())+" = "+x+","+y);
-    						Structure tAlly = new Structure("ally");
-    						tAlly.addTerm(new Atom(m.getSender()));
-    						getTS().getAg().addBel( createCellPerception(x, y, tAlly));
-    					} catch (Exception e) {
-    						e.printStackTrace();
-    					}
-    				}
-    				im.remove(); 
+    			} else {
+	    			String  ms = m.getPropCont().toString();
+	    			if (ms.startsWith("cell") && ms.endsWith("obstacle)") && model != null) {
+	    				Literal p = (Literal)m.getPropCont();
+	    				int x = (int)((NumberTerm)p.getTerm(0)).solve();
+	    				int y = (int)((NumberTerm)p.getTerm(1)).solve();
+	    				if (model.inGrid(x,y)) {
+	    					model.add(WorldModel.OBSTACLE, x, y);
+	    					if (acView != null) acView.addObject(WorldModel.OBSTACLE, x, y);
+	    				}
+	    				im.remove();
+	    				//getTS().getAg().getLogger().info("received obs="+p);
+	    				
+	    			} else if (ms.startsWith("my_status") && model != null) {
+	    				// update others location
+	    				Literal p = Literal.parseLiteral(m.getPropCont().toString());
+	    				int x = (int)((NumberTerm)p.getTerm(0)).solve();
+	    				int y = (int)((NumberTerm)p.getTerm(1)).solve();
+	    				if (model.inGrid(x,y)) {
+	    					try {
+	    						int agid = getAgId(m.getSender());
+	    						model.setAgPos(agid, x, y);
+	    						if (acView != null) acView.getModel().setAgPos(agid, x, y);
+	    						model.incVisited(x, y);
+	    						//getTS().getAg().getLogger().info("ag pos "+getMinerId(m.getSender())+" = "+x+","+y);
+	    						Structure tAlly = new Structure("ally");
+	    						tAlly.addTerm(new Atom(m.getSender()));
+	    						getTS().getAg().addBel( createCellPerception(x, y, tAlly));
+	    					} catch (Exception e) {
+	    						e.printStackTrace();
+	    					}
+	    				}
+	    				im.remove(); 
+	    			}
     			}
     		}
 	    } catch (Exception e) {

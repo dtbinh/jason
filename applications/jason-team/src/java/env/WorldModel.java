@@ -17,6 +17,7 @@ public class WorldModel extends GridWorldModel {
     public static final int   CORRAL = 32;
     public static final int   ENEMY  = 64;
     public static final int   TARGET = 128; // one agent target location
+    public static final int   FORPLACE = 256; // a place in a formation
 
     public static final int   nbActions = 8;
 
@@ -164,6 +165,14 @@ public class WorldModel extends GridWorldModel {
     	return maxSteps;
     }
         
+    public void removeAll(int obj) {
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+            	if (hasObject(obj, i, j))
+            		remove(obj, i, j);
+            }
+        }
+    }
     
     /** Actions **/
 
