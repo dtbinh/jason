@@ -13,6 +13,7 @@ import jason.environment.grid.Location;
 import jason.mas2j.ClassParameters;
 import jason.runtime.Settings;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -140,14 +141,6 @@ public class CowboyArch extends IdentifyCrashed {
         model.setMaxSteps(s);
     }
 
-    /** The perception ratio is discovered */
-	void perceptionRatioPerceived(int s) throws RevisionFailedException {
-		if (s != model.getPerceptionRatio()) {
-			model.setPerceptionRatio(s);
-			getTS().getAg().addBel(Literal.parseLiteral("pratio("+s+")"));
-		}
-	}
-    
 	/** update the model with obstacle and share them with the team mates */
 	void obstaclePerceived(int x, int y, Literal p) {
 		if (! model.hasObject(WorldModel.OBSTACLE, x, y)) {
@@ -249,9 +242,22 @@ public class CowboyArch extends IdentifyCrashed {
     }
 
     private static final Literal cowstoclean = Literal.parseLiteral("cell(_,_,cow(_))");
-    synchronized void initKnownCows() throws RevisionFailedException {
+    private boolean cleanCows = false;
+    
+    @Override
+    public synchronized void agDidPerceive() {
+    	super.agDidPerceive();
+    	if (cleanCows) {
+        	try {
+				getTS().getAg().abolish(cowstoclean, null);
+			} catch (RevisionFailedException e) {}     		
+        	cleanCows = false;
+    	}
+    }
+    
+    void initKnownCows() {
     	model.clearCows();
-    	getTS().getAg().abolish(cowstoclean, null); 
+    	cleanCows = true;
     }
     void cowPerceived(int x, int y) {
     	model.addCow(x,y);
@@ -259,7 +265,7 @@ public class CowboyArch extends IdentifyCrashed {
     
     void sendCowsToTeam() {
 		try {
-			Message m = new Message("tell-cows", null, null, model.getCows());
+			Message m = new Message("tell-cows", null, null, new ArrayList<Location>(model.getCows()));
 			broadcast(m);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -303,7 +309,7 @@ public class CowboyArch extends IdentifyCrashed {
     
 	@SuppressWarnings("unchecked")
 	@Override
-	synchronized public void checkMail() {
+	public void checkMail() {
 	    try {
     		super.checkMail();
     		

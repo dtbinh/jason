@@ -109,7 +109,7 @@ public class WriteStatusThread extends Thread {
         if (act.equals(WorldModel.Move.southwest.toString()))   return "sw";
         if (act.equals(WorldModel.Move.north.toString()))       return "n ";
         if (act.equals(WorldModel.Move.south.toString()))       return "s ";
-        if (act.equals(WorldModel.Move.skip.toString()))        return "sk";
+        if (act.equals(WorldModel.Move.skip.toString()))        return "--";
         return act;
     }
     

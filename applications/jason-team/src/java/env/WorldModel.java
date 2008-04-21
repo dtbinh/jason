@@ -21,7 +21,10 @@ public class WorldModel extends GridWorldModel {
 
     public static final int   nbActions = 8;
 
-    public static final int   agsByTeam = 6;    
+    public static final int   agsByTeam = 6;
+    
+    public static final int   agPerceptionRatio = 8;
+    public static final int   cowPerceptionRatio = 4;    
 
     
     double                    PSim = 0.1; // probability of action/information failure
@@ -35,8 +38,6 @@ public class WorldModel extends GridWorldModel {
     
     int	                      maxSteps = 0; // number of steps of the simulation
 
-    int                       pratio = -1; // perception ratio
-    
     private Logger            logger   = Logger.getLogger("jasonTeamSimLocal.mas2j." + WorldModel.class.getName());
 
     public enum Move {
@@ -98,65 +99,12 @@ public class WorldModel extends GridWorldModel {
         cowsRed = c;
     }
     
-    public void setPerceptionRatio(int r) {
-        pratio = r;
-    }
-    public int getPerceptionRatio() {
-        return pratio;
-    }
-    
-    /*
-    public boolean hasGold() {
-    	return countObjects(COW) > 0;
-    }
-    
-    public boolean isAllGoldsCollected() {
-    	return goldsInDepotRed + goldsInDepotBlue == initialNbCows;
-    }
-    
-    public void setInitialNbGolds(int i) {
-    	initialNbCows = i;
-    }
-    
-    public int getInitialNbGolds() {
-    	return initialNbCows;
-    }
-
-    public boolean isCarryingGold(int ag) {
-    	return goldsWithAg[ag] > 0;
-    }
-
-    public boolean mayCarryMoreGold(int ag) {
-        return goldsWithAg[ag] < AG_CAPACITY;
-    }
-    
-    public int getGoldsWithAg(int ag) {
-    	return goldsWithAg[ag];
-    }
-    public void setGoldsWithAg(int ag, int n) {
-    	goldsWithAg[ag] = n;
-    }
-    */
-    
     public void setPSim(double psim) {
         PSim = psim;
     }
     public void setPMax(double pmax) {
         PMax = pmax;
     }
-    
-    /** returns the probability of action/perception failure for an agent
-        based on the number of golds it is carrying 
-    */
-    /*
-    public double getAgFatigue(int ag) {
-        return getAgFatigue(ag, goldsWithAg[ag]); 
-    }
-    
-    public double getAgFatigue(int ag, int golds) {
-        return PSim + ((PMax - PSim)/AG_CAPACITY) * golds; 
-    }
-    */
     
     public void setMaxSteps(int s) {
     	maxSteps = s;

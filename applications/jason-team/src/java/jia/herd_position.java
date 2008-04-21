@@ -45,11 +45,13 @@ public class herd_position extends DefaultInternalAction {
             if (arch.hasGUI())
             	setFormationLoc(model, Formation.valueOf(terms[0].toString()));
 
-            Location agTarget = getAgTarget(model,Formation.valueOf(terms[0].toString()), agLoc);
+            Location agTarget = getAgTarget(model, Formation.valueOf(terms[0].toString()), agLoc);
             if (agTarget != null) {
             	agTarget = nearFreeForAg(model, agLoc, agTarget);
                 return un.unifies(terms[1], new NumberTermImpl(agTarget.x)) && 
                        un.unifies(terms[2], new NumberTermImpl(agTarget.y));
+            } else {
+            	ts.getLogger().info("No target! I am at "+agLoc+" places are "+formationPlaces(model, Formation.valueOf(terms[0].toString())));
             }
         } catch (Throwable e) {
             ts.getLogger().log(Level.SEVERE, "herd_position error: "+e, e);    		
@@ -60,11 +62,11 @@ public class herd_position extends DefaultInternalAction {
     public Location getAgTarget(LocalWorldModel model, Formation formation, Location ag) throws Exception {
         Location r = null;
         List<Location> locs = formationPlaces(model, formation);
-	        if (locs != null) {
-	        for (Location l : locs) {
-	        	r = l;
+        if (locs != null) {
+        	for (Location l : locs) {
+        		r = l;
 	            if (ag.equals(l) || // I am there
-	                model.countObjInArea(WorldModel.AGENT, l, 1) == 0) { // someone else is there
+	                model.countObjInArea(WorldModel.AGENT, l, 1) == 0) { // no one else is there
 	        		break;
 	        	}
 	        }

@@ -6,7 +6,6 @@
         gsize(Weight,Height)
         steps(MaxSteps)
         corral(UpperLeft.x,UpperLeft.y,DownRight.x,DownRight.y)
-        pratio(Int) // ratio of perception of the agent
         
       Step:
         pos(X,Y,Step)
@@ -18,6 +17,11 @@
         end_of_simulation(Result)
 
 */
+
+/* -- initial beliefs -- */
+
+ag_perception_ratio(8). // ratio of perception of the agent
+cow_perception_ratio(4).
 
 /* -- useful rules */ 
 
@@ -125,5 +129,4 @@ random_pos(X,Y) :-
 +corral(X1,Y1,X2,Y2)  <- .println("corral = ",X1,",",Y1," -- ",X2,",",Y2).
 
 //+cell(X,Y,Type)       <- .println("cell   = ",X,",",Y," = ",Type).
-+pratio(R)            <- .println("pratio = ",R).
 +pos(X,Y,S)           <- .println("pos    = ",X,",",Y,"/",S).

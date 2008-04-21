@@ -11,6 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,6 +28,8 @@ import java.util.logging.Logger;
  */
 public class ACArchitecture extends CowboyArch {
 
+    public static final int   actionTimeout = 1500; // timeout to send an action
+    
 	private Logger logger;	
 
 	private ACProxy       proxy;
@@ -130,23 +136,29 @@ public class ACArchitecture extends CowboyArch {
 	    ActionExec        lastAction;
         String            lastActionInCurrentCycle;
 	    Queue<ActionExec> toExecute = new ConcurrentLinkedQueue<ActionExec>();
-
+	    Lock              lock = new ReentrantLock();
+	    Condition         cycle = lock.newCondition();
 	    
 	    WaitSleep() {
 	        super("WaitSpeepToSendAction");
 	    }
 	    
-	    synchronized void addAction(ActionExec action) {
-	        if (lastAction != null)
-	            toExecute.offer(lastAction);
-	        lastAction = action;
+	    void addAction(ActionExec action) {
+	    	lock.lock();
+            try {
+    	        if (lastAction != null)
+    	            toExecute.offer(lastAction);
+    	        lastAction = action;
+            } finally {
+            	lock.unlock();
+            }
         }
 	    
 	    void newCycle() {
 	        String w = "";
 	        if (lastActionInCurrentCycle == null) {
-	        	w = "*** ";
 	        	addRestart();
+	        	w = "*** ";
 	        }
             logger.info(w+"Last sent action was "+lastActionInCurrentCycle+" for cycle "+getCycle()+". The following was not sent: "+toExecute);
             
@@ -160,14 +172,25 @@ public class ACArchitecture extends CowboyArch {
                 action.setResult(true);
                 feedback.add(action);
             }
+            go(); // reset the wait
 	    }
 	    
-	    synchronized void go() {
-            notifyAll();
+    	void go() {
+	    	lock.lock();
+            try {
+            	cycle.signal();
+            } finally {
+            	lock.unlock();
+            }
         }
-	    synchronized void waitSleep() throws InterruptedException {
-	        // TODO: do something by timeout?
-            wait();
+	    
+	    boolean waitSleep() throws InterruptedException {
+	    	lock.lock();
+            try {
+            	return !cycle.await(actionTimeout, TimeUnit.MILLISECONDS);
+            } finally {
+            	lock.unlock();
+            }
         }
 	    
 	    @Override
@@ -175,7 +198,7 @@ public class ACArchitecture extends CowboyArch {
 	        while (true) {
 	            try {
                     lastAction = null;
-	                waitSleep();
+                    waitSleep();
 	                if (lastAction != null) {
                         lastActionInCurrentCycle = lastAction.getActionTerm().getTerm(0).toString();
 	                    proxy.sendAction(lastActionInCurrentCycle);

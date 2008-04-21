@@ -203,7 +203,7 @@ public class LocalWorldModel extends WorldModel {
 
     /** removes enemies/gold around x,y */
     public void clearAgView(int x, int y) {
-        int r = getPerceptionRatio();
+        int r = agPerceptionRatio;
         for (int c=x-r; c<=x+r; c++) {
             for (int l=y-r; l<=y+r; l++) {
                 if (inGrid(c, l)) {

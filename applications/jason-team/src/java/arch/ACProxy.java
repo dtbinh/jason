@@ -136,9 +136,6 @@ public class ACProxy extends ACAgent implements Runnable {
 		}
 	}
 
-	int maxx = 0; // max value of some cell'x
-
-    
 	public void processRequestAction(Element perception, long currenttime, long deadline) {
 		try {
 			List<Literal> percepts = new ArrayList<Literal>();
@@ -171,9 +168,6 @@ public class ACProxy extends ACAgent implements Runnable {
                 int celly = Integer.parseInt(cell.getAttribute("y"));
 				int absx  = agx + cellx;
 				int absy  = agy + celly;
-				
-				if (cellx > maxx)
-					maxx = cellx;
 				
 				NodeList cnl = cell.getChildNodes();
 				for (int j=0; j < cnl.getLength(); j++) {
@@ -212,7 +206,6 @@ public class ACProxy extends ACAgent implements Runnable {
 			}
 	
 			
-            arq.perceptionRatioPerceived(maxx);
 			arq.sendCowsToTeam();
 			arq.startNextStep(step, percepts);
 			
