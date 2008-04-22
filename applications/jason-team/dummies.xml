@@ -8,7 +8,7 @@
                     April 10, 2008 - 23:19:55
 -->
 
-<project name   ="miners"
+<project name   ="dummies"
          basedir="."
          default="run">
 

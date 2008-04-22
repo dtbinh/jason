@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?xml-stylesheet href="http://moise.sourceforge.net/xml/os.xsl" type="text/xsl" ?>
+
+<organisational-specification 
+
+    id="jason-cowboys"
+    os-version="0.4"
+  
+    xmlns='http://moise.sourceforge.net/os'
+    xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+    xsi:schemaLocation='http://moise.sourceforge.net/os
+                        http://moise.sourceforge.net/xml/os.xsd' >
+    
+    <structural-specification>
+
+        <role-definitions>
+            <role id="cowboy" />
+            <role id="leader">   <extends role="cowboy"/> </role>
+            <role id="explorer"> <extends role="leader"/> </role>
+            <role id="herder">   <extends role="leader"/> </role>
+            <role id="scouter">  <extends role="cowboy"/> </role>
+            <role id="herdboy">  <extends role="cowboy"/> </role>
+        </role-definitions>
+
+        <group-specification id="team">
+            <links>
+                <link from="cowboy" to="cowboy" type="communication"
+                      scope="inter-group" extends-sub-groups="true" bi-dir="false"/>
+                <link from="leader" to="cowboy" type="authority"
+                      scope="intra-group" extends-sub-groups="true" bi-dir="false"/>
+            </links>
+
+            <sub-groups>
+                
+                <group-specification id="exploration" >
+                    <roles>
+                        <role id="explorer" min="1" max="1"/>
+                        <role id="scouter" />
+                    </roles>
+                </group-specification>
+
+                <group-specification id="herding" >
+                    <roles>
+                        <role id="herder" min="1" max="1"/>
+                        <role id="herdboy" />
+                    </roles>
+                </group-specification>
+            </sub-groups>
+
+            <formation-constraints>
+                <!--compatibility from="cowboy" to="cowboy" type="compatibility"
+                               scope="intra-group" extends-sub-groups="true" 
+                               bi-dir="true"/ -->
+            </formation-constraints>
+        </group-specification>
+    </structural-specification>
+
+
+
+    <functional-specification>
+    </functional-specification>
+
+    <deontic-specification>
+    </deontic-specification>
+</organisational-specification>
+

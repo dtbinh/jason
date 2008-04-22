@@ -91,7 +91,7 @@ public class OrgAgent extends AgArch {
                 if (m.getPropCont() instanceof OE) {
                     currentOE = (OE) m.getPropCont();
                     i.remove();
-                } else {
+                } else if (m.getSender().equals(getOrgManagerName())) {
                     // the content is a normal predicate
                     final String content = m.getPropCont().toString();
                     final boolean isTell = m.getIlForce().equals("tell");

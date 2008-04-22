@@ -1,19 +1,20 @@
 package arch;
 
-import java.util.List;
-
 import jason.JasonException;
-import jason.architecture.AgArch;
 import jason.asSyntax.Literal;
 import jason.mas2j.ClassParameters;
 import jason.runtime.Settings;
+
+import java.util.List;
+
+import jmoise.OrgAgent;
 
 /** 
  *  An agent architecture that try to identify a crashed agent and then try to fix it.
  * 
  *  @author Jomi
  */
-public class IdentifyCrashed extends AgArch {
+public class IdentifyCrashed extends OrgAgent {
 
     private boolean didPercept = true;
     private int     maxCycleTime = 4000;
