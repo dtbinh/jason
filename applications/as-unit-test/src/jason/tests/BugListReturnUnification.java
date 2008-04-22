@@ -22,16 +22,25 @@ public class BugListReturnUnification {
 
         		"+!test2 <- L=[A,B,C,D]; !bundle(L); jason.asunit.print(L). "+
         		"+!bundle([]). "+
-        		"+!bundle([a|T]) <- !bundle(T). "
+        		"+!bundle([a|T]) <- !bundle(T). "+
+        		
+        		"+!test3 <- !a(Y)[x(Z), y]; jason.asunit.print(Y, Z). "+
+        		"+!a(Y)[x(Z),kk]           <- Y=3; Z=4. "+  		
+        		"+!a(Y)[x(Z),source(self)] <- Y=1; Z=2. "  		
         );
     }
     
     @Test
-    public void testContext() {
+    public void testList() {
         ag.addGoal("test1");
         ag.assertPrint("[a,a]", 10);
         ag.addGoal("test2");
         ag.assertPrint("[a,a,a,a]", 10);
     }
 
+    @Test
+    public void testAnnots() {
+        ag.addGoal("test3");
+        ag.assertPrint("12", 10);
+    }
 }
