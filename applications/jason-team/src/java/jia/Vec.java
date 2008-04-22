@@ -8,8 +8,9 @@ import java.util.List;
 import arch.LocalWorldModel;
 
 
-public class Vec implements Cloneable {
+public final class Vec implements Cloneable {
     
+	// immutable fields (for a immutable object)
     public final double x,y;
     public final double r,t;
     
@@ -46,7 +47,7 @@ public class Vec implements Cloneable {
         return new Vec(x - v.x, y - v.y);
     }
     public Vec product(double e) {
-        return new Vec((int)(x * e), (int)(y *e));
+        return new Vec( x * e, y * e);
     }
     public Vec newAngle(double t) {
 		while (t > PI2) t = t - PI2;
@@ -69,7 +70,6 @@ public class Vec implements Cloneable {
     	return this; // it is an immutable object, no need to create a new one
     }
 
-    
 
 	/**
 	 * Provides info on which octant (0-7) the vector lies in.
@@ -102,7 +102,7 @@ public class Vec implements Cloneable {
     public static Vec max(List<Vec> vs) {
         Vec max = null;
         for (Vec v: vs) {
-            if (max == null || max.magnitude() < v.magnitude())
+            if (max == null || max.r < v.r)
                 max = v;
         }
         return max;
@@ -117,14 +117,16 @@ public class Vec implements Cloneable {
     }
     
     public static List<Vec> cluster(List<Vec> vs, int maxstddev) {
-    	vs = new ArrayList<Vec>(vs);
-        Vec stddev = Vec.stddev(vs);
+    	vs = new ArrayList<Vec>(vs); // result vectors in the cluster
+    	Vec mean   = Vec.mean(vs);
+        Vec stddev = Vec.stddev(vs, mean);
+        
         // remove max if stddev is too big
         while (stddev.magnitude() > maxstddev) {
-        	Vec mean = Vec.mean(vs);
         	Vec max  = Vec.max(Vec.sub(vs, mean));
             vs.remove(max.add(mean));
-            stddev = Vec.stddev(vs);
+            mean   = Vec.mean(vs);
+            stddev = Vec.stddev(vs, mean);
         }
         return vs;
     }
@@ -132,7 +134,7 @@ public class Vec implements Cloneable {
     public static Vec mean(List<Vec> vs) {
         if (vs.isEmpty())
             return new Vec(0,0);
-        int x = 0, y = 0;
+        double x = 0, y = 0;
         for (Vec v: vs) {
             x += v.x;
             y += v.y;
@@ -140,19 +142,18 @@ public class Vec implements Cloneable {
         return new Vec(x/vs.size(), y/vs.size());  
     }
     
-    public static Vec stddev(List<Vec> vs) {
+    public static Vec stddev(List<Vec> vs, Vec mean) {
         if (vs.isEmpty())
             return new Vec(0,0);
-        Vec mean = mean(vs);
-        int x = 0, y = 0;
+    	double x = 0, y = 0;
         for (Vec v: vs) {
-            x += Math.pow(v.x - mean.x,2);
-            y += Math.pow(v.y - mean.y,2);
+            x += Math.pow(v.x - mean.x, 2);
+            y += Math.pow(v.y - mean.y, 2);
         }
         x = x / vs.size();
         y = y / vs.size();
         
-        return new Vec( (int)Math.sqrt(x), (int)Math.sqrt(y));
+        return new Vec( Math.sqrt(x), Math.sqrt(y));
     }
 
     

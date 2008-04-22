@@ -138,6 +138,7 @@ public class ACArchitecture extends CowboyArch {
 	    Queue<ActionExec> toExecute = new ConcurrentLinkedQueue<ActionExec>();
 	    Lock              lock = new ReentrantLock();
 	    Condition         cycle = lock.newCondition();
+	    long              timestartcycle = 0;
 	    
 	    WaitSleep() {
 	        super("WaitSpeepToSendAction");
@@ -155,24 +156,37 @@ public class ACArchitecture extends CowboyArch {
         }
 	    
 	    void newCycle() {
-	        String w = "";
-	        if (lastActionInCurrentCycle == null) {
-	        	addRestart();
-	        	w = "*** ";
-	        }
-            logger.info(w+"Last sent action was "+lastActionInCurrentCycle+" for cycle "+getCycle()+". The following was not sent: "+toExecute);
-            
-            setLastAct(lastActionInCurrentCycle);
-            lastActionInCurrentCycle = null;
-            
+            StringBuilder notsent = new StringBuilder();
+            if (toExecute.size() > 1) {
+            	notsent.append(" The following was not sent: ");
+            }
             // set all actions as successfully executed
             List<ActionExec> feedback = getTS().getC().getFeedbackActions();
             while (!toExecute.isEmpty()) {
                 ActionExec action = toExecute.poll();
                 action.setResult(true);
                 feedback.add(action);
+                if (!toExecute.isEmpty())
+                	notsent.append(action.getActionTerm()+" ");
             }
             go(); // reset the wait
+            
+            // prepare msg to print out
+	        String w = "";
+	        if (lastActionInCurrentCycle == null) {
+	        	addRestart();
+	        	w = "*** ";
+	        }
+	        
+	        long timetoact = 0;
+	        if (timestartcycle > 0) {
+	        	timetoact = System.currentTimeMillis() -  timestartcycle;
+	        }
+	        timestartcycle = System.currentTimeMillis();
+
+            logger.info(w+"Last sent action was "+lastActionInCurrentCycle+" for cycle "+getCycle()+ " (act in "+timetoact+" ms). "+notsent);            
+            setLastAct(lastActionInCurrentCycle);
+            lastActionInCurrentCycle = null;
 	    }
 	    
     	void go() {

@@ -9,6 +9,7 @@ import jason.environment.grid.Location;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.logging.Level;
 
 import arch.CowboyArch;
@@ -97,12 +98,12 @@ public class herd_position extends DefaultInternalAction {
         cows = Vec.cluster(cows, 2); // find center/clusterise
 
         Vec mean = Vec.mean(cows);
+        int stepsFromCenter = (int)Math.round(Vec.max(cows).sub(mean).magnitude())+1;
         
         // run A* to see the cluster target in n steps
-        Search s = new Search(model, mean.getLocation(model), model.getCorralCenter(), null, false, false, false, null);
+        Search s = new Search(model, mean.getLocation(model), model.getCorralCenter(), null, false, false, false, true, null);
+        s.setMaxDistFromCluster(stepsFromCenter+Search.DIST_FOR_AG_OBSTACLE);
         List<Nodo> np = s.normalPath(s.search());
-        
-        int stepsFromCenter = (int)Vec.max(cows).sub(mean).magnitude()+1;
         int n = Math.min(stepsFromCenter, np.size());
 
         Vec cowstarget = new Vec(model, s.getNodeLocation(np.get(n)));
@@ -111,6 +112,13 @@ public class herd_position extends DefaultInternalAction {
         List<Location> r = new ArrayList<Location>();
         for (int angle: formation.getAngles()) {
         	double nt = angle * (Math.PI / 180);
+
+        	agTarget = agsTarget.newAngle(agsTarget.angle() + nt);
+            Location l = agTarget.add(mean).getLocation(model);
+        	r.add(l);
+        	
+        	// TODO: test the code below
+        	/*
         	for (double varangle = nt; nt < 180; nt += 5) {
             	agTarget = agsTarget.newAngle(agsTarget.angle() + varangle);
                 Location l = agTarget.add(mean).getLocation(model);
@@ -118,7 +126,7 @@ public class herd_position extends DefaultInternalAction {
                 // if l is in the path of cows, continue with next varangle
                 boolean inpath = false;
                 for (Nodo pn: np) {
-                	if (l.equals(s.getNodeLocation(pn))) {
+                	if (l.maxBorder(s.getNodeLocation(pn)) <= 0) {
                 		inpath = true;
                 		break;
                 	}
@@ -128,22 +136,27 @@ public class herd_position extends DefaultInternalAction {
                 	break;
                 }
         	}
+        	*/
         }
-        return r;    	
+        return r;
     }
     
     public Location nearFreeForAg(LocalWorldModel model, Location ag, Location t) throws Exception {
         // run A* to get the path from ag to t
-        Search s = new Search(model, t, ag, null, false, false, true, null);
+    	if (! model.inGrid(t))
+    		t = model.nearFree(t);
+    	
+        Search s = new Search(model, ag, t, null, true, true, true, false, null);
         List<Nodo> np = s.normalPath(s.search());
     	
         int i = 0;
-        for (Nodo n: np) {
+        ListIterator<Nodo> inp = np.listIterator(np.size());
+        while (inp.hasPrevious()) {
+        	Nodo n = inp.previous();
         	if (model.isFree(s.getNodeLocation(n))) {
         		return s.getNodeLocation(n);
         	}
-        	i++;
-        	if (i > 3) // do not go to far from target
+        	if (i++ > 3) // do not go to far from target
         		break;
         }
         return model.nearFree(t);

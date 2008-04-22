@@ -319,10 +319,12 @@ public class CowboyArch extends IdentifyCrashed {
     		while (im.hasNext()) {
     			Message m  = im.next();
     			if (m.getIlForce().equals("tell-cows")) {
-    				for (Location l: (Collection<Location>)m.getPropCont()) {
-    					cowPerceived(l.x, l.y);
-    				}
     				im.remove();
+    				if (model != null) {
+	    				for (Location l: (Collection<Location>)m.getPropCont()) {
+	    					cowPerceived(l.x, l.y);
+	    				}
+    				}
     			} else {
 	    			String  ms = m.getPropCont().toString();
 	    			if (ms.startsWith("cell") && ms.endsWith("obstacle)") && model != null) {

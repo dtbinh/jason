@@ -206,7 +206,7 @@ public class ACProxy extends ACAgent implements Runnable {
 			}
 	
 			
-			arq.sendCowsToTeam();
+			//arq.sendCowsToTeam();
 			arq.startNextStep(step, percepts);
 			
 			//if (logger.isLoggable(Level.FINE)) 

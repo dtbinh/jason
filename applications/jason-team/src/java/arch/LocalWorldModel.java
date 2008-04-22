@@ -23,8 +23,12 @@ public class LocalWorldModel extends WorldModel {
     int                       minVisited = 0; // min value for near least visited
     
     private Random			  random = new Random();
-    
+
     Set<Location> cows = new HashSet<Location>();
+    
+    int[][]       cowsrep; // cows repulsion 
+    int[][]       agsrep;  // agents repulsion
+    int[][]       obsrep;  // obstacle repulsion
     
     //private Logger            logger   = Logger.getLogger("jasonTeamSimLocal.mas2j." + LocalWorldModel.class.getName());
 
@@ -40,26 +44,85 @@ public class LocalWorldModel extends WorldModel {
         super(w, h, nbAg);
         
         visited = new int[getWidth()][getHeight()];
-        for (int i = 0; i < getWidth(); i++) {
-            for (int j = 0; j < getHeight(); j++) {
+        for (int i = 0; i < getWidth(); i++)
+            for (int j = 0; j < getHeight(); j++)
             	visited[i][j] = 0;
-            }
-        }
+
+        cowsrep = new int[getWidth()][getHeight()];
+        
+        agsrep  = new int[getWidth()][getHeight()];
+        for (int i = 0; i < getWidth(); i++)
+            for (int j = 0; j < getHeight(); j++)
+            	agsrep[i][j] = 0;
+
+        obsrep  = new int[getWidth()][getHeight()];
+        for (int i = 0; i < getWidth(); i++)
+            for (int j = 0; j < getHeight(); j++)
+            	obsrep[i][j] = 0;
+
     }
+    
+    @Override
+    public void add(int value, int x, int y) {
+    	super.add(value, x, y);
+    	//if (value == WorldModel.AGENT || value == WorldModel.ENEMY) {
+       	if (value == WorldModel.ENEMY) {
+            increp(agsrep, x, y, 2, 2);
+    	} else if (value == WorldModel.OBSTACLE) {
+            increp(obsrep, x, y, 1, 1);
+    	}
+    }
+    @Override
+    public void remove(int value, int x, int y) {
+    	super.remove(value, x, y);
+    	//if (value == WorldModel.AGENT || value == WorldModel.ENEMY) {
+       	if (value == WorldModel.ENEMY) {
+            increp(agsrep, x, y, 2, -2);
+    	}
+    }
+
 
     public void clearCows() {
     	removeAll(WorldModel.COW);
+
+    	for (int i = 0; i < getWidth(); i++)
+            for (int j = 0; j < getHeight(); j++)
+            	cowsrep[i][j] = 0;
+    	
         cows.clear();
     }
+    
     public void addCow(int x, int y) {
         add(WorldModel.COW, x, y);
         cows.add(new Location(x,y));        
+
+        increp(cowsrep, x, y, 2, 1);
     }
+    
+    private void increp(int[][] m, int x, int y, int maxr, int value) {
+    	for (int r = 1; r <= maxr; r++)
+    		for (int c = x-r; c <= x+r; c++)
+    			for (int l = y-r; l <= y+r; l++)
+    				if (inGrid(c,l))
+    					m[c][l] += value;    	
+    }
+    
     public void addCow(Location l) {
         addCow(l.x, l.y);
     }
+    
     public Collection<Location> getCows() {
         return cows;
+    }
+    
+    public int getCowsRep(int x, int y) {
+    	return cowsrep[x][y];
+    }
+    public int getAgsRep(int x, int y) {
+    	return agsrep[x][y];
+    }
+    public int getObsRep(int x, int y) {
+    	return obsrep[x][y];
     }
 
     public Location nearFree(Location l) throws Exception {
@@ -67,12 +130,23 @@ public class LocalWorldModel extends WorldModel {
         List<Location> options = new ArrayList<Location>();
         while (true) {
         	options.clear();
+        	for (int y=l.y-w+1; y<l.y+w; y++) {
+        		//System.out.println(" "+(l.x+w)+" "+y);
+        		//System.out.println(" "+(l.x-w)+" "+y);
+        		if (isFree(l.x-w,y)) 
+        			options.add(new Location(l.x-w,y));
+        		if (isFree(l.x+w,y)) 
+        			options.add(new Location(l.x+w,y));
+        	}
         	for (int x=l.x-w; x<=l.x+w;x++) {
+        		//System.out.println(" "+x+" "+(l.y-w));
+        		//System.out.println(" "+x+" "+(l.y+w));
         		if (isFree(x,l.y-w)) 
         			options.add(new Location(x,l.y-w));
         		if (isFree(x,l.y+w))
         			options.add(new Location(x,l.y+w));
         	}
+        	//System.out.println(w + " " + options);
         	if (!options.isEmpty()) 
         		return options.get(random.nextInt(options.size()));
             w++;
@@ -100,15 +174,13 @@ public class LocalWorldModel extends WorldModel {
     }
     public void incVisited(int x, int y) {
     	visited[x][y] += 2;
-
-    	// TODO: review this
-    	if (x > 0) visited[x-1][y]++;
-    	if (y > 0) visited[x][y-1]++;
-    	if (y > 0 && x > 0) visited[x-1][y-1]++;
-    	if (y+1 < getHeight()) visited[x][y+1]++;
-    	if (x > 0 && y+1 < getHeight()) visited[x-1][y+1]++;
-    	if (x+1 < getWidth()) visited[x+1][y]++;
-    	if (x+1 < getWidth() && y > 0) visited[x+1][y-1]++;
+    	if (x > 0)                                 visited[x-1][y  ]++;
+    	if (y > 0)                                 visited[x  ][y-1]++;
+    	if (y > 0 && x > 0)                        visited[x-1][y-1]++;
+    	if (y+1 < getHeight())                     visited[x  ][y+1]++;
+    	if (x > 0 && y+1 < getHeight())            visited[x-1][y+1]++;
+    	if (x+1 < getWidth())                      visited[x+1][y  ]++;
+    	if (x+1 < getWidth() && y > 0)             visited[x+1][y-1]++;
     	if (x+1 < getWidth() && y+1 < getHeight()) visited[x+1][y+1]++;
     }
     

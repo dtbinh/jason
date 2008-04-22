@@ -27,6 +27,9 @@ public class Search {
     final boolean         considerAgentsAsObstacles;
     final boolean         considerCorralAsObstacles;
     final boolean         considerCowsAsObstacles;
+    final boolean         considerRepulsionForCows;
+    int maxDistFromCluster;
+    
     WorldModel.Move[]     actionsOrder;    
     int                   nbStates = 0;
     AgArch                agArch;
@@ -44,30 +47,43 @@ public class Search {
 
     Logger logger = Logger.getLogger(Search.class.getName());
     
-    public Search(LocalWorldModel m, Location from, Location to, WorldModel.Move[] actions, boolean considerAgentsAsObstacles, boolean considerCorralAsObstacles, boolean considerCowsAsObstacles, AgArch agArch) {
+    public Search(LocalWorldModel m, Location from, Location to, WorldModel.Move[] actions, 
+    		      boolean considerAgentsAsObstacles, 
+    		      boolean considerCorralAsObstacles, 
+    		      boolean considerCowsAsObstacles, 
+    		      boolean considerRepulsionForCows,
+    		      AgArch agArch) {
+    	
     	this.model = m;
     	this.from  = from;
     	this.to    = to;
     	this.considerAgentsAsObstacles = considerAgentsAsObstacles;
         this.considerCorralAsObstacles = considerCorralAsObstacles;
         this.considerCowsAsObstacles   = considerCowsAsObstacles;
+        this.considerRepulsionForCows  = considerRepulsionForCows;
     	this.agArch = agArch;
     	if (actions != null) {
     		this.actionsOrder = actions;
     	} else {
     		this.actionsOrder = defaultActions;
     	}
+    	
+    	this.maxDistFromCluster = 4;
+    }
+    
+    public void setMaxDistFromCluster(int m) {
+    	maxDistFromCluster = m;
     }
 
     /** used normally to discover the distance from 'from' to 'to' */
     Search(LocalWorldModel m, Location from, Location to, AgArch agArch) {
-    	this(m,from,to,null,false, false, false, agArch);
+    	this(m,from,to,null,false, false, false, false, agArch);
     }
     
     public Nodo search() throws Exception { 
     	Busca searchAlg = new AEstrela();
     	//searchAlg.ssetMaxAbertos(1000);
-    	GridState root = new GridState(from, WorldModel.Move.skip, this, 1);
+    	GridState root = new GridState(from, WorldModel.Move.skip, this);
     	root.setAsRoot();
         return searchAlg.busca(root);
     }
@@ -142,13 +158,11 @@ final class GridState implements Estado, Heuristica {
     final Search          ia;
     final int             hashCode;
     boolean               isRoot = false;
-    int                   cost = 1;
     
-    public GridState(Location l, WorldModel.Move op, Search ia, int cost) {
+    public GridState(Location l, WorldModel.Move op, Search ia) {
         this.pos  = l;
         this.op   = op;
         this.ia   = ia;
-        this.cost = cost;
         hashCode  = pos.hashCode();
         
         ia.nbStates++;
@@ -159,7 +173,19 @@ final class GridState implements Estado, Heuristica {
     }
     
     public int custo() {
-        return cost;
+    	if (isRoot)
+    		return 0;
+        if (ia.considerCowsAsObstacles) 
+        	return ia.model.getCowsRep(pos.x, pos.y)+1;
+
+        if (ia.considerRepulsionForCows) {
+        	// consider the cost of agents only if they are near
+        	int c =  ia.model.getObsRep(pos.x, pos.y) + 1;
+        	if (ia.from.maxBorder(pos) <= ia.maxDistFromCluster) 
+        		c += ia.model.getAgsRep(pos.x, pos.y);
+        	return c;
+        }
+        return 1;
     }
 
     public boolean ehMeta() {
@@ -208,14 +234,7 @@ final class GridState implements Estado, Heuristica {
         if (ia.considerCowsAsObstacles   && ia.model.hasObject(WorldModel.COW,newl)   && ia.from.maxBorder(newl) <= Search.DIST_FOR_AG_OBSTACLE) 
             return;
 
-        int cost = 1;
-        
-        if (ia.considerCowsAsObstacles) { 
-            cost += ia.model.countObjInArea(WorldModel.CORRAL, newl,1);
-            cost += ia.model.countObjInArea(WorldModel.CORRAL, newl,2);
-        }
-
-        s.add(new GridState(newl,op,ia, cost));
+        s.add(new GridState(newl,op,ia));
     }
         
     public boolean equals(Object o) {

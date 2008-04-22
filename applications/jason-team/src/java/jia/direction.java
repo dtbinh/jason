@@ -61,7 +61,7 @@ public class direction extends DefaultInternalAction {
                 actionsOrder[i2] = actionsOrder[i1];
                 actionsOrder[i1] = temp;
                 
-                Search astar    = new Search(model, from, to, actionsOrder, true, true, true, ts.getUserAgArch());
+                Search astar    = new Search(model, from, to, actionsOrder, true, true, true, false, ts.getUserAgArch());
                 Nodo   solution = astar.search();
                 if (solution != null) {
                 	WorldModel.Move m = astar.firstAction(solution);
