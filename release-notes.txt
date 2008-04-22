@@ -3,16 +3,16 @@ version 1.1.1
 -------------
 
 New features
-. Terms can be body plans enclosed by |{ ... }", as in the following
+. Terms can be body plans enclosed by "{ ... }", as in the following
   example:
      test({ a1; !g; ?b(X); .print(X) }, 10)
 
 Bugs fixed:
+. unification in return of ! and ?
 . use nested source annotations in communication 
 . add "source(self)" in goals without source
 . correctly handle failure event caused by no relevant plans 
 . timeout in .wait does not cause a runtime exception
-. unification in return of ! and ?
 
 
 -------------

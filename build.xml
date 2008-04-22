@@ -229,6 +229,8 @@
 		</propertyfile>
 		<property file="${dist.properties}" />
 
+		<antcall target="plugin" />
+		
 		<fixcrlf eol="crlf" includes="**/*.txt,**/*.bat" srcdir="${basedir}" />
 
 		<delete failonerror="no" includeEmptyDirs="true">
