@@ -50,9 +50,19 @@ public class CommerceModel{
     	shop1.addProductToCatalogue(new Product("bread", "hovis", 1.4, 800), 22);
     	shop1.addProductToCatalogue(new Product("bread", "kingsmill", 1.6, 750), 58);
     	shop1.addProductToCatalogue(new Product("milk", "cravendale", 0.9, 500), 33);
+    	shop1.addProductToCatalogue(new Product("milk", "tescos_semi_skimmed", 0.7, 500), 85);
+    	shop1.addProductToCatalogue(new Product("butter", "clover_butter", 0.8, 300), 74);
     	
     	ModelShop shop2 = new ModelShop(new Atom("shop2"), new Point(5, 3), this, env);
-    	shop2.addProductToCatalogue(new Product("beef", "farmer_jims_rump_steak", 1.4, 800), 22);
+    	shop2.addProductToCatalogue(new Product("beef", "farmer_jims_rump_steak", 10.5, 500), 22);
+    	shop2.addProductToCatalogue(new Product("lamb", "farmer_jims_lamb_chops", 10.5, 400), 80);
+    	shop2.addProductToCatalogue(new Product("beef", "tescos_sirloin_steak", 5, 600), 11);
+    	shop2.addProductToCatalogue(new Product("fish", "tescos_salmon", 8, 200), 29);
+    	shop2.addProductToCatalogue(new Product("fish", "tescos_chicken_breasts", 5.9, 450), 92);
+    	
+    	ModelShop shop3 = new ModelShop(new Atom("shop3"), new Point(15, 10), this, env);
+    	shop3.addProductToCatalogue(new Product("rootVegetable", "potatoes", 1.2, 1000), 92);
+    	shop3.addProductToCatalogue(new Product("greens", "iceburg_lettuce", 0.3, 90), 54);
     	
     	addObject(shop1);    	
     	addObject(shop2);
@@ -61,8 +71,11 @@ public class CommerceModel{
     	addObject(new ModelCustomer(new Atom("customer3"), new Point(19, 3), this, env));
     	addObject(new ModelDeliveryVan(new Atom("delivery_van1"), new Point(2, 6), this, env, shop1));
     	addObject(new ModelDeliveryVan(new Atom("delivery_van2"), new Point(3, 4), this, env, shop1));
+    	addObject(new ModelDeliveryVan(new Atom("delivery_van3"), new Point(6, 4), this, env, shop1));
+    	addObject(new ModelDeliveryVan(new Atom("delivery_van4"), new Point(8, 10), this, env, shop1));
     	addObject(new ModelPA(new Atom("pa1"), new Point(0, 0), this, env));
     	addObject(new ModelPA(new Atom("pa2"), new Point(0, 0), this, env));
+    	addObject(new ModelPA(new Atom("pa3"), new Point(0, 0), this, env));
     	
     	updateObjects();
     	

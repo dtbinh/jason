@@ -10,6 +10,8 @@ import jasdl.bridge.mapping.aliasing.MappingStrategy;
 import jason.asSyntax.Atom;
 
 public class JASDLParams {
+	public static float DEFAULT_TRUST_RATING = 0;
+	
 	public static String JASDL_TG_CAUSE_RETAIN_ANNOTS = "JASDL_TG_CAUSE_RETAIN_ANNOTS";
 	
 	public static String JASDL_TG_CAUSE = "JASDL_TG_CAUSE";

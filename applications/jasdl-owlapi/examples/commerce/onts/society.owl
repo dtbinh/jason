@@ -216,6 +216,18 @@
     
 
 
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/society.owl#delivery_van_3 -->
+
+    <rdf:Description rdf:about="#delivery_van_3"/>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/society.owl#delivery_van_4 -->
+
+    <rdf:Description rdf:about="#delivery_van_4"/>
+    
+
+
     <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/society.owl#pa1 -->
 
     <PA rdf:about="#pa1"/>
@@ -238,6 +250,7 @@
 
     <Supermarket rdf:about="#shop1">
         <employs rdf:resource="#delivery_van1"/>
+        <employs rdf:resource="#delivery_van_4"/>
         <ownedBy rdf:resource="#tescos_inc"/>
     </Supermarket>
     
@@ -249,6 +262,15 @@
         <employs rdf:resource="#delivery_van2"/>
         <ownedBy rdf:resource="#tescos_inc"/>
     </Butchers>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/society.owl#shop3 -->
+
+    <GreenGrocers rdf:about="#shop3">
+        <employs rdf:resource="#delivery_van_3"/>
+        <ownedBy rdf:resource="#tescos_inc"/>
+    </GreenGrocers>
     
 
 
@@ -269,17 +291,20 @@
     <rdf:Description>
         <rdf:type rdf:resource="&owl;AllDifferent"/>
         <owl:distinctMembers rdf:parseType="Collection">
-            <rdf:Description rdf:about="#pa3"/>
             <rdf:Description rdf:about="#customer3"/>
-            <rdf:Description rdf:about="#delivery_van1"/>
-            <rdf:Description rdf:about="#pa2"/>
-            <rdf:Description rdf:about="#shop1"/>
-            <rdf:Description rdf:about="#pa1"/>
-            <rdf:Description rdf:about="#customer1"/>
             <rdf:Description rdf:about="#customer2"/>
-            <rdf:Description rdf:about="#tescos_inc"/>
-            <rdf:Description rdf:about="#delivery_van2"/>
             <rdf:Description rdf:about="#shop2"/>
+            <rdf:Description rdf:about="#delivery_van2"/>
+            <rdf:Description rdf:about="#pa1"/>
+            <rdf:Description rdf:about="#delivery_van_3"/>
+            <rdf:Description rdf:about="#customer1"/>
+            <rdf:Description rdf:about="#tescos_inc"/>
+            <rdf:Description rdf:about="#shop3"/>
+            <rdf:Description rdf:about="#shop1"/>
+            <rdf:Description rdf:about="#pa2"/>
+            <rdf:Description rdf:about="#delivery_van_4"/>
+            <rdf:Description rdf:about="#delivery_van1"/>
+            <rdf:Description rdf:about="#pa3"/>
         </owl:distinctMembers>
     </rdf:Description>
 </rdf:RDF>

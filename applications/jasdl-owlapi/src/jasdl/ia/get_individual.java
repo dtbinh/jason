@@ -32,6 +32,14 @@ import jason.asSyntax.Term;
 import java.util.logging.Logger;
 
 /**
+ * Unifies with the second parameter the individual within a (unary, i.e. assertion of class membership) ground SE-Literal.
+ * 
+ * Example:
+ * 	jasdl.ia.get_individual(bread(hovis)[o(c)], Individual), unifies Individual with the atom bread.
+ * 	
+ * Usage:
+ * 	jasdl.ia.get_individual(Assertion, Individual) where Assertion is any valid, unary and ground SE-Literal.
+ * 
  * @author Tom Klapiscak
  */
 public class get_individual extends DefaultInternalAction {

@@ -130,7 +130,15 @@ public class ModelShop extends ModelAgent {
 							env.c)
 						.getLiteral());	
 						
-			differentIndividuals.add(new Atom(product.brand));
+			//differentIndividuals.add(new Atom(product.brand));
+		}
+		
+		for(ModelObject o : model.getObjects()){
+			if(o instanceof ModelShop){
+				for(Product product :((ModelShop)o).getCatalogue()){
+					differentIndividuals.add(new Atom(product.brand));
+				}				
+			}
 		}
 		
 		// enter all products into an all_different assertion
@@ -144,6 +152,10 @@ public class ModelShop extends ModelAgent {
 					env.c)
 				.getLiteral());
 		
+	}
+	
+	public Set<Product> getCatalogue(){
+		return catalogue;
 	}
 
 	protected float getOffset(){

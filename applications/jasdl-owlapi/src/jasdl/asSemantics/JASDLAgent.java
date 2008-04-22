@@ -42,6 +42,7 @@ import jason.JasonException;
 import jason.RevisionFailedException;
 import jason.architecture.AgArch;
 import jason.asSemantics.Intention;
+import jason.asSemantics.Option;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.Literal;
@@ -267,6 +268,7 @@ public class JASDLAgent extends JmcaAgent {
 		}
 		getJom().refreshReasoner();
 	}
+	
 
 	/**
 	 * *Must* be unique within society!

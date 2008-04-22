@@ -1,4 +1,13 @@
-/* Jason Project */
+/* .mas2j configuration of the commerce MAS
+ * Note: 
+ * 		-	this takes advantage of defaults for many of the settings available
+ * 			for the configuration of a JASDL agent. Please consult docs/mas2jconfiguration
+ * 			for full documentation of these.
+ *		-	in the interests of simplicitly, all agents make use of the same label mappings for ontologies
+ *			and (automatic and manual) alias mappings for ontological entities.
+ *			There could be set arbitrarily for each agent (and the .asl code updated accordingly) and JASDL would
+ *			still function correctly. 
+ */
 
 MAS commerce {
 
@@ -7,13 +16,15 @@ MAS commerce {
     environment: commerce.env.CommerceEnvironment
 
     agents:
+
+	
 		shop
 		[
 		jasdl_ontologies="c,s",
 		jasdl_c_uri="/onts/commerce.owl",
 		jasdl_s_uri="/onts/society.owl"
 		]
-		#2
+		#3
 	    agentArchClass jasdl.architecture.JASDLAgArch
 	    agentClass jasdl.asSemantics.JASDLAgent
 	    beliefBaseClass jasdl.bb.JASDLBeliefBase; 
@@ -24,7 +35,7 @@ MAS commerce {
 		jasdl_c_uri="/onts/commerce.owl",
 		jasdl_s_uri="/onts/society.owl"
 		]
-		#2
+		#4
 	    agentArchClass jasdl.architecture.JASDLAgArch
 	    agentClass jasdl.asSemantics.JASDLAgent
 	    beliefBaseClass jasdl.bb.JASDLBeliefBase; 
@@ -44,7 +55,9 @@ MAS commerce {
 		[
 		jasdl_ontologies="c,s",
 		jasdl_c_uri="/onts/commerce.owl",
-		jasdl_s_uri="/onts/society.owl"
+		jasdl_s_uri="/onts/society.owl",
+		
+		jasdl_useContraction = "true"
 		]
 		#3
 	    agentArchClass jasdl.architecture.JASDLAgArch

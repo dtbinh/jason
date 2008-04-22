@@ -14,4 +14,6 @@ public interface ModelCustomerListener {
 	 * @return
 	 */	
 	public boolean approve(String brand);
+	
+	public void message(String message);
 }

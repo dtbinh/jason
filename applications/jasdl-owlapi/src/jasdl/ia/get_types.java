@@ -40,6 +40,17 @@ import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLIndividual;
 
 /**
+ * Gets all the asserted or inferred class memberships of an individual wrt a particular ontology.
+ * 
+ * Usage:
+ * 	jasdl.ia.get_types(Individual, OntologyLabel, Direct, Types)
+ * 		where Individual is any known individual referenced within the ontology instance referred to by OntologyLabel. If direct is
+ * 		set, only asserted types are returned, otherwise ALL inferred types are returned.
+ * 
+ * Example:
+ * 	jasdl.ia.get_types(hovis, c, true, Types), unifies Types with [bread]
+ *  jasdl.ia.get_types(hovis, c, false, Types), unifies Types with [bread, grocery, product, thing ...]
+ * 
  * @author Tom Klapiscak
  *
  */

@@ -146,8 +146,10 @@ public class JASDLBeliefBase extends DefaultBeliefBase {
 				BeliefBaseContractor contractor = new BeliefBaseContractor(agent.getOntologyManager(), new JASDLReasonerFactory(), agent.getLogger());
 				removeList = contractor.contract(axiom, new JASDLKernelsetFilter(), new JASDLIncisionFunction(agent, sl));
 			}else{
-				getLogger().info("Removing " + l);
+				getLogger().fine("Removing " + l);
 				removeList = (List<OWLAxiom>)Collections.singletonList(axiom);
+				
+				
 			}
 			
 

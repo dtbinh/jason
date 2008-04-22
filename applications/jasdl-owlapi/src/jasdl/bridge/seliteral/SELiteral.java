@@ -173,56 +173,16 @@ public class SELiteral {
 	}
 
 	/**
-	 * Attempts to fetch individual from "parent" ontologies (i.e. that referred to by ontology label of enclosing SELiteral).
-	 * If not present, attempts to fetch from personal ontology.
-	 * If not present, instantiates in personal ontology and adds a meaningless all_different({i}) assertion to ensure the individual is referenced (for parsing - see toEntity method).
-	 * Placed here for convenient (varying) usage by subclasses.
+	 * Fetches the individual referenced by the term in any known ontology. 
+	 * If not found, instantiate a new individual in ontology of this SE-Literal.
 	 * Validates and doesn't cache since terms are mutable.
+	 * @see JASDLOntologyManager#getOWLIndividual(Alias)
 	 * @return
 	 * @throws JASDLUnknownMappingException
 	 */
 	public OWLIndividual getOWLIndividual(Term term) throws JASDLException {
-		Atom atom = new Atom(term.toString());
-		OWLIndividual i = null;
-		
-		
-		// search across all known ontologies for an individual by this name (functor only)		
-		for(OWLOntology tryOntology : jom.getReasoner().getLoadedOntologies()){
-			try{
-				i = (OWLIndividual) jom.getAliasManager().getRight(
-						AliasFactory.INSTANCE.create(atom, jom.getLabelManager().getLeft(tryOntology)));
-			}catch(JASDLUnknownMappingException e){				
-			}
-		}	
-		
-		
-		// we can't find one, define a new individual within the ontology referenced by this SE-Literal		
-		if(i == null){
-			// get the ontology of this SE-Literal
-			OWLOntology ontology = getOntology();
-			
-			// instantiate a new alias mapping for this individual
-			Alias newIndividualAlias = AliasFactory.INSTANCE.create(atom, getOntologyLabel());
-			URI uri = URI.create(ontology.getURI() + "#" + atom);
-			
-			jom.getLogger().info("Instantiating individual ("+newIndividualAlias+") "+uri);
-			
-			i = jom.getOntologyManager().getOWLDataFactory().getOWLIndividual(uri);
-			jom.getAliasManager().put(newIndividualAlias, i);
-			
-			// create a semantically-meaningless empty annotation axiom so this individual is referenced within the ontology
-			OWLAnnotation a = new OWLLabelAnnotationImpl(jom.getOWLDataFactory(), jom.getOWLDataFactory().getOWLTypedConstant(""));
-			OWLAxiom axiom = jom.getOWLDataFactory().getOWLEntityAnnotationAxiom(i, a);
-			try {
-				jom.getOntologyManager().applyChange(new AddAxiom(ontology, axiom)); // <- add this "redundant" axiom to ensure we have a reference to this individuals in the ontology (for toEntity method and description parsing)
-				jom.refreshReasoner();
-			} catch (Exception e) {
-				throw new JASDLInvalidSELiteralException("Error instantiating owl individual from " + term, e);
-			}
-		}
-		
-		
-		return i;
+		Alias alias = new Alias((Atom)term, getOntologyLabel());	
+		return jom.getOWLIndividual(alias);
 	}
 
 	public Literal getLiteral() {

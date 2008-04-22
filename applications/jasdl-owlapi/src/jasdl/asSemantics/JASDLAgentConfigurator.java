@@ -35,6 +35,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,7 +48,6 @@ import org.semanticweb.owl.model.OWLOntologyManager;
 public class JASDLAgentConfigurator {
 
 	/* Agent configuration */
-	private List<String> knownAgentNames;
 
 	private HashMap<Atom, Float> trustMap;
 
@@ -65,7 +65,6 @@ public class JASDLAgentConfigurator {
 	public JASDLAgentConfigurator(JASDLAgent agent) {
 		this.agent = agent;
 
-		knownAgentNames = new Vector<String>();
 		trustMap = new HashMap<Atom, Float>();
 	}
 
@@ -79,9 +78,7 @@ public class JASDLAgentConfigurator {
 		setUseAnnotationGathering(stts);
 		setUseContraction(stts);
 		loadOntologies(stts);
-		applyManualMappings(stts);
-		loadKnownAgents(stts);
-		loadTrustRatings(stts);
+		applyManualMappings(stts);		
 		createOWLPlaceholderOntologies();
 	}
 
@@ -94,6 +91,8 @@ public class JASDLAgentConfigurator {
 		agent.getJom().setLogger(agent.getLogger()); // <- set logger now agent logger is initialised using agent name
 
 		createSelfPlaceholderOntologies();
+		
+		loadTrustRatings(stts);
 
 		// output initialisation details
 		getLogger().fine("Using annotation gathering? " + isAnnotationGatheringEnabled());
@@ -264,16 +263,6 @@ public class JASDLAgentConfigurator {
 		}
 	}
 
-	private void loadKnownAgents(Settings stts) throws JASDLException {
-		try {
-			String[] names = (splitUserParameter(stts, JASDLParams.MAS2J_PREFIX + JASDLParams.MAS2J_KNOWNAGENTS));
-			for (String name : names) {
-				addKnownAgentName(name);
-			}
-		} catch (JASDLConfigurationException e) {
-			// optional parameter, default to empty			
-		}
-	}
 
 	// TODO: set trust ratings for assertions predefined in ontology schema (maybe annotated with self)
 	private void loadTrustRatings(Settings stts) throws JASDLException {
@@ -281,14 +270,17 @@ public class JASDLAgentConfigurator {
 		setTrustRating(new Atom("self"), 1f);
 		for (String knownAgent : getKnownAgentNames()) {
 			// load trust ratings (mandatory for known agents)
-			String _trustRating = prepareUserParameter(stts, JASDLParams.MAS2J_PREFIX + "_" + knownAgent + JASDLParams.MAS2J_TRUSTRATING);
-			Float trustRating;
-			try {
-				trustRating = Float.parseFloat(_trustRating);
+			try{
+				String _trustRating = prepareUserParameter(stts, JASDLParams.MAS2J_PREFIX + "_" + knownAgent + JASDLParams.MAS2J_TRUSTRATING);
+				Float trustRating;	
+				trustRating = Float.parseFloat(_trustRating);				
+				setTrustRating(new Atom(knownAgent), trustRating);
 			} catch (NumberFormatException e) {
-				throw new JASDLException("Invalid trust rating for " + knownAgent + ". Reason: " + e);
+				throw new JASDLConfigurationException("Invalid trust rating for " + knownAgent, e);
+			}catch (JASDLConfigurationException e){
+				// set default trust rating
+				setTrustRating(new Atom(knownAgent), JASDLParams.DEFAULT_TRUST_RATING);
 			}
-			setTrustRating(new Atom(knownAgent), trustRating);
 		}
 	}
 
@@ -377,10 +369,6 @@ public class JASDLAgentConfigurator {
 		return defaultMappingStrategies;
 	}
 
-	public List<String> getKnownAgentNames() {
-		return knownAgentNames;
-	}
-
 	public HashMap<Atom, Float> getTrustMap() {
 		return trustMap;
 	}
@@ -390,11 +378,11 @@ public class JASDLAgentConfigurator {
 		trustMap.put(name, trust);
 	}
 
-	public void addKnownAgentName(String name) {
-		knownAgentNames.add(name);
+	public Set<String> getKnownAgentNames(){
+		return agent.getTS().getUserAgArch().getArchInfraTier().getRuntimeServices().getAgentsName();
 	}
 
-	public float getTrustRating(Atom name) {
+	public float getTrustRating(Atom name) {		
 		return trustMap.get(name);
 	}
 

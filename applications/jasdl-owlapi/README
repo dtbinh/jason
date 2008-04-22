@@ -20,6 +20,23 @@ must be run in-situ within the Jason trunk. All necessary ant tasks will be perf
 Please refer to /trunk/jason/applications/jasdl-owlapi/examples/travel_agent/config.mas2j for an example of how to configure JASDL agents.
 
 
+
+********************************************************
+--- Directory Structure ---
+
+The JASDL distribution is structured as such:
+	
+	README			- This file
+
+	docs/
+		mas2jconfig 	- Instructions on mas2j setup for a JASDL agent
+		java		- Java docs for JASDL
+
+	
+		
+
+********************************************************
+
 *** Known issues ***
 
 The -+ operator does not function properly. Until this problem is fixed the operation must be performed in two steps as shown here:
@@ -31,6 +48,11 @@ becomes:
 When TG is applied to complex test goals, unifications do not propagate correctly
 
 Trigger generalisation is not properly applied when searching for an suitable failure event for intended means that are not in the top level of an intention.
+
+Complex test goals resulting from queries against the ontology (those whose event has a SE-Literal, e.g. ?hotel(hilton)[o(travel)]), prevent their instantiating intention from properly generating failure events.
+
+
+Any test queries (and hence ask messages) that might result in the trigger generalisation mechanism being employed will need to include the "jasdl_tg_cause(_)" annotation (the parameter will not be unified and so is best left anonymous for clarity). If future work deems this issue unavoidable, JASDL will make a pass through the plan library and add this annotation automatically where required so the developer need not worry about it.
 
 
 

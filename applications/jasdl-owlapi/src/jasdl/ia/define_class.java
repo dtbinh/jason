@@ -35,11 +35,18 @@ import org.coode.manchesterowlsyntax.ManchesterOWLSyntaxDescriptionParser;
 /**
  * @author Tom Klapiscak
  * 
- * Usage jasdl.ia.define_class(classname, classexpr, label), where:
+ * Defines a new class in the personal ontology instance (label "self") of a JASDL agent.
+ * 
+ * For example: jasdl.ia.define_class(cheapBread, "c:bread and s:hasPrice some double [<= 0.5]") defines the class of individuals
+ * who are a member of bread that have a price of less than £0.5 in the ontology referred to by the label "c". This can then
+ * be used like any other SE-Literal. For instance:
+ * 
+ * ?cheapBread(X)[o(self)], will unify X with such an individual (if known).
+ * 
+ * Usage jasdl.ia.define_class(classname, expr_1...expr_n), where:
  * 	- classname is an atomic name used to refer to this class in future. Must begin with a lowercase letter and not clash with any AgentSpeak keyword
- *  - classexpr is a expression defining this class
+ *  - the concatenation of expr_1...expr_n is a valid Manchester OWL syntax class expression (in JASDL's namespace prefix form)
  *  
- *  Changed class name to atom only - forces valid alias syntax
  *
  */
 public class define_class extends DefaultInternalAction {

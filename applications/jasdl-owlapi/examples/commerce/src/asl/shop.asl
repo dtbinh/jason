@@ -1,113 +1,176 @@
 {include("common/society.asl")}
+{include("common/commerce.asl")}
 
-+!kqml_received(Sender, askOne, Content[o(O), id(ID)], MsgId) :
-	pA(PA)[o(s)]
-   <- 
-   .add_annot(Content, source(Sender), X);
-   .add_annot(X, o(O), Y);
-   .add_annot(Y, id(ID), Z);
-   ?Z.
+/*
+ * Unify with a shop that is a member of the class specified by Expression
+ *
+ * This is a good example of how certain JASDL features (such as run-time class definition and SE-Literal queries) 
+ * can be conveniently expressed within a rule.
+ */
+possibleStockist(ID, Expression, PossibleStockist) :-
+	jasdl.ia.define_class(possibleStockist, Expression) &
+	possibleStockist(PossibleStockist)[o(self)] &
+	shopInSameCompany(PossibleStockist) &	// note: this constraint could be more flexible by using an expression such as '' in the above class definition
+	not exhausted(ID)[source(PossibleStockist)] &
+	not (PossibleStockist == Me).
 	
 	
-	
-	
-	
-
-
-
-+?product(Brand)[o(c), id(ID), source(PA)] : JASDL_TG_CAUSE
-	<-
-	//.add_annot(JASDL_TG_CAUSE, id(ID), Response);
-	//.send(PA, tell, Response).
-	jasdl.ia.get_individual(JASDL_TG_CAUSE, Brand);
-	.print("Sending ", JASDL_TG_CAUSE);
-	.send(PA, tell, product(Brand)[o(c), id(ID)]).
-
-/** Plans dealing with a failure to find a suitable product within the belief-base of this agent */
-
-+?thing(Brand)[o(owl), id(ID), source(PA)] :
-	not JASDL_TG_CAUSE
-	<-
-	.print("Requested unknown product, moreover, no other shops in this company can be identified to potentially service this request");
-	.send(PA, tell, failure[id(ID)]).
-
-+?product(Brand)[o(c), id(ID), source(PA)] :
-	not JASDL_TG_CAUSE &
-	.my_name(Me) &
-	ownedBy(Me, Owner)[o(s)] &
-	jasdl.ia.define_class(mightStock, "s:shop and s:ownedBy value s:",Owner," and (not {s:",Me,"})") &
-	mightStock(Shop)[o(self)]
-	<-
-	.print("Requested unknown product, attempting to refer to any other shop owned by this company");
-	.send(PA, tell, referral(Shop)[id(ID)]).
 
 /**
- * No suitable product has been found in this agent's belief base. However,
- * because it is a type of meat product, it might be worth looking for butchers
- * owned by this company and referring to PA to them (if any are known).
- */ 
-+?meat(Brand)[o(c), id(ID), source(PA)] :
-	not JASDL_TG_CAUSE &
+ * Unify with a shop, other than this one, that is owned by the same company as this one.
+ */
+shopInSameCompany(Shop) :-
+	shop(Shop)[o(s)] &
 	.my_name(Me) &
-	ownedBy(Me, Owner)[o(s)] &
-	jasdl.ia.define_class(mightStock, "s:butchers and s:ownedBy value s:",Owner," and (not {s:",Me,"})") &
-	mightStock(Butchers)[o(self)]
+	ownedBy(Me, Company)[o(s)] &
+	owns(Company, Shop)[o(s)] &
+	(not Shop==Me).
+	
+	
+	
+/*
+ * This shop has managed to find a suitable product in its belief base, directly
+ * in response to a PA. Respond to the PA, keeping id annotation intact so the
+ * PA can match this response with the customer's request.
+ */
+@found_product_for_PA
++?product(Brand)[o(c), id(ID), stockist(Me), jasdl_tg_cause(OriginalQuery)] :
+	OriginalQuery	// the agent has found a suitable product within its belief base
 	<-
-	.print("Requested unknown meat product, attempting to refer to a butchers owned by this company");
-	.send(PA, tell, referral(Butchers)[id(ID)]).
+		.print("Recieved request and is able to service it");
+		.my_name(Me);
+		jasdl.ia.get_individual(OriginalQuery, Brand).
 
-/****************************************************************/
-
-
-
-	
-
-+!add_to_order(Order, Brand, Qty)[source(PA)] :
-	product(Brand)[o(c)] &															// check known product brand
-	hasCustomer(Order, Customer)[o(c)] & employs(Customer, PA)[o(s)] &				// check PA is authorised to speak on behalf of customer whose order it is
-	hasInStock(Brand, StockLevel)[o(c)] & StockLevel>=Qty							// check we have enough stock
+/**
+ * Notice that the two plans below also with "not OriginalQuery" in their context will take precence over this one,
+ * since their are both more specific than owl:thing (which is the most general concept) - additionally, plan ordering
+ * is irrelevant here since JASDL automatically assigns precence according to concept specificity for trigger generalisation
+ */
++?thing(Brand)[o(owl), id(_), stockist(_), jasdl_tg_cause(OriginalQuery)] :
+	not OriginalQuery	// the agent has found a suitable product within its belief base
 	<-
+		.print("Recieved request and is UNABLE to service it");
+		.fail.	
+		
+/**
+ * Requested a type of product that this agent cannot supply, try asking any other shop.
+ */
++?product(Brand)[o(c), id(ID), stockist(PossibleStockist), jasdl_tg_cause(OriginalQuery)] :
+	not OriginalQuery &
+	possibleStockist(ID, "s:shop", PossibleStockist)
+	<-
+	.print("Unknown GENERAL PRODUCT requested");
+	!exhausted(ID);
+	?stocked_by_another_shop(PossibleStockist, ID, OriginalQuery, Brand).
+
+/**
+ * Requested a type of vegetable product that this agent cannot supply, try asking a greengrocer or a supermarket.
+ */
++?vegetable(Brand)[o(c), id(ID), stockist(PossibleStockist), jasdl_tg_cause(OriginalQuery)] :
+	not OriginalQuery &
+	possibleStockist(ID, "s:greenGrocers or s:supermarket", PossibleStockist)
+	<-
+	.print("Unknown VEGETABLE PRODUCT requested");
+	!exhausted(ID);
+	?stocked_by_another_shop(PossibleStockist, ID, OriginalQuery, Brand).
+
+/**
+ * Requested a type of meat product that this agent cannot supply, try asking a butchers.
+ */
++?meatProduct(Brand)[o(c), id(ID), stockist(PossibleStockist), jasdl_tg_cause(OriginalQuery)] :
+	not OriginalQuery &
+	possibleStockist(ID, "s:butchers", PossibleStockist)
+	<-
+	.print("Unknown MEAT PRODUCT requested");
+	!exhausted(ID);
+	?stocked_by_another_shop(PossibleStockist, ID, OriginalQuery, Brand).
 	
-	// get a unique purchase identifier
-	jasdl.ia.get_anonymous_individual(PID);
++?stocked_by_another_shop(PossibleStockist, ID, Query, Answer)
+	<-
+	.print("Trying ", PossibleStockist);
+	.add_annot(Query, id(ID), Q1);
+	.add_annot(Q1, stockist(PossibleStockist), Q2);
+	.add_annot(Q2, jasdl_tg_cause(_), Q3);	
+	.send(PossibleStockist, askOne, Q3, Q3);	
+	jasdl.ia.get_individual(Q3, Answer).
 	
-	// add purchase
-	+purchase(PID)[o(c)];
-	+includes(Order, PID)[o(c)];
-	+hasBrand(PID, Brand)[o(c)];
-	+hasQuantity(PID, Qty)[o(c)];
-	.send(PA, tell, confirmed(Order, Brand, Qty)).
+	
+	
+/**
+ * Inform all shops that I have already been tried for this order and unable to service it
+ * (so I am not asked again)
+ */
++!exhausted(ID)
+	<-
+	.findall(Shop, shop(Shop)[o(s)], Shops);
+	.send(Shops, tell, exhausted(ID)).
+	
++!reset(ID)
+	<-
+	.findall(Shop, shopInSameCompany(Shop), Shops);
+	.send(Shops, untell, exhausted(ID)).
+   
 
-
-
-+!confirm_order(Order)[source(PA)] :
+   
+   
+/**
+ * All plans below this point deal with coordinating delivery with a delivery van employed by the shop.
+ * Note that these are not so interesting in terms of exploring JASDL extensions to Jason's core functionality, so
+ * don't worry about them too much.
+ */
+	
+/**
+ * Attempts to find an avaiable delivery van (identified by available(Van)).
+ * Once found, it deletes the van's status as available.
+ * This plan must be atomic to prevent a van being allocated simultaneously to more
+ * than one order (i.e. multiple ?'s before we get a chance to remove the van's available status)
+ */
+ 
+ 
+ /**
+ * An order request has been recieved from a PA, coordinate delivery of it
+ */
++order(Order)[o(c), source(PA)] :
 	hasCustomer(Order, Customer)[o(c)] &                      
 	employs(Customer, PA)[o(s)]
 	<-
-	!deploy(Order);
-	!allocate_available(Van);
-	!recall(Van);
-	!load(Order, Van);
-	!dispatch(Order, Van);
-	!unload(Order, Van);
-	+available(Van);
-	.abolish(includes(Order, _)[o(c)]);
-	.send(Customer, tell, order_complete(Order)).
-	
-	
-	
+		// Delopy crates containing product
+		!deploy(Order);
+		// Obtain an available van (or suspend this intention until one it available)
+		!allocate_available(Van);
+		// Instruct this van to move to shop's position
+		!recall(Van);
+		// Instruct the van to load the deployed products into its cargo hold
+		!load(Order, Van);
+		// Instruct the van to move to the customer's position
+		!dispatch(Order, Van);
+		// Instruct the van to unload its cargo at its current position (i.e. the customer's)
+		!unload(Order, Van);
+		// Abolish beliefs about this order (and all included purchases), we no longer need them
+		!abolish_order(Order);
+		// Make the van available again
+		+available(Van).
+ 
 @available[atomic]
 +!allocate_available(Van)
 	<-
-	?available(Van)[source(_)];
-	-available(Van)[source(_)].
-	
+		?available(Van)[source(_)];
+		-available(Van)[source(_)].
+
+/*
+ * The agent has attempted to find an available van (see above) within the belief base but has failed.
+ * Simply suspend the intention until a van notifies the agent that it is available.
+ */
 +?available(Van)
 	<-
-	.concat("+",available(Van)[source(_)], WaitFor);
-	.wait(WaitFor);
-	?available(Van)[source(_)].
+		.concat("+",available(Van)[source(_)], WaitFor);
+		.wait(WaitFor);
+		?available(Van)[source(_)].
 
+/**
+ * Achieve the state of affairs such that a van has loaded an entire order into its cargo.
+ * (Suspends the intention until this is so) 
+ */
 +!load(Order, Van) : .my_name(Me) & inVicinityOf(Van)
 	<-
 	-hasPosition(Van, X, Y)[source(Van)];	
@@ -118,6 +181,10 @@
 	.wait(WaitFor);
 	-L.
 	
+/**
+ * Achieve the state of affairs such that a van has unloaded its entire cargo at its current destination
+ * (Suspends the intention until this is so) 
+ */	
 +!unload(Order, Van)
 	<-
 	.findall(PID, includes(Order, PID)[o(c)], PIDs);
@@ -126,54 +193,84 @@
 	.concat("+", L, WaitFor);
 	.wait(WaitFor);
 	-L.
-	
+
+/**
+ * Instruct a van to go to the shop's position
+ * (Suspends the intention until this is so) 
+ */
 +!recall(Van)
 	<-
 	.my_name(Me);
 	?hasPosition(Me, MX, MY);
 	!hasPosition(Van, MX, MY).
 
+/**
+ * Instruct a van to go to the location of the customer assocaited with an order
+ * (Suspends the intention until this is so) 
+ */
 +!dispatch(Order, Van)
 	<-
 	?hasCustomer(Order, Customer)[o(c)];
 	.send(Customer, askOne, hasPosition(Customer, X, Y), hasPosition(Customer, X, Y));
+	.print("Dispatching ", Van, " to ", X,",",Y,"(",Customer,")");
 	!hasPosition(Van, X, Y).	
 	
-	
-+!hasPosition(Van, X, Y) : L=hasPosition(Van, X, Y) & not L
+/**
+ * Achieve the state of affairs such that a van is at a position on the grid.
+ * (Suspends the intention until this is so)
+ */
++!hasPosition(Van, X, Y) : L=hasPosition(Van, X, Y)
 	<-	
-	.send(Van, achieve, hasPosition(Van, X, Y));
-	.concat("+", L[source(Van)], WaitFor);
-	.wait(WaitFor);
-	-L.
-	
-+!hasPosition(Van, X, Y) : L=hasPosition(Van, X, Y) & L.
+		.send(Van, achieve, hasPosition(Van, X, Y));
+		.concat("+", hasPosition(Van, X, Y)[source(Van)], WaitFor);
+		.wait(WaitFor);
+		-hasPosition(Van, X, Y)[source(_)].
+
+/**
+ * We think the van is already at the specified position,
+ * but we'll try again just to be sure
+ */
++!hasPosition(Van, X, Y) : hasPosition(Van, X, Y)
+	<-
+	-hasPosition(Van, X, Y)[source(_)];
+	!hasPosition(Van, X, Y).
 
 
 
-
+/**
+ * (Recursively) achieve the state of affairs such that all purchases are deployed (i.e present
+ * on the grid as a "crate") at the shop's location. 
+ */
 +!deploy([]).
 +!deploy([Purchase|Purchases])
 	<-
-	?hasBrand(Purchase, Brand)[o(c)];
-	?hasQuantity(Purchase, Qty)[o(c)];
-	deploy(Purchase, Brand, Qty);
-	.print("Deploying crate", Purchase);
-	!deploy(Purchases).
+		?hasBrand(Purchase, Brand)[o(c)];
+		?hasQuantity(Purchase, Qty)[o(c)];
+	
+	// The "deploy" environmental action results in the creation of a ModelCrate object
+	// at the shop's current position and decreases it's stock for the supplied brand accordingly.
+		deploy(Purchase, Brand, Qty);
+		.print("Deploying crate", Purchase);
+		!deploy(Purchases).
+		
+/**
+ * Convenience plan that finds all the purchases in an order and instantiates !deploy above.
+ */
 +!deploy(Order)
 	<-
-	.findall(PID, includes(Order, PID)[o(c)], PIDs);
-	!deploy(PIDs).
+		.findall(PID, includes(Order, PID)[o(c)], PIDs);
+		!deploy(PIDs).
 
-	
 	
 
 +?details(Brand, Details) : product(PID)[o(c)]
 	<-
-	?hasPrice(Brand, Price)[o(c)];
-	?hasInStock(Brand, StockLevel)[o(c)];
-	jasdl.ia.get_types(Brand, self, true, Types);
-	.concat("Brand Name=", Brand, ", Stock level=", StockLevel, ", Price=", ", Classifications=", Types, Price, Details).
+		?hasPrice(Brand, Price)[o(c)];
+		?hasInStock(Brand, StockLevel)[o(c)];
+	// Unifies Types with all asserted (since third parameter is "true") classifications of the individual Brand 
+	// in the ontology identified by c
+		jasdl.ia.get_types(Brand, c, true, Types);
+		.concat("Brand Name=", Brand, ", Stock level=", StockLevel, ", Price=", ", Classifications=", Types, Price, Details).
 
 /* Failed to get details. Reason: No price listed for product type */
 -?details(Brand, Details) : product(Brand)[o(c)] & not hasPrice(Brand, Price)
@@ -184,57 +281,3 @@
 	<-
 	?details(Brand, Details);
 	.print(Details).
-	
-
-	
-	
-/* Local Prices */
-
-	
-	
-/* We trust the delivery_agent when it informs of a product removal */
-/*
--hovis(PID)[o(c)]
-	<-
-	-product(PID)[o(c), source(self)];	
-	?details(PID, Details);
-	.print("Sold ", Details).
-*/
-
-
-/* Gets this shop's price for a class of individuals */
-// TODO: jasdl.ia.seliteral(Literal)
-/* SAFELY allowing classes to be subjects of properties*/
-/*
-Deprecated, prices are obtained statically
-+?hasPrice(PID, Price) : .atom(PID)
-	<-
-	.print("Get price of ", PID);
-	?hasPrice(product(PID)[o(c)], Price). // <- why doesn't this work?
-	
-	
-	
-	
-+!hasPrice(product(PID)[o(c)], Price) // <- note: not semantically-enriched
-	<-
-	.findall(product(PID)[o(c)], product(PID)[o(c)], Groundings);
-	.print("Setting price to ",Price," for ", Groundings);
-	!hasPrice(Groundings, Price).
-	
-+!hasPrice([Grounding | Groundings], Price)
-	<-
-	jasdl.ia.get_individual(Grounding, PID);
-	+hasPrice(PID, Price)[o(c)]; // <- note: semantically-enriched
-	!hasPrice(Groundings, Price).
-	
-+!hasPrice([], _).
-	
-*/
-
-
-/*
-	Doesn't work, since concat creates string term and so includes quotation marks which are not valid URI characters
-	.findall(ID, includes(Order, ID)[o(c)], IDs);
-	.length(IDs, MaxID);
-	.concat("purchase_", Order, "_", MaxID, PID);
-	*/

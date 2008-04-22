@@ -40,12 +40,12 @@ import bebops.common.IndividualAxiomToDescriptionConverter;
 /**
  * @author Tom Klapiscak
  * 
- * Usage jasdl.ia.define_class(classname, classexpr, label), where:
- * 	- classname is an atomic name used to refer to this class in future. Must begin with a lowercase letter and not clash with any AgentSpeak keyword
- *  - classexpr is a expression defining this class
- *  
- *  Changed class name to atom only - forces valid alias syntax
- *
+ * Produces a rendering in Manchester OWL syntax (in JASDL's Namespace prefix form) of the assertion made by any valid SE-Literal.
+ * 
+ * For example: jasdl.ia.get_class_definition(bread(hovis)[o(c)], Rendering), unifies Rendering with "c:bread and {c:hovis}".
+ * 
+ * Usage: jasdl.ia.get_class_definition(Assertion, Rendering), where Assertion is any valid SE-Literal.
+ * 
  */
 public class get_class_definition extends DefaultInternalAction {
 

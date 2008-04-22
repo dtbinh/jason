@@ -21,7 +21,6 @@ import java.awt.Point;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Vector;
 import java.util.logging.Logger;
 
 import commerce.env.model.CommerceModel;
@@ -31,7 +30,6 @@ import commerce.env.model.ModelDeliveryVan;
 import commerce.env.model.ModelObject;
 import commerce.env.model.ModelShop;
 import commerce.exception.ModelAgentException;
-import commerce.ui.customer.CustomerUIFrame;
 
 
 
@@ -59,15 +57,16 @@ public class CommerceEnvironment extends JASDLEnvironment{
     public void init(String[] args) {
     	super.init(args);
     	
+    	System.out.println("Agents loading... please wait.");
+    	
     	model = new CommerceModel(new Dimension(20, 20), this);
     	
-    	view = new CommerceView(model);
-    	    	
-    	CustomerUIFrame customerUIFrame = new CustomerUIFrame(this);
+    	view = new CommerceView(model, this);
+    	   
     	// for each customer set-up a UI Panel
     	for(ModelObject o : model.getObjects()){
     		if(o instanceof ModelCustomer){
-    			customerUIFrame.addCustomer((ModelCustomer)o);
+    			view.addCustomer((ModelCustomer)o);
     		}
     	}
     	
@@ -172,8 +171,14 @@ public class CommerceEnvironment extends JASDLEnvironment{
 	    		if(action.getFunctor().equals("request_product")){
 	    			customer.request(terms[0].toString(), terms[1].toString(), (int)((NumberTerm)terms[2]).solve());
 	    		}
+	    		if(action.getFunctor().equals("confirm_order")){
+	    			customer.confirm_order();
+	    		}
 	    		if(action.getFunctor().equals("approve")){
 	    			return customer.approve(terms[0].toString());
+	    		}
+	    		if(action.getFunctor().equals("message")){
+	    			customer.message(terms[0].toString());
 	    		}
 	    	}
 	    	
@@ -186,7 +191,7 @@ public class CommerceEnvironment extends JASDLEnvironment{
     	}finally{
     		updatePercepts();
     	}
-		agentLogger.info("Completed action "+action);
+		agentLogger.fine("Completed action "+action);
 		return true;
     }
 

@@ -39,9 +39,12 @@ import org.semanticweb.owl.model.OWLOntology;
  * Generates a anonymous, guaranteed unique individual.
  * Prefixed with agent name to guarantee uniqueness within entire agent society.
  * 
+ * Usage:
+ * 		jasdl.ia.get_individual(ID) unifies ID with an atomic unique individual name.
+ * 
  * @author Tom Klapiscak
  * 
- * TODO: Add all different assertions?
+ * TODO: Add all corresponding different assertions to individual?
  */
 public class get_anonymous_individual extends DefaultInternalAction {
 

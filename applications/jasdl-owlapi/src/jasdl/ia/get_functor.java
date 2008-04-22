@@ -31,6 +31,8 @@ import jason.asSyntax.VarTerm;
 import java.util.logging.Logger;
 
 /**
+ * Gets the functor of any Jason literal. Not currently used.
+ * jasdl.ia.get_functor(Literal, Functor), where Literal is any valid Jason Literal.
  * @author Tom Klapiscak
  */
 public class get_functor extends DefaultInternalAction {

@@ -19,9 +19,12 @@
  */
 package jasdl.util.owlapi.parsing;
 
+import java.net.URI;
+
 import jasdl.bridge.JASDLOntologyManager;
 import jasdl.bridge.factory.AliasFactory;
 import jasdl.bridge.mapping.aliasing.Alias;
+import jasdl.util.exception.JASDLException;
 import jason.asSyntax.Atom;
 
 import org.semanticweb.owl.model.OWLClass;
@@ -38,11 +41,11 @@ import org.semanticweb.owl.model.OWLObjectProperty;
  */
 public class NsPrefixOWLEntityChecker extends XSDDatatypeChecker {
 
-	private JASDLOntologyManager jasdlOntologyManager;
+	private JASDLOntologyManager jom;
 
 	public NsPrefixOWLEntityChecker(JASDLOntologyManager jasdlOntologyManager) {
 		super(jasdlOntologyManager.getOntologyManager().getOWLDataFactory());
-		this.jasdlOntologyManager = jasdlOntologyManager;
+		this.jom = jasdlOntologyManager;
 	}
 
 	public OWLClass getOWLClass(String name) {
@@ -72,8 +75,16 @@ public class NsPrefixOWLEntityChecker extends XSDDatatypeChecker {
 	public OWLIndividual getOWLIndividual(String name) {
 		OWLEntity entity = convert(name);
 		if (entity == null) {
-			// TODO: instantiate individuals?				
-			return null;
+			try {
+				// TODO: tidy this up
+				String[] tokens = name.split(":");
+				Atom functor = new Atom(tokens[1]);
+				Atom label = new Atom(tokens[0]);
+				Alias alias = AliasFactory.INSTANCE.create(functor, label);
+				return jom.getOWLIndividual(alias);
+			} catch (JASDLException e) {
+				throw new RuntimeException(e);
+			}
 		}
 		if (entity.isOWLIndividual()) {
 			return entity.asOWLIndividual();
@@ -100,7 +111,7 @@ public class NsPrefixOWLEntityChecker extends XSDDatatypeChecker {
 			Atom functor = new Atom(tokens[1]);
 			Atom label = new Atom(tokens[0]);
 			Alias alias = AliasFactory.INSTANCE.create(functor, label);
-			return (OWLEntity) jasdlOntologyManager.getAliasManager().getRight(alias); // guaranteed to be an entity? Not for anonymous classes!
+			return (OWLEntity) jom.getAliasManager().getRight(alias); // guaranteed to be an entity? Not for anonymous classes!
 		} catch (ClassCastException e) {
 			// we are dealing with an anonymous class description
 			return null;

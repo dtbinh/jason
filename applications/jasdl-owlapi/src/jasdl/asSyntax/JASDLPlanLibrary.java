@@ -23,13 +23,11 @@ import jasdl.asSemantics.JASDLAgent;
 import jasdl.bridge.seliteral.SELiteral;
 import jasdl.util.JASDLCommon;
 import jasdl.util.exception.JASDLException;
-import jasdl.util.exception.JASDLInvalidSELiteralException;
 import jasdl.util.exception.JASDLNotEnrichedException;
 import jason.JasonException;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Plan;
 import jason.asSyntax.PlanLibrary;
-import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 import jason.asSyntax.Trigger;
 
@@ -90,7 +88,7 @@ public class JASDLPlanLibrary extends PlanLibrary {
 		for(SEPlan placed : sePlans){			
 			Literal x = unplaced.getTrigger().getLiteral();
 			Literal y = placed.getTrigger().getLiteral();
-			boolean xIsMoreSpecific = isMoreSpecific(x, y);
+			boolean xIsMoreSpecific = JASDLCommon.isMoreSpecific(x, y, agent.getJom());
 			getLogger().finest("Is "+x+" more specific than "+y+"? "+xIsMoreSpecific);
 			if(xIsMoreSpecific) break;
 			i++;
@@ -103,77 +101,25 @@ public class JASDLPlanLibrary extends PlanLibrary {
 		return sePlans;
 	}
 	
-	/**
-	 * Semantically naive literals are always considered more specific than semantically enriched.
-	 * Do not need to consider incomparable literals (those with different arities or those with different semantic enrichment state)
-	 * since one can never generalise to the other.
-	 * 
-	 * Algorithm functions as follows:
-	 * 
-	 * Terminal cases:
-	 * if either x or y is not a structure, they are incomparable (different arities (at least one has no terms))
-	 * If arity(x)!=arity(y) then they are considered incomparable and we (arbitrarily) return arity(x)<arity(y)
-	 * If SN(x) and SE(y) then we return true
-	 * if SE(x) and SN(y) then we return false
-	 * if SE(x) and SE(y) then we return subsumes(y, x) (i.e. true if x is more specific)
-	 * 
-	 * Recursive case:
-	 * score=0
-	 * if SN(x) and SN(y) then
-	 * 		for each term of x and y in parallel
-	 * 			if isMoreSpecific(x, y) then score++ else score--
-	 * 
-	 * if score>=0 then we return true (i.e. x has a greater number of more specific terms than y) else false
-	 *
-	 */
-	private boolean isMoreSpecific(Term _x, Term _y) throws JASDLException, OWLException{
-		if(!_x.isStructure() || !_y.isStructure()) return false;		
-		Structure x = (Structure)_x;
-		Structure y = (Structure)_y;
-		
-		if(x.getArity() != y.getArity()) return false;
-		SELiteral sx = null;
-		SELiteral sy = null;
-		
-		try {
-			if(x.isLiteral()) sx = agent.getSELiteralFactory().construct((Literal)x);
-		} catch (JASDLInvalidSELiteralException e) {
-		}
-		
-		try {
-			if(y.isLiteral()) sy = agent.getSELiteralFactory().construct((Literal)y);
-		} catch (JASDLInvalidSELiteralException e) {
-		}
-		
-		if((sx == null && sy != null) || (sx != null && sy == null)) return false;
-		
-		if(sx != null && sy != null) return JASDLCommon.subsumes(agent.getJom(), sy.toOWLObject(), sx.toOWLObject());
-		
-		// both sx and sy are semantically-naive and have equivalent arities
-		int score = 0;
-		for(int i=0; i<x.getArity(); i++){
-			Term xt = x.getTerm(i);
-			Term yt = y.getTerm(i);
-			
-			if(isMoreSpecific(xt, yt)) score++; else score--;
-			
-		}
-		
-		if(score>=0) return true; else return false;
-	}
+
 	
 
 	@Override
 	public List<Plan> getCandidatePlans(Trigger te) {
-		// All SE-plans treated as candidates. TODO: rule-out some based on arity?
-
+		//TODO: We are duplicating work here (performing full unification on SE-candidates here and when transition system calls
+		// SEPlan#isRelevant. More efficient means for determining candidates? - or perhaps storing these unifications for re-use by TS
 		List<Plan> candidates = super.getCandidatePlans(te);
-		if (!sePlans.isEmpty()) {
-			if (candidates == null) {
-				candidates = new Vector<Plan>();
+		if(candidates == null){
+			candidates = new Vector<Plan>();
+			for(Plan candidate : sePlans){				
+				if(candidate instanceof SEPlan){
+					candidate = (SEPlan)candidate.clone();
+					SEPlan seCandidate = (SEPlan)candidate;
+					if(seCandidate.isRelevant(te) != null){
+						candidates.add(candidate);
+					}
+				}
 			}
-			candidates.addAll(sePlans);
-			
 			
 		}
 		return candidates;

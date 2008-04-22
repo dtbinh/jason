@@ -20,8 +20,13 @@
 package jasdl.util;
 
 import jasdl.bridge.JASDLOntologyManager;
+import jasdl.bridge.seliteral.SELiteral;
 import jasdl.util.exception.JASDLException;
+import jasdl.util.exception.JASDLInvalidSELiteralException;
 import jasdl.util.exception.JASDLUnknownMappingException;
+import jason.asSyntax.Literal;
+import jason.asSyntax.Structure;
+import jason.asSyntax.Term;
 import jason.asSyntax.Trigger;
 
 import java.io.File;
@@ -29,7 +34,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Set;
 
-import org.semanticweb.owl.expression.OWLEntityChecker;
 import org.semanticweb.owl.inference.OWLReasonerAdapter;
 import org.semanticweb.owl.model.OWLDataProperty;
 import org.semanticweb.owl.model.OWLDescription;
@@ -79,6 +83,67 @@ public class JASDLCommon {
 		return strCurrentDir;
 	}
 	
+	
+	/**
+	 * Semantically naive literals are always considered more specific than semantically enriched.
+	 * Do not need to consider incomparable literals (those with different arities or those with different semantic enrichment state)
+	 * since one can never generalise to the other.
+	 * 
+	 * Algorithm functions as follows:
+	 * 
+	 * Terminal cases:
+	 * if either x or y is not a structure, they are incomparable (different arities (at least one has no terms))
+	 * If arity(x)!=arity(y) then they are considered incomparable and we (arbitrarily) return arity(x)<arity(y)
+	 * If SN(x) and SE(y) then we return true
+	 * if SE(x) and SN(y) then we return false
+	 * if SE(x) and SE(y) then we return subsumes(y, x) (i.e. true if x is more specific)
+	 * 
+	 * Recursive case:
+	 * score=0
+	 * if SN(x) and SN(y) then
+	 * 		for each term of x and y in parallel
+	 * 			if isMoreSpecific(x, y) then score++ else score--
+	 * 
+	 * if score>=0 then we return true (i.e. x has a greater number of more specific terms than y) else false
+	 * 
+	 * TODO: have a unifier "collect" unifications on all variables?
+	 *
+	 */
+	public static boolean isMoreSpecific(Term _x, Term _y, JASDLOntologyManager jom) throws JASDLException, OWLException{
+		if(!_x.isStructure() || !_y.isStructure()) return false;		
+		Structure x = (Structure)_x;
+		Structure y = (Structure)_y;
+		
+		if(x.getArity() != y.getArity()) return false;
+		SELiteral sx = null;
+		SELiteral sy = null;
+		
+		try {
+			if(x.isLiteral()) sx = jom.getSELiteralFactory().construct((Literal)x);
+		} catch (JASDLInvalidSELiteralException e) {
+		}
+		
+		try {
+			if(y.isLiteral()) sy = jom.getSELiteralFactory().construct((Literal)y);
+		} catch (JASDLInvalidSELiteralException e) {
+		}
+		
+		if((sx == null && sy != null) || (sx != null && sy == null)) return false;
+		
+		if(sx != null && sy != null) return JASDLCommon.subsumes(jom, sy.toOWLObject(), sx.toOWLObject());
+		
+		// both sx and sy are semantically-naive and have equivalent arities
+		int score = 0;
+		for(int i=0; i<x.getArity(); i++){
+			Term xt = x.getTerm(i);
+			Term yt = y.getTerm(i);
+			
+			if(isMoreSpecific(xt, yt, jom)) score++; else score--;
+			
+		}
+		
+		if(score>=0) return true; else return false;
+	}	
 	
 	
 	

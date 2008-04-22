@@ -20,6 +20,8 @@
 package jasdl.util.owlapi.parsing;
 
 import jasdl.bridge.JASDLOntologyManager;
+import jasdl.bridge.mapping.aliasing.Alias;
+import jasdl.util.exception.JASDLException;
 
 import java.net.URI;
 
@@ -39,11 +41,11 @@ import org.semanticweb.owl.model.OWLObjectProperty;
  */
 public class URIOWLEntityChecker extends XSDDatatypeChecker {
 
-	private JASDLOntologyManager jasdlOntologyManager;
+	private JASDLOntologyManager jom;
 
-	public URIOWLEntityChecker(JASDLOntologyManager jasdlOntologyManager) {
-		super(jasdlOntologyManager.getOntologyManager().getOWLDataFactory());
-		this.jasdlOntologyManager = jasdlOntologyManager;
+	public URIOWLEntityChecker(JASDLOntologyManager jom) {
+		super(jom.getOntologyManager().getOWLDataFactory());
+		this.jom = jom;
 	}
 
 	public OWLClass getOWLClass(String uri) {
@@ -70,10 +72,19 @@ public class URIOWLEntityChecker extends XSDDatatypeChecker {
 		}
 	}
 
+	/**
+	 * Will look across all known ontologies for individual. If not found, will instantiate according to alias generated from URI.
+	 * @see JASDLOntologyManager#toAlias(URI)
+	 * @see JASDLOntologyManager#getOWLIndividual(Alias)
+	 */
 	public OWLIndividual getOWLIndividual(String uri) {
 		OWLEntity entity = convert(uri);
 		if (entity == null) {
-			return null;
+			try {
+				return jom.getOWLIndividual(URI.create(uri));
+			} catch (JASDLException e) {
+				throw new RuntimeException(e);
+			}
 		}
 		if (entity.isOWLIndividual()) {
 			return entity.asOWLIndividual();
@@ -97,7 +108,7 @@ public class URIOWLEntityChecker extends XSDDatatypeChecker {
 	private OWLEntity convert(String _uri) {
 		try {
 			URI uri = new URI(_uri);
-			return jasdlOntologyManager.toEntity(uri);
+			return jom.toEntity(uri);
 		} catch (Exception e) {
 			return null;
 		}

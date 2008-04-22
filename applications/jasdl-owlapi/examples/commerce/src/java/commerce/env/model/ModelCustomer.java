@@ -16,6 +16,11 @@ public class ModelCustomer extends ModelMobileAgent {
 	
 	private List<ModelCustomerListener> listeners;
 	private List<Request> requests;
+	
+	/**
+	 * Set to true by confirm_order environmental action (currently instantiated by UI)
+	 */
+	private boolean orderConfirmed = false;
 
 	public ModelCustomer(Atom id, Point position, CommerceModel model, CommerceEnvironment env) {
 		super(id, position, model, env);
@@ -53,6 +58,10 @@ public class ModelCustomer extends ModelMobileAgent {
 		for(Request request : requests){
 			env.addPercept(getId().toString(), Literal.parseLiteral("ui_product_request("+request.productDescription+","+request.shopDescription+","+request.qty+")"));
 		}
+		if(orderConfirmed){
+			env.addPercept(getId().toString(), Literal.parseLiteral("ui_confirm_order"));
+			orderConfirmed = false;
+		}
 		requests.clear();
 	}
 
@@ -64,7 +73,15 @@ public class ModelCustomer extends ModelMobileAgent {
 	}
 	
 	/**
-	 * Returns true if all listeners approve of this choice as a purchase
+	 * Called by the confirm_order environmental action (currently instantiated by UI)
+	 *
+	 */
+	public void confirm_order(){
+		orderConfirmed = true;
+	}
+	
+	/**
+	 * Returns true if all listeners (current just a CustomerUIPanel) approve of this choice as a purchase.
 	 * @param brand
 	 * @return
 	 */
@@ -74,6 +91,16 @@ public class ModelCustomer extends ModelMobileAgent {
 			result&=listener.approve(brand); // do all listeners approve of this choice?
 		}
 		return result;
+	}
+	
+	/**
+	 * Passes a message to all listeners (currently just causes a dialog box to be displayed by CustomerUIPanel)
+	 * @param message
+	 */
+	public void message(String message){
+		for(ModelCustomerListener listener : listeners){
+			listener.message(message);
+		}
 	}
 	
 	protected float getOffset(){

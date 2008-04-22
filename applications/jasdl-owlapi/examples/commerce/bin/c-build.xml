@@ -7,7 +7,7 @@
 	<import file="build.xml"/>
 	
 	<target name="user-init">		
-		<ant dir="../../../../" inheritAll="false" target="plugin"/>
+		<ant dir="../../../../" inheritAll="false" target="jar"/>
 		<ant dir="../../../jmca" inheritAll="false"/>
 		<ant dir="../.." inheritAll="false"/>
 	</target>

@@ -21,13 +21,12 @@ package jasdl.asSyntax;
 
 import jasdl.JASDLParams;
 import jasdl.asSemantics.JASDLAgent;
-import jasdl.bridge.DLUnifier;
+import jasdl.util.JASDLCommon;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Plan;
-import jason.asSyntax.Term;
+import jason.asSyntax.Structure;
 import jason.asSyntax.Trigger;
-import jason.asSyntax.VarTerm;
 
 /**
  * <p>A plan whose trigger is associated with a semantically-enriched literal.</p>
@@ -46,28 +45,67 @@ public class SEPlan extends Plan{
 		this.agent = agent;
 	}
 
-	@Override
-	public Unifier isRelevant(Trigger te) {
-		Unifier un = super.isRelevant(te);
-		if (un != null) { // plan is specifically relevant to deal with the trigger
-			return un;
-		}
-		DLUnifier dlun = new DLUnifier(agent);
-		if (dlun.unifiesNoUndo(getTrigger(), te)) { // <- plan's trigger subsumes incoming
 
-			Literal causeWithAnnots = (Literal)te.getLiteral().clone();		
-			dlun.unifiesNoUndo(new VarTerm(JASDLParams.JASDL_TG_CAUSE_RETAIN_ANNOTS), causeWithAnnots);
-			
-			Literal causeNoAnnots = (Literal)te.getLiteral().clone();
-			Term o = causeNoAnnots.getAnnots(JASDLParams.ONTOLOGY_ANNOTATION_FUNCTOR).get(0);			
-			causeNoAnnots.clearAnnots();
-			causeNoAnnots.addAnnot(o);			
-			dlun.unifiesNoUndo(new VarTerm(JASDLParams.JASDL_TG_CAUSE), causeNoAnnots);
-			
-			
-			return dlun;
-		} else {
-			return null;
+
+	@Override
+	public Unifier isRelevant(Trigger te) {	
+		// TODO: this needs to be tidied up
+		Unifier un = super.isRelevant(te);
+		if(un == null){
+			try {
+				if(JASDLCommon.isMoreSpecific(te.getLiteral(), this.getTrigger().getLiteral(), agent.getJom())){					
+					
+					
+					
+					Literal trigger = te.getLiteral();
+					Literal oldLiteral = getTrigger().getLiteral();
+					
+					Structure triggerO = (Structure)trigger.getAnnots(JASDLParams.ONTOLOGY_ANNOTATION_FUNCTOR).get(0);
+					Structure oldO = (Structure)oldLiteral.getAnnots(JASDLParams.ONTOLOGY_ANNOTATION_FUNCTOR).get(0);
+					
+					
+					// create a new literal with functor of trigger
+					Literal newLiteral = new Literal( !oldLiteral.negated(), trigger.getFunctor());
+					
+					// add the terms from the old literal
+					newLiteral.addTerms(oldLiteral.getTerms());
+					
+					// add the annots from the old literal
+					newLiteral.addAnnots(oldLiteral.getAnnots());
+					
+					// change the o annotation to that of the trigger (o is always ground, so not an issue - no unification need be performed against the IM)
+					newLiteral.delAnnot(oldO);
+					newLiteral.addAnnot(triggerO);
+					
+					getTrigger().setLiteral(newLiteral);			
+					
+					
+					Literal jasdl_tg_cause_annot = (Literal)trigger.getAnnots("jasdl_tg_cause").get(0);
+					Literal jasdl_tg_cause = (Literal)te.getLiteral().clone();
+					
+					// musn't retain annots, except "o"
+					jasdl_tg_cause.clearAnnots();
+					jasdl_tg_cause.addAnnot(triggerO);
+					
+					// mutate the term
+					jasdl_tg_cause_annot.setTerm(0, jasdl_tg_cause);
+					
+					
+					un = new Unifier();
+					
+					if(un.unifiesNoUndo(getTrigger(), te)){
+						return un;
+					}else{
+						return null;
+					}
+					
+				}
+				return null;
+			} catch (Exception e) {
+				return null;
+			}
+		}else{
+			return un;
 		}
 	}
 
