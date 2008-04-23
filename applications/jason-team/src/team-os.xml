@@ -5,7 +5,7 @@
 <organisational-specification 
 
     id="jason-cowboys"
-    os-version="0.4"
+    os-version="0.5"
   
     xmlns='http://moise.sourceforge.net/os'
     xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
@@ -13,6 +13,10 @@
                         http://moise.sourceforge.net/xml/os.xsd' >
     
     <structural-specification>
+        <properties>
+            <property id="check-players-in-remove-group"   value="false" />
+            <property id="check-sub-group-in-remove-group" value="false" />
+        </properties>
 
         <role-definitions>
             <role id="cowboy" />
@@ -24,6 +28,7 @@
         </role-definitions>
 
         <group-specification id="team">
+            
             <links>
                 <link from="cowboy" to="cowboy" type="communication"
                       scope="inter-group" extends-sub-groups="true" bi-dir="false"/>

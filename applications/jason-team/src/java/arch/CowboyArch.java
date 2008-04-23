@@ -30,7 +30,7 @@ import env.WorldView;
  */
 public class CowboyArch extends IdentifyCrashed {
 
-	LocalWorldModel model = null;
+	LocalWorldModel model = new LocalWorldModel(10,10);
 	WorldView       view  = null;
 	
 	String     simId = null;

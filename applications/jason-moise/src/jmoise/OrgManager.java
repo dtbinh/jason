@@ -67,9 +67,8 @@ public class OrgManager extends AgArch {
         // starts GUI        
         if ("yes".equals(getTS().getSettings().getUserParameter("gui"))) {
             try {
-                simOE = new SimOE(currentOE);
+                simOE = new SimOE(currentOE, false);
                 simOE.setName("OrgManager");
-                simOE.frame.getContentPane().remove(simOE.frame.OESimTabPanel);
                 simOE.frame.addWindowListener(new java.awt.event.WindowAdapter() {
                     public void windowClosing(java.awt.event.WindowEvent e) {
                         if (simOE != null) {
