@@ -25,7 +25,7 @@ rmiregistry 1099 &
 sleep 1
 
 echo "Launching Server"
-java -Djava.rmi.server.hostname=$name -jar lib/massimserver.jar --conf conf/serverconfig.xml
+java -Djava.rmi.server.hostname=$name -jar lib/massimserver.jar --conf $1
 
 echo "Killall RMI Registry"
 killall rmiregistry -w
