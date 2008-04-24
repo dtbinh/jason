@@ -12,15 +12,18 @@
 
 To run this team:
 
-1. update sources of Jason
+1. update sources of Jason and JMoise+
      cd Jason-svn
      svn update
      ant plugin
    
+     cd applications/jason-moise
+     ant jar
+
 2. run massim-server
      cd applications/jason-team/massim-server
      ./startServer.sh
-
+   
 3. run dummies (written in Jason)
      ant -f dummies.xml
  
