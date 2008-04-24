@@ -5,7 +5,7 @@
 <organisational-specification 
 
     id="jason-cowboys"
-    os-version="0.5"
+    os-version="0.6"
   
     xmlns='http://moise.sourceforge.net/os'
     xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
@@ -64,9 +64,27 @@
 
 
     <functional-specification>
+        <scheme id="exploring" >
+            <goal id="find_cows" >
+              <plan operator="parallel">
+                <goal id="goto_near_unvisited" ds="go to the near unvisited location inside the area of the group" type="maintenance"/>
+                <goal id="share_cows"          ds="share seen cows with other agents in the scheme" type="maintenance"/>
+              </plan>
+            </goal>
+            
+            <mission id="mscouter" >
+                <goal id="share_cows" />
+            </mission>
+            <mission id="mexplorer" min="1">
+                <goal id="goto_near_unvisited" />
+                <goal id="share_cows" />
+            </mission>
+        </scheme>
     </functional-specification>
 
     <deontic-specification>
+        <deontic-relation type="obligation" role="explorer"  mission="mscouter" />
+        <deontic-relation type="obligation" role="scouter"   mission="mexplorer" />
     </deontic-specification>
 </organisational-specification>
 

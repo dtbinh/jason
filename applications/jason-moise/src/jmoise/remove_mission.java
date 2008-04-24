@@ -16,7 +16,7 @@ import jason.asSyntax.Term;
 <p>Conditions to succeed:
 <ul>
 <li>the agent is committed to MissionId in SchId;</li>
-<li>all goals of the mission are satisfied; if a super goal of a mission's goal is
+<li>all achievement goals of the mission are satisfied; if a super goal of a mission's goal is
     satisfied, the goal is also considered as satisfied.</li>
 </ul>
 

@@ -32,7 +32,7 @@
       });
 	 .abolish(area(_,_,_,_,_)); 
      jmoise.create_group(team).
-+gsize(Weight,Height)
++gsize(_Weight,_Height)
   <- .abolish(area(_,_,_,_,_)).
   
 +group(team,GId)

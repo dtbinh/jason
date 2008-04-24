@@ -6,24 +6,26 @@ import jason.asSyntax.Term;
 
 /** 
 
-<p>Organisational action: <b><code>jmoise.remove_scheme( SchId )</code></b>: 
-   used by an agent to remove a scheme. 
+<p>Organisational action: <b><code>jmoise.abort_scheme( SchId )</code></b>: 
+   used by an agent to abort the execution of a scheme. 
    SchId is the identification of the scheme instance.
+   This organisational action does not require that no agent is committed to 
+   the scheme, as does .jmoise.remove_scheme.
    
 <p>Conditions to succeed:
 <ul>
 <li>the agent performing the action is the owner of the scheme;</li>
-<li>the scheme has no players (so all agents have to remove the commitments before the scheme is removed).</li>
 </ul>
 
 <p>Consequences:
 <ul>
-<li>there is no more responsible groups for the scheme.</li>
+<li>there is no more responsible groups for the scheme;</li>
+<li>the agents of the scheme are no more obligated to achieve the scheme's goals.</li>
 </ul>
 
 <p>Examples:
 <ul>
-<li> <code>jmoise.remove_scheme(wp0)</code>: 
+<li> <code>jmoise.abort_scheme(wp0)</code>: 
      removes the scheme identified by wp0 form the organisational entity.</li>
 </ul>
  
@@ -33,14 +35,13 @@ import jason.asSyntax.Term;
 @see jmoise.set_goal_arg
 @see jmoise.set_goal_state
 @see jmoise.add_responsible_group
-@see jmoise.abort_scheme
-
+@see jmoise.remove_scheme
 @see <a href="http://moise.sourceforge.net/doc/tutorial.pdf">Moise+ Tutorial, chapter for J-Moise+</a> 
  
 @author Jomi 
 
 */
-public class remove_scheme extends MoiseBaseIA {
+public class abort_scheme extends MoiseBaseIA {
 
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
