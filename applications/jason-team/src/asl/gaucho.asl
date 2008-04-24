@@ -18,40 +18,34 @@
 
 /* -- initial beliefs -- */
 
+agent_id(gaucho1,0).
+agent_id(gaucho2,1).
+agent_id(gaucho3,2).
+agent_id(gaucho4,3).
+agent_id(gaucho5,4).
+agent_id(gaucho6,5).
+
+ag_perception_ratio(8). // ratio of perception of the agent
+cow_perception_ratio(4).
+
 /* -- initial goals -- */
 
-!test.
-+!test <- +gsize(16,8).
+/* -- plans -- */
 
-/* -- create the initial exploration groups and areas -- */
++end_of_simulation(_Result)
+  <- .abolish(area(_,_,_,_,_,_)).
 
-+gsize(_Weight,_Height)                  // new match've started
-   : .my_name(gaucho1) 
-  <- .if( group(team,Old), {
-        jmoise.remove_group(Old)
-      });
-	 .abolish(area(_,_,_,_,_)); 
-     jmoise.create_group(team).
-+gsize(_Weight,_Height)
-  <- .abolish(area(_,_,_,_,_)).
-  
-+group(team,GId)
-   : .my_name(gaucho1) 
-  <- jmoise.create_group(exploration,GId);
-     jmoise.create_group(exploration,GId);
-     jmoise.create_group(exploration,GId).
-+group(exploration,_)                    // compute the area of the groups
-   : .my_name(gaucho1) &
-     .findall(GId, group(exploration,GId), LG) &
-	 LG = [G1,G2,G3] // there are three groups
-  <- ?gsize(W,H);
-	 X = math.round(((W*H)/3)/H);
-	 +area(G1, 0,   0,       X,   H-1);
-	 +area(G2, X+1, 0,       W-1, H/2);
-	 +area(G3, X+1, (H/2)+1, W-1, H-1).
-+area(G,A,B,C,D)[source(self)]
-  <- .broadcast(tell, area(G,A,B,C,D)).  
++!restart 
+  <- //.print("*** restart ***"); 
+     .drop_all_desires;
+     .abolish(target(_,_)).
+     // TODO: what to do?
+     //!decide_target.
 
-// include common plans for MOISE+ agents
-{ include("moise-common.asl") }
+/* -- includes -- */
+
+{ include("goto.asl") }         // include plans for movimentation
+{ include("exploration.asl") }  // include plans for exploration
+{ include("herding.asl") }      // include plans for herding
+{ include("moise-common.asl") } // include common plans for MOISE+ agents
 

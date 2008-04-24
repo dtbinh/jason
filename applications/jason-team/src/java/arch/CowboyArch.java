@@ -2,6 +2,7 @@ package arch;
 
 import jason.JasonException;
 import jason.RevisionFailedException;
+import jason.asSemantics.Intention;
 import jason.asSemantics.Message;
 import jason.asSyntax.Atom;
 import jason.asSyntax.Literal;
@@ -224,9 +225,7 @@ public class CowboyArch extends IdentifyCrashed {
     	try {
         	logger.info("** Arch adding restart for "+getAgName());
     	    getTS().getC().create();
-    		
-        	getTS().getAg().getBB().abolish(new Literal("restart").getPredicateIndicator());
-        	getTS().getAg().addBel(new Literal("restart"));
+        	getTS().getC().addAchvGoal(new Literal("restart"), Intention.EmptyInt);
         	lo2 = new Location(-1,-1); // to not restart again in the next cycle
     	} catch (Exception e) {
         	logger.info("Error in restart!"+ e);

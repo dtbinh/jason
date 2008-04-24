@@ -67,21 +67,23 @@ public class WriteStatusThread extends Thread {
                     //out.println(model.toString());
                     StringBuilder s = new StringBuilder(String.format("Step %5d : ", owner.getCycle()-1));
                     for (int agId=0; agId<WorldModel.agsByTeam; agId++) {
-                        Location agp = agents[agId].getLastLocation();
-                        if (agp != null) {
-                            // count how long the agent is in the same location
-                            int c = 0;
-                            Iterator<Location> il = locations.get(agId).iterator();
-                            while (il.hasNext() && il.next().equals(agp) && c <= 11) {
-                                c++;
-                            }
-                            String sc = "*";
-                            if (c < 10) sc = ""+c;
-                            
-                            locations.get(agId).add(0,agp);
-                            String lastAct = shortActionFormat(agents[agId].getLastAction());
-                            s.append(String.format("%5d,%2d/%s %s", agp.x, agp.y, sc, lastAct));
-                        }
+                    	if (agents[agId] != null) {
+	                        Location agp = agents[agId].getLastLocation();
+	                        if (agp != null) {
+	                            // count how long the agent is in the same location
+	                            int c = 0;
+	                            Iterator<Location> il = locations.get(agId).iterator();
+	                            while (il.hasNext() && il.next().equals(agp) && c <= 11) {
+	                                c++;
+	                            }
+	                            String sc = "*";
+	                            if (c < 10) sc = ""+c;
+	                            
+	                            locations.get(agId).add(0,agp);
+	                            String lastAct = shortActionFormat(agents[agId].getLastAction());
+	                            s.append(String.format("%5d,%2d/%s %s", agp.x, agp.y, sc, lastAct));
+	                        }
+                    	}
                     }
                     logger.info(s.toString());
                     out.println(s.toString());

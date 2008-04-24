@@ -25,14 +25,6 @@
 		<pathelement location="${jasonJar}" />
 	</path>
 
-	<condition property="parsers-ok" value="ok">
-		<and>
-			<uptodate property="parsers-ok" targetfile="${basedir}/src/jason/mas2j/parser/mas2j.java" srcfile="${basedir}/src/jason/mas2j/parser/MAS2JavaParser.jcc" />
-			<uptodate property="parsers-ok" targetfile="${basedir}/src/jason/asSyntax/parser/as2j.java" srcfile="${basedir}/src/jason/asSyntax/parser/AS2JavaParser.jcc" />
-			<uptodate property="parsers-ok" targetfile="${basedir}/doc/AS2JavaParser.html" srcfile="${basedir}/src/jason/asSyntax/parser/AS2JavaParser.jcc" />
-		</and>
-	</condition>
-
 	<target name="init">
 		<mkdir dir="${build.dir}" />
 	</target>

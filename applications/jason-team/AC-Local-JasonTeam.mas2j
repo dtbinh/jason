@@ -10,7 +10,7 @@ MAS jason_cowboys {
     infrastructure: Centralised
 	
     agents:
-	    orgManager [osfile="src/team-os.xml",gui=no] 
+	    orgManager [osfile="src/team-os.xml",gui=yes] 
               agentArchClass jmoise.OrgManager;
 			  
  		gaucho1 gaucho.asl

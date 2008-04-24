@@ -139,6 +139,7 @@ public class ACArchitecture extends CowboyArch {
 	    Lock              lock = new ReentrantLock();
 	    Condition         cycle = lock.newCondition();
 	    long              timestartcycle = 0;
+	    int               cycleCounter = 0;
 	    
 	    WaitSleep() {
 	        super("WaitSpeepToSendAction");
@@ -156,6 +157,9 @@ public class ACArchitecture extends CowboyArch {
         }
 	    
 	    void newCycle() {
+	    	cycleCounter++;
+	    	if (getCycle() == 1) cycleCounter = 1;
+	    	
             StringBuilder notsent = new StringBuilder();
             if (toExecute.size() > 1) {
             	notsent.append(" The following was not sent: ");
@@ -173,7 +177,7 @@ public class ACArchitecture extends CowboyArch {
             
             // prepare msg to print out
 	        String w = "";
-	        if (lastActionInCurrentCycle == null) {
+	        if (lastActionInCurrentCycle == null && cycleCounter > 3) { // ignore problem in the first cycles (the agent is still in setup!)
 	        	addRestart();
 	        	w = "*** ";
 	        }

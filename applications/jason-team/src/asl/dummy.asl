@@ -115,7 +115,7 @@ random_pos(X,Y) :-
    <- .current_intention(I); .println("failure in move, intention: ",I);
       !move.
 
-+restart 
++!restart 
   <- .print("*** restart ***"); 
      .drop_all_desires;
      .abolish(target(_,_));
