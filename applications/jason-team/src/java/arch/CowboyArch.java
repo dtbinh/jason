@@ -1,6 +1,7 @@
 package arch;
 
 import jason.JasonException;
+import jason.ReceiverDoesNotExistException;
 import jason.RevisionFailedException;
 import jason.asSemantics.Intention;
 import jason.asSemantics.Message;
@@ -67,6 +68,8 @@ public class CowboyArch extends IdentifyCrashed {
 	    massimBackDir = stts.getUserParameter("ac_sim_back_dir");
         if (massimBackDir != null && massimBackDir.startsWith("\"")) 
             massimBackDir = massimBackDir.substring(1,massimBackDir.length()-1);
+        logger = Logger.getLogger(CowboyArch.class.getName() + ".CA-" + getAgName());
+
 	}
 	
 	@Override
@@ -299,9 +302,15 @@ public class CowboyArch extends IdentifyCrashed {
     		if (!getAgName().equals(oname)) {
     			Message msg = new Message(m);
     			msg.setReceiver(oname);
-    			try {
-    			    sendMsg(msg);
-    			} catch (JasonException e) {} // no problem, the agent still does not exists
+    			for (int t=0; t<4; t++) {
+	    			try {
+	    			    sendMsg(msg);
+	    			    break; // the for
+	    			} catch (ReceiverDoesNotExistException e) {
+	    				// wait and try again
+	    				Thread.sleep(500);
+	    			}
+    			}
     		}
     	}
     }

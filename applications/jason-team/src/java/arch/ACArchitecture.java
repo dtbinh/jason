@@ -177,7 +177,7 @@ public class ACArchitecture extends CowboyArch {
             
             // prepare msg to print out
 	        String w = "";
-	        if (lastActionInCurrentCycle == null && cycleCounter > 3) { // ignore problem in the first cycles (the agent is still in setup!)
+	        if (lastActionInCurrentCycle == null && cycleCounter > 10) { // ignore problem in the first cycles (the agent is still in setup!)
 	        	addRestart();
 	        	w = "*** ";
 	        }

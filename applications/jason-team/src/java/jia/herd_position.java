@@ -9,7 +9,6 @@ import jason.environment.grid.Location;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.logging.Level;
 
 import arch.CowboyArch;
@@ -27,9 +26,9 @@ public class herd_position extends DefaultInternalAction {
     public static final double maxStdDev = 3;
     
     public enum Formation { 
-    	one { int[] getAngles() { return new int[] { 0 }; } }, 
-    	six { int[] getAngles() { return new int[] { 10, -10, 30, -30, 60, -60 }; } };
-    	abstract int[] getAngles();
+    	one { int[] getDistances() { return new int[] { 0 }; } }, 
+    	six { int[] getDistances() { return new int[] { 2, -2, 6, -6, 10, -10 }; } };
+    	abstract int[] getDistances();
     };
     
     @Override
@@ -99,6 +98,7 @@ public class herd_position extends DefaultInternalAction {
 
         Vec mean = Vec.mean(cows);
         int stepsFromCenter = (int)Math.round(Vec.max(cows).sub(mean).magnitude())+1;
+        //Vec max = Vec.max(cows);
         
         // run A* to see the cluster target in n steps
         Search s = new Search(model, mean.getLocation(model), model.getCorralCenter(), null, false, false, false, true, null);
@@ -108,40 +108,60 @@ public class herd_position extends DefaultInternalAction {
 
         Vec cowstarget = new Vec(model, s.getNodeLocation(np.get(n)));
         Vec agsTarget  = mean.sub(cowstarget);
-        Vec agTarget   = agsTarget;
         List<Location> r = new ArrayList<Location>();
-        for (int angle: formation.getAngles()) {
-        	double nt = angle * (Math.PI / 180);
-
-        	agTarget = agsTarget.newAngle(agsTarget.angle() + nt);
-            Location l = agTarget.add(mean).getLocation(model);
-        	r.add(l);
+        int initAgTS = 1;
+        for (int dist: formation.getDistances()) { // 2, -2, 6, -6, ....
+        	Vec agTarget = agsTarget;
+        	Location l = agTarget.add(mean).getLocation(model);
         	
-        	// TODO: test the code below
-        	/*
-        	for (double varangle = nt; nt < 180; nt += 5) {
-            	agTarget = agsTarget.newAngle(agsTarget.angle() + varangle);
-                Location l = agTarget.add(mean).getLocation(model);
-
-                // if l is in the path of cows, continue with next varangle
-                boolean inpath = false;
-                for (Nodo pn: np) {
-                	if (l.maxBorder(s.getNodeLocation(pn)) <= 0) {
-                		inpath = true;
-                		break;
-                	}
-                }
-                if (!inpath) {
-                	r.add(l);
-                	break;
-                }
+        	//System.out.println(".......  "+dist+" antes angle "+agTarget);
+        	if (dist >= 0)
+        		agTarget = new Vec( -agTarget.y, agTarget.x);
+        	else
+        		agTarget = new Vec( agTarget.y, -agTarget.x);
+        	
+        	Location lastloc = null;
+        	boolean  uselast = false;
+        	for (int agTargetSize = initAgTS; agTargetSize <= Math.abs(dist); agTargetSize++) {
+        		l = agTarget.newMagnitude(agTargetSize).add(mean).add(agsTarget).getLocation(model);
+        		//System.out.println("pos angle "+agTargetSize);
+            	uselast = !model.inGrid(l) || model.hasObject(WorldModel.OBSTACLE, l) && lastloc != null; 
+        		if (uselast) {
+                	r.add(pathToNearCow(model, lastloc));
+        			break;
+        		}
+        		lastloc = l;
         	}
-        	*/
+        	if (!uselast)
+        		r.add(pathToNearCow(model, l));
+        	if (dist < 0)
+        		initAgTS = Math.abs(dist)+1;
         }
+        //System.out.println("all places "+r);
         return r;
     }
     
+    private Location pathToNearCow(LocalWorldModel model, Location t) {
+    	Location near = null;
+        for (Location c: model.getCows()) {
+        	if (near == null || t.maxBorder(c) < t.maxBorder(near))
+        		near = c;
+        }
+        if (near != null) {
+        	Vec nearcv = new Vec(model,near);
+        	Vec dircow = new Vec(model,t).sub(nearcv);
+        	//System.out.println("Near cow to "+t+" is "+near+" vec = "+dircow);
+        	for (int s = 1; s <= 20; s++) {
+        		Location l = dircow.newMagnitude(s).add(nearcv).getLocation(model);
+        		if (model.isFree(l))
+        			return l;
+        	}
+        }
+    	return t;
+    }
+    
     public Location nearFreeForAg(LocalWorldModel model, Location ag, Location t) throws Exception {
+    	/*
         // run A* to get the path from ag to t
     	if (! model.inGrid(t))
     		t = model.nearFree(t);
@@ -159,6 +179,7 @@ public class herd_position extends DefaultInternalAction {
         	if (i++ > 3) // do not go to far from target
         		break;
         }
+        */
         return model.nearFree(t);
     }
 }

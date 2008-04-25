@@ -15,7 +15,7 @@
 
 +gsize(_Weight,_Height)                  // new match've started
    : .my_name(gaucho1)                   // agent 1 is responsible for the team creation 
-  <- .print("oooo creating team group"); 
+  <- //.print("oooo creating team group"); 
      .if( group(team,Old), {
         jmoise.remove_group(Old)
      });
@@ -40,40 +40,46 @@
   <- .broadcast(tell, group_area(ID,G,A)).  
 
 
-/* plans for agents with even id */
+/* plans for agents with odd id */
 
 +gsize(_,_)
    : .my_name(Me) &
      agent_id(Me,AgId) &
-     AgId mod 2 == 0                    // I have an even Id
-  <- // wait my pos
-     .if(not pos(MyX, MyY,_), { MyX = 333; MyY = 444 }); //.wait("+pos(MyX,MyY,_)") 
-     .print("oooo ",MyX, MyY); //?pos(MyX, MyY,_);
+     AgId mod 2 == 1                    // I have an odd Id
+  <- .print("ooo Recruiting scouters for my explorer group....");
+  
+     // wait my pos
+     ?pos(MyX,MyY,_); 
      
      // wait others pos
-     .if(not cell(_,_,ally(_)), { .wait("+cell(_,_,ally(_))") });
-     .wait(200);
+     .while( .count(cell(_,_,ally(_)), N) & N < 5, {
+	    .print("ooo waiting others pos ");
+        .wait("+cell(_,_,ally(_))", 500, nofail)
+     });
      
-     // find distance to odd agents
+     // find distance to even agents
      .findall(ag_d(D,AgName),
-              cell(X,Y,ally(AgName)) & .print(AgName) & agent_id(AgName,Id) & .print(AgName," ooo ",Id) & Id mod 2 == 1 & jia.dist(MyX, MyY, X, Y, D),
+              cell(X,Y,ally(AgName)) & agent_id(AgName,Id) & Id mod 2 == 0 & jia.dist(MyX, MyY, X, Y, D),
               LOdd);
      .sort(LOdd, LSOdd);
+
      // test if I received the area of my group
-     .if( not group_area(AgId div 2,G,A), { .wait("+group_area(AgId div 2,G,A)") });
-     .print("oooo Ags=", LSOdd," in area ",group_area(AgId div 2,G,A));
+     ?group_area(AgId div 2,G,A);
+     .print("ooo Scouters candidates =", LSOdd," in area ",group_area(AgId div 2,G,A));
      
      // adopt role explorer in the group
      jmoise.adopt_role(explorer,G);
      !find_scouter(LSOdd, G).
      
 +!find_scouter([],_)
-  <- .print("oooo I do not find a scouter to work with me!").
+  <- .print("ooo I do not find a scouter to work with me!").
 +!find_scouter([ag_d(_,AgName)|_],GId)
-  <- .send(AgName, achieve, play_role(scouter,GId));
-     .wait("+play(Ag,scouter,GId)",1000).  
+  <- .print("ooo Ask ",AgName," to play scouter");
+     .send(AgName, achieve, play_role(scouter,GId));
+     .wait("+play(Ag,scouter,GId)",2000).  
 -!find_scouter([_|LSOdd],GId) // in case the wait fails, try next agent
-  <- !find_scouter(LSOdd,GId).  
+  <- .print("ooo find_scouter failure, try another agent.");
+     !find_scouter(LSOdd,GId).  
      
 
 /* plans for agents the others */

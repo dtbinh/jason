@@ -47,7 +47,7 @@ random_pos(X,Y) :-
 
 // revise target each 4 steps
 +pos(Step,_,_)                  // new cycle
-   : Step mod 4 == 0
+   : Step mod 10 == 0
   <- !decide_target. 
      
 

@@ -20,7 +20,11 @@ public class TestIF {
                 "+!test1 <- a1; "+
                 "           .if( b(X), {jason.asunit.print(X); b1}, {jason.asunit.print(no)}); "+
                 "           a2. "+
-                "+!test2 <- -b(_); !test1. "
+                
+                "+!test2 <- -b(_); !test1. "+
+                
+                "+!test3 <- .if( b(X), { Y = X*10; Z = 10 }, { Y = 60; Z=20 }); jason.asunit.print(Y,\" \",Z). "+
+                "+!test4 <- -b(_); !test3. "
         );
     }
     
@@ -37,5 +41,13 @@ public class TestIF {
         ag.addGoal("test2");
         ag.assertPrint("no", 5);
         ag.assertAct("a2", 5);
+    }
+
+    @Test
+    public void testUnifiyInThenElse() {
+        ag.addGoal("test3");
+        ag.assertPrint("30 10", 5);
+        ag.addGoal("test4");
+        ag.assertPrint("60 20", 10);
     }
 }

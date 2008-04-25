@@ -34,7 +34,7 @@ public final class Vec implements Cloneable {
     public int getX() { return (int)Math.round(x); }
     public int getY() { return (int)Math.round(y); }
     public double magnitude() { return r; }
-    public double angle() { return t; }
+    public double angle()     { return t; }
     
     public Location getLocation(LocalWorldModel model) {
         return new Location(getX(), model.getHeight()-getY()-1); 
@@ -54,7 +54,9 @@ public final class Vec implements Cloneable {
 		while (t < 0)   t = t + PI2;
 		return new Vec(r*Math.cos(t), r*Math.sin(t));    	
     }
-    
+    public Vec newMagnitude(double r) {
+        return new Vec(r*Math.cos(t), r*Math.sin(t));
+    }
     @Override
     public boolean equals(Object o) {
         if (o == null) return false;

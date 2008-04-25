@@ -32,12 +32,18 @@ cow_perception_ratio(4).
 
 /* -- plans -- */
 
++pos(_,_,_) <- do(skip).
+
+
++?pos(X, Y, S)       <- .wait("+pos(X,Y,S)").
++?group_area(Id,G,A) <- .wait("+group_area(Id,G,A)").
+
 +end_of_simulation(_Result)
   <- .abolish(area(_,_,_,_,_,_)).
 
 +!restart 
-  <- //.print("*** restart ***"); 
-     .drop_all_desires;
+  <- .print("*** restart ***"); 
+     //.drop_all_desires;
      .abolish(target(_,_)).
      // TODO: what to do?
      //!decide_target.
