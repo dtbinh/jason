@@ -19,6 +19,7 @@
  */
 package jasdl.util;
 
+import static jasdl.util.JASDLCommon.getCurrentDir;
 import jasdl.bridge.JASDLOntologyManager;
 import jasdl.bridge.seliteral.SELiteral;
 import jasdl.util.exception.JASDLException;
@@ -237,6 +238,16 @@ public class JASDLCommon {
 
 		}
 		return newExpression;
+	}
+	
+	
+	/**
+	 * Now works for both linux and windows
+	 * @param suffix
+	 * @return
+	 */
+	public static URI getRelativeLocalURI(String suffix){
+		return URI.create("file:///" + getCurrentDir().replace("\\", "/") + suffix);
 	}
 
 }

@@ -40,6 +40,8 @@
 
     <owl:ObjectProperty rdf:about="#employs">
         <rdf:type rdf:resource="&owl;InverseFunctionalProperty"/>
+        <rdfs:comment
+            >Inverse of isEmployedBy. An agent can employ many other agents (but each agent may only be employed by one agent)</rdfs:comment>
         <rdfs:domain rdf:resource="#Agent"/>
         <rdfs:range rdf:resource="#Agent"/>
     </owl:ObjectProperty>
@@ -50,6 +52,8 @@
 
     <owl:ObjectProperty rdf:about="#isEmployedBy">
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:comment
+            >Inverse of isEmployedByemploys. Each agent may only be employed by one agent (but an agent can employ many other agents)</rdfs:comment>
         <rdfs:domain rdf:resource="#Agent"/>
         <rdfs:range rdf:resource="#Agent"/>
         <owl:inverseOf rdf:resource="#employs"/>
@@ -61,6 +65,10 @@
 
     <owl:ObjectProperty rdf:about="#ownedBy">
         <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:comment
+            >An agent is owned by exactly one company. Inverse of owns</rdfs:comment>
+        <rdfs:domain rdf:resource="#Agent"/>
+        <rdfs:range rdf:resource="#Company"/>
     </owl:ObjectProperty>
     
 
@@ -69,6 +77,9 @@
 
     <owl:ObjectProperty rdf:about="#owns">
         <rdf:type rdf:resource="&owl;InverseFunctionalProperty"/>
+        <rdfs:comment
+            >A company can own many agents. Inverse of ownedBy</rdfs:comment>
+        <rdfs:domain rdf:resource="#Company"/>
         <owl:inverseOf rdf:resource="#ownedBy"/>
     </owl:ObjectProperty>
     
@@ -216,15 +227,15 @@
     
 
 
-    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/society.owl#delivery_van_3 -->
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/society.owl#delivery_van3 -->
 
-    <rdf:Description rdf:about="#delivery_van_3"/>
+    <DeliveryVan rdf:about="#delivery_van3"/>
     
 
 
-    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/society.owl#delivery_van_4 -->
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/society.owl#delivery_van4 -->
 
-    <rdf:Description rdf:about="#delivery_van_4"/>
+    <DeliveryVan rdf:about="#delivery_van4"/>
     
 
 
@@ -250,7 +261,7 @@
 
     <Supermarket rdf:about="#shop1">
         <employs rdf:resource="#delivery_van1"/>
-        <employs rdf:resource="#delivery_van_4"/>
+        <employs rdf:resource="#delivery_van4"/>
         <ownedBy rdf:resource="#tescos_inc"/>
     </Supermarket>
     
@@ -268,7 +279,7 @@
     <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/society.owl#shop3 -->
 
     <GreenGrocers rdf:about="#shop3">
-        <employs rdf:resource="#delivery_van_3"/>
+        <employs rdf:resource="#delivery_van3"/>
         <ownedBy rdf:resource="#tescos_inc"/>
     </GreenGrocers>
     
@@ -291,20 +302,20 @@
     <rdf:Description>
         <rdf:type rdf:resource="&owl;AllDifferent"/>
         <owl:distinctMembers rdf:parseType="Collection">
-            <rdf:Description rdf:about="#customer3"/>
             <rdf:Description rdf:about="#customer2"/>
-            <rdf:Description rdf:about="#shop2"/>
+            <rdf:Description rdf:about="#delivery_van1"/>
+            <rdf:Description rdf:about="#pa2"/>
+            <rdf:Description rdf:about="#shop1"/>
             <rdf:Description rdf:about="#delivery_van2"/>
             <rdf:Description rdf:about="#pa1"/>
-            <rdf:Description rdf:about="#delivery_van_3"/>
             <rdf:Description rdf:about="#customer1"/>
             <rdf:Description rdf:about="#tescos_inc"/>
             <rdf:Description rdf:about="#shop3"/>
-            <rdf:Description rdf:about="#shop1"/>
-            <rdf:Description rdf:about="#pa2"/>
-            <rdf:Description rdf:about="#delivery_van_4"/>
-            <rdf:Description rdf:about="#delivery_van1"/>
+            <rdf:Description rdf:about="#delivery_van3"/>
             <rdf:Description rdf:about="#pa3"/>
+            <rdf:Description rdf:about="#shop2"/>
+            <rdf:Description rdf:about="#customer3"/>
+            <rdf:Description rdf:about="#delivery_van4"/>
         </owl:distinctMembers>
     </rdf:Description>
 </rdf:RDF>

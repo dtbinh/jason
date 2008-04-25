@@ -1,44 +1,69 @@
 <project basedir="." default="jar" name="jasdl">
-	<property name="jason.dir" 	value="../.."/>
-	<property name="apps.dir"	value="${jason.dir}/applications"/>
-	<property name="jmca.dir" 	value="${apps.dir}/jmca"/>
-	<property name="bebops.dir" 	value="${apps.dir}/bebops"/>
-	<property name="bebops.jar" 	value="${bebops.dir}/lib/bebops.jar"/>
-	<property name="asunit.dir" 	value="${apps.dir}/as-unit-test"/>
+
+	<property file="${user.home}/.jason/user.properties"/>
+
 	<property name="source.dir" 	value="${basedir}/src" />
 	<property name="build.dir" 	value="${basedir}/bin" />
-	<property name="apidocs.dir" 	value="${basedir}/doc/api" />
+	<property name="apidocs.dir" 	value="${basedir}/doc/api/java" />
 	<property name="lib.dir" 	value="${basedir}/lib" />
 	<property name="jasdl.jar" 	value="${lib.dir}/jasdl.jar" />
+
+
+	<!-- Distribution properties -->
+		<property name="version.jasdl" value="0"/>
+		<property name="release.jasdl" value="1"/>
+
+		<property name="dist.dir" value="${user.home}/tmp/jasdl-owlapi-${version.jasdl}.${release.jasdl}" />
+		<property name="dist.file" value="${dist.dir}.zip" />
+
+
+	<!-- For conveniently building bebops, jason and jmca if present -->
+		<property name="jason.dir"	value="../../../jason"/>
+		<property name="apps.dir"	value="${jason.dir}/applications"/>
+		<property name="bebops.dir" value="${apps.dir}/bebops"/>
+		<property name="bebops.jar"	value="${bebops.dir}/lib/bebops.jar"/>	
+		<property name="jmca.dir" 	value="${apps.dir}/jmca"/>
+		<property name="jmca.jar" 	value="${jmca.dir}/lib/jmca.jar"/>	
+		<property name="jason.dir" 	value="${apps.dir}/jmca"/>
+		
+		<available file="${jason.dir}" type="dir" property="jason.available"/>
+		
+		<target name="jason" if="jason.available">
+			<echo message="Building Jason (${jason.dir})"/>
+			<ant dir="${jason.dir}" inheritAll="false" target="jar"/>
+		</target>		
 	
-	
+		<available file="${bebops.dir}" type="dir" property="bebops.available"/>
+
+		<target name="bebops" if="bebops.available">
+			<echo message="Building Bebops"/>
+			<ant dir="${bebops.dir}" inheritAll="false"/>
+			<copy file="${bebops.jar}" todir="${lib.dir}"/>
+		</target>
+
+		<available file="${jmca.dir}" type="dir" property="jmca.available"/>
+
+		<target name="jmca" if="jmca.available">
+			<echo message="Building JMCA"/>
+			<ant dir="${jmca.dir}" inheritAll="false"/>
+			<copy file="${jmca.jar}" todir="${lib.dir}"/>
+		</target>
+
 
 	<path id="project.classpath">
-		<pathelement location="${jason.dir}/lib/jason.jar"/>
-		<pathelement location="${jmca.dir}/lib/jmca.jar"/>
-		<pathelement location="${asunit.dir}/lib/asunit.jar"/>
+		<pathelement location="${jasonJar}"/> <!-- taken from ./jason/user.properties -->
 		<fileset dir="./lib">
 			<include name="**/*.jar"/>
 		</fileset>
 	</path>
 
-	<path id="test.classpath">
-		<path refid="project.classpath" />
-		<pathelement location="${build.dir}" />
-	</path>
-
 	<target name="init">
 		<tstamp/>
 		<mkdir dir="${build.dir}"/>
-		<available file="${bebops.dir}" type="dir" property="bebops.available"/>
 	</target>
 
-	<target name="bebops" depends="init" if="bebops.available">
-		<ant dir="${bebops.dir}" inheritAll="false"/>
-		<copy file="${bebops.jar}" todir="${lib.dir}"/>
-	</target>
 
-	<target name="compile" depends="init, bebops">
+	<target name="compile" depends="init,jason,bebops,jmca">
 		<javac srcdir="src" destdir="${build.dir}" debug="true" deprecation="true" optimize="true" nowarn="true" source="1.5" target="1.5">
 			<classpath refid="project.classpath" />
 		</javac>
@@ -54,18 +79,6 @@
 		<delete dir="${apidocs.dir}"/>
 	</target>
 
-
-	<target name="test" depends="jar">
-		<junit printsummary="yes" failureProperty="test.failure">
-			<classpath refid="test.classpath" />
-			<formatter type="plain" usefile="false" />
-			<batchtest>
-				<fileset dir="${source.dir}" includes="jasdl/test/*Test.java" />
-			</batchtest>
-		</junit>
-		<fail message="test failed" if="test.failure" />
-	</target>
-
 	<target name="apidoc" depends="compile" >
 		<javadoc 
 			packagenames="jasdl.*"
@@ -79,6 +92,44 @@
 				<pathelement path="${source.dir}"/>
 			</sourcepath>
 		</javadoc>    
+	</target>
+
+	<target name="dist" depends="clean, jar, apidoc">
+
+		<echo message="Generating JASDL ${version.jasdl}.${release.jasdl}" />
+
+		<fixcrlf srcdir="${basedir}"  eol="crlf" includes="**/*.txt,**/*.bat"  />
+
+		<delete failonerror="no" includeEmptyDirs="true" >
+			<fileset dir="${dist.dir}" />
+			<fileset file="${dist.file}" />
+		</delete>
+
+		<mkdir dir="${dist.dir}" />
+		  
+		<copy todir="${dist.dir}">
+			<fileset dir="${basedir}" includes="build.xml" />
+			<fileset dir="${basedir}" includes="COPYING" />
+			<fileset dir="${basedir}" includes="COPYING.LESSER" />
+			<fileset dir="${basedir}" includes="log4j.properties" />
+			<fileset dir="${basedir}" includes="README" />
+
+			<fileset dir="${basedir}" includes="doc/**/*" />
+			<fileset dir="${basedir}" includes="lib/**/*" />
+			<fileset dir="${basedir}" includes="src/**/*" />
+
+			<fileset dir="${basedir}" includes="examples/commerce/commerce.mas2j" />
+			<fileset dir="${basedir}" includes="examples/commerce/logging.properties" />
+			<fileset dir="${basedir}" includes="examples/commerce/README" />
+
+			<fileset dir="${basedir}" includes="examples/commerce/bin/c-build.xml" />
+			<fileset dir="${basedir}" includes="examples/commerce/src/**/*" />
+			<fileset dir="${basedir}" includes="examples/commerce/onts/**/*" />
+			
+
+		</copy>
+
+		<zip basedir="${dist.dir}/.." includes="jasdl-owlapi*/**/*" zipfile="${dist.file}"/>
 	</target>
 
 

@@ -128,6 +128,8 @@ public class JASDLAgent extends JmcaAgent {
 		return ts;
 	}
 	
+	
+	
 	@Override
 	public List<Literal>[] brf(Literal beliefToAdd, Literal beliefToDel, Intention i) throws RevisionFailedException {
 		// TODO: what annotations should revision contractions contain? all! (or none? - same effect)

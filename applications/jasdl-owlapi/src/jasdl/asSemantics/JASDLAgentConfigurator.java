@@ -19,12 +19,12 @@
  */
 package jasdl.asSemantics;
 
-import static jasdl.util.JASDLCommon.getCurrentDir;
 import static jasdl.util.JASDLCommon.strip;
 import jasdl.JASDLParams;
 import jasdl.bridge.factory.AliasFactory;
 import jasdl.bridge.mapping.aliasing.Alias;
 import jasdl.bridge.mapping.aliasing.MappingStrategy;
+import jasdl.util.JASDLCommon;
 import jasdl.util.exception.JASDLConfigurationException;
 import jasdl.util.exception.JASDLException;
 import jason.asSyntax.Atom;
@@ -220,9 +220,8 @@ public class JASDLAgentConfigurator {
 						throw new URISyntaxException("", "");
 					}
 				} catch (URISyntaxException urie) {
-					_uri = "file://" + getCurrentDir() + _uri;
-					uri = new URI(_uri); // try relative path
-					agent.getLogger().fine("Loaded ontology " + _uri + " from relative uri");
+					uri = JASDLCommon.getRelativeLocalURI(_uri); // try relative path
+					agent.getLogger().fine("Loaded ontology " + uri + " from relative uri");
 				}
 				agent.getJom().loadOntology(new Atom(label), uri, getMappingStrategies(stts, new Atom(label)));
 			} catch (Exception e) {
@@ -270,17 +269,18 @@ public class JASDLAgentConfigurator {
 		setTrustRating(new Atom("self"), 1f);
 		for (String knownAgent : getKnownAgentNames()) {
 			// load trust ratings (mandatory for known agents)
+			float trustRating;
 			try{
 				String _trustRating = prepareUserParameter(stts, JASDLParams.MAS2J_PREFIX + "_" + knownAgent + JASDLParams.MAS2J_TRUSTRATING);
-				Float trustRating;	
-				trustRating = Float.parseFloat(_trustRating);				
+				trustRating = Float.parseFloat(_trustRating);	
 				setTrustRating(new Atom(knownAgent), trustRating);
+				agent.getLogger().fine("Setting trust rating of "+knownAgent+" to "+trustRating);
 			} catch (NumberFormatException e) {
 				throw new JASDLConfigurationException("Invalid trust rating for " + knownAgent, e);
 			}catch (JASDLConfigurationException e){
-				// set default trust rating
-				setTrustRating(new Atom(knownAgent), JASDLParams.DEFAULT_TRUST_RATING);
-			}
+				// set default trust rating - now performed when attempting to fetch trust rating for unknown agent
+				//trustRating = JASDLParams.DEFAULT_TRUST_RATING;
+			}			
 		}
 	}
 
@@ -383,7 +383,12 @@ public class JASDLAgentConfigurator {
 	}
 
 	public float getTrustRating(Atom name) {		
-		return trustMap.get(name);
+		Float rating = trustMap.get(name);
+		if(rating == null){
+			return JASDLParams.DEFAULT_TRUST_RATING;
+		}else{
+			return rating;
+		}
 	}
 
 	public void setBeliefRevisionEnabled(boolean b) {

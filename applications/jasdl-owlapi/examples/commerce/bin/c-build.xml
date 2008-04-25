@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 
 <project name ="custombuild" basedir="..">
-	<!-- Ensure we are using the latest build of Jason -->
-	<property name="jasonJar" value="../../../../lib/jason.jar"/>
-	
+
 	<import file="build.xml"/>
 	
-	<target name="user-init">		
-		<ant dir="../../../../" inheritAll="false" target="jar"/>
-		<ant dir="../../../jmca" inheritAll="false"/>
-		<ant dir="../.." inheritAll="false"/>
+	<target name="user-init">
+		<!-- compile JASDL for convenience -->
+		<ant dir="../../" inheritAll="false" target="jar"/>
 	</target>
 	
 	<target name="user-end">

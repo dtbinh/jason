@@ -1,3 +1,22 @@
+/* 
+ *  Copyright (C) 2008 Thomas Klapiscak (t.g.klapiscak@durham.ac.uk)
+ *  
+ *  This file is part of JASDL.
+ *
+ *  JASDL is free software: you can redistribute it and/or modify
+ *  it under the terms of the Lesser GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  JASDL is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  Lesser GNU General Public License for more details.
+ *
+ *  You should have received a copy of the Lesser GNU General Public License
+ *  along with JASDL.  If not, see <http://www.gnu.org/licenses/>.
+ *  
+ */
 package commerce.env;
 
 import java.awt.Color;
@@ -16,6 +35,12 @@ import commerce.env.model.ModelCustomer;
 import commerce.env.model.ModelObject;
 import commerce.ui.customer.CustomerUIPanel;
 
+/**
+ * Displays a bird-eye view of the commerce world and a tab (containing a CustomerUIPane) for each customer present.
+ * Runs in its own thread responsible for rendering the world at a set interval.
+ * @author Tom Klapiscak
+ *
+ */
 public class CommerceView extends JFrame implements Runnable{
 	
 	private final CommerceView view;
@@ -26,6 +51,8 @@ public class CommerceView extends JFrame implements Runnable{
 	private JPanel masterPane;
 
 	public CommerceView(CommerceModel model, CommerceEnvironment env) {
+		super("JASDL MAS Example: Commerce");
+		
 		this.model = model;
 		this.view = this;
 		this.env = env;

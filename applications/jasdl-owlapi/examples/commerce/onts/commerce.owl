@@ -21,7 +21,12 @@
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:commerce="http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#">
-    <owl:Ontology rdf:about=""/>
+    <owl:Ontology rdf:about="">
+        <rdfs:comment
+            >Individuals (i.e. brands of product) are not instantiated in this ontology schema (since product catalogue varies between shops and should not be shared information). Instead, they are instantiated by the CommerceModel class using SE-Percepts.</rdfs:comment>
+        <rdfs:comment
+            >The full potential for expressing types of products has not been explored here. For example, we could define a &quot;contains&quot; object property, relating a class of products to a notable ingredient that a customer may wish to avoid such as an allergen (e.g. lactose, gluten, etc).</rdfs:comment>
+    </owl:Ontology>
     
 
 
@@ -292,14 +297,6 @@
     
 
 
-    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#ReadyMeal -->
-
-    <owl:Class rdf:about="#ReadyMeal">
-        <rdfs:subClassOf rdf:resource="#Grocery"/>
-    </owl:Class>
-    
-
-
     <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#RootVegetable -->
 
     <owl:Class rdf:about="#RootVegetable">
@@ -309,28 +306,10 @@
     
 
 
-    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#ShepherdsPie -->
-
-    <owl:Class rdf:about="#ShepherdsPie">
-        <rdfs:subClassOf rdf:resource="#MeatProduct"/>
-        <rdfs:subClassOf rdf:resource="#ReadyMeal"/>
-    </owl:Class>
-    
-
-
     <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#Vegetable -->
 
     <owl:Class rdf:about="#Vegetable">
         <rdfs:subClassOf rdf:resource="#Grocery"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#VegetableCurry -->
-
-    <owl:Class rdf:about="#VegetableCurry">
-        <rdfs:subClassOf rdf:resource="#ReadyMeal"/>
-        <owl:disjointWith rdf:resource="#ShepherdsPie"/>
     </owl:Class>
     
 

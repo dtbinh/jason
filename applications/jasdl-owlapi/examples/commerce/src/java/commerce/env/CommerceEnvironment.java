@@ -1,3 +1,22 @@
+/* 
+ *  Copyright (C) 2008 Thomas Klapiscak (t.g.klapiscak@durham.ac.uk)
+ *  
+ *  This file is part of JASDL.
+ *
+ *  JASDL is free software: you can redistribute it and/or modify
+ *  it under the terms of the Lesser GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  JASDL is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  Lesser GNU General Public License for more details.
+ *
+ *  You should have received a copy of the Lesser GNU General Public License
+ *  along with JASDL.  If not, see <http://www.gnu.org/licenses/>.
+ *  
+ */
 package commerce.env;
 // Environment code for project commerce.mas2j
 
@@ -7,6 +26,7 @@ import jasdl.bridge.mapping.aliasing.Alias;
 import jasdl.bridge.mapping.aliasing.DecapitaliseMappingStrategy;
 import jasdl.bridge.mapping.aliasing.MappingStrategy;
 import jasdl.env.JASDLEnvironment;
+import jasdl.util.JASDLCommon;
 import jasdl.util.exception.JASDLException;
 import jason.asSyntax.Atom;
 import jason.asSyntax.Literal;
@@ -71,8 +91,8 @@ public class CommerceEnvironment extends JASDLEnvironment{
     	}
     	
     	try {
-			getJom().loadOntology(c, URI.create("file://"+getCurrentDir()+"/onts/commerce.owl"), mappingStrategies);
-			getJom().loadOntology(s, URI.create("file://"+getCurrentDir()+"/onts/society.owl"), mappingStrategies);
+			getJom().loadOntology(c, JASDLCommon.getRelativeLocalURI("/onts/commerce.owl"), mappingStrategies);
+			getJom().loadOntology(s, JASDLCommon.getRelativeLocalURI("/onts/society.owl"), mappingStrategies);
 			
 		} catch (JASDLException e) {
 			e.printStackTrace();

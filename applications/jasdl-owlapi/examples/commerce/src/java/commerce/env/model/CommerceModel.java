@@ -1,3 +1,22 @@
+/* 
+ *  Copyright (C) 2008 Thomas Klapiscak (t.g.klapiscak@durham.ac.uk)
+ *  
+ *  This file is part of JASDL.
+ *
+ *  JASDL is free software: you can redistribute it and/or modify
+ *  it under the terms of the Lesser GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  JASDL is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  Lesser GNU General Public License for more details.
+ *
+ *  You should have received a copy of the Lesser GNU General Public License
+ *  along with JASDL.  If not, see <http://www.gnu.org/licenses/>.
+ *  
+ */
 package commerce.env.model;
 
 import jason.asSyntax.Atom;
@@ -14,8 +33,9 @@ import commerce.env.CommerceEnvironment;
 import commerce.env.CommerceView;
 
 /**
- * If agents have no location, they are disembodied
- * @author tom
+ * Manages addition, deletion and retrieval of ModelObject (and its extension) instances. 
+ * 
+ * @author Tom Klapiscak
  *
  */
 public class CommerceModel{
@@ -45,6 +65,7 @@ public class CommerceModel{
     	// initialise agents
     	
     	// TODO: Read from ontology to establish agent society
+    	// TODO: Read product catalogue from an external data source of some kind
     	
     	ModelShop shop1 = new ModelShop(new Atom("shop1"), new Point(0, 0), this, env);
     	shop1.addProductToCatalogue(new Product("bread", "hovis", 1.4, 800), 22);
@@ -52,27 +73,30 @@ public class CommerceModel{
     	shop1.addProductToCatalogue(new Product("milk", "cravendale", 0.9, 500), 33);
     	shop1.addProductToCatalogue(new Product("milk", "tescos_semi_skimmed", 0.7, 500), 85);
     	shop1.addProductToCatalogue(new Product("butter", "clover_butter", 0.8, 300), 74);
+    	shop1.addProductToCatalogue(new Product("rootVegetable", "sweet_potatoes", 2.2, 600), 58);
     	
-    	ModelShop shop2 = new ModelShop(new Atom("shop2"), new Point(5, 3), this, env);
+    	ModelShop shop2 = new ModelShop(new Atom("shop2"), new Point(7, 5), this, env);
     	shop2.addProductToCatalogue(new Product("beef", "farmer_jims_rump_steak", 10.5, 500), 22);
     	shop2.addProductToCatalogue(new Product("lamb", "farmer_jims_lamb_chops", 10.5, 400), 80);
     	shop2.addProductToCatalogue(new Product("beef", "tescos_sirloin_steak", 5, 600), 11);
     	shop2.addProductToCatalogue(new Product("fish", "tescos_salmon", 8, 200), 29);
     	shop2.addProductToCatalogue(new Product("fish", "tescos_chicken_breasts", 5.9, 450), 92);
     	
-    	ModelShop shop3 = new ModelShop(new Atom("shop3"), new Point(15, 10), this, env);
+    	ModelShop shop3 = new ModelShop(new Atom("shop3"), new Point(15, 16), this, env);    	
+    	shop3.addProductToCatalogue(new Product("greenVegetable", "iceburg_lettuce", 0.3, 90), 54);
     	shop3.addProductToCatalogue(new Product("rootVegetable", "potatoes", 1.2, 1000), 92);
-    	shop3.addProductToCatalogue(new Product("greens", "iceburg_lettuce", 0.3, 90), 54);
     	
     	addObject(shop1);    	
     	addObject(shop2);
-    	addObject(new ModelCustomer(new Atom("customer1"), new Point(10, 10), this, env));
+    	addObject(shop3);
+    	
+    	addObject(new ModelCustomer(new Atom("customer1"), new Point(3, 17), this, env));
     	addObject(new ModelCustomer(new Atom("customer2"), new Point(15, 8), this, env));
-    	addObject(new ModelCustomer(new Atom("customer3"), new Point(19, 3), this, env));
-    	addObject(new ModelDeliveryVan(new Atom("delivery_van1"), new Point(2, 6), this, env, shop1));
-    	addObject(new ModelDeliveryVan(new Atom("delivery_van2"), new Point(3, 4), this, env, shop1));
-    	addObject(new ModelDeliveryVan(new Atom("delivery_van3"), new Point(6, 4), this, env, shop1));
-    	addObject(new ModelDeliveryVan(new Atom("delivery_van4"), new Point(8, 10), this, env, shop1));
+    	addObject(new ModelCustomer(new Atom("customer3"), new Point(11, 3), this, env));
+    	addObject(new ModelDeliveryVan(new Atom("delivery_van1"), new Point(1, 0), this, env, shop1));
+    	addObject(new ModelDeliveryVan(new Atom("delivery_van2"), new Point(8, 5), this, env, shop1));
+    	addObject(new ModelDeliveryVan(new Atom("delivery_van3"), new Point(16, 16), this, env, shop1));
+    	addObject(new ModelDeliveryVan(new Atom("delivery_van4"), new Point(2, 1), this, env, shop1));
     	addObject(new ModelPA(new Atom("pa1"), new Point(0, 0), this, env));
     	addObject(new ModelPA(new Atom("pa2"), new Point(0, 0), this, env));
     	addObject(new ModelPA(new Atom("pa3"), new Point(0, 0), this, env));

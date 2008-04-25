@@ -1,3 +1,22 @@
+/* 
+ *  Copyright (C) 2008 Thomas Klapiscak (t.g.klapiscak@durham.ac.uk)
+ *  
+ *  This file is part of JASDL.
+ *
+ *  JASDL is free software: you can redistribute it and/or modify
+ *  it under the terms of the Lesser GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  JASDL is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  Lesser GNU General Public License for more details.
+ *
+ *  You should have received a copy of the Lesser GNU General Public License
+ *  along with JASDL.  If not, see <http://www.gnu.org/licenses/>.
+ *  
+ */
 package commerce.ui.customer;
 
 import jasdl.util.JASDLCommon;
@@ -42,7 +61,10 @@ public class CustomerUIPanel extends JPanel implements ModelCustomerListener{
 	private Object lastQty;
 	
 	private List<ExampleRequest> examples = Arrays.asList(new ExampleRequest[] {
-			new ExampleRequest("c:bread", "{s:shop1}", "Bread from shop2 (will propagate to shop1)")
+			new ExampleRequest("c:bread and c:hasPrice some double [< 1.6]", "{s:shop2}", "Bread initially asking shop2 that costs under £1.6 (will propagate to shop1 to find \"hovis\")"),
+			new ExampleRequest("c:rootVegetable or c:greenVegetable", "s:butchers", "Any type of root or green vegetable initially asking shop2 (will propagate to shop1 to find \"sweet_potatoes\" and shop3 to find \"iceburg_lettuce\" and \"potatoes\")"),
+			new ExampleRequest("c:beef and c:hasWeight some double [>= 500]", "s:supermarket or s:greenGrocers", "Any type of beef product weighting more than 500 grams (will propogate to shop2 to find \"farmer_jims_rump_steak\" and \"tescos_sirloin_steak\")"),
+			new ExampleRequest("c:product", "s:shop", "Any type of product, initially asking any type of shop (will find many matches)")
 		});
 	private JTextArea englishDescriptionField;
 	
@@ -109,7 +131,9 @@ public class CustomerUIPanel extends JPanel implements ModelCustomerListener{
 				exampleRequestsPane.setBorder(BorderFactory.createTitledBorder("Example Requests"));
 				productRequestPane.add(exampleRequestsPane);
 				
-				englishDescriptionField = new JTextArea(20, 7);
+				englishDescriptionField = new JTextArea();
+					//englishDescriptionField.setPreferredSize(new Dimension(200, 120));
+					englishDescriptionField.setLineWrap(true);
 				
 				JComboBox exampleRequests = new JComboBox();
 					exampleRequestsPane.add(exampleRequests);					

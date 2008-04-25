@@ -1,3 +1,22 @@
+/* 
+ *  Copyright (C) 2008 Thomas Klapiscak (t.g.klapiscak@durham.ac.uk)
+ *  
+ *  This file is part of JASDL.
+ *
+ *  JASDL is free software: you can redistribute it and/or modify
+ *  it under the terms of the Lesser GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  JASDL is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  Lesser GNU General Public License for more details.
+ *
+ *  You should have received a copy of the Lesser GNU General Public License
+ *  along with JASDL.  If not, see <http://www.gnu.org/licenses/>.
+ *  
+ */
 package commerce.env.model;
 
 import jasdl.util.exception.JASDLException;
@@ -12,9 +31,23 @@ import java.util.Vector;
 
 import commerce.env.CommerceEnvironment;
 
+
+/**
+ * Models a customer agent within the comemrce world.
+ * @author tom
+ *
+ */
 public class ModelCustomer extends ModelMobileAgent {
 	
+	/**
+	 * Objects interesting in recieving notification of customer related events.
+	 * Currently used only by the customer UI pane for the request_approved and message events.
+	 */
 	private List<ModelCustomerListener> listeners;
+	
+	/**
+	 * For queing requests made by this customer to send to "customer" agent.
+	 */
 	private List<Request> requests;
 	
 	/**
@@ -28,30 +61,14 @@ public class ModelCustomer extends ModelMobileAgent {
 		listeners = new Vector<ModelCustomerListener>();
 	}
 	
-	public List<Literal> getPercepts() throws JASDLException{
-		List<Literal> percepts = new Vector<Literal>();
-				
-		Set<ModelObject> inVicinityList = model.getObjectsInVicinityOfPosition(getPosition());
-		// don't want to add atLocation(me, me)
-		inVicinityList.remove((ModelCustomer)this);
-		
-		// add my x and y coords
-		percepts.add(Literal.parseLiteral("hasPosition("+getId()+","+getPosition().x+","+getPosition().y+")"));
-		
-		for(ModelObject inVicinity : inVicinityList){    				
-			percepts.add(Literal.parseLiteral("inVicinityOf("+inVicinity.getId()+")"));
-			percepts.add(Literal.parseLiteral("hasPosition("+inVicinity.getId()+","+inVicinity.getPosition().x+","+inVicinity.getPosition().y+")"));
-			    				
-		}
-		
-		return percepts;
-	}
-	
 	
 	public void addListener(ModelCustomerListener listener){
 		listeners.add(listener);
 	}
 	
+	/**
+	 * Adds percepts relating to product_requets and confirm_order events.
+	 */
 	@Override
 	public void addPercepts() throws JASDLException {
 		super.addPercepts();
