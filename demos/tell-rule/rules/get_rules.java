@@ -27,8 +27,7 @@ public class get_rules extends DefaultInternalAction {
             while (i.hasNext()) {
             	Literal l = i.next();
                 if (l.isRule()) {
-                    Unifier unc = (Unifier)un.clone();
-                    if (unc.unifies(pattern, l)) {
+                    if (un.copy().unifies(pattern, l)) {
                         l = (Literal)l.clone();
                         l.delSources();
                         result.add(new StringTermImpl(l.toString()));

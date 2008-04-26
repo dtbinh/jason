@@ -75,7 +75,7 @@ public class link extends MoiseBaseIA {
                             gr = rp.getGroup();
                         }
                         for (OEAgent ag: currentOE.getAgents( gr, link.getTarget())) { // all agents of the target role
-                            Unifier c = (Unifier)un.clone();
+                            Unifier c = un.copy();
 
                             // unifies the type and target
                             if (c.unifies(args[0], new Atom(link.getTypeStr())) && 

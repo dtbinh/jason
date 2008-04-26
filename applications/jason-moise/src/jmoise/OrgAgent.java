@@ -13,6 +13,7 @@ import jason.asSyntax.DefaultTerm;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Pred;
 import jason.asSyntax.PredicateIndicator;
+import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 import jason.asSyntax.Trigger;
 import jason.asSyntax.UnnamedVar;
@@ -34,6 +35,8 @@ import moise.oe.OE;
 import moise.oe.OEAgent;
 import moise.oe.Permission;
 import moise.oe.SchemeInstance;
+import moise.os.fs.Goal;
+import moise.os.fs.Goal.GoalType;
 
 /**
   * Organisational Architecture, binds Jason agent to
@@ -187,9 +190,19 @@ public class OrgAgent extends AgArch {
                 alreadyGeneratedEvents.add(gi);
 
                 Literal l = Literal.parseLiteral(gi.getAsProlog());
-                Literal giID = new Literal("scheme");
+                // add annot with scheme id
+                Structure giID = new Structure("scheme", 1);
                 giID.addTerm(new Atom(gi.getScheme().getId()));
                 l.addAnnot(giID);
+                
+                // add annot with type of goal
+                Structure type = new Structure("type", 1);
+                type.addTerm(getGoalTypeAtom(gi.getSpec()));
+                l.addAnnot(type);
+                
+                // add source annot
+                l.addAnnot(managerSource);
+                
                 // "role(notimplemented),group(notimplemented)"+
                 // TODO: add annots: role, group (percorrer as missoes do ag que
                 // em GI, procurar os papel com obrigacao para essa missao)
@@ -198,6 +211,17 @@ public class OrgAgent extends AgArch {
             }
         }
     }
+   
+   	private static final Atom aAchievementGoal = new Atom(GoalType.achievement.toString()); 
+   	private static final Atom aMaintenanceGoal = new Atom(GoalType.maintenance.toString());
+   	
+   	public static Atom getGoalTypeAtom(Goal g) {
+   		switch (g.getType()) {
+   		case achievement: return aAchievementGoal;
+   		case maintenance: return aMaintenanceGoal;
+   		}
+   		return null;
+   	}
 
     void removeAchieveEvents(String schId) {
         Iterator<GoalInstance> i = alreadyGeneratedEvents.iterator();
