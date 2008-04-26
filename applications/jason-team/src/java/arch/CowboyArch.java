@@ -1,7 +1,7 @@
 package arch;
 
 import jason.JasonException;
-import jason.ReceiverDoesNotExistException;
+import jason.ReceiverNotFoundException;
 import jason.RevisionFailedException;
 import jason.asSemantics.Intention;
 import jason.asSemantics.Message;
@@ -302,11 +302,11 @@ public class CowboyArch extends IdentifyCrashed {
     		if (!getAgName().equals(oname)) {
     			Message msg = new Message(m);
     			msg.setReceiver(oname);
-    			for (int t=0; t<4; t++) {
+    			for (int t=0; t<6; t++) {
 	    			try {
 	    			    sendMsg(msg);
 	    			    break; // the for
-	    			} catch (ReceiverDoesNotExistException e) {
+	    			} catch (ReceiverNotFoundException e) {
 	    				// wait and try again
 	    				Thread.sleep(500);
 	    			}

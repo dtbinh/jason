@@ -38,17 +38,17 @@
 
             <sub-groups>
                 
-                <group-specification id="exploration" >
+                <group-specification id="exploration" min="3" max="3" >
                     <roles>
                         <role id="explorer" min="1" max="1"/>
-                        <role id="scouter" />
+                        <role id="scouter"  min="0" max="1"/>
                     </roles>
                 </group-specification>
 
-                <group-specification id="herding" >
+                <group-specification id="herding" min="0" max="6" >
                     <roles>
-                        <role id="herder" min="1" max="1"/>
-                        <role id="herdboy" />
+                        <role id="herder"  min="1" max="1"/>
+                        <role id="herdboy" min="0" max="3"/>
                     </roles>
                 </group-specification>
             </sub-groups>
@@ -69,14 +69,38 @@
               <plan operator="parallel">
                 <goal id="goto_near_unvisited" ds="go to the near unvisited location inside the area of the group" type="maintenance"/>
                 <goal id="share_cows"          ds="share seen cows with other agents in the scheme" type="maintenance"/>
+                <goal id="follow_leader"       ds="follows the leader of the scheme/group" type="maintenance"/>
               </plan>
             </goal>
             
-            <mission id="mscouter" >
-                <goal id="share_cows" />
-            </mission>
             <mission id="mexplorer" min="1">
                 <goal id="goto_near_unvisited" />
+                <goal id="share_cows" />
+            </mission>
+            <mission id="mscouter" >
+                <goal id="follow_leader" />
+                <goal id="share_cows" />
+            </mission>
+        </scheme>
+        
+        <scheme id="herding" >
+            <goal id="herd_cows" >
+              <plan operator="parallel">
+                <goal id="recruit"          ds="recruit more herdboys depending on the size of the cows cluster" type="maintenance"/>
+                <goal id="define_formation" ds="compute the ideal location of each member of the group and share this information with them" type="maintenance"/>
+                <goal id="be_in_formation"  ds="go to the place allocated to the agent in the formation" type="maintenance"/>
+                <goal id="share_cows"       ds="share seen cows with other agents in the scheme" type="maintenance"/>
+              </plan>
+            </goal>
+            
+            <mission id="mherder" min="1">
+                <goal id="recruit" />
+                <goal id="define_formation" />
+                <goal id="be_in_formation" />
+                <goal id="share_cows" />
+            </mission>
+            <mission id="mherdboy" >
+                <goal id="be_in_formation" />
                 <goal id="share_cows" />
             </mission>
         </scheme>
@@ -85,6 +109,8 @@
     <deontic-specification>
         <deontic-relation type="obligation" role="explorer"  mission="mscouter" />
         <deontic-relation type="obligation" role="scouter"   mission="mexplorer" />
+        <deontic-relation type="obligation" role="herder"    mission="mherder" />
+        <deontic-relation type="obligation" role="herdboy"   mission="mherdboy" />
     </deontic-specification>
 </organisational-specification>
 
