@@ -133,6 +133,9 @@ public class OrgManager extends AgArch {
         while (i.hasNext()) {
             Message m = i.next();
             i.remove(); // the agent do not receive this message
+            if (currentOE == null) break;
+            if (m.getSender() == null) break;
+            
             OEAgent agSender = currentOE.getAgent(m.getSender());
             if (logger.isLoggable(Level.FINE)) logger.fine("Processing '" + m + "' for " + agSender);
             try {
