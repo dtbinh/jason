@@ -103,6 +103,7 @@ public class OrgManager extends AgArch {
         addCommand(new SetGoalState());
         addCommand(new SetGoalArg());
         addCommand(new RemoveScheme());
+        addCommand(new AbortScheme());
         
         addCommand(new AddAgent());
     }
@@ -428,13 +429,24 @@ public class OrgManager extends AgArch {
                 sendReply(sender, mId, "error(\"you are not the owner of the scheme " + schId + ", so you can not change it\")");
             }
 
-            currentOE.finishScheme(sch);
-
+            act(currentOE, sch);
             // send untell to agents
             updateMembersOE(currentOE.getAgents(), "scheme(" + sch.getSpec().getId() + "," + sch.getId() + ")[owner(" + sch.getOwner() + ")]", false, false);
         }
+        protected void act(OE currentOE, SchemeInstance sch) throws MoiseException {
+            currentOE.finishScheme(sch);        	
+        }
     }
     
+    class AbortScheme extends RemoveScheme {
+        public String getId() {
+            return "abort_scheme";
+        }
+        protected void act(OE currentOE, SchemeInstance sch) throws MoiseException {
+            currentOE.abortScheme(sch);
+        }
+    }
+
     class SetGoalState implements OrgManagerCommand {
         public String getId() {
             return "set_goal_state";

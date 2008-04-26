@@ -3,7 +3,11 @@ package jia;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
+import jason.asSyntax.ListTerm;
+import jason.asSyntax.ListTermImpl;
+import jason.asSyntax.NumberTerm;
 import jason.asSyntax.NumberTermImpl;
+import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 import jason.environment.grid.Location;
 
@@ -18,6 +22,11 @@ import env.WorldModel;
 
 /** 
  * Gives a good location to herd cows
+ * 
+ * the first argument is the formation id (one, two, ... 1, 2, ....)
+ * 
+ * if it is called with 3 args, returns the a free location in the formation
+ * otherwise return a list of location for the formation
  *  
  * @author jomi
  */
@@ -26,32 +35,62 @@ public class herd_position extends DefaultInternalAction {
     public static final double maxStdDev = 3;
     
     public enum Formation { 
-    	one { int[] getDistances() { return new int[] { 0 }; } }, 
-    	six { int[] getDistances() { return new int[] { 2, -2, 6, -6, 10, -10 }; } };
+    	one   { int[] getDistances() { return new int[] { 0 }; } }, 
+    	two   { int[] getDistances() { return new int[] { 2, -2 }; } },
+    	three { int[] getDistances() { return new int[] { 0, 4, -4 }; } },
+    	four  { int[] getDistances() { return new int[] { 2, -2, 6, -6 }; } },
+    	five  { int[] getDistances() { return new int[] { 0, 4, -4, 8, -8 }; } },
+    	six   { int[] getDistances() { return new int[] { 2, -2, 6, -6, 10, -10 }; } };
     	abstract int[] getDistances();
     };
     
     @Override
-    public Object execute(TransitionSystem ts, Unifier un, Term[] terms) throws Exception {
+    public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
         try {
         	CowboyArch arch       = (CowboyArch)ts.getUserAgArch();
             LocalWorldModel model = arch.getModel();
             if (model == null)
             	return false;
-            
             Location agLoc        = model.getAgPos(arch.getMyId());
 
+            // identify the formation id
+            Formation formation = Formation.six;
+            if (args[0].isNumeric()) {
+            	int index = (int)((NumberTerm)args[0]).solve();
+            	formation = Formation.values()[ index-1 ];
+            } else {
+            	formation = Formation.valueOf(args[0].toString());
+            }
+            
             // update GUI
             if (arch.hasGUI())
-            	setFormationLoc(model, Formation.valueOf(terms[0].toString()));
+            	setFormationLoc(model, formation);
 
-            Location agTarget = getAgTarget(model, Formation.valueOf(terms[0].toString()), agLoc);
-            if (agTarget != null) {
-            	agTarget = nearFreeForAg(model, agLoc, agTarget);
-                return un.unifies(terms[1], new NumberTermImpl(agTarget.x)) && 
-                       un.unifies(terms[2], new NumberTermImpl(agTarget.y));
+            // if the return is a location for one agent
+            if (args.length == 3) {
+	            Location agTarget = getAgTarget(model, formation, agLoc);
+	            if (agTarget != null) {
+	                return un.unifies(args[1], new NumberTermImpl(agTarget.x)) && 
+	                       un.unifies(args[2], new NumberTermImpl(agTarget.y));
+	            } else {
+	            	ts.getLogger().info("No target! I am at "+agLoc+" places are "+formationPlaces(model, formation));
+	            }
             } else {
-            	ts.getLogger().info("No target! I am at "+agLoc+" places are "+formationPlaces(model, Formation.valueOf(terms[0].toString())));
+            	// return all the locations for the formation
+            	List<Location> locs = formationPlaces(model, formation);
+            	if (locs != null) {
+            		ListTerm r = new ListTermImpl();
+            		ListTerm tail = r;
+            		for (Location l: locs) {
+            			Structure p = new Structure("pos",2);
+            			p.addTerm(new NumberTermImpl(l.x));
+            			p.addTerm(new NumberTermImpl(l.y));
+            			tail = tail.append(p);
+            		}
+            		return un.unifies(args[1], r);
+            	} else {
+	            	ts.getLogger().info("No formation possible! I am at "+agLoc+" places are "+formationPlaces(model, formation));            		
+            	}
             }
         } catch (Throwable e) {
             ts.getLogger().log(Level.SEVERE, "herd_position error: "+e, e);    		
@@ -66,11 +105,13 @@ public class herd_position extends DefaultInternalAction {
         	for (Location l : locs) {
         		r = l;
 	            if (ag.equals(l) || // I am there
-	                model.countObjInArea(WorldModel.AGENT, l, 1) == 0) { // no one else is there
+	                !model.hasObject(WorldModel.AGENT, l)) { // no one else is there
 	        		break;
 	        	}
 	        }
         }
+        if (r != null)
+        	r = model.nearFree(r);
         return r;
     }
 
@@ -125,7 +166,7 @@ public class herd_position extends DefaultInternalAction {
         	for (int agTargetSize = initAgTS; agTargetSize <= Math.abs(dist); agTargetSize++) {
         		l = agTarget.newMagnitude(agTargetSize).add(mean).add(agsTarget).getLocation(model);
         		//System.out.println("pos angle "+agTargetSize);
-            	uselast = !model.inGrid(l) || model.hasObject(WorldModel.OBSTACLE, l) && lastloc != null; 
+            	uselast = (!model.inGrid(l) || model.hasObject(WorldModel.OBSTACLE, l)) && lastloc != null; 
         		if (uselast) {
                 	r.add(pathToNearCow(model, lastloc));
         			break;
@@ -160,8 +201,8 @@ public class herd_position extends DefaultInternalAction {
     	return t;
     }
     
+	/*
     public Location nearFreeForAg(LocalWorldModel model, Location ag, Location t) throws Exception {
-    	/*
         // run A* to get the path from ag to t
     	if (! model.inGrid(t))
     		t = model.nearFree(t);
@@ -179,8 +220,8 @@ public class herd_position extends DefaultInternalAction {
         	if (i++ > 3) // do not go to far from target
         		break;
         }
-        */
         return model.nearFree(t);
     }
+        */
 }
 

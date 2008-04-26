@@ -185,10 +185,7 @@ public class LocalWorldModel extends WorldModel {
     }
     
     /** returns the near location of x,y that was least visited */
-    public Location getNearLeastVisited(int agx, int agy) {
-    	//int distanceToBorder = (agx < getWidth()/2 ? agx : getWidth() - agx) - 1; 
-    	Location agloc = new Location(agx,agy);
-    	
+    public Location getNearLeastVisited(Location agloc, Location tr, Location bl) {
         /*
     	logger.info("------");
         for (int i = 0; i < getWidth(); i++) {
@@ -203,8 +200,8 @@ public class LocalWorldModel extends WorldModel {
     	//int visitedTarget = 0;
     	while (true) {
 
-        	int x = agx;
-        	int y = agy;
+        	int x = agloc.x;
+        	int y = agloc.y;
     		int w = 1; 
         	int dx = 0;
         	int dy = 0;
@@ -217,13 +214,13 @@ public class LocalWorldModel extends WorldModel {
 	    				    	dx++;
 	    				    	break;
 	    					} else {
-	    						stage = 2;//(x % 2 == 0) ? 2 : 3; 
+	    						stage = 2;
 	    					}
 	    			case 2: if (dy < w) {
 	    						dy++;
 	    						break;
 	    					} else {
-	    						stage = 3;//(x % 2 == 0) ? 3 : 1;
+	    						stage = 3;
 	    					}
 	    			case 3: if (dx > 0) {
 								dx--;
@@ -243,7 +240,7 @@ public class LocalWorldModel extends WorldModel {
 	    		}
 	    		
     			Location l = new Location(x+dx,y+dy);
-	    		if (isFree(l) && !l.equals(agloc)) {
+	    		if (isFree(l) && !l.equals(agloc) && l.isInArea(tr, bl)) {
 	    			if (visited[l.x][l.y] < minVisited) { // a place better then minVisited! go there
 	    				return l;
 	    			} if (visited[l.x][l.y] == minVisited) { // a place in the minVisited level

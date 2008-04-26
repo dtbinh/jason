@@ -170,7 +170,6 @@ public class TestBasicHerding {
         scenario2();
         model.add(WorldModel.ENEMY, 11,48);
         Location byIA =  new herd_position().getAgTarget(model, Formation.one, cowboy.getLocation(model));
-        byIA = new herd_position().nearFreeForAg(model, new Location(11,46), byIA);
         assertEquals(new Location(11,49), byIA);
     }
 

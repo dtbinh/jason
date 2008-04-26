@@ -32,9 +32,6 @@ cow_perception_ratio(4).
 
 /* -- plans -- */
 
-+pos(_,_,_) <- do(skip).
-
-
 +?pos(X, Y, S)       <- .wait("+pos(X,Y,S)").
 +?group_area(Id,G,A) <- .wait("+group_area(Id,G,A)").
 

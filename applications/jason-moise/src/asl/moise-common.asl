@@ -51,6 +51,6 @@
 
 // if some scheme is finished, drop all intentions related to it.
 -scheme(_Spec,Id)
-   <- .drop_desire(X[scheme(Id)]).
+   <- .drop_desire(_[scheme(Id)]).
 
 +error(M)[source(orgManager)] <- .print("Error in organisational action: ",M); -error(M)[source(orgManager)].
