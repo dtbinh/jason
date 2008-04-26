@@ -18,17 +18,25 @@
 
 /* -- initial beliefs -- */
 
-agent_id(gaucho1,0).
-agent_id(gaucho2,1).
-agent_id(gaucho3,2).
-agent_id(gaucho4,3).
-agent_id(gaucho5,4).
-agent_id(gaucho6,5).
+agent_id(gaucho1,1).
+agent_id(gaucho2,2).
+agent_id(gaucho3,3).
+agent_id(gaucho4,4).
+agent_id(gaucho5,5).
+agent_id(gaucho6,6).
 
 ag_perception_ratio(8). // ratio of perception of the agent
 cow_perception_ratio(4).
 
 /* -- initial goals -- */
+
+/* Testing alloc
+alloc_target(a1,pos(10,10)).
+alloc_target(a2,pos(20,20)).
+alloc_target(a3,pos(30,30)).
+!test.
++!test <- !alloc_all([a1,a2,a3],[pos(31,31),pos(21,21),pos(11,11)]).
+*/
 
 /* -- plans -- */
 
@@ -47,7 +55,7 @@ cow_perception_ratio(4).
 
 /* -- includes -- */
 
-{ include("goto.asl") }         // include plans for movimentation
+{ include("goto.asl") }         // include plans for moving around
 { include("exploration.asl") }  // include plans for exploration
 { include("herding.asl") }      // include plans for herding
 { include("moise-common.asl") } // include common plans for MOISE+ agents

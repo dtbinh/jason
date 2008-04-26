@@ -53,5 +53,6 @@ random_pos(X,Y) :-
   
 // in case of failure, move
 -!move
-   <- .current_intention(I); .println("failure in move, intention: ",I);
+   <- .current_intention(I); .println("failure in moving; intention was: ",I);
       !move.
+

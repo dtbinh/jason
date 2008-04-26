@@ -3,9 +3,9 @@
 
 /* -- initial beliefs -- */
 
-// missions I can commit to
-desired_mission(exploring, mexplorer).
-desired_mission(exploring, mscouter).
+// missions I can commit to depend on the roles I adopt
+desired_mission(explore_sch, explore) :- desired_role(exploration_grp, explorer).
+desired_mission(explore_sch, scout) :- desired_role(exploration_grp, scouter).
 
 
 /* -- initial goals -- */
@@ -21,7 +21,7 @@ desired_mission(exploring, mscouter).
 
 /* plans for agent 1 */
 
-+gsize(_Weight,_Height)                  // new match've started
++gsize(_Weight,_Height)                  // new match has started
    : .my_name(gaucho1)                   // agent 1 is responsible for the team creation 
   <- //.print("oooo creating team group"); 
      .if( group(team,Old), {
@@ -78,13 +78,15 @@ desired_mission(exploring, mscouter).
      
      // adopt role explorer in the group
      jmoise.adopt_role(explorer,G);
+	 +desired_role(exploration_grp, explorer);  // needed for moise-common plans
+	 +desired_role(herding_grp, herder);        // explorers will also be herders
      !find_scouter(LSOdd, G).
      
 +!find_scouter([],_)
-  <- .print("ooo I do not find a scouter to work with me!").
+  <- .print("ooo I did not find a scouter to work with me!").
 +!find_scouter([ag_d(_,AgName)|_],GId)
   <- .print("ooo Ask ",AgName," to play scouter");
-     .send(AgName, achieve, play_role(scouter,GId));
+     .send(AgName, achieve, play_role(scouter,GId,exploration_grp));
      .wait("+play(Ag,scouter,GId)",2000).  
 -!find_scouter([_|LSOdd],GId) // in case the wait fails, try next agent
   <- .print("ooo find_scouter failure, try another agent.");
@@ -99,17 +101,24 @@ desired_mission(exploring, mscouter).
 
 /* plans for the others */
 
-+!play_role(Role,Group)[source(Ag)]
++!play_role(Role,Group,Group_Spec)[source(Ag)]
   <- .print("ooo Adopting role ",Role,", asked by ",Ag);
-     jmoise.adopt_role(Role,Group).
-     
-     
+     jmoise.adopt_role(Role, Group);
+	 +desired_role(Group_Spec, Role).
+
+// to keep plan above generic...
+// scouters will be herdboys
+// and need to tell t
++desired_role(exploration_grp, scouter)
+  <- +desired_role(herding_grp, herdboy).
+
+
 /* -- plans for the goals of role explorer -- */
 
 // TODO: make a pattern for organisational maintainance goal
 
 +!goto_near_unvisited[scheme(Sch)]
-  <- .print("ooo I should find the near unvisited location and go there!");
+  <- .print("ooo I should find the nearest unvisited location and go there!");
      .my_name(Me); 
      ?play(Me,explorer,GroupId);   // get the group where I play explorer
      ?group_area(_,GroupId, Area);  // get the area of this group
@@ -136,9 +145,15 @@ desired_mission(exploring, mscouter).
 
 /* -- plans for the goals of all roles -- */
 
-+!share_cows[scheme(Sch)]
++!share_seen_cows[scheme(Sch)]
   <- .print("ooo I should share cows!");
-     // TODO:
+     ?cows_to_inform(C);
+	 jmoise.broadcast(Sch, tell, C);
      .wait("+pos(_,_,_)"); // wait next cycle
-     !!share_cows[scheme(Sch)].
+     !!share_seen_cows[scheme(Sch)].
+
++cell(X,Y,cow(Id))
+  <- +cow(Id,X,Y); //Jomi, tu nao vai gostar disso :D
+     ?cows_to_inform(C);
+	 -+cows_to_inform([cow(Id,X,Y)|C]).
 
