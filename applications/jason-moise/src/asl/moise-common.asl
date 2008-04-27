@@ -53,4 +53,5 @@
 -scheme(_Spec,Id)
    <- .drop_desire(_[scheme(Id)]).
 
-+error(M)[source(orgManager)] <- .print("Error in organisational action: ",M); -error(M)[source(orgManager)].
++error(M)[source(orgManager)] 
+   <- .print("Error in organisational action: ",M); -error(M)[source(orgManager)].

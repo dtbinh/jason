@@ -318,11 +318,9 @@ public class OrgAgent extends AgArch {
         }
 
         // create the literal to be added
-        Literal gil = new Literal("goal_state");
-        gil.addTerm(new Atom(gi.getScheme().getId()));
-        gil.addTerm(gap);
         VarTerm S = new VarTerm("S");
-        gil.addTerm(S);
+        Literal gil = new Literal("goal_state");
+        gil.addTerms(new Atom(gi.getScheme().getId()), gap, S);
         gil.addAnnot(managerSource);
 
         Unifier u = new Unifier();

@@ -25,9 +25,7 @@ public abstract class MoiseBaseIA extends DefaultInternalAction  {
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
     	String    acName = this.getClass().getSimpleName(); // remove the package name "jmoise"
         Structure acTerm = new Structure(acName);
-		for (int i=0; i<args.length; i++) {
-			acTerm.addTerm(args[i]);
-		}
+        acTerm.addTerms(args);
 		if (logger.isLoggable(Level.FINE)) logger.fine("sending: "+acTerm);
 		
 		// send acTerm as message to OrgManager
