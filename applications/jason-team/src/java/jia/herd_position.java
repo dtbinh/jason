@@ -83,8 +83,7 @@ public class herd_position extends DefaultInternalAction {
             		ListTerm tail = r;
             		for (Location l: locs) {
             			Structure p = new Structure("pos",2);
-            			p.addTerm(new NumberTermImpl(l.x));
-            			p.addTerm(new NumberTermImpl(l.y));
+            			p.addTerms(new NumberTermImpl(l.x), new NumberTermImpl(l.y));
             			tail = tail.append(p);
             		}
             		return un.unifies(args[1], r);
@@ -103,9 +102,10 @@ public class herd_position extends DefaultInternalAction {
         List<Location> locs = formationPlaces(model, formation);
         if (locs != null) {
         	for (Location l : locs) {
-        		r = l;
 	            if (ag.equals(l) || // I am there
-	                !model.hasObject(WorldModel.AGENT, l)) { // no one else is there
+	                //model.countObjInArea(WorldModel.AGENT, l, 1) == 0) { // no one else is there
+	            	!model.hasObject(WorldModel.AGENT, l)) {
+	        		r = l;
 	        		break;
 	        	}
 	        }
@@ -153,14 +153,20 @@ public class herd_position extends DefaultInternalAction {
         int initAgTS = 1;
         for (int dist: formation.getDistances()) { // 2, -2, 6, -6, ....
         	Vec agTarget = agsTarget;
-        	Location l = agTarget.add(mean).getLocation(model);
+        	//Location l = agTarget.add(mean).getLocation(model);
         	
-        	//System.out.println(".......  "+dist+" antes angle "+agTarget);
+        	System.out.println(".......  "+dist+" antes angle "+agTarget);
         	if (dist >= 0)
-        		agTarget = new Vec( -agTarget.y, agTarget.x);
+        		agTarget = agTarget.turn90CW();
         	else
-        		agTarget = new Vec( agTarget.y, -agTarget.x);
+        		agTarget = agTarget.turn90ACW();
         	
+        	Location l = findFirstFreeLocTowardsTarget(agTarget, mean.add(agsTarget), initAgTS, dist, model);
+        	System.out.println(" =       "+dist+" result  "+l);
+        	if (l != null)
+        		r.add(pathToNearCow(model, l));
+        	
+        	/*
         	Location lastloc = null;
         	boolean  uselast = false;
         	for (int agTargetSize = initAgTS; agTargetSize <= Math.abs(dist); agTargetSize++) {
@@ -175,11 +181,27 @@ public class herd_position extends DefaultInternalAction {
         	}
         	if (!uselast)
         		r.add(pathToNearCow(model, l));
+        	*/
+        	
         	if (dist < 0)
         		initAgTS = Math.abs(dist)+1;
         }
-        //System.out.println("all places "+r);
+        System.out.println("all places "+r);
         return r;
+    }
+    
+    private Location findFirstFreeLocTowardsTarget(Vec target, Vec ref, int initialSize, int maxSize, LocalWorldModel model) {
+    	Location lastloc = null;
+    	maxSize = Math.abs(maxSize);
+    	Location l = ref.getLocation(model);;
+    	for (int s = initialSize; s <= maxSize; s++) {
+    		l = target.newMagnitude(s).add(ref).getLocation(model);
+    		System.out.println("pos angle "+s+" = "+l);
+        	if ( (!model.inGrid(l) || model.hasObject(WorldModel.OBSTACLE, l)) && lastloc != null)
+        		return lastloc;
+    		lastloc = l;
+    	}
+    	return l; //ref.getLocation(model); //target.add(ref).getLocation(model);
     }
     
     private Location pathToNearCow(LocalWorldModel model, Location t) {
@@ -194,7 +216,7 @@ public class herd_position extends DefaultInternalAction {
         	//System.out.println("Near cow to "+t+" is "+near+" vec = "+dircow);
         	for (int s = 1; s <= 20; s++) {
         		Location l = dircow.newMagnitude(s).add(nearcv).getLocation(model);
-        		if (model.isFree(l))
+        		if (!model.hasObject(WorldModel.COW,l))
         			return l;
         	}
         }

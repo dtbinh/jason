@@ -3,11 +3,6 @@
 
 /* -- initial beliefs -- */
 
-// missions I can commit to depend on the roles I adopt
-desired_mission(explore_sch, explore) :- desired_role(exploration_grp, explorer).
-desired_mission(explore_sch, scout) :- desired_role(exploration_grp, scouter).
-
-
 /* -- initial goals -- */
 
 //!test.
@@ -19,11 +14,10 @@ desired_mission(explore_sch, scout) :- desired_role(exploration_grp, scouter).
 */
 
 
-/* plans for agent 1 */
+/* plans for the team's groups creation */
 
-+gsize(_Weight,_Height)                  // new match has started
-   : .my_name(gaucho1)                   // agent 1 is responsible for the team creation 
-  <- //.print("oooo creating team group"); 
++!create_team_group
+  <- .print("oooo creating team group"); 
      .if( group(team,Old), {
         jmoise.remove_group(Old)
      });
@@ -31,13 +25,13 @@ desired_mission(explore_sch, scout) :- desired_role(exploration_grp, scouter).
   
 +group(team,GId)                         // agent 1 is responsible for the creation of exploration groups 
    : .my_name(gaucho1)
-  <- jmoise.create_group(exploration,GId);
-     jmoise.create_group(exploration,GId);
-     jmoise.create_group(exploration,GId).
-+group(exploration,_)                    // compute the area of the groups
+  <- jmoise.create_group(exploration_grp,GId);
+     jmoise.create_group(exploration_grp,GId);
+     jmoise.create_group(exploration_grp,GId).
++group(exploration_grp,_)                    // compute the area of the groups
    : .my_name(gaucho1) &
-     .findall(GId, group(exploration,GId), LG) &
-	 LG = [G1,G2,G3] // there are three groups
+     .findall(GId, group(exploration_grp,GId), LG) &
+	 LG = [G1,G2,G3]                     // there are three groups
   <- ?gsize(W,H);
 	 X = math.round(((W*H)/3)/H);
 	 +group_area(0, G1, area(0,   0,       X,   H-1));
@@ -51,24 +45,28 @@ desired_mission(explore_sch, scout) :- desired_role(exploration_grp, scouter).
 
 /* plans for agents with odd id */
 
-+gsize(_,_)
++gsize(_,_)                             // new match has started 
    : .my_name(Me) &
      agent_id(Me,AgId) &
      AgId mod 2 == 1                    // I have an odd Id
-  <- .print("ooo Recruiting scouters for my explorer group....");
+  <- .if( .my_name(gaucho1), { 
+        !create_team_group 
+     });
+  
+     .print("ooo Recruiting scouters for my explorer group....");
   
      // wait my pos
      ?pos(MyX,MyY,_); 
      
      // wait others pos
-     .while( .count(cell(_,_,ally(_)), N) & N < 5, {
+     .while( .count(ally_pos(_,_,_), N) & N < 5, {
 	    .print("ooo waiting others pos ");
-        .wait("+cell(_,_,ally(_))", 500, nofail)
+        .wait("+ally_pos(_,_,_)", 500, nofail)
      });
      
      // find distance to even agents
      .findall(ag_d(D,AgName),
-              cell(X,Y,ally(AgName)) & agent_id(AgName,Id) & Id mod 2 == 0 & jia.dist(MyX, MyY, X, Y, D),
+              ally_pos(AgName,X,Y) & agent_id(AgName,Id) & Id mod 2 == 0 & jia.dist(MyX, MyY, X, Y, D),
               LOdd);
      .sort(LOdd, LSOdd);
 
@@ -78,15 +76,13 @@ desired_mission(explore_sch, scout) :- desired_role(exploration_grp, scouter).
      
      // adopt role explorer in the group
      jmoise.adopt_role(explorer,G);
-	 +desired_role(exploration_grp, explorer);  // needed for moise-common plans
-	 +desired_role(herding_grp, herder);        // explorers will also be herders
      !find_scouter(LSOdd, G).
      
 +!find_scouter([],_)
   <- .print("ooo I did not find a scouter to work with me!").
 +!find_scouter([ag_d(_,AgName)|_],GId)
   <- .print("ooo Ask ",AgName," to play scouter");
-     .send(AgName, achieve, play_role(scouter,GId,exploration_grp));
+     .send(AgName, achieve, play_role(scouter,GId));
      .wait("+play(Ag,scouter,GId)",2000).  
 -!find_scouter([_|LSOdd],GId) // in case the wait fails, try next agent
   <- .print("ooo find_scouter failure, try another agent.");
@@ -96,22 +92,8 @@ desired_mission(explore_sch, scout) :- desired_role(exploration_grp, scouter).
 +play(Ag,explorer,G)
    : .my_name(Ag) &
      not scheme_group(_,G)
-  <- jmoise.create_scheme(exploring, [G]).
+  <- jmoise.create_scheme(explore_sch, [G]).
      
-
-/* plans for the others */
-
-+!play_role(Role,Group,Group_Spec)[source(Ag)]
-  <- .print("ooo Adopting role ",Role,", asked by ",Ag);
-     jmoise.adopt_role(Role, Group);
-	 +desired_role(Group_Spec, Role).
-
-// to keep plan above generic...
-// scouters will be herdboys
-// and need to tell t
-+desired_role(exploration_grp, scouter)
-  <- +desired_role(herding_grp, herdboy).
-
 
 /* -- plans for the goals of role explorer -- */
 
@@ -120,7 +102,7 @@ desired_mission(explore_sch, scout) :- desired_role(exploration_grp, scouter).
 +!goto_near_unvisited[scheme(Sch)]
   <- .print("ooo I should find the nearest unvisited location and go there!");
      .my_name(Me); 
-     ?play(Me,explorer,GroupId);   // get the group where I play explorer
+     ?play(Me,explorer,GroupId);    // get the group where I play explorer
      ?group_area(_,GroupId, Area);  // get the area of this group
      ?pos(MeX, MeY, _);             // get my location
      jia.near_least_visited(MeX, MeY, Area, TargetX, TargetY);
@@ -142,18 +124,4 @@ desired_mission(explore_sch, scout) :- desired_role(exploration_grp, scouter).
      // TODO:
      .wait("+pos(_,_,_)"); // wait next cycle
      !!follow_leader[scheme(Sch)].
-
-/* -- plans for the goals of all roles -- */
-
-+!share_seen_cows[scheme(Sch)]
-  <- .print("ooo I should share cows!");
-     ?cows_to_inform(C);
-	 jmoise.broadcast(Sch, tell, C);
-     .wait("+pos(_,_,_)"); // wait next cycle
-     !!share_seen_cows[scheme(Sch)].
-
-+cell(X,Y,cow(Id))
-  <- +cow(Id,X,Y); //Jomi, tu nao vai gostar disso :D
-     ?cows_to_inform(C);
-	 -+cows_to_inform([cow(Id,X,Y)|C]).
 

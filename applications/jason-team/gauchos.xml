@@ -30,7 +30,6 @@
     <target name="user-init">
 	    <copy file="../jason-moise/lib/jmoise.jar" todir="lib" />
 	    <copy file="../jason-moise/lib/moise.jar" todir="lib" />
-	    <copy file="../jason-moise/src/asl/moise-common.asl" todir="src/asl" />
     </target>
     <target name="user-end">
     </target>

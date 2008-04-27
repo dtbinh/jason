@@ -108,10 +108,10 @@
     </functional-specification>
 
     <deontic-specification>
-        <deontic-relation type="obligation" role="explorer" mission="mexplore" />
-        <deontic-relation type="obligation" role="scouter"  mission="mscout" />
-        <deontic-relation type="obligation" role="herder"   mission="mherd" />
-        <deontic-relation type="obligation" role="herdboy"  mission="mhelp_herder" />
+        <deontic-relation type="obligation" role="explorer" mission="explore" />
+        <deontic-relation type="obligation" role="scouter"  mission="scout" />
+        <deontic-relation type="obligation" role="herder"   mission="herd" />
+        <deontic-relation type="obligation" role="herdboy"  mission="help_herder" />
     </deontic-specification>
 </organisational-specification>
 

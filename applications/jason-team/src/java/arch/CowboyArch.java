@@ -9,7 +9,6 @@ import jason.asSyntax.Atom;
 import jason.asSyntax.Literal;
 import jason.asSyntax.NumberTerm;
 import jason.asSyntax.NumberTermImpl;
-import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 import jason.environment.grid.Location;
 import jason.mas2j.ClassParameters;
@@ -237,9 +236,9 @@ public class CowboyArch extends IdentifyCrashed {
 	
     public static Literal createCellPerception(int x, int y, Term obj) {
         Literal l = new Literal("cell");
-        l.addTerm(new NumberTermImpl(x));
-        l.addTerm(new NumberTermImpl(y));
-        l.addTerm(obj); 
+        l.addTerms(new NumberTermImpl(x),
+                   new NumberTermImpl(y),
+                   obj); 
         return l;
     }
 
@@ -358,9 +357,9 @@ public class CowboyArch extends IdentifyCrashed {
 	    						if (acView != null) acView.getModel().setAgPos(agid, x, y);
 	    						model.incVisited(x, y);
 	    						//getTS().getAg().getLogger().info("ag pos "+getMinerId(m.getSender())+" = "+x+","+y);
-	    						Structure tAlly = new Structure("ally");
-	    						tAlly.addTerm(new Atom(m.getSender()));
-	    						getTS().getAg().addBel( createCellPerception(x, y, tAlly));
+	    						Literal tAlly = new Literal("ally_pos");
+	    						tAlly.addTerms(new Atom(m.getSender()), new NumberTermImpl(x), new NumberTermImpl(y));
+	    						getTS().getAg().addBel( tAlly );
 	    					} catch (Exception e) {
 	    						e.printStackTrace();
 	    					}

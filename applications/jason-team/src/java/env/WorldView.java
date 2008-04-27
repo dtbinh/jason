@@ -6,6 +6,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -27,7 +29,7 @@ public class WorldView extends GridWorldView {
 	JLabel     jCycle;
 	JLabel     jCowsC;
 
-    //JLabel     jlMouseLoc;
+	JLabel     jlMouseLoc;
     //JComboBox  scenarios;
     //JSlider    jSpeed;
 
@@ -96,16 +98,15 @@ public class WorldView extends GridWorldView {
         msg.setBorder(BorderFactory.createEtchedBorder());
         
         
-        JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        /*
-        p.add(new JLabel("Click on the cells to add new pieces of gold."));
-        p.add(new JLabel("  (mouse at:"));
-        jlMouseLoc = new JLabel("0,0)");
-        p.add(jlMouseLoc);
-        msg.add(p);
-        */
+        JPanel pmoise = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        //p.add(new JLabel("Click on the cells to add new pieces of gold."));
+        //pmoise.add(new JLabel("  (mouse at:"));
+        jlMouseLoc = new JLabel("0,0");
+        pmoise.add(jlMouseLoc);
+        pmoise.setBorder(BorderFactory.createEtchedBorder());
+        //msg.add(p);
         
-        p = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER));
         p.add(new JLabel("Cycle:"));
         jCycle = new JLabel("0");
         p.add(jCycle);
@@ -119,6 +120,7 @@ public class WorldView extends GridWorldView {
         JPanel s = new JPanel(new BorderLayout());
         s.add(BorderLayout.WEST, args);
         s.add(BorderLayout.CENTER, msg);
+        s.add(BorderLayout.EAST, pmoise);
         getContentPane().add(BorderLayout.SOUTH, s);        
 
         // Events handling
@@ -160,18 +162,16 @@ public class WorldView extends GridWorldView {
         });
         */
 
-        /*
         getCanvas().addMouseMotionListener(new MouseMotionListener() {
             public void mouseDragged(MouseEvent e) { }
             public void mouseMoved(MouseEvent e) {
                 int col = e.getX() / cellSizeW;
                 int lin = e.getY() / cellSizeH;
                 if (col >= 0 && lin >= 0 && col < getModel().getWidth() && lin < getModel().getHeight()) {
-                    jlMouseLoc.setText(col+","+lin+")");
+                    jlMouseLoc.setText(col+","+lin);
                 }
             }            
         });
-        */
     }
     
     /*

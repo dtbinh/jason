@@ -46,15 +46,15 @@ public class ACArchitecture extends CowboyArch {
         String password = stts.getUserParameter("password");
         if (password.startsWith("\"")) password = password.substring(1,password.length()-1);
         
+		waitSleepThread = new WaitSleep();
+		waitSleepThread.start();
+
 		proxy = new ACProxy( 	this, 
 								stts.getUserParameter("host"), 
 								Integer.parseInt(stts.getUserParameter("port")),
 								username,
 								password);
 		new Thread(proxy,"AgentProxy"+username).start();
-		
-		waitSleepThread = new WaitSleep();
-		waitSleepThread.start();
 	}
 
 	

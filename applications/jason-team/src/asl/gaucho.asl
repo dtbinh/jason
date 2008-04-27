@@ -44,7 +44,7 @@ alloc_target(a3,pos(30,30)).
 +?group_area(Id,G,A) <- .wait("+group_area(Id,G,A)").
 
 +end_of_simulation(_Result)
-  <- .abolish(area(_,_,_,_,_,_)).
+  <- .abolish(group_area(_,_,_)).
 
 +!restart 
   <- .print("*** restart ***"); 
@@ -53,10 +53,79 @@ alloc_target(a3,pos(30,30)).
      // TODO: what to do?
      //!decide_target.
 
+
+/* -- plans for the goals of all roles -- */
+
+// get the list G of participants of the group where I play R
++?my_group_players(G,R) 
+  <- .my_name(Me);
+     play(Me,R,Gid);
+     .findall(P, play(P,_,Gid), G).
+
++!play_role(Role,Group)[source(Ag)]
+   : .my_name(Me) & not play(Me,_,_) // I can not play more than one role
+  <- .print("ooo Adopting role ",Role,", asked by ",Ag);
+     jmoise.adopt_role(Role, Group).
++!play_role(Role,Group)[source(Ag)]
+  <- .print("ooo Can NOT adopt role ",Role,", asked by ",Ag).
+
+/*
+
+TODO: use a list given by BUF
+
++!share_seen_cows[scheme(Sch)]
+  <- .print("ooo I should share cows!");
+     ?cows_to_inform(C);
+	 jmoise.broadcast(Sch, tell, C);
+	 // TODO: limpar -+cows_to_inform([])
+     .wait("+pos(_,_,_)"); // wait next cycle
+     !!share_seen_cows[scheme(Sch)].
+
++?cows_to_inform([]).
+
++cell(X,Y,cow(Id))
+  <- +cow(Id,X,Y); //Jomi, tu nao vai gostar disso :D
+     ?cows_to_inform(C);
+	 -+cows_to_inform([cow(Id,X,Y)|C]).
+
+*/
+
++!share_seen_cows.
+
+// simple implementation of share_cows (see TODO above)
++cell(X,Y,cow(_))
+   : .my_name(Me) & play(Me,_,Gr)
+  <- C = cow(X,Y);
+     +C;
+	 jmoise.broadcast(Gr, tell, C).
+-cell(X,Y,cow(_))
+   : .my_name(Me) & play(Me,_,Gr)
+  <- C = cow(X,Y);
+     -C;
+	 jmoise.broadcast(Gr, untell, C).
+
+
+
+/* -- general organisational plans -- */
+
+// when I have an obligation or permission to a mission, commit to it
++obligation(Sch, Mission) 
+  <- jmoise.commit_mission(Mission,Sch).
++permission(Sch, Mission)
+  <- jmoise.commit_mission(Mission,Sch).
+
+// if some scheme is finished, drop all intentions related to it.
+-scheme(_Spec,Id)
+  <- .drop_desire(_[scheme(Id)]).
+
++error(M)[source(orgManager)] 
+  <- .print("Error in organisational action: ",M); -error(M)[source(orgManager)].
+
+
 /* -- includes -- */
 
 { include("goto.asl") }         // include plans for moving around
 { include("exploration.asl") }  // include plans for exploration
 { include("herding.asl") }      // include plans for herding
-{ include("moise-common.asl") } // include common plans for MOISE+ agents
+// { include("moise-common.asl") } // include common plans for MOISE+ agents
 

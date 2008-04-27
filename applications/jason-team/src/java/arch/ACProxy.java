@@ -152,9 +152,7 @@ public class ACProxy extends ACAgent implements Runnable {
 
             // add location in perception
 			Literal lpos = new Literal("pos");
-			lpos.addTerm(new NumberTermImpl(agx));
-			lpos.addTerm(new NumberTermImpl(agy));
-    		lpos.addTerm(new NumberTermImpl(step));
+			lpos.addTerms(new NumberTermImpl(agx), new NumberTermImpl(agy), new NumberTermImpl(step));
 			percepts.add(lpos);
 
 			arq.initKnownCows();

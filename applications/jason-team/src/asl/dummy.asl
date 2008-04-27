@@ -30,7 +30,8 @@ random_pos(X,Y) :-
    pos(AgX,AgY,_) &
    jia.random(RX,40)   & RX > 5 & X = (RX-20)+AgX & X > 0 &
    jia.random(RY,40,5) & RY > 5 & Y = (RY-20)+AgY &
-   not jia.obstacle(X,Y).
+   not jia.obstacle(X,Y) &
+   not cell(X,Y,_).
 
 
 /* -- initial goal */
@@ -47,7 +48,7 @@ random_pos(X,Y) :-
 
 // revise target each 4 steps
 +pos(Step,_,_)                  // new cycle
-   : Step mod 10 == 0
+   : Step mod 6 == 0
   <- !decide_target. 
      
 
@@ -66,7 +67,6 @@ random_pos(X,Y) :-
      -+target(X,Y).
 
 +!decide_target                  // chose a new random pos
-   : not cell(_,_,cow(_))
   <- ?random_pos(NX,NY);
      .print("New random target: ",NX,",",NY);
      -+goal(search);

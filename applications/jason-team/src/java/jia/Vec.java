@@ -54,6 +54,16 @@ public final class Vec implements Cloneable {
 		while (t < 0)   t = t + PI2;
 		return new Vec(r*Math.cos(t), r*Math.sin(t));    	
     }
+    
+    /** turn the vec to 90 degrees clockwise */
+    public Vec turn90CW() {
+    	return new Vec(y, -x);
+    }
+    /** turn the vec to 90 degrees anticlockwise */
+    public Vec turn90ACW() {
+    	return new Vec(-y, x);    	
+    }
+    
     public Vec newMagnitude(double r) {
         return new Vec(r*Math.cos(t), r*Math.sin(t));
     }

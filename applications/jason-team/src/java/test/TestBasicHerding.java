@@ -152,17 +152,32 @@ public class TestBasicHerding {
         assertEquals(new Location(6,38), byIA);
         
         byIA =  new herd_position().getAgTarget(model, Formation.six, cowboy.getLocation(model));
-        assertEquals(new Location(5,38), byIA);
+        assertEquals(new Location(6,39), byIA);
         
+        // add an agent in 6,39
+        model.add(WorldModel.AGENT, 6,39);
+        byIA =  new herd_position().getAgTarget(model, Formation.six, cowboy.getLocation(model));
+        assertEquals(new Location(5,38), byIA);        
+
         // add an agent in 5,38
         model.add(WorldModel.AGENT, 5,38);
-        byIA =  new herd_position().getAgTarget(model, Formation.six, cowboy.getLocation(model));
+        byIA =  new herd_position().getAgTarget(model, Formation.six,cowboy.getLocation(model));
         assertEquals(new Location(7,42), byIA);        
 
-        // add an agent in 7,42 
+        // add an agent in 7,42
         model.add(WorldModel.AGENT, 7,42);
         byIA =  new herd_position().getAgTarget(model, Formation.six,cowboy.getLocation(model));
-        assertEquals(new Location(8,42), byIA);        
+        assertEquals(new Location(4,38), byIA);        
+
+        // add an agent in 4,38
+        model.add(WorldModel.AGENT, 4,38);
+        byIA =  new herd_position().getAgTarget(model, Formation.six,cowboy.getLocation(model));
+        assertEquals(null, byIA);        
+
+        // add an agent in 5,37
+        //model.add(WorldModel.AGENT, 5,37);
+        //byIA =  new herd_position().getAgTarget(model, Formation.six,cowboy.getLocation(model));
+        //assertEquals(new Location(5,37), byIA);        
     }
 
     @Test 
