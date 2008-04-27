@@ -155,14 +155,14 @@ public class herd_position extends DefaultInternalAction {
         	Vec agTarget = agsTarget;
         	//Location l = agTarget.add(mean).getLocation(model);
         	
-        	System.out.println(".......  "+dist+" antes angle "+agTarget);
+        	//System.out.println(".......  "+dist+" antes angle "+agTarget);
         	if (dist >= 0)
         		agTarget = agTarget.turn90CW();
         	else
         		agTarget = agTarget.turn90ACW();
         	
         	Location l = findFirstFreeLocTowardsTarget(agTarget, mean.add(agsTarget), initAgTS, dist, model);
-        	System.out.println(" =       "+dist+" result  "+l);
+        	//System.out.println(" =       "+dist+" result  "+l);
         	if (l != null)
         		r.add(pathToNearCow(model, l));
         	
@@ -196,7 +196,7 @@ public class herd_position extends DefaultInternalAction {
     	Location l = ref.getLocation(model);;
     	for (int s = initialSize; s <= maxSize; s++) {
     		l = target.newMagnitude(s).add(ref).getLocation(model);
-    		System.out.println("pos angle "+s+" = "+l);
+    		//System.out.println("pos angle "+s+" = "+l);
         	if ( (!model.inGrid(l) || model.hasObject(WorldModel.OBSTACLE, l)) && lastloc != null)
         		return lastloc;
     		lastloc = l;

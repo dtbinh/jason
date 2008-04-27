@@ -46,13 +46,14 @@ alloc_target(a3,pos(30,30)).
 +end_of_simulation(_Result)
   <- .abolish(group_area(_,_,_)).
 
-+!restart 
-  <- .print("*** restart ***"); 
++!restart.
+ 
+/*  <- .print("*** restart ***"). 
      //.drop_all_desires;
-     .abolish(target(_,_)).
+     //.abolish(target(_,_)).
      // TODO: what to do?
      //!decide_target.
-
+*/
 
 /* -- plans for the goals of all roles -- */
 

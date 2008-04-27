@@ -30,10 +30,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import moise.oe.GoalInstance;
+import moise.oe.GroupInstance;
 import moise.oe.MissionPlayer;
 import moise.oe.OE;
 import moise.oe.OEAgent;
 import moise.oe.Permission;
+import moise.oe.RolePlayer;
 import moise.oe.SchemeInstance;
 import moise.os.fs.Goal;
 import moise.os.fs.Goal.GoalType;
@@ -185,8 +187,9 @@ public class OrgAgent extends AgArch {
     }
 
    private void generateOrgGoalEvents() {
-        for (GoalInstance gi : getMyOEAgent().getPossibleGoals()) {
-            if (!alreadyGeneratedEvents.contains(gi)) {
+	   OEAgent me = getMyOEAgent();
+	   for (GoalInstance gi : getMyOEAgent().getPossibleGoals()) {
+		   if (!alreadyGeneratedEvents.contains(gi)) {
                 alreadyGeneratedEvents.add(gi);
 
                 Literal l = Literal.parseLiteral(gi.getAsProlog());
@@ -203,13 +206,25 @@ public class OrgAgent extends AgArch {
                 // add source annot
                 l.addAnnot(managerSource);
                 
-                // "role(notimplemented),group(notimplemented)"+
-                // TODO: add annots: role, group (percorrer as missoes do ag que
-                // em GI, procurar os papel com obrigacao para essa missao)
+                // try to find the role/group of this goal
+                // (the first all resp group of the scheme where I am)
+                for (GroupInstance g: gi.getScheme().getResponsibleGroups()) {
+                	for (RolePlayer rp: g.getPlayers()) {
+                		if (rp.getPlayer().equals(me)) {
+                			Structure role = new Structure("role");
+                			role.addTerm(new Atom(rp.getRole().getId()));
+                			l.addAnnot(role);
+
+                			Structure group = new Structure("group");
+                			group.addTerm(new Atom(rp.getGroup().getId()));
+                			l.addAnnot(group);
+                		}
+                	}
+                }
                 getTS().updateEvents(new Event(new Trigger(TEOperator.add, TEType.achieve, l), Intention.EmptyInt));
                 if (logger.isLoggable(Level.FINE)) logger.fine("New goal: " + l);
-            }
-        }
+		   }
+	   }
     }
    
    	private static final Atom aAchievementGoal = new Atom(GoalType.achievement.toString()); 

@@ -14,9 +14,8 @@
 
 +!define_formation[scheme(Sch)]
   <- .print("ooo I should define the formation of my group!");
-     ?my_group(G, herder);
-     .length(G,NumP);
-     jia.herd_position(NumP,L);
+     ?my_group_players(G, herder);
+     jia.herd_position(.length(G),L);
      .print("ooo formation is ",L);
 	 !alloc_all(G,L);
      .wait("+pos(_,_,_)"); // wait next cycle

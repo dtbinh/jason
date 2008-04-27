@@ -119,9 +119,23 @@
 
 /* -- plans for the goals of role scouter -- */
 
-+!follow_leader[scheme(Sch)]
-  <- .print("ooo I should follow the leader!");
-     // TODO:
++!follow_leader[scheme(Sch),group(Gr)]
+   : play(Leader, explorer, Gr)
+  <- .print("ooo I should follow the leader ",Leader);
+     ?pos(MyX,MyY,_);
+     ?ally_pos(Leader,LX,LY);
+     ?ag_perception_ratio(AGPR);
+     jia.dist(MyX, MyY, LX, LY, DistanceToLeader);
+     
+     // If I am far from him, go to him
+     .if( DistanceToLeader > (AGPR * 2) -3, {
+        .print("ooo Approaching leader.");
+     	-+target(LX,LY)
+     }, {
+        .print("ooo being in formation with leader.");
+        do(skip)
+     });
+     
      .wait("+pos(_,_,_)"); // wait next cycle
-     !!follow_leader[scheme(Sch)].
+     !!follow_leader[scheme(Sch),group(Gr)].
 
