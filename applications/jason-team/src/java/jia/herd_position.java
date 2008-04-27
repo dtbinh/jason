@@ -33,15 +33,18 @@ import env.WorldModel;
 public class herd_position extends DefaultInternalAction {
     
     public static final double maxStdDev = 3;
+    public static final int    agDistanceInFormation = 4;
     
     public enum Formation { 
     	one   { int[] getDistances() { return new int[] { 0 }; } }, 
-    	two   { int[] getDistances() { return new int[] { 2, -2 }; } },
-    	three { int[] getDistances() { return new int[] { 0, 4, -4 }; } },
-    	four  { int[] getDistances() { return new int[] { 2, -2, 6, -6 }; } },
-    	five  { int[] getDistances() { return new int[] { 0, 4, -4, 8, -8 }; } },
-    	six   { int[] getDistances() { return new int[] { 2, -2, 6, -6, 10, -10 }; } };
+    	two   { int[] getDistances() { return new int[] { sd, -sd }; } },
+    	three { int[] getDistances() { return new int[] { 0, d, -d }; } },
+    	four  { int[] getDistances() { return new int[] { sd, -sd, d+sd, -(d+sd) }; } },
+    	five  { int[] getDistances() { return new int[] { 0, d, -d, d*2, -d*2 }; } },
+    	six   { int[] getDistances() { return new int[] { sd, -sd, d+sd, -(d+sd), d*2+sd, -(d*2+sd) }; } };
     	abstract int[] getDistances();
+    	private static final int d  = agDistanceInFormation;
+    	private static final int sd = agDistanceInFormation/2;
     };
     
     @Override
