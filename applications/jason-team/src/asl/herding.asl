@@ -36,7 +36,7 @@
 // TODO: use min
 +!closest([],S,S,P,D).
 +!closest([pos(XH,YH)|T],Aux,S,pos(XP,YP),LD)
-  :  jia.dist(XH,YH,XP,YP,D) & D < LD // usar A*
+  :  jia.path_length(XH,YH,XP,YP,D) & D < LD // usar A*
   <- !closest(T,[pos(XH,YH)|Aux],S,pos(XP,YP),D).
 +!closest([pos(XH,YH)|T],Aux,S,pos(XP,YP),LD)
   <- .concat(Aux,[pos(XH,YH)],Aux2);

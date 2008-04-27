@@ -66,7 +66,7 @@
      
      // find distance to even agents
      .findall(ag_d(D,AgName),
-              ally_pos(AgName,X,Y) & agent_id(AgName,Id) & Id mod 2 == 0 & jia.dist(MyX, MyY, X, Y, D),
+              ally_pos(AgName,X,Y) & agent_id(AgName,Id) & Id mod 2 == 0 & jia.path_length(MyX, MyY, X, Y, D),
               LOdd);
      .sort(LOdd, LSOdd);
 
