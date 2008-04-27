@@ -203,9 +203,7 @@ public class MiningEnvironment extends SteppedEnvironment {
         // its location
         Location l = model.getAgPos(ag);
         Literal p = new Literal("pos");
-        p.addTerm(new NumberTermImpl(l.x));
-        p.addTerm(new NumberTermImpl(l.y));
-        p.addTerm(new NumberTermImpl(getStep()));
+        p.addTerms(new NumberTermImpl(l.x), new NumberTermImpl(l.y), new NumberTermImpl(getStep()));
         addPercept(agName, p);
         
         Literal cg = new Literal("carrying_gold");
@@ -258,9 +256,9 @@ public class MiningEnvironment extends SteppedEnvironment {
     
     public static Literal createCellPerception(int x, int y, Atom obj) {
     	Literal l = new Literal("cell");
-    	l.addTerm(new NumberTermImpl(x));
-    	l.addTerm(new NumberTermImpl(y));
-    	l.addTerm(obj); 
+    	l.addTerms(new NumberTermImpl(x),
+    	           new NumberTermImpl(y),
+    	           obj); 
     	return l;
     }
 

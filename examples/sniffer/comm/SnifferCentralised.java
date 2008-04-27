@@ -43,12 +43,13 @@ public class SnifferCentralised extends AgArch implements MsgListener {
 
         Calendar now = new GregorianCalendar();
 		Structure p = new Structure("time");
-		p.addTerm(new NumberTermImpl(now.get(Calendar.YEAR)));
-		p.addTerm(new NumberTermImpl(now.get(Calendar.MONTH)));
-		p.addTerm(new NumberTermImpl(now.get(Calendar.DAY_OF_MONTH)));
-		p.addTerm(new NumberTermImpl(now.get(Calendar.HOUR)));
-		p.addTerm(new NumberTermImpl(now.get(Calendar.MINUTE)));
-		p.addTerm(new NumberTermImpl(now.get(Calendar.SECOND)));
+		p.addTerms(
+				new NumberTermImpl(now.get(Calendar.YEAR)),
+				new NumberTermImpl(now.get(Calendar.MONTH)),
+				new NumberTermImpl(now.get(Calendar.DAY_OF_MONTH)),
+				new NumberTermImpl(now.get(Calendar.HOUR)),
+				new NumberTermImpl(now.get(Calendar.MINUTE)),
+				new NumberTermImpl(now.get(Calendar.SECOND)));
 		e.addTerm(p);
 	
 	
