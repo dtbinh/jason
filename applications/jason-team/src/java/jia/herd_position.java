@@ -186,11 +186,11 @@ public class herd_position extends DefaultInternalAction {
         	if (dist < 0)
         		initAgTS = Math.abs(dist)+1;
         }
-        System.out.println("all places "+r);
+        //System.out.println("all places "+r);
         return r;
     }
     
-    private Location findFirstFreeLocTowardsTarget(Vec target, Vec ref, int initialSize, int maxSize, LocalWorldModel model) {
+    public static Location findFirstFreeLocTowardsTarget(Vec target, Vec ref, int initialSize, int maxSize, LocalWorldModel model) {
     	Location lastloc = null;
     	maxSize = Math.abs(maxSize);
     	Location l = ref.getLocation(model);;

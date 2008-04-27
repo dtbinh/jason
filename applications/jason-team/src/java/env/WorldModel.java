@@ -23,7 +23,7 @@ public class WorldModel extends GridWorldModel {
 
     public static final int   agsByTeam = 6;
     
-    public static final int   agPerceptionRatio = 8;
+    public static final int   agPerceptionRatio  = 8;
     public static final int   cowPerceptionRatio = 4;    
 
     

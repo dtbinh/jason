@@ -10,6 +10,7 @@ import java.util.List;
 import jia.Search;
 import jia.Vec;
 import jia.herd_position;
+import jia.scouter_pos;
 import jia.herd_position.Formation;
 
 import org.junit.Before;
@@ -186,6 +187,19 @@ public class TestBasicHerding {
         model.add(WorldModel.ENEMY, 11,48);
         Location byIA =  new herd_position().getAgTarget(model, Formation.one, cowboy.getLocation(model));
         assertEquals(new Location(11,49), byIA);
+    }
+
+    @Test 
+    public void scouterPos() throws Exception {
+        scenario1();
+        Location byIA =  new scouter_pos().getScouterTarget(model, new Location(2,46), new Location(6,42));
+        assertEquals(new Location(5,49), byIA);
+
+        byIA =  new scouter_pos().getScouterTarget(model, new Location(2,46), new Location(3,42));
+        assertEquals(new Location(6,47), byIA);
+
+        byIA =  new scouter_pos().getScouterTarget(model, new Location(9,46), new Location(9,42));
+        assertEquals(new Location(22,46), byIA);
     }
 
     /*

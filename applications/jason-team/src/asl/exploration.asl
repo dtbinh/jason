@@ -133,9 +133,17 @@
      	-+target(LX,LY)
      }, {
         .print("ooo being in formation with leader.");
-        do(skip)
+        .send(Leader,askOne,target(X,Y),target(TX,TY));
+        jia.scouter_pos(LX, LY, TX, TY, SX, SY);
+     	-+target(SX,SY)
      });
      
      .wait("+pos(_,_,_)"); // wait next cycle
      !!follow_leader[scheme(Sch),group(Gr)].
 
+-!follow_leader[scheme(Sch),group(Gr)]
+  <- .current_intention(I);
+     .print("ooo Failure to follow_leader ",I);
+     .wait("+pos(_,_,_)"); // wait next cycle
+     !!follow_leader[scheme(Sch),group(Gr)].
+     
