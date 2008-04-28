@@ -12,6 +12,8 @@ import jason.asSyntax.Term;
 import jason.environment.grid.Location;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -34,7 +36,7 @@ public class herd_position extends DefaultInternalAction {
     
     public static final double maxStdDev = 3;
     public static final int    agDistanceInFormation = 4;
-    
+
     public enum Formation { 
     	one   { int[] getDistances() { return new int[] { 0 }; } }, 
     	two   { int[] getDistances() { return new int[] { sd, -sd }; } },
@@ -47,14 +49,20 @@ public class herd_position extends DefaultInternalAction {
     	private static final int sd = agDistanceInFormation/2;
     };
     
+    LocalWorldModel model;
+
+    public void setModel(LocalWorldModel model) {
+    	this.model = model;
+    }
+    
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
         try {
         	CowboyArch arch       = (CowboyArch)ts.getUserAgArch();
-            LocalWorldModel model = arch.getModel();
+        	model = arch.getModel();
             if (model == null)
             	return false;
-            Location agLoc        = model.getAgPos(arch.getMyId());
+            Location agLoc = model.getAgPos(arch.getMyId());
 
             // identify the formation id
             Formation formation = Formation.six;
@@ -67,20 +75,20 @@ public class herd_position extends DefaultInternalAction {
             
             // update GUI
             if (arch.hasGUI())
-            	setFormationLoc(model, formation);
+            	setFormationLoc(formation);
 
             // if the return is a location for one agent
             if (args.length == 3) {
-	            Location agTarget = getAgTarget(model, formation, agLoc);
+	            Location agTarget = getAgTarget(formation, agLoc);
 	            if (agTarget != null) {
 	                return un.unifies(args[1], new NumberTermImpl(agTarget.x)) && 
 	                       un.unifies(args[2], new NumberTermImpl(agTarget.y));
 	            } else {
-	            	ts.getLogger().info("No target! I am at "+agLoc+" places are "+formationPlaces(model, formation));
+	            	ts.getLogger().info("No target! I am at "+agLoc+" places are "+formationPlaces(formation));
 	            }
             } else {
             	// return all the locations for the formation
-            	List<Location> locs = formationPlaces(model, formation);
+            	List<Location> locs = formationPlaces(formation);
             	if (locs != null) {
             		ListTerm r = new ListTermImpl();
             		ListTerm tail = r;
@@ -91,7 +99,7 @@ public class herd_position extends DefaultInternalAction {
             		}
             		return un.unifies(args[1], r);
             	} else {
-	            	ts.getLogger().info("No formation possible! I am at "+agLoc+" places are "+formationPlaces(model, formation));            		
+	            	ts.getLogger().info("No formation possible! I am at "+agLoc+" places are "+formationPlaces(formation));            		
             	}
             }
         } catch (Throwable e) {
@@ -100,9 +108,9 @@ public class herd_position extends DefaultInternalAction {
         return false;
     }
     
-    public Location getAgTarget(LocalWorldModel model, Formation formation, Location ag) throws Exception {
+    public Location getAgTarget(Formation formation, Location ag) throws Exception {
         Location r = null;
-        List<Location> locs = formationPlaces(model, formation);
+        List<Location> locs = formationPlaces(formation);
         if (locs != null) {
         	for (Location l : locs) {
 	            if (ag.equals(l) || // I am there
@@ -118,9 +126,9 @@ public class herd_position extends DefaultInternalAction {
         return r;
     }
 
-    public void setFormationLoc(LocalWorldModel model, Formation formation) throws Exception {
+    public void setFormationLoc(Formation formation) throws Exception {
     	model.removeAll(WorldModel.FORPLACE);
-        List<Location> locs = formationPlaces(model, formation);
+        List<Location> locs = formationPlaces(formation);
         if (locs != null) {
 	        for (Location l : locs) {
 	            if (model.inGrid(l)) {
@@ -130,7 +138,7 @@ public class herd_position extends DefaultInternalAction {
         }
     }
     
-    private List<Location> formationPlaces(LocalWorldModel model, Formation formation) throws Exception {
+    private List<Location> formationPlaces(Formation formation) throws Exception {
         List<Vec> cows = new ArrayList<Vec>();
         for (Location c: model.getCows()) {
             cows.add(new Vec(model, c));
@@ -138,8 +146,14 @@ public class herd_position extends DefaultInternalAction {
         if (cows.isEmpty())
             return null;
         
-        cows = Vec.cluster(cows, 2); // find center/clusterise
+        //cows = Vec.cluster(cows, 2); // find center/clusterise
+        cows = cluster(cows, WorldModel.cowPerceptionRatio);
 
+        List<Location> clusterLocs = new ArrayList<Location>();
+        for (Vec v: cows) {
+        	clusterLocs.add(v.getLocation(model));
+        }
+        
         Vec mean = Vec.mean(cows);
         int stepsFromCenter = (int)Math.round(Vec.max(cows).sub(mean).magnitude())+1;
         //Vec max = Vec.max(cows);
@@ -167,7 +181,7 @@ public class herd_position extends DefaultInternalAction {
         	Location l = findFirstFreeLocTowardsTarget(agTarget, mean.add(agsTarget), initAgTS, dist, model);
         	//System.out.println(" =       "+dist+" result  "+l);
         	if (l != null)
-        		r.add(pathToNearCow(model, l));
+        		r.add(pathToNearCow(l, clusterLocs));
         	
         	/*
         	Location lastloc = null;
@@ -207,9 +221,9 @@ public class herd_position extends DefaultInternalAction {
     	return l; //ref.getLocation(model); //target.add(ref).getLocation(model);
     }
     
-    private Location pathToNearCow(LocalWorldModel model, Location t) {
+    private Location pathToNearCow(Location t, List<Location> cluster) {
     	Location near = null;
-        for (Location c: model.getCows()) {
+        for (Location c: cluster) {
         	if (near == null || t.maxBorder(c) < t.maxBorder(near))
         		near = c;
         }
@@ -225,6 +239,59 @@ public class herd_position extends DefaultInternalAction {
         }
     	return t;
     }
+    
+    public static List<Vec> cluster(List<Vec> cows, int maxDist) {
+    	/*
+			Vs = set of all seen cows (sorted by distance to the centre of cluster)
+			Cs  = { the cow near to the center of Vs }
+
+			add = true
+			while (add)
+  				add = false
+  				for all v in Vs
+    				if (some cow in Cs sees v)
+      					move v from Vs to Cs
+      					add = true
+    	*/
+    	Vec mean = Vec.mean(cows);
+    	List<Vec> vs = new ArrayList<Vec>();
+    	// place all cows in ref to mean
+    	for (Vec v: cows)
+    		vs.add(v.sub(mean));
+    	
+    	Collections.sort(vs);
+    	
+    	List<Vec> cs = new ArrayList<Vec>();
+    	if (!vs.isEmpty()) 
+    		cs.add(vs.remove(0));
+    	
+    	boolean add = true;
+    	while (add) {
+    		add = false;
+    		Iterator<Vec> i = vs.iterator();
+    		while (i.hasNext()) {
+        		Vec v = i.next();
+        		
+        		Iterator<Vec> j = cs.iterator();
+        		while (j.hasNext()) {
+            		Vec c = j.next();
+        			if (c.sub(v).magnitude() < maxDist) {
+        				cs.add(v);
+        				i.remove();
+        				add = true;
+        				break;
+        			}
+        		}
+    		}
+    	}
+    	
+    	List<Vec> r = new ArrayList<Vec>();
+    	// place all cows in ref to 0,0
+    	for (Vec v: cs)
+    		r.add(v.add(mean));
+        return r;
+    }
+    
     
 	/*
     public Location nearFreeForAg(LocalWorldModel model, Location ag, Location t) throws Exception {

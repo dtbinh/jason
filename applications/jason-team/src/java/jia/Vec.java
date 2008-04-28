@@ -8,7 +8,7 @@ import java.util.List;
 import arch.LocalWorldModel;
 
 
-public final class Vec implements Cloneable {
+public final class Vec implements Cloneable, Comparable<Vec> {
     
 	// immutable fields (for a immutable object)
     public final double x,y;
@@ -67,21 +67,6 @@ public final class Vec implements Cloneable {
     public Vec newMagnitude(double r) {
         return new Vec(r*Math.cos(t), r*Math.sin(t));
     }
-    @Override
-    public boolean equals(Object o) {
-        if (o == null) return false;
-        if (o == this) return true;
-        if (o instanceof Vec) {
-            Vec v = (Vec)o;
-            return (getX() == v.getX()) && (getY() == v.getY());
-        }
-        return false;
-    }
-    
-    public Object clone() {
-    	return this; // it is an immutable object, no need to create a new one
-    }
-
 
 	/**
 	 * Provides info on which octant (0-7) the vector lies in.
@@ -106,6 +91,33 @@ public final class Vec implements Cloneable {
 		return ((int)(temp/(Math.PI/2))%4);
 	}
 
+    
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) return false;
+        if (o == this) return true;
+        if (o instanceof Vec) {
+            Vec v = (Vec)o;
+            return (getX() == v.getX()) && (getY() == v.getY());
+        }
+        return false;
+    }
+    
+    public int compareTo(Vec o) {
+    	if (r > o.r) return 1;
+    	if (r < o.r) return -1;
+    	return 0;
+    }
+
+    public Object clone() {
+    	return this; // it is an immutable object, no need to create a new one
+    }
+
+    
+    @Override
+    public String toString() {
+        return getX() + "," + getY();
+    }
 
     //
     // Useful static methods for list of vecs
@@ -128,6 +140,7 @@ public final class Vec implements Cloneable {
         return r;
     }
     
+    /*
     public static List<Vec> cluster(List<Vec> vs, int maxstddev) {
     	vs = new ArrayList<Vec>(vs); // result vectors in the cluster
     	Vec mean   = Vec.mean(vs);
@@ -142,6 +155,7 @@ public final class Vec implements Cloneable {
         }
         return vs;
     }
+    */
 
     public static Vec mean(List<Vec> vs) {
         if (vs.isEmpty())
@@ -168,9 +182,4 @@ public final class Vec implements Cloneable {
         return new Vec( Math.sqrt(x), Math.sqrt(y));
     }
 
-    
-    @Override
-    public String toString() {
-        return getX() + "," + getY();
-    }
 }

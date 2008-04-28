@@ -1,10 +1,10 @@
 package test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import jason.environment.grid.Location;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import jia.Search;
@@ -70,7 +70,7 @@ public class TestBasicHerding {
     }
     
     @Test
-    public void testVect() {
+    public void testVec() {
         scenario1();
         //assertEquals(new Vec(6,7), cow.add(cowboy));
         //assertEquals(new Location(6,42), cow.add(cowboy).getLocation(model));
@@ -79,6 +79,22 @@ public class TestBasicHerding {
         assertEquals(new Vec(3,2), new Vec(6,7).sub(cowboy)); //new Vec(model, cowboy.getLocation(model), cow.add(cowboy).getLocation(model)));
         Vec v = new Vec(3,2);
         assertEquals(v, v.newAngle(v.angle()));
+    }
+    
+    @Test 
+    public void testVecSort() {
+    	scenario1();
+    	
+        List<Vec> cowsl = new ArrayList<Vec>(); 
+        for (int i=0; i<cows.length; i++) {
+            cowsl.add(cows[i]);
+        }
+        Collections.sort(cowsl);
+        assertEquals(new Vec(0,1), cowsl.get(0));
+        assertEquals(new Vec(4,8), cowsl.get(1));
+        assertEquals(new Vec(6,7), cowsl.get(2));
+        assertEquals(new Vec(5,10), cowsl.get(3));
+        assertEquals(new Vec(5,30), cowsl.get(4));
     }
 
     @Test
@@ -136,9 +152,9 @@ public class TestBasicHerding {
         }
 
         // find center/clusterise
-        cowsl = Vec.cluster(cowsl, 2);
-        Vec stddev = Vec.stddev(cowsl, Vec.mean(cowsl));
-        assertTrue(stddev.magnitude() < 3);
+        cowsl = herd_position.cluster(cowsl, WorldModel.cowPerceptionRatio);
+        //Vec stddev = Vec.stddev(cowsl, Vec.mean(cowsl));
+        assertEquals(3, cowsl.size());
         
         Vec mean   = Vec.mean(cowsl);
         assertEquals(new Vec(5,8), mean);
@@ -149,30 +165,33 @@ public class TestBasicHerding {
         int stepsFromCenter = (int)Math.round(Vec.max(cowsl).sub(mean).magnitude())+1;
         assertEquals(3, stepsFromCenter);
         
-        Location byIA =  new herd_position().getAgTarget(model, Formation.one, cowboy.getLocation(model));
+        herd_position hp = new herd_position();
+        hp.setModel(model);
+        
+        Location byIA =  hp.getAgTarget(Formation.one, cowboy.getLocation(model));
         assertEquals(new Location(6,38), byIA);
         
-        byIA =  new herd_position().getAgTarget(model, Formation.six, cowboy.getLocation(model));
+        byIA =  hp.getAgTarget(Formation.six, cowboy.getLocation(model));
         assertEquals(new Location(6,39), byIA);
         
         // add an agent in 6,39
         model.add(WorldModel.AGENT, 6,39);
-        byIA =  new herd_position().getAgTarget(model, Formation.six, cowboy.getLocation(model));
+        byIA =  hp.getAgTarget(Formation.six, cowboy.getLocation(model));
         assertEquals(new Location(5,38), byIA);        
 
         // add an agent in 5,38
         model.add(WorldModel.AGENT, 5,38);
-        byIA =  new herd_position().getAgTarget(model, Formation.six,cowboy.getLocation(model));
+        byIA =  hp.getAgTarget(Formation.six,cowboy.getLocation(model));
         assertEquals(new Location(7,42), byIA);        
 
         // add an agent in 7,42
         model.add(WorldModel.AGENT, 7,42);
-        byIA =  new herd_position().getAgTarget(model, Formation.six,cowboy.getLocation(model));
+        byIA =  hp.getAgTarget(Formation.six,cowboy.getLocation(model));
         assertEquals(new Location(4,38), byIA);        
 
         // add an agent in 4,38
         model.add(WorldModel.AGENT, 4,38);
-        byIA =  new herd_position().getAgTarget(model, Formation.six,cowboy.getLocation(model));
+        byIA =  hp.getAgTarget(Formation.six,cowboy.getLocation(model));
         assertEquals(null, byIA);        
 
         // add an agent in 5,37
@@ -185,7 +204,19 @@ public class TestBasicHerding {
     public void moveCows3() throws Exception {
         scenario2();
         model.add(WorldModel.ENEMY, 11,48);
-        Location byIA =  new herd_position().getAgTarget(model, Formation.one, cowboy.getLocation(model));
+
+        List<Vec> cowsl = new ArrayList<Vec>(); 
+        for (int i=0; i<cows.length; i++) {
+            cowsl.add(cows[i]);
+        }
+
+        cowsl = herd_position.cluster(cowsl, WorldModel.cowPerceptionRatio);
+        assertEquals(9, cowsl.size());
+        
+        herd_position hp = new herd_position();
+        hp.setModel(model);
+        
+        Location byIA =  hp.getAgTarget(Formation.one, cowboy.getLocation(model));
         assertEquals(new Location(11,49), byIA);
     }
 
