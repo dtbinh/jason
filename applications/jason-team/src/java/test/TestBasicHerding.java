@@ -22,13 +22,12 @@ import env.WorldModel;
 
 public class TestBasicHerding {
 
-    Vec[] cows;
     Vec cowboy;
     LocalWorldModel model;
     
     @Before
     public void scenario() {
-        model = new LocalWorldModel(50,50);
+        model = new LocalWorldModel(50,50, WorldModel.agPerceptionRatio, null);
         model.setCorral(new Location(0,49), new Location(2,49));
         model.wall(7, 44, 7, 49);
     }
@@ -37,37 +36,50 @@ public class TestBasicHerding {
         cowboy = new Vec(3,5);
         model.add(WorldModel.AGENT, cowboy.getLocation(model));
 
-        cows = new Vec[5];
-        cows[0] = new Vec(6,7);
-        cows[1] = new Vec(5,30);
-        cows[2] = new Vec(4,8);
-        cows[3] = new Vec(5,10);
-        cows[4] = new Vec(0,1);
-
-        for (int i=0; i<cows.length; i++)
-            model.addCow(cows[i].getLocation(model));
-
+        addToModel(
+                new Vec(6,7),
+                new Vec(5,30),
+                new Vec(4,8),
+                new Vec(5,10),
+                new Vec(0,1));
     }
     
     public void scenario2() {
         cowboy = new Vec(11,3);
         model.add(WorldModel.AGENT, cowboy.getLocation(model));
         
-        cows = new Vec[9];
-        cows[0] = new Vec(8,0);
-        cows[1] = new Vec(9,0);
-        cows[2] = new Vec(10,0);
-        cows[3] = new Vec(8,1);
-        cows[4] = new Vec(9,1);
-        cows[5] = new Vec(10,1);
-        cows[6] = new Vec(8,2);
-        cows[7] = new Vec(9,2);
-        cows[8] = new Vec(10,2);
-
-        for (int i=0; i<cows.length; i++)
-            model.addCow(cows[i].getLocation(model));
-        
+        addToModel(
+                new Vec(8,0),
+                new Vec(9,0),
+                new Vec(10,0),
+                new Vec(8,1),
+                new Vec(9,1),
+                new Vec(10,1),
+                new Vec(8,2),
+                new Vec(9,2),
+                new Vec(10,2));
     }
+
+    @Test
+    public void bigCluster() {
+        // big cluster
+        for (int x = 10; x < 30; x++) {
+            for (int y = 5; y < 20; y++) {
+                addToModel(new Vec(model,x,y));
+            }
+        }
+        
+        List<Vec> cowsl = herd_position.cluster(model.getCows(), WorldModel.cowPerceptionRatio);
+        assertEquals(model.getCows().size(), cowsl.size());
+    }
+
+    private void addToModel(Vec... cows) {
+        for (int i=0; i<cows.length; i++) {
+            Location l = cows[i].getLocation(model);
+            model.addCow(l.x, l.y);
+        }
+    }
+    
     
     @Test
     public void testVec() {
@@ -85,10 +97,7 @@ public class TestBasicHerding {
     public void testVecSort() {
     	scenario1();
     	
-        List<Vec> cowsl = new ArrayList<Vec>(); 
-        for (int i=0; i<cows.length; i++) {
-            cowsl.add(cows[i]);
-        }
+        List<Vec> cowsl = new ArrayList<Vec>(model.getCows());
         Collections.sort(cowsl);
         assertEquals(new Vec(0,1), cowsl.get(0));
         assertEquals(new Vec(4,8), cowsl.get(1));
@@ -146,13 +155,8 @@ public class TestBasicHerding {
     public void moveCows2() throws Exception {
         scenario1();
         
-        List<Vec> cowsl = new ArrayList<Vec>(); 
-        for (int i=0; i<cows.length; i++) {
-            cowsl.add(cows[i]);
-        }
-
         // find center/clusterise
-        cowsl = herd_position.cluster(cowsl, WorldModel.cowPerceptionRatio);
+        List<Vec> cowsl = herd_position.cluster(model.getCows(), WorldModel.cowPerceptionRatio);
         //Vec stddev = Vec.stddev(cowsl, Vec.mean(cowsl));
         assertEquals(3, cowsl.size());
         
@@ -205,12 +209,7 @@ public class TestBasicHerding {
         scenario2();
         model.add(WorldModel.ENEMY, 11,48);
 
-        List<Vec> cowsl = new ArrayList<Vec>(); 
-        for (int i=0; i<cows.length; i++) {
-            cowsl.add(cows[i]);
-        }
-
-        cowsl = herd_position.cluster(cowsl, WorldModel.cowPerceptionRatio);
+        List<Vec> cowsl = herd_position.cluster(model.getCows(), WorldModel.cowPerceptionRatio);
         assertEquals(9, cowsl.size());
         
         herd_position hp = new herd_position();

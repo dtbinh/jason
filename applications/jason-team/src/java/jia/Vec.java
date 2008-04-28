@@ -3,6 +3,7 @@ package jia;
 import jason.environment.grid.Location;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import arch.LocalWorldModel;
@@ -29,6 +30,14 @@ public final class Vec implements Cloneable, Comparable<Vec> {
         this.y = model.getHeight()-l.y-1;
         this.r = Math.sqrt(x*x + y*y);
         this.t = Math.atan2(y,x);
+    }
+    
+    /** create a vector based on a location in the model */
+    public Vec(LocalWorldModel model, int x, int y) {
+        this.x = x;
+        this.y = model.getHeight()-y-1;
+        this.r = Math.sqrt(x*x + this.y*this.y);
+        this.t = Math.atan2(this.y,x);
     }
     
     public int getX() { return (int)Math.round(x); }
@@ -91,6 +100,10 @@ public final class Vec implements Cloneable, Comparable<Vec> {
 		return ((int)(temp/(Math.PI/2))%4);
 	}
 
+	@Override
+	public int hashCode() {
+	    return (int)((x + y) * 37);
+	}
     
     @Override
     public boolean equals(Object o) {
@@ -123,7 +136,7 @@ public final class Vec implements Cloneable, Comparable<Vec> {
     // Useful static methods for list of vecs
     //
     
-    public static Vec max(List<Vec> vs) {
+    public static Vec max(Collection<Vec> vs) {
         Vec max = null;
         for (Vec v: vs) {
             if (max == null || max.r < v.r)
@@ -132,7 +145,7 @@ public final class Vec implements Cloneable, Comparable<Vec> {
         return max;
     }
 
-    public static List<Vec> sub(List<Vec> vs, Vec ref) {
+    public static List<Vec> sub(Collection<Vec> vs, Vec ref) {
     	List<Vec> r = new ArrayList<Vec>(vs.size());
         for (Vec v: vs) {
         	r.add(v.sub(ref));
@@ -157,7 +170,7 @@ public final class Vec implements Cloneable, Comparable<Vec> {
     }
     */
 
-    public static Vec mean(List<Vec> vs) {
+    public static Vec mean(Collection<Vec> vs) {
         if (vs.isEmpty())
             return new Vec(0,0);
         double x = 0, y = 0;
@@ -168,7 +181,7 @@ public final class Vec implements Cloneable, Comparable<Vec> {
         return new Vec(x/vs.size(), y/vs.size());  
     }
     
-    public static Vec stddev(List<Vec> vs, Vec mean) {
+    public static Vec stddev(Collection<Vec> vs, Vec mean) {
         if (vs.isEmpty())
             return new Vec(0,0);
     	double x = 0, y = 0;

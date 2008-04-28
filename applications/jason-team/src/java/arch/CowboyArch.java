@@ -14,8 +14,6 @@ import jason.environment.grid.Location;
 import jason.mas2j.ClassParameters;
 import jason.runtime.Settings;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,7 +29,7 @@ import env.WorldView;
  */
 public class CowboyArch extends IdentifyCrashed {
 
-	LocalWorldModel model = new LocalWorldModel(10,10);
+	LocalWorldModel model = null;
 	WorldView       view  = null;
 	
 	String     simId = null;
@@ -57,6 +55,8 @@ public class CowboyArch extends IdentifyCrashed {
 	@Override
     public void initAg(String agClass, ClassParameters bbPars, String asSrc, Settings stts) throws JasonException {
 		super.initAg(agClass, bbPars, asSrc, stts);
+		
+		model = new LocalWorldModel(10,10, WorldModel.agsByTeam, getTS().getAg().getBB()); // just to have a default model
 	    gui = "yes".equals(stts.getUserParameter("gui"));
 	    if ("yes".equals(stts.getUserParameter("write_status"))) {
 	        writeStatusThread = WriteStatusThread.create(this);
@@ -68,7 +68,6 @@ public class CowboyArch extends IdentifyCrashed {
         if (massimBackDir != null && massimBackDir.startsWith("\"")) 
             massimBackDir = massimBackDir.substring(1,massimBackDir.length()-1);
         logger = Logger.getLogger(CowboyArch.class.getName() + ".CA-" + getAgName());
-
 	}
 	
 	@Override
@@ -110,7 +109,7 @@ public class CowboyArch extends IdentifyCrashed {
     /** The perception of the grid size is removed from the percepts list 
         and "directly" added as a belief */
     void gsizePerceived(int w, int h, String opponent) throws RevisionFailedException {
-        model = new LocalWorldModel(w, h);
+        model = new LocalWorldModel(w, h, WorldModel.agsByTeam, getTS().getAg().getBB());
         getTS().getAg().addBel(Literal.parseLiteral("gsize("+w+","+h+")"));
         playing = true;
 
@@ -242,9 +241,10 @@ public class CowboyArch extends IdentifyCrashed {
         return l;
     }
 
-    private static final Literal cowstoclean = Literal.parseLiteral("cell(_,_,cow(_))");
-    private boolean cleanCows = false;
+    //private static final Literal cowstoclean = Literal.parseLiteral("cell(_,_,cow(_))");
+    //private boolean cleanCows = false;
     
+    /*
     @Override
     public synchronized void agDidPerceive() {
     	super.agDidPerceive();
@@ -255,15 +255,18 @@ public class CowboyArch extends IdentifyCrashed {
         	cleanCows = false;
     	}
     }
+    */
     
     void initKnownCows() {
     	model.clearCows();
-    	cleanCows = true;
-    }
-    void cowPerceived(int x, int y) {
-    	model.addCow(x,y);
+    	//cleanCows = true;
     }
     
+    //void cowPerceived(int x, int y) {
+    //	model.addCow(x,y);
+    //}
+    
+    /*
     void sendCowsToTeam() {
 		try {
 			Message m = new Message("tell-cows", null, null, new ArrayList<Location>(model.getCows()));
@@ -272,6 +275,7 @@ public class CowboyArch extends IdentifyCrashed {
 			e.printStackTrace();
 		}    	
     }
+    */
 
     void enemyPerceived(int x, int y) {
         model.add(WorldModel.ENEMY, x, y); 
@@ -327,11 +331,13 @@ public class CowboyArch extends IdentifyCrashed {
     			Message m  = im.next();
     			if (m.getIlForce().equals("tell-cows")) {
     				im.remove();
+    				/* not used anymore
     				if (model != null) {
 	    				for (Location l: (Collection<Location>)m.getPropCont()) {
 	    					cowPerceived(l.x, l.y);
 	    				}
     				}
+    				*/
     			} else {
 	    			String  ms = m.getPropCont().toString();
 	    			if (ms.startsWith("cell") && ms.endsWith("obstacle)") && model != null) {

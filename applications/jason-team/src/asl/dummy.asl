@@ -50,7 +50,11 @@ random_pos(X,Y) :-
 +pos(Step,_,_)                  // new cycle
    : Step mod 6 == 0
   <- !decide_target. 
-     
+
+
+// add all cows in BB (used by the arch)
++cell(X,Y,cow(_)) <- +cow(X,Y).
+-cell(X,Y,cow(_)) <- -cow(X,Y).
 
 /* -- decide a new target -- */
 

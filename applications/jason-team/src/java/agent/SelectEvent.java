@@ -10,14 +10,13 @@ import java.util.Iterator;
 import java.util.Queue;
 
 /**
- * change the default select event function to prefer cell(_,_,gold) events.
+ * change the default select event function to prefer cell(_,_,cow(_)) events.
  * 
  * @author Jomi
  */
 public class SelectEvent extends Agent {
 
-	private Trigger gold    = Trigger.parseTrigger("+cell(_,_,gold)");
-	private Trigger restart = Trigger.parseTrigger("+restart");
+	private Trigger cow  = Trigger.parseTrigger("+cell(_,_,cow(_))");
 	private Unifier un   = new Unifier();
 	
     public Event selectEvent(Queue<Event> events) {
@@ -25,14 +24,11 @@ public class SelectEvent extends Agent {
     	while (ie.hasNext()) {
     		un.clear();
     		Event e = ie.next();
-        	if (un.unifies(gold, e.getTrigger()) || un.unifies(restart, e.getTrigger())) {
-        		//getTS().getLogger().info("custom select event "+e);
+        	if (un.unifies(cow, e.getTrigger())) {
     			ie.remove();
     			return e;
     		}
     	}
         return super.selectEvent(events);
     }
-
-
 }

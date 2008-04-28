@@ -188,8 +188,8 @@ public class ACProxy extends ACAgent implements Runnable {
                             int cowId = Integer.parseInt(type.getAttribute("ID"));
                             Structure lc = new Literal("cow");
                             lc.addTerm(new NumberTermImpl( cowId ));
-                            percepts.add(CowboyArch.createCellPerception(cellx, celly, lc));
-                            arq.cowPerceived(absx, absy);
+                            percepts.add(CowboyArch.createCellPerception(absx, absy, lc));
+                            //arq.cowPerceived(absx, absy);
                             
                         } else if (type.getNodeName().equals("obstacle")) { 
 							arq.obstaclePerceived(absx, absy, CowboyArch.createCellPerception(absx, absy, CowboyArch.aOBSTACLE));

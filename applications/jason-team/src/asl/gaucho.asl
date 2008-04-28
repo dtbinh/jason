@@ -94,16 +94,16 @@ TODO: use a list given by BUF
 +!share_seen_cows.
 
 // simple implementation of share_cows (see TODO above)
-+cell(X,Y,cow(_))
++cell(X,Y,cow(_))[source(percept)]
    : .my_name(Me) & play(Me,_,Gr)
   <- C = cow(X,Y);
      +C;
-	 jmoise.broadcast(Gr, tell, C).
--cell(X,Y,cow(_))
+     jmoise.broadcast(Gr, tell, C).
+-cell(X,Y,cow(_))[source(percept)]
    : .my_name(Me) & play(Me,_,Gr)
   <- C = cow(X,Y);
      -C;
-	 jmoise.broadcast(Gr, untell, C).
+     jmoise.broadcast(Gr, untell, C).
 
 
 

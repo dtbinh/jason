@@ -131,7 +131,7 @@ public class ACArchitecture extends CowboyArch {
     }
      */
 	
-	class WaitSleep extends Thread {
+    class WaitSleep extends Thread {
 	    
 	    ActionExec        lastAction;
         String            lastActionInCurrentCycle;
@@ -140,6 +140,7 @@ public class ACArchitecture extends CowboyArch {
 	    Condition         cycle = lock.newCondition();
 	    long              timestartcycle = 0;
 	    int               cycleCounter = 0;
+	    
 	    
 	    WaitSleep() {
 	        super("WaitSpeepToSendAction");

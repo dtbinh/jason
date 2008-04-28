@@ -12,6 +12,7 @@ import jason.asSyntax.Term;
 import jason.environment.grid.Location;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -50,6 +51,7 @@ public class herd_position extends DefaultInternalAction {
     };
     
     LocalWorldModel model;
+    List<Location> lastCluster = null;
 
     public void setModel(LocalWorldModel model) {
     	this.model = model;
@@ -84,7 +86,7 @@ public class herd_position extends DefaultInternalAction {
 	                return un.unifies(args[1], new NumberTermImpl(agTarget.x)) && 
 	                       un.unifies(args[2], new NumberTermImpl(agTarget.y));
 	            } else {
-	            	ts.getLogger().info("No target! I am at "+agLoc+" places are "+formationPlaces(formation));
+	            	ts.getLogger().info("No target! I am at "+agLoc+" places are "+formationPlaces(formation)+" cluster is "+lastCluster);
 	            }
             } else {
             	// return all the locations for the formation
@@ -139,20 +141,18 @@ public class herd_position extends DefaultInternalAction {
     }
     
     private List<Location> formationPlaces(Formation formation) throws Exception {
-        List<Vec> cows = new ArrayList<Vec>();
-        for (Location c: model.getCows()) {
-            cows.add(new Vec(model, c));
-        }
-        if (cows.isEmpty())
-            return null;
-        
         //cows = Vec.cluster(cows, 2); // find center/clusterise
-        cows = cluster(cows, WorldModel.cowPerceptionRatio);
+
+        List<Vec>cows = cluster(model.getCows(), WorldModel.cowPerceptionRatio);
 
         List<Location> clusterLocs = new ArrayList<Location>();
         for (Vec v: cows) {
         	clusterLocs.add(v.getLocation(model));
         }
+        lastCluster = clusterLocs;
+
+        if (cows.isEmpty())
+            return null;
         
         Vec mean = Vec.mean(cows);
         int stepsFromCenter = (int)Math.round(Vec.max(cows).sub(mean).magnitude())+1;
@@ -240,7 +240,7 @@ public class herd_position extends DefaultInternalAction {
     	return t;
     }
     
-    public static List<Vec> cluster(List<Vec> cows, int maxDist) {
+    public static List<Vec> cluster(Collection<Vec> cows, int maxDist) {
     	/*
 			Vs = set of all seen cows (sorted by distance to the centre of cluster)
 			Cs  = { the cow near to the center of Vs }

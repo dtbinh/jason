@@ -1,14 +1,18 @@
 package arch;
 
+import jason.asSyntax.Literal;
+import jason.asSyntax.NumberTerm;
+import jason.bb.BeliefBase;
 import jason.environment.grid.Location;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import jia.Vec;
 import env.WorldModel;
 
 
@@ -24,24 +28,28 @@ public class LocalWorldModel extends WorldModel {
     
     private Random			  random = new Random();
 
-    Set<Location> cows = new HashSet<Location>();
+    Set<Vec>      cows = new HashSet<Vec>();
+    boolean       isCowsUptodate = false;
     
     int[][]       cowsrep; // cows repulsion 
     int[][]       agsrep;  // agents repulsion
     int[][]       obsrep;  // obstacle repulsion
     
+    BeliefBase bb; // agent's BB
+    
     //private Logger            logger   = Logger.getLogger("jasonTeamSimLocal.mas2j." + LocalWorldModel.class.getName());
 
-    public static LocalWorldModel create(int w, int h, int nbAg) {
-    	return new LocalWorldModel(w,h,nbAg);
-    }
+    //public static LocalWorldModel create(int w, int h, int nbAg) {
+    //	return new LocalWorldModel(w,h,nbAg);
+    //}
     
-    public LocalWorldModel(int w, int h) {
-        this(w, h, 6);
-    }
+    //public LocalWorldModel(int w, int h) {
+    //   this(w, h, 6);
+    //}
     
-    public LocalWorldModel(int w, int h, int nbAg) {
+    public LocalWorldModel(int w, int h, int nbAg, BeliefBase bb) {
         super(w, h, nbAg);
+        this.bb = bb;
         
         visited = new int[getWidth()][getHeight()];
         for (int i = 0; i < getWidth(); i++)
@@ -81,40 +89,52 @@ public class LocalWorldModel extends WorldModel {
     	}
     }
 
-
+    // cows methods
+    
     public void clearCows() {
-    	removeAll(WorldModel.COW);
+        isCowsUptodate = false;
+    }
+    
+    public Set<Vec> getCows() {
+        if (!isCowsUptodate)
+            updateCowsFromBB();
+        return cows;
+    }
 
-    	for (int i = 0; i < getWidth(); i++)
+    private static final Literal cowLiteral = Literal.parseLiteral("cow(_,_)");
+    
+    private void updateCowsFromBB() {
+        if (bb == null) return;
+        
+        // clean
+        removeAll(WorldModel.COW);
+
+        for (int i = 0; i < getWidth(); i++)
             for (int j = 0; j < getHeight(); j++)
-            	cowsrep[i][j] = 0;
-    	
+                cowsrep[i][j] = 0;
+        
         cows.clear();
+
+        // rebuild
+        Iterator<Literal> i = bb.getCandidateBeliefs(cowLiteral, null);
+        if (i != null) {
+            while (i.hasNext()) {
+                Literal c = i.next();
+                int x = (int)((NumberTerm)c.getTerm(0)).solve();
+                int y = (int)((NumberTerm)c.getTerm(1)).solve();
+                addCow(x,y);
+            }
+        }
+        isCowsUptodate = true;
     }
     
     public void addCow(int x, int y) {
         add(WorldModel.COW, x, y);
-        cows.add(new Location(x,y));        
-
+        cows.add(new Vec( this, x, y));        
         increp(cowsrep, x, y, 2, 1);
     }
     
-    private void increp(int[][] m, int x, int y, int maxr, int value) {
-    	for (int r = 1; r <= maxr; r++)
-    		for (int c = x-r; c <= x+r; c++)
-    			for (int l = y-r; l <= y+r; l++)
-    				if (inGrid(c,l))
-    					m[c][l] += value;    	
-    }
-    
-    public void addCow(Location l) {
-        addCow(l.x, l.y);
-    }
-    
-    public Collection<Location> getCows() {
-        return cows;
-    }
-    
+
     public int getCowsRep(int x, int y) {
     	return cowsrep[x][y];
     }
@@ -123,6 +143,14 @@ public class LocalWorldModel extends WorldModel {
     }
     public int getObsRep(int x, int y) {
     	return obsrep[x][y];
+    }
+
+    private void increp(int[][] m, int x, int y, int maxr, int value) {
+        for (int r = 1; r <= maxr; r++)
+            for (int c = x-r; c <= x+r; c++)
+                for (int l = y-r; l <= y+r; l++)
+                    if (inGrid(c,l))
+                        m[c][l] += value;       
     }
 
     public Location nearFree(Location l) throws Exception {
