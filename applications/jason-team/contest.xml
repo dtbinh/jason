@@ -12,7 +12,7 @@
          basedir="."
          default="run">
 
-    <property name="mas2j.project.file" value="AC-official.mas2j"/>
+    <property name="mas2j.project.file" value="AC-jason-official.mas2j"/>
     <property name="debug" value=""/> <!-- use "-debug" to run in debug mode -->
     <property name="build.dir" value="${basedir}/bin/classes" />
 
@@ -23,13 +23,13 @@
         <pathelement location="${build.dir}"/>
         <pathelement location="${jasonJar}"/>
         <fileset dir="${basedir}/lib" >  <include name="*.jar" /> </fileset>
-
     </path>
 
     <!-- tasks the user can override in his/her c-build.xml script -->
     <target name="user-init">
 	    <copy file="../jason-moise/lib/jmoise.jar" todir="lib" />
 	    <copy file="../jason-moise/lib/moise.jar"  todir="lib" />
+    	<ant antfile="../jason-moise/build.xml" target="jar" inheritall="false" />
     </target>
     <target name="user-end">
     </target>
