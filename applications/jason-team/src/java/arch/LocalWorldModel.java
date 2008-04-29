@@ -23,30 +23,22 @@ import env.WorldModel;
  */
 public class LocalWorldModel extends WorldModel {
 
-    int[][]                   visited; // count the visited locations
-    int                       minVisited = 0; // min value for near least visited
+    int[][]         visited; // count the visited locations
+    int             minVisited = 0; // min value for near least visited
     
-    private Random			  random = new Random();
+    private Random  random = new Random();
 
-    Set<Vec>      cows = new HashSet<Vec>();
-    boolean       isCowsUptodate = false;
+    Set<Vec>        cows = new HashSet<Vec>();
+    boolean         isCowsUptodate = false;
     
-    int[][]       cowsrep; // cows repulsion 
-    int[][]       agsrep;  // agents repulsion
-    int[][]       obsrep;  // obstacle repulsion
+    int[][]         cowsrep; // cows repulsion 
+    int[][]         agsrep;  // agents repulsion
+    int[][]         obsrep;  // obstacle repulsion
     
-    BeliefBase bb; // agent's BB
+    BeliefBase      bb; // agent's BB
     
     //private Logger            logger   = Logger.getLogger("jasonTeamSimLocal.mas2j." + LocalWorldModel.class.getName());
 
-    //public static LocalWorldModel create(int w, int h, int nbAg) {
-    //	return new LocalWorldModel(w,h,nbAg);
-    //}
-    
-    //public LocalWorldModel(int w, int h) {
-    //   this(w, h, 6);
-    //}
-    
     public LocalWorldModel(int w, int h, int nbAg, BeliefBase bb) {
         super(w, h, nbAg);
         this.bb = bb;

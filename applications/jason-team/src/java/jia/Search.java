@@ -22,7 +22,7 @@ public class Search {
 
     public static final  int DIST_FOR_AG_OBSTACLE = 2;
     
-	final LocalWorldModel model;
+    final LocalWorldModel model;
     final Location        from, to;
     final boolean         considerAgentsAsObstacles;
     final boolean         considerCorralAsObstacles;
@@ -69,6 +69,7 @@ public class Search {
     	}
     	
     	this.maxDistFromCluster = 4;
+        model.getCows(); // to update the cows in model.
     }
     
     public void setMaxDistFromCluster(int m) {
