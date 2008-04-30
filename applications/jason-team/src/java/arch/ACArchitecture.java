@@ -139,6 +139,7 @@ public class ACArchitecture extends CowboyArch {
 	    Lock              lock = new ReentrantLock();
 	    Condition         cycle = lock.newCondition();
 	    long              timestartcycle = 0;
+	    long              timeLastAction = 0;
 	    int               cycleCounter = 0;
 	    
 	    
@@ -183,13 +184,13 @@ public class ACArchitecture extends CowboyArch {
 	        	w = "*** ";
 	        }
 	        
-	        long timetoact = 0;
-	        if (timestartcycle > 0) {
-	        	timetoact = System.currentTimeMillis() -  timestartcycle;
+	        String timetoact = ". ";
+	        if (lastActionInCurrentCycle != null && timestartcycle > 0) {
+	        	timetoact = " (act in "+ (timeLastAction -  timestartcycle) +" ms)";
 	        }
 	        timestartcycle = System.currentTimeMillis();
 
-            logger.info(w+"Last sent action was "+lastActionInCurrentCycle+" for cycle "+getCycle()+ " (act in "+timetoact+" ms). "+notsent);            
+            logger.info(w+"Last sent action was "+lastActionInCurrentCycle+" for cycle "+getCycle()+ timetoact + notsent);            
             setLastAct(lastActionInCurrentCycle);
             lastActionInCurrentCycle = null;
 	    }
@@ -213,7 +214,7 @@ public class ACArchitecture extends CowboyArch {
         }
 	    
 	    @Override
-	    synchronized public void run() {
+	    public void run() {
 	        while (true) {
 	            try {
                     lastAction = null;
@@ -222,6 +223,7 @@ public class ACArchitecture extends CowboyArch {
                         lastActionInCurrentCycle = lastAction.getActionTerm().getTerm(0).toString();
 	                    proxy.sendAction(lastActionInCurrentCycle);
 	                    toExecute.offer(lastAction);
+	                    timeLastAction = System.currentTimeMillis();
 	                }
 	            } catch (InterruptedException e) {
 	                return; // condition to stop the thread 

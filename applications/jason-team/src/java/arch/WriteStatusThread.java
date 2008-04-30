@@ -1,7 +1,10 @@
 package arch;
 
 import jason.environment.grid.Location;
+import jason.util.asl2xml;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -54,6 +57,14 @@ public class WriteStatusThread extends Thread {
         reset();
         
         String fileName = "world-status.txt";
+        File dirmind = null;
+        try {
+        	dirmind = new File("tmp-ag-mind");
+        	dirmind.mkdir();
+        } catch (Exception e) {
+        	dirmind = null;
+        }
+        
         PrintWriter out = null;
         try {
             out = new PrintWriter(fileName);
@@ -85,6 +96,15 @@ public class WriteStatusThread extends Thread {
 	                        }
                     	}
                     }
+                    
+                    // store the agent'd mind
+                    if (dirmind != null) {
+                    	String agmind = new asl2xml().transform(owner.getTS().getAg().getAgState());
+                    	FileWriter outmind = new FileWriter(new File(dirmind.getName()+"/"+owner.getCycle()+".xml"));
+                    	outmind.write(agmind);
+                    	outmind.close();
+                    }
+                    
                     logger.info(s.toString());
                     out.println(s.toString());
                     out.flush();

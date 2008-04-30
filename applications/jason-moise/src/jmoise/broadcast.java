@@ -58,7 +58,7 @@ public class broadcast extends DefaultInternalAction {
             // try group
             GroupInstance gi = oag.getOE().findGroup(target.toString());
             if (gi != null) {
-                for (OEAgent ag: gi.getAgents()) {
+                for (OEAgent ag: gi.getAgents(true)) {
                     if (!ag.getId().equals(oag.getAgName())) {
                         oag.sendMsg(new Message(ilf.toString(), null, ag.getId(), pcnt));
                     }

@@ -7,11 +7,11 @@
         steps(MaxSteps)
         corral(UpperLeft.x,UpperLeft.y,DownRight.x,DownRight.y)
         
-      Step:
+      Each step:
         pos(X,Y,Step)
-        cell(X,Y,Type) 
-           Type in { cow(Id), ally(Name), enemy(Id) }
-           // the Id of enemy is not working
+        cow(Id,X,Y)
+        apply_pos(Name,X,Y)
+        
 
       End:
         end_of_simulation(Result)
@@ -51,10 +51,6 @@ random_pos(X,Y) :-
    : Step mod 6 == 0
   <- !decide_target. 
 
-
-// add all cows in BB (used by the arch)
-+cell(X,Y,cow(_)) <- +cow(X,Y).
--cell(X,Y,cow(_)) <- -cow(X,Y).
 
 /* -- decide a new target -- */
 

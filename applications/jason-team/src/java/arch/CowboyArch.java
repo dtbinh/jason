@@ -225,7 +225,7 @@ public class CowboyArch extends IdentifyCrashed {
 	protected void addRestart() {
     	try {
         	logger.info("** Arch adding restart for "+getAgName());
-    	    getTS().getC().create();
+    	    //getTS().getC().create();
         	getTS().getC().addAchvGoal(new Literal("restart"), Intention.EmptyInt);
         	lo2 = new Location(-1,-1); // to not restart again in the next cycle
     	} catch (Exception e) {

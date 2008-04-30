@@ -5,11 +5,10 @@
         steps(MaxSteps)
         corral(UpperLeft.x,UpperLeft.y,DownRight.x,DownRight.y)
         
-      Step:
+      Each step:
         pos(X,Y,Step)
-        cell(X,Y,Type) 
-           Type in { cow(Id), ally(Name), enemy(Id) }
-           // the Id of enemy is not working
+        cow(Id,X,Y)
+        apply_pos(Name,X,Y)
 
       End:
         end_of_simulation(Result)
@@ -94,16 +93,12 @@ TODO: use a list given by BUF
 +!share_seen_cows.
 
 // simple implementation of share_cows (see TODO above)
-+cell(X,Y,cow(_))[source(percept)]
++cow(Id,X,Y)[source(percept)]
    : .my_name(Me) & play(Me,_,Gr)
-  <- C = cow(X,Y);
-     +C;
-     jmoise.broadcast(Gr, tell, C).
--cell(X,Y,cow(_))[source(percept)]
+  <- jmoise.broadcast(Gr, tell, cow(Id,X,Y)).
+-cow(Id,X,Y)[source(percept)]
    : .my_name(Me) & play(Me,_,Gr)
-  <- C = cow(X,Y);
-     -C;
-     jmoise.broadcast(Gr, untell, C).
+  <- jmoise.broadcast(Gr, untell, cow(Id,X,Y)).
 
 
 

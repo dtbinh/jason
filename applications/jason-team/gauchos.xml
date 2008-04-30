@@ -27,9 +27,14 @@
 
     <!-- tasks the user can override in his/her c-build.xml script -->
     <target name="user-init">
+    	<ant antfile="../jason-moise/build.xml" target="jar" inheritall="false" />
 	    <copy file="../jason-moise/lib/jmoise.jar" todir="lib" />
 	    <copy file="../jason-moise/lib/moise.jar" todir="lib" />
-    	<ant antfile="../jason-moise/build.xml" target="jar" inheritall="false" />
+
+    	<mkdir dir="tmp-ag-mind" />
+        <!--delete failonerror="no" includeEmptyDirs="true" verbose="false">
+            <fileset dir="tmp-ag-mind" includes="*.xml"/>
+        </delete-->
     </target>
     <target name="user-end">
     </target>
@@ -96,6 +101,13 @@
             <jvmarg line="-Xmx750M"/>    
         </java>
         <antcall target="user-end" />
+    </target>
+
+    <target name="mind-view" depends="compile" >
+        <java classname="test.MindView" failonerror="true" fork="yes" dir="${basedir}" >
+            <classpath refid="project.classpath"/>
+            <arg line="0"/>
+        </java>
     </target>
 
     <target name="clean" >

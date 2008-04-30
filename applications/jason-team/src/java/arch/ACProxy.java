@@ -2,7 +2,6 @@ package arch;
 
 import jason.asSyntax.Literal;
 import jason.asSyntax.NumberTermImpl;
-import jason.asSyntax.Structure;
 import jason.environment.grid.Location;
 
 import java.util.ArrayList;
@@ -157,7 +156,8 @@ public class ACProxy extends ACAgent implements Runnable {
 
 			arq.initKnownCows();
 			
-			int enemyId = 1;
+			//int enemyId = 1;
+			
 			// add in perception what is around
 			NodeList nl = perception.getElementsByTagName("cell");
 			for (int i=0; i < nl.getLength(); i++) {
@@ -178,17 +178,17 @@ public class ACProxy extends ACAgent implements Runnable {
 							    // allies are managed by communication
 								//percepts.add(CowboyArch.createCellPerception(cellx, celly, CowboyArch.aALLY));
 							} else if (type.getAttribute("type").equals("enemy")) {
-	                            Structure le = new Literal("enemy");
-	                            le.addTerm(new NumberTermImpl( (enemyId++) )); // we need an id to work with UniqueBB
-								percepts.add(CowboyArch.createCellPerception(cellx, celly, le));
+	                            //Structure le = new Literal("enemy");
+	                            //le.addTerm(new NumberTermImpl( (enemyId++) )); // we need an id to work with UniqueBB
+								//percepts.add(CowboyArch.createCellPerception(cellx, celly, le));
                                 arq.enemyPerceived(absx, absy);
 							}
                             
                         } else if (type.getNodeName().equals("cow")) {
                             int cowId = Integer.parseInt(type.getAttribute("ID"));
-                            Structure lc = new Literal("cow");
-                            lc.addTerm(new NumberTermImpl( cowId ));
-                            percepts.add(CowboyArch.createCellPerception(absx, absy, lc));
+                            Literal lc = new Literal("cow");
+                            lc.addTerms(new NumberTermImpl( cowId ), new NumberTermImpl( absx), new NumberTermImpl(absy));
+                            percepts.add( lc); //CowboyArch.createCellPerception(absx, absy, lc));
                             //arq.cowPerceived(absx, absy);
                             
                         } else if (type.getNodeName().equals("obstacle")) { 
@@ -208,7 +208,7 @@ public class ACProxy extends ACAgent implements Runnable {
 			arq.startNextStep(step, percepts);
 			
 			//if (logger.isLoggable(Level.FINE)) 
-			logger.info("Request action for "+lpos+" / percepts: "+percepts);			
+			logger.info("Request action for "+lpos+" / rid: "+rid+" / percepts: "+percepts);			
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "error processing request",e);
 		}
@@ -216,7 +216,7 @@ public class ACProxy extends ACAgent implements Runnable {
 
 	public void sendAction(String action) {
 		try {
-			logger.info("sending action "+action+" for step "+rid+" at "+arq.model.getAgPos(arq.getMyId()) );
+			logger.info("sending action "+action+" for rid "+rid+" at "+arq.model.getAgPos(arq.getMyId()) );
 			Document doc = documentbuilder.newDocument();
 			Element el_response = doc.createElement("message");
 			

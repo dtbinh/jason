@@ -93,7 +93,7 @@ public class LocalWorldModel extends WorldModel {
         return cows;
     }
 
-    private static final Literal cowLiteral = Literal.parseLiteral("cow(_,_)");
+    private static final Literal cowLiteral = Literal.parseLiteral("cow(Id,X,Y)");
     
     private void updateCowsFromBB() {
         if (bb == null) return;
@@ -112,8 +112,8 @@ public class LocalWorldModel extends WorldModel {
         if (i != null) {
             while (i.hasNext()) {
                 Literal c = i.next();
-                int x = (int)((NumberTerm)c.getTerm(0)).solve();
-                int y = (int)((NumberTerm)c.getTerm(1)).solve();
+                int x = (int)((NumberTerm)c.getTerm(1)).solve();
+                int y = (int)((NumberTerm)c.getTerm(2)).solve();
                 addCow(x,y);
             }
         }

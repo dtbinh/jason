@@ -194,10 +194,10 @@ public class OrgManager extends AgArch {
             }
 
             // notify others in the group about this new player
-            updateMembersOE(gr.getAgentsInThisGroupAndSubGroups(), "play(" + sender + "," + roleId + "," + grId + ")", true, true);
+            updateMembersOE(gr.getAgents(true), "play(" + sender + "," + roleId + "," + grId + ")", true, true);
 
             // send players of this group to sender
-            for (RolePlayer rp : gr.getPlayers()) {
+            for (RolePlayer rp : gr.getPlayers(null, true)) {
                 if (!rp.getPlayer().getId().equals(sender)) {
                     updateMembersOE(sender, "play(" + rp.getPlayer().getId() + "," + rp.getRole().getId() + "," + grId + ")", false, true);
                 }
@@ -216,7 +216,7 @@ public class OrgManager extends AgArch {
             GroupInstance gr = currentOE.findGroup(grId);
 
             // notify other players
-            updateMembersOE(gr.getAgentsInThisGroupAndSubGroups(), "play(" + sender + "," + roleId + "," + grId + ")", false, false);
+            updateMembersOE(gr.getAgents(true), "play(" + sender + "," + roleId + "," + grId + ")", false, false);
         }
     }
     
