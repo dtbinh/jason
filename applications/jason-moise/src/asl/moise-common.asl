@@ -45,8 +45,7 @@
 
 // when the root goal of the scheme is achieved, 
 // remove my missions
-+goal_state(Sch, G[root], achieved) 
-   :  true | .print("achieved ",G) // just to avoid G as singleton var warning 
++goal_state(Sch, _[root], achieved) 
    <- jmoise.remove_mission(Sch).
 
 // if some scheme is finished, drop all intentions related to it.

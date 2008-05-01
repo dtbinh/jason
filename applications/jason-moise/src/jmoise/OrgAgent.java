@@ -23,8 +23,10 @@ import jason.asSyntax.Trigger.TEType;
 import jason.mas2j.ClassParameters;
 import jason.runtime.Settings;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -98,8 +100,9 @@ public class OrgAgent extends AgArch {
                     i.remove();
                 } else if (m.getSender().equals(getOrgManagerName())) {
                     // the content is a normal predicate
-                    final String content = m.getPropCont().toString();
-                    final boolean isTell = m.getIlForce().equals("tell");
+                    final String content   = m.getPropCont().toString();
+                    final boolean isTell   = m.getIlForce().equals("tell");
+                    final boolean isUntell = m.getIlForce().equals("untell");
                     if (isTell && content.startsWith("scheme(")) {
                     	i.remove();
                     	addAsBel(content);
@@ -113,12 +116,18 @@ public class OrgAgent extends AgArch {
                         i.remove();
                         updateGoalBels(Pred.parsePred(content));
                         updateGoalEvt  = true;
-                    } else if (isTell && content.startsWith("scheme_group")) {
+                    } else if (content.startsWith("scheme_group")) {
                     	i.remove();
-                        // this message is generated when my group becomes
-                        // responsible for a scheme
-                    	Literal l = addAsBel(content);
-                        generateObligationPermissionEvents(l);  			
+                    	if (isTell) {
+                            // this message is generated when my group becomes
+                            // responsible for a scheme
+                        	Literal l = addAsBel(content);
+                            generateObligationPermissionEvents(l);
+                    	} else if (isUntell) {
+                            Literal l = delAsBel(content);
+                            removeObligationPermissionBeliefs(l, "obligation");
+                            removeObligationPermissionBeliefs(l, "permission");
+                    	}
                     } else if (isTell && content.startsWith("commitment")) { 
                         i.remove();
                         addAsBel(content);
@@ -127,7 +136,7 @@ public class OrgAgent extends AgArch {
 
                     } else if (m.getIlForce().equals("untell") && content.startsWith("scheme")) {
                         String schId = Pred.parsePred(content).getTerm(1).toString();
-                        removeAchieveEvents(schId);
+                        removeAchieveGoalsOfSch(schId);
                         removeBeliefs(schId);
                     }
                 }
@@ -152,8 +161,14 @@ public class OrgAgent extends AgArch {
         getTS().getAg().addBel(l);
         return l;
     }
+    private Literal delAsBel(String b) throws RevisionFailedException {
+        Literal l = Literal.parseLiteral(b);
+        l.addAnnot(managerSource);
+        getTS().getAg().delBel(l);
+        return l;
+    }
     
-    void generateObligationPermissionEvents(Pred m) throws RevisionFailedException {
+    private void generateObligationPermissionEvents(Pred m) throws RevisionFailedException {
         // computes this agent obligations in the scheme
         String schId = m.getTerm(0).toString();
         String grId  = m.getTerm(1).toString();
@@ -166,7 +181,7 @@ public class OrgAgent extends AgArch {
                 obligations.add(p);
                 Literal l = Literal.parseLiteral("obligation(" + p.getScheme().getId() + "," 
                         + p.getMission().getId() + ")[" + "role(" + p.getRolePlayer().getRole().getId()
-                        + "),group(" + p.getRolePlayer().getGroup().getGrSpec().getId() + ")]");
+                        + "),group(" + p.getRolePlayer().getGroup().getId() + ")]");
                 l.addAnnot(managerSource);
                 getTS().getAg().addBel(l);
                 if (logger.isLoggable(Level.FINE)) logger.fine("New obligation: " + l);
@@ -178,15 +193,45 @@ public class OrgAgent extends AgArch {
             if (p.getRolePlayer().getGroup().getId().equals(grId) && p.getScheme().getId().equals(schId) && !obligations.contains(p)) {
                 Literal l = Literal.parseLiteral("permission(" + p.getScheme().getId() + "," 
                         + p.getMission().getId() + ")[" + "role(" + p.getRolePlayer().getRole().getId()
-                        + "),group(" + p.getRolePlayer().getGroup().getGrSpec().getId() + ")]");
+                        + "),group(" + p.getRolePlayer().getGroup().getId() + ")]");
                 l.addAnnot(managerSource);
                 getTS().getAg().addBel(l);
                 if (logger.isLoggable(Level.FINE)) logger.fine("New permission: " + l);
             }
         }
     }
+    
+    
+    private void removeObligationPermissionBeliefs(Pred m, String type) throws RevisionFailedException {
+        // computes this agent obligations in the scheme
+        Term sch   = m.getTerm(0);
+        Term grId  = m.getTerm(1);
+        
+        Structure giAnnot = new Structure("group");
+        giAnnot.addTerm(grId);
+        
+        Literal obl = new Literal(type);
+        obl.addTerms(sch,new UnnamedVar());
+        obl.addAnnot(giAnnot);
+        
+        // find obligation(sch,_)[group(id)]
+        Unifier un = new Unifier();
+        Iterator<Literal> i = getTS().getAg().getBB().getCandidateBeliefs(obl, un);
+        if (i != null) {
+            List<Literal> todel = new ArrayList<Literal>();
+            while (i.hasNext()) {
+                Literal inbb = i.next();
+                un.clear();
+                if (un.unifies(obl, inbb))
+                    todel.add(inbb);
+            }
+            for (Literal l: todel) {
+                getTS().getAg().delBel(l);
+            }
+        }
+    }
 
-   private void generateOrgGoalEvents() {
+    private void generateOrgGoalEvents() {
 	   OEAgent me = getMyOEAgent();
 	   for (GoalInstance gi : getMyOEAgent().getPossibleGoals()) {
 		   if (!alreadyGeneratedEvents.contains(gi)) {
@@ -197,6 +242,15 @@ public class OrgAgent extends AgArch {
                 Structure giID = new Structure("scheme", 1);
                 giID.addTerm(new Atom(gi.getScheme().getId()));
                 l.addAnnot(giID);
+                
+                // add annot with mission id
+                Structure mission = new Structure("mission", 1);
+                for (MissionPlayer mp: getMyOEAgent().getMissions()) {
+                    if (mp.getMission().getGoals().contains(gi.getSpec())) {
+                        mission.addTerm(new Atom(mp.getMission().getId()));                        
+                    }
+                }
+                l.addAnnot(mission);
                 
                 // add annot with type of goal
                 Structure type = new Structure("type", 1);
@@ -238,7 +292,7 @@ public class OrgAgent extends AgArch {
    		return null;
    	}
 
-    void removeAchieveEvents(String schId) {
+    void removeAchieveGoalsOfSch(String schId) {
         Iterator<GoalInstance> i = alreadyGeneratedEvents.iterator();
         while (i.hasNext()) {
             GoalInstance gi = i.next();

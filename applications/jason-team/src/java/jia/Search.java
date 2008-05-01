@@ -62,13 +62,13 @@ public class Search {
         this.considerCowsAsObstacles   = considerCowsAsObstacles;
         this.considerRepulsionForCows  = considerRepulsionForCows;
     	this.agArch = agArch;
-    	if (actions != null) {
+    	if (actions != null)
     		this.actionsOrder = actions;
-    	} else {
+    	else
     		this.actionsOrder = defaultActions;
-    	}
     	
     	this.maxDistFromCluster = 4;
+    	this.nbStates = 0;
         model.getCows(); // to update the cows in model.
     }
     
@@ -76,7 +76,7 @@ public class Search {
     	maxDistFromCluster = m;
     }
 
-    /** used normally to discover the distance from 'from' to 'to' */
+    /** used normally to discover the distance from 'from' to 'to' (or if there is path to) */
     Search(LocalWorldModel m, Location from, Location to, AgArch agArch) {
     	this(m,from,to,null,false, false, false, false, agArch);
     }
@@ -203,7 +203,7 @@ final class GridState implements Estado, Heuristica {
     
     public List<Estado> sucessores() {
         List<Estado> s = new ArrayList<Estado>();
-        if (ia.nbStates > 50000) {
+        if (ia.nbStates > 100000) {
         	ia.logger.info("*** It seems I am in a loop!");
         	return s; 
         } else if (ia.agArch != null && !ia.agArch.isRunning()) {

@@ -55,7 +55,6 @@ public class CowboyArch extends IdentifyCrashed {
 	@Override
     public void initAg(String agClass, ClassParameters bbPars, String asSrc, Settings stts) throws JasonException {
 		super.initAg(agClass, bbPars, asSrc, stts);
-		
 		model = new LocalWorldModel(10,10, WorldModel.agsByTeam, getTS().getAg().getBB()); // just to have a default model
 	    gui = "yes".equals(stts.getUserParameter("gui"));
 	    if ("yes".equals(stts.getUserParameter("write_status"))) {
@@ -116,16 +115,14 @@ public class CowboyArch extends IdentifyCrashed {
         // manage GUIs
         if (view != null)   view.dispose();
         if (acView != null) acView.finish();
-        if (gui) { 
-            view = new WorldView("Herding (view of cowboy "+(getMyId()+1)+") -- against "+opponent,model);
-        }
+        if (gui) view = new WorldView("Herding (view of cowboy "+(getMyId()+1)+") -- against "+opponent,model);
+        if (writeStatusThread != null)  writeStatusThread.reset();
+
         if (massimBackDir != null && massimBackDir.length() > 0) { 
             acView = new ACViewer(massimBackDir, w, h);
             acView.setPriority(Thread.MIN_PRIORITY);
             acView.start();
         }
-        if (writeStatusThread != null)
-            writeStatusThread.reset();
     }
     
     /** The perception of the corral location is removed from the percepts list 
@@ -225,7 +222,7 @@ public class CowboyArch extends IdentifyCrashed {
 	protected void addRestart() {
     	try {
         	logger.info("** Arch adding restart for "+getAgName());
-    	    //getTS().getC().create();
+    	    //getTS().getC().create(); // it is terrible for pending intentions of cowboys!
         	getTS().getC().addAchvGoal(new Literal("restart"), Intention.EmptyInt);
         	lo2 = new Location(-1,-1); // to not restart again in the next cycle
     	} catch (Exception e) {
@@ -241,25 +238,8 @@ public class CowboyArch extends IdentifyCrashed {
         return l;
     }
 
-    //private static final Literal cowstoclean = Literal.parseLiteral("cell(_,_,cow(_))");
-    //private boolean cleanCows = false;
-    
-    /*
-    @Override
-    public synchronized void agDidPerceive() {
-    	super.agDidPerceive();
-    	if (cleanCows) {
-        	try {
-				getTS().getAg().abolish(cowstoclean, null);
-			} catch (RevisionFailedException e) {}     		
-        	cleanCows = false;
-    	}
-    }
-    */
-    
     void initKnownCows() {
     	model.clearCows();
-    	//cleanCows = true;
     }
     
     //void cowPerceived(int x, int y) {
@@ -283,11 +263,14 @@ public class CowboyArch extends IdentifyCrashed {
 
     void simulationEndPerceived(String result) throws RevisionFailedException {
     	getTS().getAg().addBel(Literal.parseLiteral("end_of_simulation("+result+")"));
+    	model   = null;
         playing = false;
+        if (view != null) view.dispose();
     }
 	
     void setCycle(int s) {
     	cycle = s;
+    	super.setCycleNumber(cycle);
 		if (view != null) view.setCycle(cycle);
         if (writeStatusThread != null) writeStatusThread.go();
     }
@@ -321,14 +304,14 @@ public class CowboyArch extends IdentifyCrashed {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void checkMail() {
-	    try {
-    		super.checkMail();
-    		
-    		// remove messages related to obstacles and agent_position
-    		// and update the model
-    		Iterator<Message> im = getTS().getC().getMailBox().iterator();
-    		while (im.hasNext()) {
-    			Message m  = im.next();
+		super.checkMail();
+		
+		// remove messages related to obstacles and agent_position
+		// and update the model
+		Iterator<Message> im = getTS().getC().getMailBox().iterator();
+		while (im.hasNext()) {
+			Message m  = im.next();
+			try {
     			if (m.getIlForce().equals("tell-cows")) {
     				im.remove();
     				/* not used anymore
@@ -341,18 +324,21 @@ public class CowboyArch extends IdentifyCrashed {
     			} else {
 	    			String  ms = m.getPropCont().toString();
 	    			if (ms.startsWith("cell") && ms.endsWith("obstacle)") && model != null) {
-	    				Literal p = (Literal)m.getPropCont();
+                        im.remove();
+
+                        Literal p = (Literal)m.getPropCont();
 	    				int x = (int)((NumberTerm)p.getTerm(0)).solve();
 	    				int y = (int)((NumberTerm)p.getTerm(1)).solve();
 	    				if (model.inGrid(x,y)) {
 	    					model.add(WorldModel.OBSTACLE, x, y);
 	    					if (acView != null) acView.addObject(WorldModel.OBSTACLE, x, y);
 	    				}
-	    				im.remove();
 	    				//getTS().getAg().getLogger().info("received obs="+p);
 	    				
 	    			} else if (ms.startsWith("my_status") && model != null) {
-	    				// update others location
+                        im.remove(); 
+
+                        // update others location
 	    				Literal p = Literal.parseLiteral(m.getPropCont().toString());
 	    				int x = (int)((NumberTerm)p.getTerm(0)).solve();
 	    				int y = (int)((NumberTerm)p.getTerm(1)).solve();
@@ -370,13 +356,12 @@ public class CowboyArch extends IdentifyCrashed {
 	    						e.printStackTrace();
 	    					}
 	    				}
-	    				im.remove(); 
 	    			}
     			}
-    		}
-	    } catch (Exception e) {
-	        logger.log(Level.SEVERE, "Error checking email!",e);
-	    }
+            } catch (Exception e) {
+                logger.log(Level.SEVERE, "Error checking email!",e);
+            }
+		}
     }
 	
     public static int getAgId(String agName) {

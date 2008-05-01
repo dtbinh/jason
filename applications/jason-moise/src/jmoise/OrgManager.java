@@ -160,6 +160,9 @@ public class OrgManager extends AgArch {
                     logger.info("Received an unknown message: " + m + "!");
                 }
                 updateGUI();
+            } catch (MoiseException e) {
+                logger.log(Level.SEVERE, "Error processing '" + m + "' for " + agSender + ". "+e);
+                sendReply(agSender, m.getMsgId(), "error(\"" + e + "\")");
             } catch (Exception e) {
                 logger.log(Level.SEVERE, "Error processing '" + m + "' for " + agSender, e);
                 sendReply(agSender, m.getMsgId(), "error(\"" + e + "\")");
@@ -337,15 +340,44 @@ public class OrgManager extends AgArch {
                 sendReply(sender, mId, "error(\"you are not the owner of the group " + grId + ", so you can not remove it\")");
             }
 
-            currentOE.removeGroup(grId);
+            gr.checkRemove();
 
-            String annot = "";
+            /*String annot = "";
             if (gr.getGrSpec().isRoot()) {
                 annot = "root";
             } else {
                 annot = "super_gr(" + gr.getSuperGroup().getId() + ")";
             }
-            updateMembersOE(currentOE.getAgents(), "group(" + gr.getGrSpec().getId() + "," + gr.getId() + ")[owner(" + gr.getOwner() + ")," + annot + "]", false, false);
+            */
+            //updateMembersOE(currentOE.getAgents(), "group(" + gr.getGrSpec().getId() + "," + gr.getId() + ")[owner(" + gr.getOwner() + ")," + annot + "]", false, false);
+            
+            // also send untell scheme_group (if it is the case)
+            for (SchemeInstance sch: gr.getRespSchemes()) {
+                updateMembersOE(gr.getPlayers(), "scheme_group(" + sch.getId() + "," + grId + ")", false, false);
+            }
+            // untell players
+            for (RolePlayer rp: gr.getPlayers()) {
+                updateMembersOE(gr.getAgents(true), "play(" + rp.getPlayer().getId() + "," + rp.getRole().getId() + "," + gr.getId() + ")", false, false);
+            }
+
+            // send changes for subgroups of gr
+            for (GroupInstance sg: gr.getAllSubGroupsTree()) {
+                updateMembersOE(currentOE.getAgents(), "group(" + sg.getGrSpec().getId() + "," + sg.getId() + ")", false, false);
+                // also send untell scheme_group (if it is the case)
+                for (SchemeInstance sch: sg.getRespSchemes()) {
+                    updateMembersOE(sg.getPlayers(), "scheme_group(" + sch.getId() + "," + sg.getId() + ")", false, false);
+                }
+                // untell players
+                for (RolePlayer rp: sg.getPlayers()) {
+                    updateMembersOE(sg.getAgents(true), "play(" + rp.getPlayer().getId() + "," + rp.getRole().getId() + "," + sg.getId() + ")", false, false);
+                }
+            }
+            
+            // have to remove after sending the untells
+            currentOE.removeGroup(grId);
+
+            // sent a new copy of OE
+            updateMembersOE(currentOE.getAgents(), "group(" + gr.getGrSpec().getId() + "," + gr.getId() + ")", true, false);            
         }
     }
 
@@ -428,7 +460,8 @@ public class OrgManager extends AgArch {
                 sendReply(sender, mId, "error(\"the scheme " + schId + " does not exist\")");
                 return;
             }
-            if (!sender.equals(sch.getOwner())) {
+            
+            if (sch.getSpec().getFS().getBoolProperty("only-owner-can-remove-scheme") && !sender.equals(sch.getOwner())) {
                 sendReply(sender, mId, "error(\"you are not the owner of the scheme " + schId + ", so you can not change it\")");
             }
 

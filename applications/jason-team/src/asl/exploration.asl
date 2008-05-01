@@ -5,9 +5,6 @@
 
 /* -- initial goals -- */
 
-//!test.
-//+!test <- +gsize(16,8).
-
 /*
    -- plans for new match 
    -- create the initial exploration groups and areas 
@@ -17,10 +14,8 @@
 /* plans for the team's groups creation */
 
 +!create_team_group
-  <- .print("oooo creating team group"); 
-     .if( group(team,Old), {
-        jmoise.remove_group(Old)
-     });
+  <- .print("oooo creating new team group -- ************************************************ "); 
+     !remove_org;
      jmoise.create_group(team).
   
 +group(team,GId)                         // agent 1 is responsible for the creation of exploration groups 
@@ -28,9 +23,10 @@
   <- jmoise.create_group(exploration_grp,GId);
      jmoise.create_group(exploration_grp,GId);
      jmoise.create_group(exploration_grp,GId).
-+group(exploration_grp,_)                    // compute the area of the groups
++group(exploration_grp,_)                // compute the area of the groups
    : .my_name(gaucho1) &
-     .findall(GId, group(exploration_grp,GId), LG) &
+     group(team,TeamId) &
+     .findall(GId, group(exploration_grp,GId)[super_gr(TeamId)], LG) &
 	 LG = [G1,G2,G3]                     // there are three groups
   <- ?gsize(W,H);
 	 X = math.round(((W*H)/3)/H);
@@ -49,7 +45,7 @@
    : .my_name(Me) &
      agent_id(Me,AgId) &
      AgId mod 2 == 1                    // I have an odd Id
-  <- .if( .my_name(gaucho1), { 
+  <- .if( .my_name(gaucho1) { 
         !create_team_group 
      });
   
@@ -59,7 +55,7 @@
      ?pos(MyX,MyY,_); 
      
      // wait others pos
-     .while( .count(ally_pos(_,_,_), N) & N < 5, {
+     .while( .count(ally_pos(_,_,_), N) & N < 5 {
 	    .print("ooo waiting others pos ");
         .wait("+ally_pos(_,_,_)", 500, nofail)
      });
@@ -99,7 +95,7 @@
 
 // TODO: make a pattern for organisational maintainance goal
 
-+!goto_near_unvisited[scheme(Sch)]
++!goto_near_unvisited[scheme(Sch),mission(Mission)]
   <- .print("ooo I should find the nearest unvisited location and go there!");
      .my_name(Me); 
      ?play(Me,explorer,GroupId);    // get the group where I play explorer
@@ -108,13 +104,13 @@
      jia.near_least_visited(MeX, MeY, Area, TargetX, TargetY);
      -+target(TargetX, TargetY);
      .wait("+pos(_,_,_)"); // wait next cycle
-     !!goto_near_unvisited[scheme(Sch)].
+     !!goto_near_unvisited[scheme(Sch),mission(Mission)].
 
--!goto_near_unvisited[scheme(Sch)]
+-!goto_near_unvisited[scheme(Sch),mission(Mission)]
   <- .current_intention(I);
      .print("ooo Failure to goto_near_unvisited ",I);
      .wait("+pos(_,_,_)"); // wait next cycle
-     !!goto_near_unvisited[scheme(Sch)].
+     !!goto_near_unvisited[scheme(Sch),mission(Mission)].
   
 
 /* -- plans for the goals of role scouter -- */

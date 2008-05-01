@@ -31,15 +31,19 @@ import java.awt.FlowLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSlider;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -67,34 +71,10 @@ public class MindView  {
 	// Interface components
 	JTextPane  jTA = null;
 	JFrame     frame;
+    JSlider    jHistory = null;
 	
 	void initComponents() {
 		frame = new JFrame();
-
-		JButton jBtNext = new JButton("Next");
-		jBtNext.setEnabled(true);
-		jBtNext.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                    	step++;
-                        show();
-                    }
-                });
-            }
-		});
-		JButton jBtPrev = new JButton("Previous");
-		jBtPrev.setEnabled(true);
-		jBtPrev.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                    	step--;
-                        show();
-                    }
-                });
-            }
-		});
 
 		jTA = new JTextPane();
 		jTA.setEditable(false);
@@ -110,11 +90,55 @@ public class MindView  {
         pAg.add(BorderLayout.CENTER, spTA);
         
 
-		JPanel pButtons = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JButton jBtNext = new JButton("Next");
+        jBtNext.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        step++;
+                        show();
+                    }
+                });
+            }
+        });
+        JButton jBtPrev = new JButton("Previous");
+        jBtPrev.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        step--;
+                        show();
+                    }
+                });
+            }
+        });
+        JPanel pButtons = new JPanel(new FlowLayout(FlowLayout.CENTER));
         pButtons.add(jBtPrev);
         pButtons.add(jBtNext);
 
-        frame.getContentPane().add(BorderLayout.SOUTH, pButtons);
+
+        JPanel pHistory = new JPanel(new BorderLayout());//new FlowLayout(FlowLayout.CENTER));
+        pHistory.setBorder(BorderFactory.createTitledBorder(BorderFactory
+                .createEtchedBorder(), "Agent History", TitledBorder.LEFT, TitledBorder.TOP));
+        jHistory = new JSlider();
+        jHistory.setMaximum(1);
+        jHistory.setMinimum(0);
+        jHistory.setValue(0);
+        jHistory.setPaintTicks(true);
+        jHistory.setPaintLabels(true);
+        jHistory.setMajorTickSpacing(10);
+        jHistory.setMinorTickSpacing(1);
+        setupSlider();
+        jHistory.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                step = (int)jHistory.getValue();
+                show();
+            }
+        });
+        pHistory.add(BorderLayout.CENTER, jHistory);
+        pHistory.add(BorderLayout.EAST, pButtons);
+		
+        frame.getContentPane().add(BorderLayout.SOUTH, pHistory);
 		frame.getContentPane().add(BorderLayout.CENTER, pAg);
 		frame.pack();
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -129,8 +153,36 @@ public class MindView  {
         	frame.setTitle(":: Jason Mind Inspector :: "+step+" ::");
             Document agState = builder.parse("tmp-ag-mind/"+step+".xml");
             jTA.setText(agTransformerHtml.transform(agState));
+            jHistory.setValue(step);
         } catch (Exception et) {
         	et.printStackTrace();
         }
 	}
+
+	@SuppressWarnings("unchecked")
+    private void setupSlider() {
+	    int size = 0;
+        for (String f: new File("tmp-ag-mind").list()) {
+            if (f.endsWith(".xml")) {
+                f = f.substring(0, f.length()-4);
+                try {
+                    int n = Integer.parseInt(f);
+                    if (n > size)
+                        size = n;
+                } catch (Exception e) { }
+            }
+        }
+        /*File f = new File("tmp-ag-mind/"+size+".xml");
+	    while (f.exists()) {
+	        size++;
+	        f = new File("tmp-ag-mind/"+size+".xml");
+	    }
+	    */
+        //Hashtable<Integer,Component> labelTable = new Hashtable<Integer,Component>();
+        //labelTable.put( 0, new JLabel("Cycle 0") );
+        //labelTable.put( size, new JLabel("Cycle "+size) );
+        //jHistory.setLabelTable( labelTable );
+        jHistory.setMaximum(size);
+        jHistory.setValue(0);
+    }
 }

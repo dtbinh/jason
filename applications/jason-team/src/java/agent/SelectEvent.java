@@ -10,13 +10,13 @@ import java.util.Iterator;
 import java.util.Queue;
 
 /**
- * change the default select event function to prefer cell(_,_,cow(_)) events.
+ * change the default select event function to prefer +cow(_,_,_) events.
  * 
  * @author Jomi
  */
 public class SelectEvent extends Agent {
 
-	private Trigger cow  = Trigger.parseTrigger("+cell(_,_,cow(_))");
+	private Trigger cow  = Trigger.parseTrigger("+cow(_,_,_)");
 	private Unifier un   = new Unifier();
 	
     public Event selectEvent(Queue<Event> events) {

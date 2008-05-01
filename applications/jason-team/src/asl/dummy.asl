@@ -46,7 +46,7 @@ random_pos(X,Y) :-
    : goal(search) & cell(_,_,cow(_))  // I see cows and was searching
   <- !decide_target. 
 
-// revise target each 4 steps
+// revise target each 6 steps
 +pos(Step,_,_)                  // new cycle
    : Step mod 6 == 0
   <- !decide_target. 

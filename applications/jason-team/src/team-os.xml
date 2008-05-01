@@ -65,6 +65,11 @@
 
 
     <functional-specification>
+        <properties>
+            <property id="check-players-in-remove-responsible-group"   value="false" />
+            <property id="only-owner-can-remove-scheme"                value="false" />
+        </properties>
+    
         <scheme id="explore_sch" >
             <goal id="find_cows" >
               <plan operator="parallel">

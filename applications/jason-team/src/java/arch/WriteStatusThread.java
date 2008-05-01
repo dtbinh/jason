@@ -111,7 +111,7 @@ public class WriteStatusThread extends Thread {
                 } catch (InterruptedException e) { // no problem, quit the thread
                     return;
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    System.out.println("error getting agent status "+e);
                 }
             }
         } catch (Exception e) {

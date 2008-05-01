@@ -168,12 +168,14 @@ public class ACArchitecture extends CowboyArch {
             }
             // set all actions as successfully executed
             List<ActionExec> feedback = getTS().getC().getFeedbackActions();
-            while (!toExecute.isEmpty()) {
-                ActionExec action = toExecute.poll();
-                action.setResult(true);
-                feedback.add(action);
-                if (!toExecute.isEmpty())
-                	notsent.append(action.getActionTerm()+" ");
+            synchronized (feedback) {
+                while (!toExecute.isEmpty()) {
+                    ActionExec action = toExecute.poll();
+                    action.setResult(true);
+                    feedback.add(action);
+                    if (!toExecute.isEmpty())
+                        notsent.append(action.getActionTerm()+" ");
+                }                
             }
             go(); // reset the wait
             

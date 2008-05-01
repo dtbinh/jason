@@ -61,13 +61,31 @@ public class direction extends DefaultInternalAction {
                 actionsOrder[i2] = actionsOrder[i1];
                 actionsOrder[i1] = temp;
                 
-                Search astar    = new Search(model, from, to, actionsOrder, true, true, true, false, ts.getUserAgArch());
+                Search astar    = new Search(model, from, to, actionsOrder, true, false, true, false, ts.getUserAgArch());
                 Nodo   solution = astar.search();
-                if (solution != null) {
-                	WorldModel.Move m = astar.firstAction(solution);
-                    if (m != null) {
-                        sAction = m.toString();
+
+                if (solution == null) {
+                    // Test impossible path
+                    Search s = new Search(model, from, to, ts.getUserAgArch()); // search without agent/cows as obstacles
+                    int fixtimes = 0;
+                    while (s.search() == null && ts.getUserAgArch().isRunning() && fixtimes < 10) {
+                        fixtimes++; // to avoid being in this loop forever 
+                        // if search is null, it is impossible in the scenario to goto n, set it as obstacle  
+                        ts.getLogger().info("[direction] No possible path to "+to+" setting as obstacle.");
+                        model.add(WorldModel.OBSTACLE, to);
+                        to = model.nearFree(to);
+                        s = new Search(model, from, to, ts.getUserAgArch());
                     }
+                    
+                    // run A* again
+                    astar    = new Search(model, from, to, actionsOrder, true, false, true, false, ts.getUserAgArch());
+                    solution = astar.search();
+                }
+
+                if (solution != null) {
+                    WorldModel.Move m = astar.firstAction(solution);
+                    if (m != null)
+                        sAction = m.toString();
                 } else {
                     ts.getLogger().info("No route from "+from+" to "+to+"!"+"\n"+model);
                 }
