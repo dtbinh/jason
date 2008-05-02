@@ -14,7 +14,7 @@
 /* plans for the team's groups creation */
 
 +!create_team_group
-  <- .print("oooo creating new team group -- ************************************************ "); 
+  <- .print("oooo creating new team group ------------------------------------------------- "); 
      !remove_org;
      jmoise.create_group(team).
   
@@ -45,9 +45,9 @@
    : .my_name(Me) &
      agent_id(Me,AgId) &
      AgId mod 2 == 1                    // I have an odd Id
-  <- .if( .my_name(gaucho1) { 
+  <- .if( .my_name(gaucho1) ) { 
         !create_team_group 
-     });
+     };
   
      .print("ooo Recruiting scouters for my explorer group....");
   
@@ -55,10 +55,10 @@
      ?pos(MyX,MyY,_); 
      
      // wait others pos
-     .while( .count(ally_pos(_,_,_), N) & N < 5 {
+     .while( .count(ally_pos(_,_,_), N) & N < 5 ) {
 	    .print("ooo waiting others pos ");
         .wait("+ally_pos(_,_,_)", 500, nofail)
-     });
+     };
      
      // find distance to even agents
      .findall(ag_d(D,AgName),
@@ -95,6 +95,8 @@
 
 // TODO: make a pattern for organisational maintainance goal
 
+{ begin maintenance_goal("+pos(_,_,_)") }
+
 +!goto_near_unvisited[scheme(Sch),mission(Mission)]
   <- .print("ooo I should find the nearest unvisited location and go there!");
      .my_name(Me); 
@@ -102,18 +104,26 @@
      ?group_area(_,GroupId, Area);  // get the area of this group
      ?pos(MeX, MeY, _);             // get my location
      jia.near_least_visited(MeX, MeY, Area, TargetX, TargetY);
-     -+target(TargetX, TargetY);
+     -+target(TargetX, TargetY). 
+	 
+	 /* added by the pattern
      .wait("+pos(_,_,_)"); // wait next cycle
-     !!goto_near_unvisited[scheme(Sch),mission(Mission)].
+     !!goto_near_unvisited[scheme(Sch),mission(Mission)]
+	 */
+	 
+{ end }
 
+/* added by the pattern
 -!goto_near_unvisited[scheme(Sch),mission(Mission)]
   <- .current_intention(I);
      .print("ooo Failure to goto_near_unvisited ",I);
      .wait("+pos(_,_,_)"); // wait next cycle
      !!goto_near_unvisited[scheme(Sch),mission(Mission)].
-  
+*/  
 
 /* -- plans for the goals of role scouter -- */
+
+{ begin maintenance_goal("+pos(_,_,_)") }
 
 +!follow_leader[scheme(Sch),group(Gr)]
    : play(Leader, explorer, Gr)
@@ -124,22 +134,14 @@
      jia.dist(MyX, MyY, LX, LY, DistanceToLeader);
      
      // If I am far from him, go to him
-     .if( DistanceToLeader > (AGPR * 2) -3, {
+     .if( DistanceToLeader > (AGPR * 2) -3) {
         .print("ooo Approaching leader.");
      	-+target(LX,LY)
-     }, {
+     }{
         .print("ooo being in formation with leader.");
         .send(Leader,askOne,target(X,Y),target(TX,TY));
         jia.scouter_pos(LX, LY, TX, TY, SX, SY);
      	-+target(SX,SY)
-     });
-     
-     .wait("+pos(_,_,_)"); // wait next cycle
-     !!follow_leader[scheme(Sch),group(Gr)].
-
--!follow_leader[scheme(Sch),group(Gr)]
-  <- .current_intention(I);
-     .print("ooo Failure to follow_leader ",I);
-     .wait("+pos(_,_,_)"); // wait next cycle
-     !!follow_leader[scheme(Sch),group(Gr)].
-     
+     }
+	 
+{ end }	 

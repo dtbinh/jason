@@ -5,21 +5,23 @@
 
 /* -- plans for the goals of role herder -- */
 
-+!recruit[scheme(Sch)]
-  <- .print("ooo I should revise the size of the cluster and recruit!");
-     // TODO
-     .wait("+pos(_,_,_)"); // wait next cycle
-     !!recruit[scheme(Sch)].
+{ begin maintenance_goal("+pos(_,_,_)") }
 
++!recruit[scheme(Sch)]
+  <- .print("ooo I should revise the size of the cluster and recruit!").
+
+{ end }
+
+{ begin maintenance_goal("+pos(_,_,_)") }
 
 +!define_formation[scheme(Sch)]
   <- .print("ooo I should define the formation of my group!");
      ?my_group_players(G, herder);
      jia.herd_position(.length(G),L);
      .print("ooo formation is ",L);
-	 !alloc_all(G,L);
-     .wait("+pos(_,_,_)"); // wait next cycle
-     !!define_formation[scheme(Sch)].
+	 !alloc_all(G,L).
+	 
+{ end }
 
 +!alloc_all([],LA).
 +!alloc_all([HA|TA],LA)
@@ -45,9 +47,10 @@
 
 /* -- plans for the goals of all roles (herder and herdboy) -- */
 
-+!be_in_formation[scheme(Sch)]
-  <- .print("ooo I should be in formation!");
-     // TODO
-     .wait("+pos(_,_,_)"); // wait next cycle
-     !!be_in_formation[scheme(Sch)].
+{ begin maintenance_goal("+pos(_,_,_)") }
 
++!be_in_formation[scheme(Sch)]
+  <- .print("ooo I should be in formation!").
+     // TODO
+	 
+{ end }

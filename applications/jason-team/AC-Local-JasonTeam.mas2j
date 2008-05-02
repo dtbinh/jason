@@ -45,6 +45,7 @@ MAS jason_cowboys {
 		      agentClass     agent.SelectEvent 
 		      beliefBaseClass agent.UniqueBelsBB("gsize(_,_)","steps(_)","ally_pos(key,_,_)","corral(_,_,_,_)");
 
+	directives: maintenance_goal = agent.OrgMaintenanceGoal;
+	
     aslSourcePath: "src/asl";
-
 }

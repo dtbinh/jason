@@ -291,6 +291,42 @@ It leads \textsf{herdboys} during this stage.
 
 \ascomment{}
 
+
+\section{Some algorithms}
+
+\subsection{Cluster identification}
+
+some how based on Hierarchical Clustering Algorithms
+http://home.dei.polimi.it/matteucc/Clustering/tutorial\_html
+
+\begin{verbatim}
+V = set of all seen cows sorted by the distance to the center of V
+C = { the cow near to the center of V }
+
+add = true
+while (add)
+ add = false
+ for all v in V
+   if (some cow in C sees v)
+     add v in C
+     add = true
+\end{verbatim}
+
+\subsection{Merging clusters/groups}
+
+performed by each herder of group gi
+\begin{verbatim}
+for all herding groups gj with id > gi.id
+
+let Si the set of cows seen by agents of group gi
+let Sj the set of cows seen by agents of group gj
+if Si intersect Sj not empty
+   // merge condition
+   group gj is removed from the organisation
+   all agents from gj adopt scouter in gi
+\end{verbatim}
+
+
 \section{TODO list}
 
 \begin{enumerate}

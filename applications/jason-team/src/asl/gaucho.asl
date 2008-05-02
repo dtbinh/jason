@@ -95,13 +95,13 @@ TODO: use a list given by BUF
 // remove all groups and schemes (only agent1 does that)
 +!remove_org
    : .my_name(gaucho1)
-  <- .if( group(team,Old) {
+  <- .if( group(team,Old) ) {
         jmoise.remove_group(Old)
-     });
+     };
      
-     .for( scheme(_,SchId) {
+     .for( scheme(_,SchId)) {
         jmoise.remove_scheme(SchId)
-     }).
+     }.
 +!remove_org.
 
 // finish the scheme if it has no more players
