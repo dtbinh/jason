@@ -61,7 +61,8 @@ random_pos(X,Y) :-
      !decide_target.
 
 +!decide_target                  
-   : jia.herd_position(six,X,Y) 
+   : jia.cluster(C) &
+     jia.herd_position(six,C,X,Y) 
   <- .print("COWS! going to ",X,",",Y); //," previous target ",TX,",",TY);
      -+goal(herd);
      -+target(X,Y).

@@ -75,8 +75,10 @@
 +!define_formation[scheme(Sch),mission(Mission)]
   <- .print("ooo I should define the formation of my group!");
      ?my_group_players(G, herder);
-     jia.herd_position(.length(G),L);
-     .print("ooo Formation is ",L, " for agents ",G);
+	 jia.cluster(Cluster,CAsList);
+	 -+current_cluster(CAsList);
+	 jia.herd_position(.length(G),Cluster,L);
+     .print("ooo Formation is ",L, " for agents ",G," in cluster ", Cluster);
 	 !alloc_all(G,L).
 	 
 { end }
@@ -91,20 +93,20 @@
 
 +!find_closest(Ag, ListPos, MinDist, Rest) // find the location in ListPos nearest to agent Ag
   <- ?ally_pos(Ag,X,Y);
-     ?calc_distances(ListPos,Distances,pos(X,Y));
-	 .print("Distances for ",ag_pos(Ag,X,Y)," are ",Distances);
-	 .min(Distances,d(_,MinDist));
-	 .delete(d(_,MinDist),Distances,Rest);
-	 .print("rest is ",Rest).
-	 //!closest(ListPos,[],Sorted,pos(X,Y),9999);
-	 //Sorted = [Alloc|Rest];
-	 //.print("FIND CLOSEST: ",Sorted).
+     .print("ooo try to alloc ",Ag," in ",X,Y," with ",ListPos);
+     //?calc_distances(ListPos,Distances,pos(X,Y));
+	 //.print("Distances for ",ag_pos(Ag,X,Y)," are ",Distances);
+	 //.min(Distances,d(_,MinDist));
+	 //.delete(d(_,MinDist),Distances,Rest);
+	 //.print("rest is ",Rest).
+	 !closest(ListPos,[],[MinDist|Rest],pos(X,Y),9999).
 
+/*	 
 calc_distances([],[],_) :- true.
 calc_distances([pos(Fx,Fy)|TP], [d(D,pos(Fx,Fy))|TD], pos(AgX,AgY))
-  :- jia.path_length(Fx,Fy,AgX,AgY,D) & calc_distances(TP, TD, pos(AgX,AgY)).
-  
-/*  
+  :- .print("calc dist from for ag ",pos(AgX,AgY)) & jia.path_length(Fx,Fy,AgX,AgY,D) & calc_distances(TP, TD, pos(AgX,AgY)).
+*/
+
 +!closest([],S,S,_,_).
 +!closest([pos(XH,YH)|T],Aux,S,pos(XP,YP),LD)
   :  jia.path_length(XH,YH,XP,YP,D) & D < LD 
@@ -112,7 +114,6 @@ calc_distances([pos(Fx,Fy)|TP], [d(D,pos(Fx,Fy))|TD], pos(AgX,AgY))
 +!closest([pos(XH,YH)|T],Aux,S,pos(XP,YP),LD)
   <- .concat(Aux,[pos(XH,YH)],Aux2);
      !closest(T,Aux2,S,pos(XP,YP),LD).
-*/
 
 /* -- plans for the goals of all roles (herder and herdboy) -- */
 
