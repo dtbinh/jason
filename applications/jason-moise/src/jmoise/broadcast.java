@@ -59,7 +59,7 @@ public class broadcast extends DefaultInternalAction {
             GroupInstance gi = oag.getOE().findGroup(target.toString());
             if (gi != null) {
                 for (OEAgent ag: gi.getAgents(true)) {
-                    if (!ag.getId().equals(oag.getAgName())) {
+                    if (!ag.getId().equals(oag.getAgName()) && !oag.getAgName().startsWith("someone")) {
                         oag.sendMsg(new Message(ilf.toString(), null, ag.getId(), pcnt));
                     }
                 }
@@ -68,7 +68,7 @@ public class broadcast extends DefaultInternalAction {
                 SchemeInstance sch = oag.getOE().findScheme(target.toString());
                 if (sch != null) {
                     for (OEAgent ag: sch.getAgents()) {
-                        if (!ag.getId().equals(oag.getAgName())) {
+                        if (!ag.getId().equals(oag.getAgName()) && !oag.getAgName().startsWith("someone")) {
                             oag.sendMsg(new Message(ilf.toString(), null, ag.getId(), pcnt));
                         }
                     }                    

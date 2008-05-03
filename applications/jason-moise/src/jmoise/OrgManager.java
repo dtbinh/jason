@@ -156,10 +156,10 @@ public class OrgManager extends AgArch {
                 OrgManagerCommand cmd = commands.get(content.getFunctor());
                 if (cmd != null) {
                     cmd.process(currentOE, content, agSender, m.getMsgId());
+                    updateGUI();
                 } else {
                     logger.info("Received an unknown message: " + m + "!");
                 }
-                updateGUI();
             } catch (MoiseException e) {
                 logger.log(Level.SEVERE, "Error processing '" + m + "' for " + agSender + ". "+e);
                 sendReply(agSender, m.getMsgId(), "error(\"" + e + "\")");
@@ -215,11 +215,22 @@ public class OrgManager extends AgArch {
         public void process(OE currentOE, Pred command, OEAgent sender, String mId) throws MoiseException {
             String roleId = command.getTerm(0).toString();
             String grId   = command.getTerm(1).toString();
+            
             sender.removeRole(roleId, grId);
             GroupInstance gr = currentOE.findGroup(grId);
 
             // notify other players
             updateMembersOE(gr.getAgents(true), "play(" + sender + "," + roleId + "," + grId + ")", false, false);
+            
+            // and the sender
+            updateMembersOE(sender, "play(" + sender + "," + roleId + "," + grId + ")", true, false);
+            
+            // if the agent is not member of the group anymore, remove other informations of the group
+            if (!gr.getAgents(false).contains(sender)) {
+                for (RolePlayer rp : gr.getPlayers()) {
+                    updateMembersOE(sender, "play(" + rp.getPlayer().getId() + "," + rp.getRole().getId() + "," + gr.getId() + ")", false, false);                
+                }
+            }
         }
     }
     

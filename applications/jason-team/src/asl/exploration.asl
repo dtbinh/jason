@@ -5,6 +5,8 @@
 
 /* -- initial goals -- */
 
+!create_team_group.
+
 /*
    -- plans for new match 
    -- create the initial exploration groups and areas 
@@ -14,10 +16,12 @@
 /* plans for the team's groups creation */
 
 +!create_team_group
+   : .my_name(gaucho1)
   <- .print("oooo creating new team group ------------------------------------------------- "); 
      !remove_org;
      jmoise.create_group(team).
-  
++!create_team_group.
+
 +group(team,GId)                         // agent 1 is responsible for the creation of exploration groups 
    : .my_name(gaucho1)
   <- jmoise.create_group(exploration_grp,GId);
@@ -45,9 +49,9 @@
    : .my_name(Me) &
      agent_id(Me,AgId) &
      AgId mod 2 == 1                    // I have an odd Id
-  <- .if( .my_name(gaucho1) ) { 
-        !create_team_group 
-     };
+  <- //.if( .my_name(gaucho1) ) { 
+     //   !create_team_group 
+     //};
   
      .print("ooo Recruiting scouters for my explorer group....");
   
@@ -79,7 +83,7 @@
 +!find_scouter([ag_d(_,AgName)|_],GId)
   <- .print("ooo Ask ",AgName," to play scouter");
      .send(AgName, achieve, play_role(scouter,GId));
-     .wait("+play(Ag,scouter,GId)",2000).  
+     .wait("+play(AgName,scouter,GId)",2000).  
 -!find_scouter([_|LSOdd],GId) // in case the wait fails, try next agent
   <- .print("ooo find_scouter failure, try another agent.");
      !find_scouter(LSOdd,GId).  
@@ -92,8 +96,6 @@
      
 
 /* -- plans for the goals of role explorer -- */
-
-// TODO: make a pattern for organisational maintainance goal
 
 { begin maintenance_goal("+pos(_,_,_)") }
 
@@ -121,11 +123,13 @@
      !!goto_near_unvisited[scheme(Sch),mission(Mission)].
 */  
 
+
+
 /* -- plans for the goals of role scouter -- */
 
 { begin maintenance_goal("+pos(_,_,_)") }
 
-+!follow_leader[scheme(Sch),group(Gr)]
++!follow_leader[scheme(Sch),mission(Mission),group(Gr)]
    : play(Leader, explorer, Gr)
   <- .print("ooo I should follow the leader ",Leader);
      ?pos(MyX,MyY,_);
@@ -139,9 +143,10 @@
      	-+target(LX,LY)
      }{
         .print("ooo being in formation with leader.");
-        .send(Leader,askOne,target(X,Y),target(TX,TY));
+        .send(Leader,askOne,target(_,_),target(TX,TY));
         jia.scouter_pos(LX, LY, TX, TY, SX, SY);
      	-+target(SX,SY)
-     }
+     }.
 	 
 { end }	 
+

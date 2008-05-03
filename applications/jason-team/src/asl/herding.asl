@@ -2,55 +2,127 @@
 
 /* -- initial beliefs -- */
 
+/* -- plans for herding groups creation -- */
 
+// if see cow and is not herding, create the herding group and change roles
+@lcs[atomic]
++cow(_,_,_)
+   : .my_name(Me) & 
+     play(Me,explorer,_) &
+     not .desire(create_herding_gr) // to avoid crating several groups
+  <- !create_herding_gr.
+  
++!create_herding_gr
+  <- .print("ooo Creating herding group.");
+     .my_name(Me);
+	 
+     // create the new  group
+     ?group(team,TeamId);
+     jmoise.create_group(herding_grp, TeamId);
+	 .wait("+group(herding_grp, HG)[owner(Me)]", 4000);
+	 
+	 // store the list of scouter in my group
+     ?play(Me,explorer,EG);
+     .findall(Scouter,play(Scouter,scouter,EG),LScouters);
+	 
+     !change_role(herder,HG);
+
+     // ask scouters to change role
+	 .print("ooo Asking ",LScouters," to adopt the herdboy role");
+	 .send(LScouters,achieve,change_role(herdboy,HG)).
+
+
++!change_role(herder,HG)
+  <- .my_name(Me);
+	 .if (commitment(Me,explore,Sch)) {
+	    jmoise.remove_mission(explore,Sch)
+	 };
+     .if (play(Me,explorer,EG)) {
+        jmoise.remove_role(explorer,EG)
+     };
+	 jmoise.adopt_role(herder,HG).
+	 
++!change_role(herdboy,HG)
+  <- .my_name(Me);
+	 .if (commitment(Me,scout,Sch)) {
+	    jmoise.remove_mission(scout,Sch)
+	 };
+     .if (play(Me,scouter,EG)) {
+        jmoise.remove_role(scouter,EG)
+     };
+	 jmoise.adopt_role(herdboy,HG).
+
+	 
+// If if start playing explorer in a group that has no scheme, create the scheme
++play(Ag,herder,G)
+   : .my_name(Ag) &
+     not scheme_group(_,G)
+  <- jmoise.create_scheme(herd_sch, [G]).
+
+	 
 /* -- plans for the goals of role herder -- */
 
 { begin maintenance_goal("+pos(_,_,_)") }
 
-+!recruit[scheme(Sch)]
++!recruit[scheme(Sch),mission(Mission)]
   <- .print("ooo I should revise the size of the cluster and recruit!").
 
 { end }
 
+
 { begin maintenance_goal("+pos(_,_,_)") }
 
-+!define_formation[scheme(Sch)]
++!define_formation[scheme(Sch),mission(Mission)]
   <- .print("ooo I should define the formation of my group!");
      ?my_group_players(G, herder);
      jia.herd_position(.length(G),L);
-     .print("ooo formation is ",L);
+     .print("ooo Formation is ",L, " for agents ",G);
 	 !alloc_all(G,L).
 	 
 { end }
 
-+!alloc_all([],LA).
++!alloc_all([],_).
 +!alloc_all([HA|TA],LA)
   <- !find_closest(HA,LA,pos(X,Y),NLA);
+     .print("ooo Alocating position ",pos(X,Y)," to agent ",HA);
      .send(HA,tell,target(X,Y));
-	 -+alloc_target(HA,Alloc);
+	 //-+alloc_target(HA,Alloc);
      !alloc_all(TA,NLA).
 
-+!find_closest(Ag, List, Alloc, Rest) // rule
-  <- ?ally_pos(Ag,XY);
-     !closest(List,[],Sorted,pos(X,Y),9999);
-	 Sorted = [Alloc|Rest];
-	 .print("FIND CLOSEST: ",Sorted).
-// TODO: use min
-+!closest([],S,S,P,D).
++!find_closest(Ag, ListPos, MinDist, Rest) // find the location in ListPos nearest to agent Ag
+  <- ?ally_pos(Ag,X,Y);
+     ?calc_distances(ListPos,Distances,pos(X,Y));
+	 .print("Distances for ",ag_pos(Ag,X,Y)," are ",Distances);
+	 .min(Distances,d(_,MinDist));
+	 .delete(d(_,MinDist),Distances,Rest);
+	 .print("rest is ",Rest).
+	 //!closest(ListPos,[],Sorted,pos(X,Y),9999);
+	 //Sorted = [Alloc|Rest];
+	 //.print("FIND CLOSEST: ",Sorted).
+
+calc_distances([],[],_) :- true.
+calc_distances([pos(Fx,Fy)|TP], [d(D,pos(Fx,Fy))|TD], pos(AgX,AgY))
+  :- jia.path_length(Fx,Fy,AgX,AgY,D) & calc_distances(TP, TD, pos(AgX,AgY)).
+  
+/*  
++!closest([],S,S,_,_).
 +!closest([pos(XH,YH)|T],Aux,S,pos(XP,YP),LD)
-  :  jia.path_length(XH,YH,XP,YP,D) & D < LD // usar A*
+  :  jia.path_length(XH,YH,XP,YP,D) & D < LD 
   <- !closest(T,[pos(XH,YH)|Aux],S,pos(XP,YP),D).
 +!closest([pos(XH,YH)|T],Aux,S,pos(XP,YP),LD)
   <- .concat(Aux,[pos(XH,YH)],Aux2);
      !closest(T,Aux2,S,pos(XP,YP),LD).
-
+*/
 
 /* -- plans for the goals of all roles (herder and herdboy) -- */
 
-{ begin maintenance_goal("+pos(_,_,_)") }
 
-+!be_in_formation[scheme(Sch)]
-  <- .print("ooo I should be in formation!").
-     // TODO
+//{ begin maintenance_goal("+pos(_,_,_)") }
+
+// This goal behaviour is set by the message "tell target" of the leader of the group
++!be_in_formation[scheme(Sch),mission(Mission)]
+  <- .print("ooo I should be in formation!");
+     .suspend.
 	 
-{ end }
+// { end }
+

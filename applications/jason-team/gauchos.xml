@@ -32,9 +32,9 @@
 	    <copy file="../jason-moise/lib/moise.jar" todir="lib" />
 
     	<mkdir dir="tmp-ag-mind" />
-        <!--delete failonerror="no" includeEmptyDirs="true" verbose="false">
-            <fileset dir="tmp-ag-mind" includes="*.xml"/>
-        </delete-->
+        <delete failonerror="no" includeEmptyDirs="true" verbose="false">
+            <fileset dir="massim-server/backup" includes="*"/>
+        </delete>
     </target>
     <target name="user-end">
     </target>
@@ -93,7 +93,11 @@
 
 
     <target name="run" depends="compile" >
-        <echo message="Running project ${ant.project.name}" />
+        <delete failonerror="no" includeEmptyDirs="true" verbose="false">
+            <fileset dir="tmp-ag-mind" includes="*.xml"/>
+        </delete>
+
+    	<echo message="Running project ${ant.project.name}" />
         <java classname="jason.infra.centralised.RunCentralisedMAS"
               failonerror="true" fork="yes" dir="${basedir}" >
             <classpath refid="project.classpath"/>

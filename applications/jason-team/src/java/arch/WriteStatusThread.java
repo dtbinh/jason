@@ -70,7 +70,10 @@ public class WriteStatusThread extends Thread {
             out = new PrintWriter(fileName);
             while (true) {
                 try {
+                    long timebefore = System.currentTimeMillis();
                     waitNextCycle();
+                    long cycletime = System.currentTimeMillis() - timebefore;
+                    
                     //out.println("\n\n** Agent "+getAgName()+" in cycle "+cycle+"\n");
                     //for (int i=0; i<model.getNbOfAgs(); i++) {
                         // out.println("miner"+(i+1)+" is carrying "+model.getGoldsWithAg(i)+" gold(s), at "+model.getAgPos(i));
@@ -97,17 +100,20 @@ public class WriteStatusThread extends Thread {
                     	}
                     }
                     
-                    // store the agent'd mind
-                    if (dirmind != null) {
-                    	String agmind = new asl2xml().transform(owner.getTS().getAg().getAgState());
-                    	FileWriter outmind = new FileWriter(new File(dirmind.getName()+"/"+owner.getCycle()+".xml"));
-                    	outmind.write(agmind);
-                    	outmind.close();
-                    }
-                    
+                    s.append( String.format("%7d ms", cycletime));
                     logger.info(s.toString());
                     out.println(s.toString());
                     out.flush();
+                    
+                    
+                    // store the agent'd mind
+                    if (dirmind != null) {
+                        String agmind = new asl2xml().transform(owner.getTS().getAg().getAgState());
+                        FileWriter outmind = new FileWriter(new File(dirmind.getName()+"/"+owner.getCycle()+".xml"));
+                        outmind.write(agmind);
+                        outmind.close();
+                    }
+                    
                 } catch (InterruptedException e) { // no problem, quit the thread
                     return;
                 } catch (Exception e) {

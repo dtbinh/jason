@@ -41,6 +41,8 @@ alloc_target(a3,pos(30,30)).
 
 +?pos(X, Y, S)       <- .wait("+pos(X,Y,S)").
 +?group_area(Id,G,A) <- .wait("+group_area(Id,G,A)").
++?gsize(W,H)         <- .wait("+gsize(W,H)").
++?ally_pos(Name,X,Y) : .my_name(Name) <- ?pos(X,Y,_).
 
 +end_of_simulation(_Result)
   <- .abolish(group_area(_,_,_));
@@ -57,37 +59,16 @@ alloc_target(a3,pos(30,30)).
 
 /* -- plans for the goals of all roles -- */
 
-/*
 
-TODO: use a list given by BUF
-
-+!share_seen_cows[scheme(Sch)]
-  <- .print("ooo I should share cows!");
-     ?cows_to_inform(C);
-	 jmoise.broadcast(Sch, tell, C);
-	 // TODO: limpar -+cows_to_inform([])
-     .wait("+pos(_,_,_)"); // wait next cycle
-     !!share_seen_cows[scheme(Sch)].
-
-+?cows_to_inform([]).
-
-+cell(X,Y,cow(Id))
-  <- +cow(Id,X,Y); //Jomi, tu nao vai gostar disso :D
-     ?cows_to_inform(C);
-	 -+cows_to_inform([cow(Id,X,Y)|C]).
-
-*/
-
-+!share_seen_cows.
++!share_seen_cows <- .print("ooo start sharing cows."); .suspend.
 
 // simple implementation of share_cows (see TODO above)
 +cow(Id,X,Y)[source(percept)]
-   : .my_name(Me) & play(Me,_,Gr)
+   : .desire(share_seen_cows) & .my_name(Me) & play(Me,_,Gr)
   <- jmoise.broadcast(Gr, tell, cow(Id,X,Y)).
 -cow(Id,X,Y)[source(percept)]
-   : .my_name(Me) & play(Me,_,Gr)
+   : .desire(share_seen_cows) & .my_name(Me) & play(Me,_,Gr)
   <- jmoise.broadcast(Gr, untell, cow(Id,X,Y)).
-
 
 
 /* -- general organisational plans -- */
@@ -114,7 +95,7 @@ TODO: use a list given by BUF
 // get the list G of participants of the group where I play R
 +?my_group_players(G,R) 
   <- .my_name(Me);
-     play(Me,R,Gid);
+     ?play(Me,R,Gid);
      .findall(P, play(P,_,Gid), G).
 
 +!play_role(Role,Group)[source(Ag)]
@@ -134,8 +115,9 @@ TODO: use a list given by BUF
   <- jmoise.remove_mission(Mission,Sch).
 
 // when I am not committed to a mission anymore, remove all goals based on that mission
--commitment(Ag,Mission,Sch)
-  <- .drop_desire(_[scheme(Id),mission(Mission)]).
+-commitment(Me,Mission,Sch)
+   : .my_name(Me)
+  <- .drop_desire(_[scheme(Sch),mission(Mission)]).
 
 // if some scheme is finished, drop all intentions related to it.
 -scheme(_Spec,Id)

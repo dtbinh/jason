@@ -55,9 +55,12 @@
             </sub-groups>
 
             <formation-constraints>
-                <!--compatibility from="cowboy" to="cowboy" type="compatibility"
+                <compatibility from="explorer" to="herder" type="compatibility"
                                scope="intra-group" extends-sub-groups="true" 
-                               bi-dir="true"/ -->
+                               bi-dir="true"/>
+                <compatibility from="scouter" to="herder" type="herdboy"
+                               scope="intra-group" extends-sub-groups="true" 
+                               bi-dir="true"/>
             </formation-constraints>
         </group-specification>
     </structural-specification>

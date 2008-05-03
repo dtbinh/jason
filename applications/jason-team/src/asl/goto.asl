@@ -21,6 +21,7 @@ random_pos(X,Y) :-
 +target(NX,NY)
   <- .drop_desire(move);
      jia.set_target(NX,NY);
+	 -at_target;
      !!move.
 
 // I still do not know my location

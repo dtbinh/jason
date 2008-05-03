@@ -161,28 +161,23 @@ public class MindView  {
 
 	@SuppressWarnings("unchecked")
     private void setupSlider() {
+        int first = -1;
 	    int size = 0;
         for (String f: new File("tmp-ag-mind").list()) {
             if (f.endsWith(".xml")) {
                 f = f.substring(0, f.length()-4);
                 try {
                     int n = Integer.parseInt(f);
+                    if (first < 0)
+                        first = n;
                     if (n > size)
                         size = n;
                 } catch (Exception e) { }
             }
         }
-        /*File f = new File("tmp-ag-mind/"+size+".xml");
-	    while (f.exists()) {
-	        size++;
-	        f = new File("tmp-ag-mind/"+size+".xml");
-	    }
-	    */
-        //Hashtable<Integer,Component> labelTable = new Hashtable<Integer,Component>();
-        //labelTable.put( 0, new JLabel("Cycle 0") );
-        //labelTable.put( size, new JLabel("Cycle "+size) );
-        //jHistory.setLabelTable( labelTable );
+        step = first;
+        jHistory.setMinimum(first);
         jHistory.setMaximum(size);
-        jHistory.setValue(0);
+        jHistory.setValue(step);
     }
 }
