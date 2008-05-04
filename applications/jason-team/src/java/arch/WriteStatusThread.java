@@ -109,7 +109,8 @@ public class WriteStatusThread extends Thread {
                     // store the agent'd mind
                     if (dirmind != null) {
                         String agmind = new asl2xml().transform(owner.getTS().getAg().getAgState());
-                        FileWriter outmind = new FileWriter(new File(dirmind.getName()+"/"+owner.getCycle()+".xml"));
+                        String filename = String.format("%5d.xml",owner.getCycle()).replaceAll(" ","0");
+                        FileWriter outmind = new FileWriter(new File(dirmind.getName()+"/"+filename));
                         outmind.write(agmind);
                         outmind.close();
                     }
