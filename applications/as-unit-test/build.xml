@@ -42,7 +42,7 @@
 	</target>
 
 	<target name="test" depends="jar">
-		<ant dir="../.." target="jar" />
+		<ant dir="../.." target="jar"  inheritall="false"/>
 		<junit printsummary="yes" failureProperty="test.failure">
 			<classpath refid="project.classpath" />
 			<classpath path="${build.dir}" />

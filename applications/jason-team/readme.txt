@@ -17,13 +17,13 @@ To run this team:
      svn update
      ant plugin
    
-     cd applications/jason-moise
-     ant jar
-
 2. run massim-server
      cd applications/jason-team/massim-server
      ./startServer.sh
-   
+
+   or some configuration for test
+     ./startServerTest.sh conf/<some conf file>.xml
+
 3. run dummies (written in Jason)
      ant -f dummies.xml
  
@@ -44,10 +44,15 @@ To run this team:
 
 6. you can get the agents location with the command
    
-   tail -f world-status.txt 
+         tail -f world-status.txt 
 
-7. the get the graphical view of some agent, add gui=yes in 
-   the agent's option (.mas2j file)
+   you can see the agent mind state with
+
+         ant -f gauchos.xml mind-view
+   
+
+7. to enable/disable the graphical view of some agent, add gui=yes
+   or gui=no in the agent's option (.mas2j file)
    
    
 
