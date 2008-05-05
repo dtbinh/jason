@@ -32,12 +32,8 @@ To run this team:
      ./startAgents.sh
 
 4. run Jason team 
-   a. by JasonIDE
-      	 ../../bin/jason.sh
-      open an run  AC-Local-JasonTeam.mas2j
 
-   b. by Ant
-         ant -f gauchos.xml
+     ant -f gauchos.xml
 
 5. start the simulation
    go to shell running startServer.sh and press ENTER

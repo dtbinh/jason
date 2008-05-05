@@ -64,10 +64,10 @@ alloc_target(a3,pos(30,30)).
 
 // simple implementation of share_cows (see TODO above)
 +cow(Id,X,Y)[source(percept)]
-   : .desire(share_seen_cows) & .my_name(Me) & play(Me,_,Gr)
+   : .intend(share_seen_cows) & .my_name(Me) & play(Me,_,Gr)
   <- jmoise.broadcast(Gr, tell, cow(Id,X,Y)).
 -cow(Id,X,Y)[source(percept)]
-   : .desire(share_seen_cows) & .my_name(Me) & play(Me,_,Gr)
+   : .intend(share_seen_cows) & .my_name(Me) & play(Me,_,Gr)
   <- jmoise.broadcast(Gr, untell, cow(Id,X,Y)).
 
 

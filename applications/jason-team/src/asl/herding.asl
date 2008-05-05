@@ -87,7 +87,7 @@
 +!alloc_all([HA|TA],LA)
   <- !find_closest(HA,LA,pos(X,Y),NLA);
      .print("ooo Alocating position ",pos(X,Y)," to agent ",HA);
-     .send(HA,untell,target(_,_));
+     //.send(HA,untell,target(_,_));
      .send(HA,tell,target(X,Y));
 	 //-+alloc_target(HA,Alloc);
      !alloc_all(TA,NLA).
