@@ -5,7 +5,6 @@
 /* -- plans for herding groups creation -- */
 
 // if see cow and is not herding, create the herding group and change roles
-@lcs[atomic]
 +cow(_,_,_)
    : .my_name(Me) & 
      play(Me,explorer,_) &
@@ -20,44 +19,38 @@
      ?group(team,TeamId);
      jmoise.create_group(herding_grp, TeamId);
 	 .wait("+group(herding_grp, HG)[owner(Me)]", 4000);
+	 .print("ooo Group ",HG," created.");
 	 
 	 // store the list of scouter in my group
      ?play(Me,explorer,EG);
      .findall(Scouter,play(Scouter,scouter,EG),LScouters);
 	 
      !change_role(herder,HG);
+	 .wait("+play(Me,herder,FinalHerdingGroup)");
 
      // ask scouters to change role
-	 .print("ooo Asking ",LScouters," to adopt the herdboy role");
-	 .send(LScouters,achieve,change_role(herdboy,HG)).
-
-
-+!change_role(herder,HG)
-  <- .my_name(Me);
-	 .if (commitment(Me,explore,Sch)) {
-	    jmoise.remove_mission(explore,Sch)
-	 };
-     .if (play(Me,explorer,EG)) {
-        jmoise.remove_role(explorer,EG)
-     };
-	 jmoise.adopt_role(herder,HG).
+	 .print("ooo Asking ",LScouters," to adopt the herdboy role in ",FinalHerdingGroup);
+	 .send(LScouters,achieve,change_role(herdboy,FinalHerdingGroup)).
 	 
-+!change_role(herdboy,HG)
-  <- .my_name(Me);
-	 .if (commitment(Me,scout,Sch)) {
-	    jmoise.remove_mission(scout,Sch)
-	 };
-     .if (play(Me,scouter,EG)) {
-        jmoise.remove_role(scouter,EG)
-     };
-	 jmoise.adopt_role(herdboy,HG).
-
 	 
 // If if start playing explorer in a group that has no scheme, create the scheme
-+play(Ag,herder,G)
-   : .my_name(Ag) &
++play(Me,herder,G)
+   : .my_name(Me) &
      not scheme_group(_,G)
-  <- jmoise.create_scheme(herd_sch, [G]).
+  <- jmoise.create_scheme(herd_sch, [G]);
+     +group_leader(G,Me);
+     .broadcast(tell, group_leader(G,Me)).
+	 
+// If I stop playing herder, destroy the herding groups I've created
+-play(Ag,herder,_)
+   : .my_name(Ag)
+  <- .wait(4000);
+     .for( group(herding_grp,G)[owner(Me)] ) {
+	    -group_leader(G,Me);
+        .broadcast(untell, group_leader(G,Me));
+	    jmoise.remove_group(G);
+		.wait(4000)
+	 }.
 
 	 
 /* -- plans for the goals of role herder -- */
@@ -65,11 +58,29 @@
 { begin maintenance_goal("+pos(_,_,_)") }
 
 +!recruit[scheme(Sch),mission(Mission)]
-  <- .print("ooo I should revise the size of the cluster and recruit!").
+  <- .print("ooo I should revise the size of the cluster and recruit!");
+     !check_merge.
 
 { end }
 
-
++!check_merge
+    : .my_name(Me) &
+	  play(Me, herder, Gi) &
+	  current_cluster(MyC)
+  <-  // for all other groups
+      .for( group_leader(Gj, L) & L \== Me & Me < L) {
+	     .print("ooo Checking merging with ",Gj);
+         // ask their cluster
+         .send(L, askOne, current_cluster(_), current_cluster(TC));
+		 .intersection(MyC,TC,I);
+		 
+		 .if (.length(I) > 0) {
+            .print("ooo Merging my herding group ",Gi," with ",Gj, " lead by ",L);
+            .send(L, achieve, change_role(herdboy,Gi))
+		 }
+	  }.
++!check_merge.
+	 	 
 { begin maintenance_goal("+pos(_,_,_)") }
 
 +!define_formation[scheme(Sch),mission(Mission)]
@@ -115,6 +126,7 @@ calc_distances([pos(Fx,Fy)|TP], [d(D,pos(Fx,Fy))|TD], pos(AgX,AgY))
   <- .concat(Aux,[pos(XH,YH)],Aux2);
      !closest(T,Aux2,S,pos(XP,YP),LD).
 */
+
 
 /* -- plans for the goals of all roles (herder and herdboy) -- */
 

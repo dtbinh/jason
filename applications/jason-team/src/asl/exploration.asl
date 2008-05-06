@@ -5,7 +5,7 @@
 
 /* -- initial goals -- */
 
-!create_team_group.
+//!create_team_group.
 
 /*
    -- plans for new match 
@@ -15,33 +15,21 @@
 
 /* plans for the team's groups creation */
 
+/*
 +!create_team_group
    : .my_name(gaucho1)
   <- .print("oooo creating new team group ------------------------------------------------- "); 
      !remove_org;
      jmoise.create_group(team).
 +!create_team_group.
+*/
 
-+group(team,GId)                         // agent 1 is responsible for the creation of exploration groups 
+/*+group(team,GId)                         // agent 1 is responsible for the creation of exploration groups 
    : .my_name(gaucho1)
   <- jmoise.create_group(exploration_grp,GId);
      jmoise.create_group(exploration_grp,GId);
-     jmoise.create_group(exploration_grp,GId).
-+group(exploration_grp,_)                // compute the area of the groups
-   : .my_name(gaucho1) &
-     group(team,TeamId) &
-     .findall(GId, group(exploration_grp,GId)[super_gr(TeamId)], LG) &
-	 LG = [G1,G2,G3]                     // there are three groups
-  <- ?gsize(W,H);
-	 X = math.round(((W*H)/3)/H);
-	 +group_area(0, G1, area(0,   0,       X,   H-1));
-	 +group_area(1, G2, area(X+1, 0,       W-1, H/2));
-	 +group_area(2, G3, area(X+1, (H/2)+1, W-1, H-1)). 
-
-
-+group_area(ID,G,A)[source(self)]
-  <- .broadcast(tell, group_area(ID,G,A)).  
-
+     jmoise.create_group(exploration_grp,GId). */
+	 
 
 /* plans for agents with odd id */
 
@@ -49,14 +37,27 @@
    : .my_name(Me) &
      agent_id(Me,AgId) &
      AgId mod 2 == 1                    // I have an odd Id
-  <- //.if( .my_name(gaucho1) ) { 
-     //   !create_team_group 
-     //};
+  <- !create_exploration_gr.
   
-     .print("ooo Recruiting scouters for my explorer group....");
++!create_exploration_gr
+  <- .my_name(Me);
+
+     // create the team  
+	 .if( Me == gaucho1 & not group(team,_) ) {
+        jmoise.create_group(team) 
+	 };
+	 
+     // wait the team creation
+	 ?group(team,TeamGroup);
+	 
+     .if( not group(exploration_grp,_)[owner(Me)]) {
+        jmoise.create_group(exploration_grp,TeamGroup);
+		.wait("+group(exploration_grp,G)[owner(Me)]")
+     };
+	 
+     .print("ooo Recruiting scouters for my explorer group ",G);
   
-     // wait my pos
-     ?pos(MyX,MyY,_); 
+     ?pos(MyX,MyY,_); // wait my pos
      
      // wait others pos
      .while( .count(ally_pos(_,_,_), N) & N < 5 ) {
@@ -71,8 +72,8 @@
      .sort(LOdd, LSOdd);
 
      // test if I received the area of my group
-     ?group_area(AgId div 2,G,A);
-     .print("ooo Scouters candidates =", LSOdd," in area ",group_area(AgId div 2,G,A));
+     ?group_area(AreaId,G,A);
+     .print("ooo Scouters candidates =", LSOdd," in area ",group_area(AreaId,G,A));
      
      // adopt role explorer in the group
      jmoise.adopt_role(explorer,G);
@@ -94,7 +95,31 @@
      not scheme_group(_,G)
   <- jmoise.create_scheme(explore_sch, [G]).
      
+// If I stop playing explorer, destroy the explore groups I've created
+-play(Ag,explorer,_)
+   : .my_name(Ag)
+  <- .wait(4000);
+     .for( group(exploration_grp,G)[owner(Me)] ) {
+	    jmoise.remove_group(G);
+		.wait(4000)
+	 }.
 
+	 
++group(exploration_grp,_)                // compute the area of the groups
+   : .my_name(gaucho1) &
+     group(team,TeamId) &
+     .findall(GId, group(exploration_grp,GId)[super_gr(TeamId)], LG) &
+	 LG = [G1,G2,G3]                     // there are three groups
+  <- ?gsize(W,H);
+	 X = math.round(((W*H)/3)/H);
+	 +group_area(0, G1, area(0,   0,       X,   H-1));
+	 +group_area(1, G2, area(X+1, 0,       W-1, H/2));
+	 +group_area(2, G3, area(X+1, (H/2)+1, W-1, H-1)). 
+
++group_area(ID,G,A)[source(self)]
+  <- .broadcast(tell, group_area(ID,G,A)).  
+
+	 
 /* -- plans for the goals of role explorer -- */
 
 { begin maintenance_goal("+pos(_,_,_)") }

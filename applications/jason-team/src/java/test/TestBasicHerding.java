@@ -220,6 +220,9 @@ public class TestBasicHerding {
         
         Location byIA =  hp.getAgTarget(clusterLocs, Formation.one, cowboy.getLocation(model));
         assertEquals(new Location(11,49), byIA);
+
+        List<Location> form =  hp.formationPlaces(clusterLocs, Formation.four);
+        assertEquals("[6,48, 11,49, 6,48, 11,49]", form.toString());
     }
 
     @Test 

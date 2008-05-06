@@ -146,7 +146,7 @@ public class herd_position extends DefaultInternalAction {
         }
     }
     
-    private List<Location> formationPlaces(List<Location> clusterLocs, Formation formation) throws Exception {
+    public List<Location> formationPlaces(List<Location> clusterLocs, Formation formation) throws Exception {
         lastCluster = clusterLocs;
 
         List<Vec> cows = cluster.location2vec(model, clusterLocs);
@@ -180,8 +180,12 @@ public class herd_position extends DefaultInternalAction {
         	
         	Location l = findFirstFreeLocTowardsTarget(agTarget, mean.add(agsTarget), initAgTS, dist, model);
         	//System.out.println(" =       "+dist+" result  "+l);
-        	if (l != null)
-        		r.add(pathToNearCow(l, clusterLocs));
+        	if (l != null) {
+        	    l = pathToNearCow(l, clusterLocs);
+        	    if ( ! model.inGrid(l) || model.hasObject(WorldModel.OBSTACLE, l))
+        	        l = model.nearFree(l);
+                r.add( l );
+        	}
         	
         	/*
         	Location lastloc = null;
@@ -210,7 +214,7 @@ public class herd_position extends DefaultInternalAction {
     public static Location findFirstFreeLocTowardsTarget(Vec target, Vec ref, int initialSize, int maxSize, LocalWorldModel model) {
     	Location lastloc = null;
     	maxSize = Math.abs(maxSize);
-    	Location l = ref.getLocation(model);;
+    	Location l = ref.getLocation(model);
     	for (int s = initialSize; s <= maxSize; s++) {
     		l = target.newMagnitude(s).add(ref).getLocation(model);
     		//System.out.println("pos angle "+s+" = "+l);

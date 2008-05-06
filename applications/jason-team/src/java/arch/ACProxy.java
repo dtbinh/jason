@@ -203,12 +203,12 @@ public class ACProxy extends ACAgent implements Runnable {
 				}
 			}
 	
+            //if (logger.isLoggable(Level.FINE)) 
+            logger.info("Request action for "+lpos+" / rid: "+rid+" / percepts: "+percepts);            
 			
 			//arq.sendCowsToTeam();
 			arq.startNextStep(step, percepts);
 			
-			//if (logger.isLoggable(Level.FINE)) 
-			logger.info("Request action for "+lpos+" / rid: "+rid+" / percepts: "+percepts);			
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "error processing request",e);
 		}

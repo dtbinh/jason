@@ -42,20 +42,20 @@ alloc_target(a3,pos(30,30)).
 +?pos(X, Y, S)       <- .wait("+pos(X,Y,S)").
 +?group_area(Id,G,A) <- .wait("+group_area(Id,G,A)").
 +?gsize(W,H)         <- .wait("+gsize(W,H)").
++?group(T,G)         <- .wait("+group(T,G)").
 +?ally_pos(Name,X,Y) : .my_name(Name) <- ?pos(X,Y,_).
 
 +end_of_simulation(_Result)
-  <- .abolish(group_area(_,_,_));
+  <- -end_of_simulation(_);
+     .drop_all_desires;
      !remove_org.
 
-+!restart.
- 
-/*  <- .print("*** restart ***"). 
++!restart
+  <- //.print("*** restart ***"); 
      //.drop_all_desires;
-     //.abolish(target(_,_)).
+     .abolish(cow(_,_,_)).
      // TODO: what to do?
      //!decide_target.
-*/
 
 /* -- plans for the goals of all roles -- */
 
@@ -77,7 +77,8 @@ alloc_target(a3,pos(30,30)).
 +!remove_org
    : .my_name(gaucho1)
   <- .if( group(team,Old) ) {
-        jmoise.remove_group(Old)
+        jmoise.remove_group(Old);
+		.wait("-group(team,_)")
      };
      
      .for( scheme(_,SchId)) {
@@ -98,6 +99,43 @@ alloc_target(a3,pos(30,30)).
      ?play(Me,R,Gid);
      .findall(P, play(P,_,Gid), G).
 
+
++!change_role(R,G)
+   : .my_name(Me) & play(Me, R,G).
+   
++!change_role(NewRole,GT)[source(S)]
+   : not .desire(change_role(_,_))  // to not trigger two change of role
+  <- .my_name(Me); 
+	 .print("ooo Adopting the role ",NewRole," in group ",GT,", as asked by ",S);
+	 
+	 // give up all missions
+	 .while( commitment(Me,M,Sch) ) {
+	    jmoise.remove_mission(M,Sch);
+		.wait("-commitment(Me,M,Sch)")
+	 };
+
+     // if I play herder in another group, ...
+     .if( play(Me,herder,G) & G \== GT) {
+	    // ask all herdboys to also change the group
+		?my_group_players(HerdBoys, herder);
+		.send(HerdBoys, achieve, change_role(herdboy,GT))
+	 };
+  
+	 // if I play any other role, give it up
+     .while( play(Me,R,OG) & OG \== GT) {
+        jmoise.remove_role(R,OG);
+		.wait("-play(Me,R,OG)")
+     };
+
+     jmoise.adopt_role(NewRole,GT);
+	 .wait("+play(Me,NewRole,GT)").
+	 
++!change_role(NewRole,GT)[source(S)]
+  <- .print("ooo I cannot adopt the role ",NewRole," in group ",GT,", as asked by ",S).
+
+  
++!play_role(Role,Group)
+   : .my_name(Me) & play(Me,R,G).
 +!play_role(Role,Group)[source(Ag)]
   <- .print("ooo Adopting role ",Role," in group ",Group,", asked by ",Ag);
      jmoise.adopt_role(Role, Group).
