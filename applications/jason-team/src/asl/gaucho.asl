@@ -81,7 +81,7 @@ alloc_target(a3,pos(30,30)).
 		.wait("-group(team,_)")
      };
      
-     .for( scheme(_,SchId)) {
+     .for( scheme(_,SchId) ) {
         jmoise.remove_scheme(SchId)
      }.
 +!remove_org.
@@ -104,7 +104,6 @@ alloc_target(a3,pos(30,30)).
    : .my_name(Me) & play(Me,R,G).
    
 +!change_role(NewRole,GT)[source(S)]
-   : not .desire(change_role(_,_))  // to not trigger two change of role
   <- .my_name(Me); 
 	 .print("ooo Adopting the role ",NewRole," in group ",GT,", as asked by ",S);
 	 
@@ -117,7 +116,7 @@ alloc_target(a3,pos(30,30)).
      // if I play herder in another group, ...
      .if( play(Me,herder,G) & G \== GT) {
 	    // ask all herdboys to also change the group
-		?my_group_players(HerdBoys, herder);
+	    .findall(Boy,play(Boy,herdboy,G),HerdBoys);
 		.send(HerdBoys, achieve, change_role(herdboy,GT))
 	 };
   
@@ -130,11 +129,11 @@ alloc_target(a3,pos(30,30)).
      jmoise.adopt_role(NewRole,GT);
 	 .wait("+play(Me,NewRole,GT)").
 	 
-+!change_role(NewRole,GT)[source(S)]
-  <- .print("ooo I cannot adopt the role ",NewRole," in group ",GT,", as asked by ",S).
+//+!change_role(NewRole,GT)[source(S)]
+//  <- .print("ooo I cannot adopt the role ",NewRole," in group ",GT,", as asked by ",S).
 
   
-+!play_role(Role,Group)
++!play_role(R,G)
    : .my_name(Me) & play(Me,R,G).
 +!play_role(Role,Group)[source(Ag)]
   <- .print("ooo Adopting role ",Role," in group ",Group,", asked by ",Ag);

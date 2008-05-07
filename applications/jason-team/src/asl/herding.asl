@@ -26,11 +26,11 @@
      .findall(Scouter,play(Scouter,scouter,EG),LScouters);
 	 
      !change_role(herder,HG);
-	 .wait("+play(Me,herder,FinalHerdingGroup)");
+	 //?play(Me,herder,FinalHerdingGroup);
 
      // ask scouters to change role
-	 .print("ooo Asking ",LScouters," to adopt the herdboy role in ",FinalHerdingGroup);
-	 .send(LScouters,achieve,change_role(herdboy,FinalHerdingGroup)).
+	 .print("ooo Asking ",LScouters," to adopt the herdboy role in ",HG);
+	 .send(LScouters,achieve,change_role(herdboy,HG)).
 	 
 	 
 // If if start playing explorer in a group that has no scheme, create the scheme

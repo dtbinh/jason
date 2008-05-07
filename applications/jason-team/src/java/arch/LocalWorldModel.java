@@ -192,8 +192,11 @@ public class LocalWorldModel extends WorldModel {
     public void incVisited(Location l) {
     	incVisited(l.x,l.y);
     }
+
     public void incVisited(int x, int y) {
     	visited[x][y] += 2;
+        increp(visited, x, y, 4, 1);
+        /*
     	if (x > 0)                                 visited[x-1][y  ]++;
     	if (y > 0)                                 visited[x  ][y-1]++;
     	if (y > 0 && x > 0)                        visited[x-1][y-1]++;
@@ -202,6 +205,7 @@ public class LocalWorldModel extends WorldModel {
     	if (x+1 < getWidth())                      visited[x+1][y  ]++;
     	if (x+1 < getWidth() && y > 0)             visited[x+1][y-1]++;
     	if (x+1 < getWidth() && y+1 < getHeight()) visited[x+1][y+1]++;
+    	*/
     }
     
     /** returns the near location of x,y that was least visited */

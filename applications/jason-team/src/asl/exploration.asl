@@ -90,16 +90,17 @@
      !find_scouter(LSOdd,GId).  
      
 // If if start playing explorer in a group that has no scheme, create the scheme
-+play(Ag,explorer,G)
-   : .my_name(Ag) &
++play(Me,explorer,G)
+   : .my_name(Me) &
      not scheme_group(_,G)
   <- jmoise.create_scheme(explore_sch, [G]).
      
 // If I stop playing explorer, destroy the explore groups I've created
--play(Ag,explorer,_)
-   : .my_name(Ag)
+-play(Me,explorer,_)
+   : .my_name(Me)
   <- .wait(4000);
      .for( group(exploration_grp,G)[owner(Me)] ) {
+	    .print("ooo Removing group ",G," since I am not in the group anymore");
 	    jmoise.remove_group(G);
 		.wait(4000)
 	 }.
@@ -131,7 +132,8 @@
      ?group_area(_,GroupId, Area);  // get the area of this group
      ?pos(MeX, MeY, _);             // get my location
      jia.near_least_visited(MeX, MeY, Area, TargetX, TargetY);
-     -+target(TargetX, TargetY). 
+     -+target(TargetX, TargetY);
+	 .wait("+at_target",10000,_). 
 	 
 	 /* added by the pattern
      .wait("+pos(_,_,_)"); // wait next cycle
