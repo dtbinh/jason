@@ -6,6 +6,7 @@ import jason.bb.BeliefBase;
 import jason.environment.grid.Location;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -145,26 +146,31 @@ public class LocalWorldModel extends WorldModel {
                         m[c][l] += value;       
     }
 
-    public Location nearFree(Location l) throws Exception {
+    // occupied means the places that can not be considered as nearFree
+    public Location nearFree(Location l, List<Location> occupied) throws Exception {
         int w = 0;
+        Location newl;
+        if (occupied == null) occupied = Collections.emptyList(); 
         List<Location> options = new ArrayList<Location>();
         while (true) {
         	options.clear();
         	for (int y=l.y-w+1; y<l.y+w; y++) {
         		//System.out.println(" "+(l.x+w)+" "+y);
         		//System.out.println(" "+(l.x-w)+" "+y);
-        		if (isFree(l.x-w,y)) 
-        			options.add(new Location(l.x-w,y));
-        		if (isFree(l.x+w,y)) 
-        			options.add(new Location(l.x+w,y));
+        	    newl = new Location(l.x-w,y);
+        		if (isFree(newl) && !occupied.contains(newl)) 
+        			options.add(newl);
+        		newl = new Location(l.x+w,y);
+        		if (isFree(newl) && !occupied.contains(newl)) 
+        			options.add(newl);
         	}
         	for (int x=l.x-w; x<=l.x+w;x++) {
-        		//System.out.println(" "+x+" "+(l.y-w));
-        		//System.out.println(" "+x+" "+(l.y+w));
-        		if (isFree(x,l.y-w)) 
-        			options.add(new Location(x,l.y-w));
-        		if (isFree(x,l.y+w))
-        			options.add(new Location(x,l.y+w));
+        	    newl = new Location(x,l.y-w);
+                if (isFree(newl) && !occupied.contains(newl)) 
+                    options.add(newl);
+                newl = new Location(x,l.y+w);
+                if (isFree(newl) && !occupied.contains(newl)) 
+                    options.add(newl);
         	}
         	//System.out.println(w + " " + options);
         	if (!options.isEmpty()) 

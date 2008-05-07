@@ -24,17 +24,6 @@ random_pos(X,Y) :-
 	 -at_target;
      !!move.
 
-//-target(_,_) // if I receive a message untell for my target, remove all target from BB
-//  <- .abolish(target(_,_)). 
-	 
-// I still do not know my location
-/*
-+!move
-    : not pos(_,_,_)
-  <- .print("waiting my location....");
-     .wait("+pos(_,_,_)");
-     !move.
-*/
 +!move
    : not target(_,_)
   <- .print("waiting my target....");

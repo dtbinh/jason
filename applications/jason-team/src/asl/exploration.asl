@@ -42,17 +42,17 @@
 +!create_exploration_gr
   <- .my_name(Me);
 
-     // create the team  
+     // create the team, if necessary
 	 .if( Me == gaucho1 & not group(team,_) ) {
-        jmoise.create_group(team) 
+         jmoise.create_group(team) 
 	 };
-	 
-     // wait the team creation
-	 ?group(team,TeamGroup);
-	 
-     .if( not group(exploration_grp,_)[owner(Me)]) {
-        jmoise.create_group(exploration_grp,TeamGroup);
-		.wait("+group(exploration_grp,G)[owner(Me)]")
+
+     .if( not group(exploration_grp,_)[owner(Me)] ) {
+	    ?group(team,TeamGroup); // get the team Id
+        jmoise.create_group(exploration_grp,TeamGroup,G);
+		.print("ooo Group ",G," created")
+     } {
+	    ?group(exploration_grp,G)[owner(Me)]
      };
 	 
      .print("ooo Recruiting scouters for my explorer group ",G);
@@ -123,7 +123,7 @@
 	 
 /* -- plans for the goals of role explorer -- */
 
-{ begin maintenance_goal("+pos(_,_,_)") }
+{ begin maintenance_goal("+at_target") }
 
 +!goto_near_unvisited[scheme(Sch),mission(Mission)]
   <- .print("ooo I should find the nearest unvisited location and go there!");
@@ -132,11 +132,11 @@
      ?group_area(_,GroupId, Area);  // get the area of this group
      ?pos(MeX, MeY, _);             // get my location
      jia.near_least_visited(MeX, MeY, Area, TargetX, TargetY);
-     -+target(TargetX, TargetY);
-	 .wait("+at_target",10000,_). 
+     -+target(TargetX, TargetY).
 	 
 	 /* added by the pattern
-     .wait("+pos(_,_,_)"); // wait next cycle
+	 .wait("+at_target").
+     //.wait("+pos(_,_,_)"); // wait next cycle
      !!goto_near_unvisited[scheme(Sch),mission(Mission)]
 	 */
 	 

@@ -42,7 +42,7 @@ alloc_target(a3,pos(30,30)).
 +?pos(X, Y, S)       <- .wait("+pos(X,Y,S)").
 +?group_area(Id,G,A) <- .wait("+group_area(Id,G,A)").
 +?gsize(W,H)         <- .wait("+gsize(W,H)").
-+?group(T,G)         <- .wait("+group(T,G)").
++?group(team,G)      <- .wait("+group(team,G)", 500, _); ?group(team,G).
 +?ally_pos(Name,X,Y) : .my_name(Name) <- ?pos(X,Y,_).
 
 +end_of_simulation(_Result)
@@ -77,8 +77,7 @@ alloc_target(a3,pos(30,30)).
 +!remove_org
    : .my_name(gaucho1)
   <- .if( group(team,Old) ) {
-        jmoise.remove_group(Old);
-		.wait("-group(team,_)")
+        jmoise.remove_group(Old)
      };
      
      .for( scheme(_,SchId) ) {
@@ -109,8 +108,7 @@ alloc_target(a3,pos(30,30)).
 	 
 	 // give up all missions
 	 .while( commitment(Me,M,Sch) ) {
-	    jmoise.remove_mission(M,Sch);
-		.wait("-commitment(Me,M,Sch)")
+	    jmoise.remove_mission(M,Sch)
 	 };
 
      // if I play herder in another group, ...
@@ -122,12 +120,10 @@ alloc_target(a3,pos(30,30)).
   
 	 // if I play any other role, give it up
      .while( play(Me,R,OG) & OG \== GT) {
-        jmoise.remove_role(R,OG);
-		.wait("-play(Me,R,OG)")
+        jmoise.remove_role(R,OG)
      };
 
-     jmoise.adopt_role(NewRole,GT);
-	 .wait("+play(Me,NewRole,GT)").
+     jmoise.adopt_role(NewRole,GT).
 	 
 //+!change_role(NewRole,GT)[source(S)]
 //  <- .print("ooo I cannot adopt the role ",NewRole," in group ",GT,", as asked by ",S).

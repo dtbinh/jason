@@ -92,6 +92,7 @@ public class OrgAgent extends AgArch {
     
     public void checkMail() {
         super.checkMail(); // get the messages from arch to circumstance
+        
         Circumstance C = getTS().getC();
         Iterator<Message> i    = C.getMailBox().iterator();
         boolean updateGoalBels = false;
@@ -104,72 +105,52 @@ public class OrgAgent extends AgArch {
                     currentOE = (OE) m.getPropCont();
                     i.remove();
                 } else if (m.getSender().equals(getOrgManagerName())) {
+                    
                     // the content is a normal predicate
                     final String content   = m.getPropCont().toString();
-                    final boolean isTell   = m.getIlForce().equals("tell");
-                    final boolean isUntell = m.getIlForce().equals("untell");
-                    if (isTell && content.startsWith("scheme(")) {
-                    	i.remove();
-                    	addAsBel(content);
-                    //} else if (content.startsWith("update_goals")) { 
-                    //    // I need to generate AS Triggers like !<orggoal>
-                    //    i.remove();
-                    //    updateGoalBels = true;
-                    //    updateGoalEvt  = true;
-                    } else if (content.startsWith("goal_state")) { 
-                        // the state of a scheme i belong to has changed
-                        i.remove();
-                        updateGoalBels(Pred.parsePred(content));
-                        updateGoalEvt  = true;
-                    } else if (content.startsWith("scheme_group")) {
-                    	i.remove();
-                    	if (isTell) {
-                            // this message is generated when my group becomes
-                            // responsible for a scheme
-                        	Literal l = addAsBel(content);
-                            generateObligationPermissionEvents(l);
-                    	} else if (isUntell) {
-                            Literal l = delAsBel(content);
-                            removeObligationPermissionBeliefs(l, "obligation");
-                            removeObligationPermissionBeliefs(l, "permission");
-                    	}
-                    } else if (isTell && content.startsWith("commitment")) { 
-                        i.remove();
-                        addAsBel(content);
-                        // I need to generate AS Triggers like !<orggoal> since some scheme becomes well formed
-                        updateGoalEvt  = true;
-
-                    } else if (m.getIlForce().equals("untell") && content.startsWith("scheme")) {
-                        String schId = Pred.parsePred(content).getTerm(1).toString();
-                        removeAchieveGoalsOfSch(schId);
-                        removeBeliefs(schId);
-                        
+                    
                     // test if it is the result of some org action    
-                    } else if (m.getInReplyTo() != null) {
-                    	// find the intention
-                    	Intention pi = C.getPendingIntentions().remove("om/"+m.getInReplyTo());
-                    	if (pi != null) {
-                    		i.remove();
-                    		pi.setSuspended(false);
-                    		C.addIntention(pi); // add it back in I
-                    		Structure body = (Structure)pi.peek().removeCurrentStep(); // remove the internal action
-                    		
-                    		if (content.startsWith("error")) {
-                        		// fail the IA
-                            	PlanBody pbody = pi.peek().getPlan().getBody();
-                            	pbody.add(0, new PlanBodyImpl(BodyType.internalAction, new InternalActionLiteral(".fail")));
-                            	getTS().getLogger().warning("Error in organisational action: "+content);
-                    		} else {
-	                    		// try to unify the return value
-	                    		//System.out.println("answer is "+content+" or "+DefaultTerm.parse(content)+" with body "+body);
-	                    		// if the last arg of body is a free var
-	                    		Term lastTerm = body.getTerm(body.getArity()-1); 
-	                    		if (!lastTerm.isGround()) {
-	                        		pi.peek().getUnif().unifies(lastTerm, DefaultTerm.parse(content));
-	                        		//System.out.println("un = "+pi.peek().getUnif());
-	                    		}
-                    		}
-                    	}
+                    if (m.getInReplyTo() != null) {
+                        // find the intention
+                        Intention pi = C.getPendingIntentions().remove("om/"+m.getInReplyTo());
+                        if (pi != null) {
+                            i.remove();
+                            resumeIntention(pi, content, C);
+                        }
+                    } else {
+                        // add all tells directly in the memory
+                        if (m.getIlForce().equals("tell")) {
+                            i.remove();
+                            if (content.startsWith("goal_state")) { 
+                                // the state of a scheme i belong to has changed
+                                updateGoalBels( Pred.parsePred(content) );
+                                updateGoalEvt  = true;
+                            } else {
+                                Literal cl = addAsBel(content);
+                                
+                                if (content.startsWith("scheme_group")) {
+                                    // this message is generated when my group becomes
+                                    // responsible for a scheme
+                                    generateObligationPermissionEvents(cl);
+                                } else if (content.startsWith("commitment")) { 
+                                    // I need to generate AS Triggers like !<orggoal> since some scheme becomes well formed
+                                    updateGoalEvt  = true;
+                                }
+                            }
+
+                        } else if ( m.getIlForce().equals("untell") ) {
+                            i.remove();
+                            Literal cl = delAsBel(content);
+                            
+                            if (content.startsWith("scheme")) {
+                                String schId = cl.getTerm(1).toString();
+                                removeAchieveGoalsOfSch(schId);
+                                removeBeliefs(schId);
+                            } else if (content.startsWith("scheme_group")) {
+                                removeObligationPermissionBeliefs(cl, "obligation");
+                                removeObligationPermissionBeliefs(cl, "permission");
+                            }
+                        }                        
                     }
                 }
             } catch (Exception e) {
@@ -184,7 +165,6 @@ public class OrgAgent extends AgArch {
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error!", e);
         }
-
     }
 
     private Literal addAsBel(String b) throws RevisionFailedException {
@@ -198,6 +178,29 @@ public class OrgAgent extends AgArch {
         l.addAnnot(managerSource);
         getTS().getAg().delBel(l);
         return l;
+    }
+
+    private void resumeIntention(Intention pi, String content, Circumstance C) {
+        pi.setSuspended(false);
+        C.addIntention(pi); // add it back in I
+        Structure body = (Structure)pi.peek().removeCurrentStep(); // remove the internal action
+        
+        if (content.startsWith("error")) {
+            // fail the IA
+            PlanBody pbody = pi.peek().getPlan().getBody();
+            pbody.add(0, new PlanBodyImpl(BodyType.internalAction, new InternalActionLiteral(".fail")));
+            getTS().getLogger().warning("Error in organisational action: "+content);
+        } else {
+            // try to unify the return value
+            //System.out.println("answer is "+content+" or "+DefaultTerm.parse(content)+" with body "+body);
+            // if the last arg of body is a free var
+            Term lastTerm = body.getTerm(body.getArity()-1); 
+            if (!lastTerm.isGround()) {
+                pi.peek().getUnif().unifies(lastTerm, DefaultTerm.parse(content));
+                //System.out.println("un = "+pi.peek().getUnif());
+            }
+        }
+        
     }
     
     private void generateObligationPermissionEvents(Pred m) throws RevisionFailedException {
@@ -344,24 +347,25 @@ public class OrgAgent extends AgArch {
     /** removes all bels related to a Scheme */
     void removeBeliefs(String schId) throws RevisionFailedException {
         Agent ag = getTS().getAg();
-        ag.abolish(buildLiteralToCleanBB(schId, obligationLiteral, false), null);
-        ag.abolish(buildLiteralToCleanBB(schId, permissionLiteral, false), null);
-        ag.abolish(buildLiteralToCleanBB(schId, schemeGroupLiteral, false), null);
-        ag.abolish(buildLiteralToCleanBB(schId, goalStateLiteral, false), null);
-        ag.abolish(buildLiteralToCleanBB(schId, schPlayersLiteral, false), null);
-        ag.abolish(buildLiteralToCleanBB(schId, commitmentLiteral, true), null);
+        Atom aSchId = new Atom(schId);
+        ag.abolish(buildLiteralToCleanBB(aSchId, obligationLiteral, false), null);
+        ag.abolish(buildLiteralToCleanBB(aSchId, permissionLiteral, false), null);
+        ag.abolish(buildLiteralToCleanBB(aSchId, schemeGroupLiteral, false), null);
+        ag.abolish(buildLiteralToCleanBB(aSchId, goalStateLiteral, false), null);
+        ag.abolish(buildLiteralToCleanBB(aSchId, schPlayersLiteral, false), null);
+        ag.abolish(buildLiteralToCleanBB(aSchId, commitmentLiteral, true), null);
     }
 
-    private Literal buildLiteralToCleanBB(String schId, PredicateIndicator pred, boolean schInEnd) {
+    private Literal buildLiteralToCleanBB(Atom aSchId, PredicateIndicator pred, boolean schInEnd) {
         Literal l = new Literal(pred.getFunctor());
         if (!schInEnd) {
-            l.addTerm(new Atom(schId));
+            l.addTerm(aSchId);
         }
         for (int i=1;i<pred.getArity();i++) {
             l.addTerm(new UnnamedVar());
         }
         if (schInEnd) {
-            l.addTerm(new Atom(schId));            
+            l.addTerm(aSchId);            
         }
         return l;
     }

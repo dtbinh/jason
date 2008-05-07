@@ -73,7 +73,7 @@ public class direction extends DefaultInternalAction {
                         // if search is null, it is impossible in the scenario to goto n, set it as obstacle  
                         ts.getLogger().info("[direction] No possible path to "+to+" setting as obstacle.");
                         model.add(WorldModel.OBSTACLE, to);
-                        to = model.nearFree(to);
+                        to = model.nearFree(to, null);
                         s = new Search(model, from, to, ts.getUserAgArch());
                     }
                     

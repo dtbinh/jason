@@ -8,7 +8,7 @@
 +cow(_,_,_)
    : .my_name(Me) & 
      play(Me,explorer,_) &
-     not .desire(create_herding_gr) // to avoid crating several groups
+     not .desire(create_herding_gr) // to avoid creating several groups
   <- !create_herding_gr.
   
 +!create_herding_gr
@@ -17,8 +17,7 @@
 	 
      // create the new  group
      ?group(team,TeamId);
-     jmoise.create_group(herding_grp, TeamId);
-	 .wait("+group(herding_grp, HG)[owner(Me)]", 4000);
+     jmoise.create_group(herding_grp, TeamId, HG);
 	 .print("ooo Group ",HG," created.");
 	 
 	 // store the list of scouter in my group
@@ -26,7 +25,6 @@
      .findall(Scouter,play(Scouter,scouter,EG),LScouters);
 	 
      !change_role(herder,HG);
-	 //?play(Me,herder,FinalHerdingGroup);
 
      // ask scouters to change role
 	 .print("ooo Asking ",LScouters," to adopt the herdboy role in ",HG);
@@ -42,8 +40,8 @@
      .broadcast(tell, group_leader(G,Me)).
 	 
 // If I stop playing herder, destroy the herding groups I've created
--play(Ag,herder,_)
-   : .my_name(Ag)
+-play(Me,herder,_)
+   : .my_name(Me)
   <- .wait(4000);
      .for( group(herding_grp,G)[owner(Me)] ) {
 	    -group_leader(G,Me);

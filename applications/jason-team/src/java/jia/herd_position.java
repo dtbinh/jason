@@ -130,7 +130,7 @@ public class herd_position extends DefaultInternalAction {
 	        }
         }
         if (r != null)
-        	r = model.nearFree(r);
+        	r = model.nearFree(r, null);
         return r;
     }
 
@@ -182,8 +182,8 @@ public class herd_position extends DefaultInternalAction {
         	//System.out.println(" =       "+dist+" result  "+l);
         	if (l != null) {
         	    l = pathToNearCow(l, clusterLocs);
-        	    if ( ! model.inGrid(l) || model.hasObject(WorldModel.OBSTACLE, l))
-        	        l = model.nearFree(l);
+        	    if ( !model.inGrid(l) || model.hasObject(WorldModel.OBSTACLE, l) || r.contains(l))
+        	        l = model.nearFree(l, r);
                 r.add( l );
         	}
         	
