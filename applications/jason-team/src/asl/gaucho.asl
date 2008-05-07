@@ -101,7 +101,7 @@ alloc_target(a3,pos(30,30)).
 
 
 +!change_role(R,G)
-   : .my_name(Me) & play(Me, R,G).
+   : .my_name(Me) & play(Me,R,G).
    
 +!change_role(NewRole,GT)[source(S)]
    : not .desire(change_role(_,_))  // to not trigger two change of role

@@ -81,6 +81,7 @@
 	  }.
 +!check_merge.
 	 	 
+
 { begin maintenance_goal("+pos(_,_,_)") }
 
 +!define_formation[scheme(Sch),mission(Mission)]

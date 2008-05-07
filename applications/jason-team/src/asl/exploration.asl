@@ -38,7 +38,7 @@
      agent_id(Me,AgId) &
      AgId mod 2 == 1                    // I have an odd Id
   <- !create_exploration_gr.
-  
+
 +!create_exploration_gr
   <- .my_name(Me);
 
@@ -61,8 +61,8 @@
      
      // wait others pos
      .while( .count(ally_pos(_,_,_), N) & N < 5 ) {
-	    .print("ooo waiting others pos ");
-        .wait("+ally_pos(_,_,_)", 500, nofail)
+        .print("ooo waiting others pos ");
+        .wait("+ally_pos(_,_,_)", 500, _)
      };
      
      // find distance to even agents
