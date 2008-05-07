@@ -29,8 +29,12 @@ import jason.asSyntax.Term;
 <ul>
 <li> <code>jmoise.create_group(team)</code>: 
      creates a new root group based on specification of a team.</li>
+<li> <code>jmoise.create_group(team,G)</code>: 
+     creates a new root group based on specification of a team and unifies in G the identification of the new group.</li>
 <li> <code>jmoise.create_group(defence, team0)</code>: 
      creates a sub-group of group team0 based on specification defence.</li>
+<li> <code>jmoise.create_group(defence, team0, G)</code>: 
+     creates a sub-group of group team0 based on specification defence and unifies in G the identification of the new group.</li>
 </ul>
  
 @see jmoise.remove_group

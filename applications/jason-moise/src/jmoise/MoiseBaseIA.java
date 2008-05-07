@@ -2,6 +2,7 @@ package jmoise;
 
 import jason.JasonException;
 import jason.asSemantics.DefaultInternalAction;
+import jason.asSemantics.Intention;
 import jason.asSemantics.Message;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
@@ -26,6 +27,10 @@ public abstract class MoiseBaseIA extends DefaultInternalAction  {
     	String    acName = this.getClass().getSimpleName(); // remove the package name "jmoise"
         Structure acTerm = new Structure(acName);
         acTerm.addTerms(args);
+        // remove the last arg if unground (the return of the IA)
+        if (!acTerm.getTerm(args.length-1).isGround()) {
+        	acTerm.delTerm(args.length-1);
+        }
 		if (logger.isLoggable(Level.FINE)) logger.fine("sending: "+acTerm);
 		
 		// send acTerm as message to OrgManager
@@ -33,6 +38,12 @@ public abstract class MoiseBaseIA extends DefaultInternalAction  {
             OrgAgent oag = (OrgAgent)ts.getUserAgArch();
 	        Message m = new Message("achieve", null, oag.getOrgManagerName(), acTerm);
             oag.sendMsg(m);
+            
+            if (suspendIntention()) {
+                Intention i = ts.getC().getSelectedIntention();
+                i.setSuspended(true);
+                ts.getC().getPendingIntentions().put("om/"+m.getMsgId(), i);
+            }
             return true;
 		} catch (JasonException e) {
 		    throw e;
@@ -41,4 +52,10 @@ public abstract class MoiseBaseIA extends DefaultInternalAction  {
     	}
         return false;
     }
+	
+    @Override
+    public boolean suspendIntention() {
+    	return true;
+    }
+	
 }

@@ -15,7 +15,8 @@ desired_mission(writePaperSch,mManager).
 // create a group to write a paper
 +!create_group : true 
    <- //.send(orgManager, achieve, create_group(wpgroup)).
-      jmoise.create_group(wpgroup).
+      jmoise.create_group(wpgroup,G);
+	  .print("Group ",G," created").
 
 
 
@@ -35,7 +36,8 @@ desired_mission(writePaperSch,mManager).
 // when a scheme has finished, start another
 -scheme(writePaperSch,_)
    :  group(wpgroup,GId)
-   <- jmoise.create_scheme(writePaperSch, [GId]).
+   <- jmoise.create_scheme(writePaperSch, [GId], SchId);
+      .print("Scheme ",SchId," created").
 
 // include common plans for MOISE+ agents
 { include("moise-common.asl") }

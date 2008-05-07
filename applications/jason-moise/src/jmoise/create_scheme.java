@@ -22,9 +22,12 @@ import jason.asSyntax.Term;
 <ul>
 <li> <code>jmoise.create_scheme(wp)</code>: 
      creates new scheme based on specification wp.</li>
-<li> <code>jmoise.create_scheme(wp, [ g1, g2])</code>: 
+<li> <code>jmoise.create_scheme(wp, [g1, g2])</code>: 
      creates new scheme based on specification wp and set g1 and g2 as responsible
      groups.</li>
+<li> <code>jmoise.create_scheme(wp, [g1, g2], S)</code>: 
+     creates new scheme based on specification wp and set g1 and g2 as responsible
+     groups. The identification of the new group will be unified with G.</li>
 </ul>
  
 @see jmoise.remove_scheme 

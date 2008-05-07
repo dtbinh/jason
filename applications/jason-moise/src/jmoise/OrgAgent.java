@@ -4,13 +4,17 @@ import jason.JasonException;
 import jason.RevisionFailedException;
 import jason.architecture.AgArch;
 import jason.asSemantics.Agent;
+import jason.asSemantics.Circumstance;
 import jason.asSemantics.Event;
 import jason.asSemantics.Intention;
 import jason.asSemantics.Message;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.Atom;
 import jason.asSyntax.DefaultTerm;
+import jason.asSyntax.InternalActionLiteral;
 import jason.asSyntax.Literal;
+import jason.asSyntax.PlanBody;
+import jason.asSyntax.PlanBodyImpl;
 import jason.asSyntax.Pred;
 import jason.asSyntax.PredicateIndicator;
 import jason.asSyntax.Structure;
@@ -18,6 +22,7 @@ import jason.asSyntax.Term;
 import jason.asSyntax.Trigger;
 import jason.asSyntax.UnnamedVar;
 import jason.asSyntax.VarTerm;
+import jason.asSyntax.PlanBody.BodyType;
 import jason.asSyntax.Trigger.TEOperator;
 import jason.asSyntax.Trigger.TEType;
 import jason.mas2j.ClassParameters;
@@ -87,8 +92,8 @@ public class OrgAgent extends AgArch {
     
     public void checkMail() {
         super.checkMail(); // get the messages from arch to circumstance
-        
-        Iterator<Message> i = getTS().getC().getMailBox().iterator();
+        Circumstance C = getTS().getC();
+        Iterator<Message> i    = C.getMailBox().iterator();
         boolean updateGoalBels = false;
         boolean updateGoalEvt  = false;
         while (i.hasNext()) {
@@ -138,6 +143,33 @@ public class OrgAgent extends AgArch {
                         String schId = Pred.parsePred(content).getTerm(1).toString();
                         removeAchieveGoalsOfSch(schId);
                         removeBeliefs(schId);
+                        
+                    // test if it is the result of some org action    
+                    } else if (m.getInReplyTo() != null) {
+                    	// find the intention
+                    	Intention pi = C.getPendingIntentions().remove("om/"+m.getInReplyTo());
+                    	if (pi != null) {
+                    		i.remove();
+                    		pi.setSuspended(false);
+                    		C.addIntention(pi); // add it back in I
+                    		Structure body = (Structure)pi.peek().removeCurrentStep(); // remove the internal action
+                    		
+                    		if (content.startsWith("error")) {
+                        		// fail the IA
+                            	PlanBody pbody = pi.peek().getPlan().getBody();
+                            	pbody.add(0, new PlanBodyImpl(BodyType.internalAction, new InternalActionLiteral(".fail")));
+                            	getTS().getLogger().warning("Error in organisational action: "+content);
+                    		} else {
+	                    		// try to unify the return value
+	                    		//System.out.println("answer is "+content+" or "+DefaultTerm.parse(content)+" with body "+body);
+	                    		// if the last arg of body is a free var
+	                    		Term lastTerm = body.getTerm(body.getArity()-1); 
+	                    		if (!lastTerm.isGround()) {
+	                        		pi.peek().getUnif().unifies(lastTerm, DefaultTerm.parse(content));
+	                        		//System.out.println("un = "+pi.peek().getUnif());
+	                    		}
+                    		}
+                    	}
                     }
                 }
             } catch (Exception e) {

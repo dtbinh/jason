@@ -1,5 +1,6 @@
 package jmoise;
 
+import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.Atom;
@@ -37,7 +38,7 @@ import moise.os.ss.RoleRel.RoleRelScope;
 @author Jomi 
 
 */
-public class link extends MoiseBaseIA {
+public class link extends DefaultInternalAction {
 
     private static Logger logger = Logger.getLogger(link.class.getName());
 

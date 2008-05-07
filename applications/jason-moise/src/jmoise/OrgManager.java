@@ -205,6 +205,7 @@ public class OrgManager extends AgArch {
                     updateMembersOE(sender, "play(" + rp.getPlayer().getId() + "," + rp.getRole().getId() + "," + grId + ")", false, true);
                 }
             }
+            sendReply(sender, mId, "ok");
         }        
     }
     
@@ -231,6 +232,7 @@ public class OrgManager extends AgArch {
                     updateMembersOE(sender, "play(" + rp.getPlayer().getId() + "," + rp.getRole().getId() + "," + gr.getId() + ")", false, false);                
                 }
             }
+            sendReply(sender, mId, "ok");
         }
     }
     
@@ -259,6 +261,7 @@ public class OrgManager extends AgArch {
                 updateMembersOE(sch.getOwner(), "sch_players(" + sch.getId() + ",NP)", false, false);
             }
             updateMembersOE(sch.getOwner(), "sch_players(" + sch.getId() + "," + sch.getPlayersQty() + ")", false, true);
+            sendReply(sender, mId, "ok");
         }
     }
     
@@ -305,6 +308,7 @@ public class OrgManager extends AgArch {
             // notify owner that it can finish the scheme
             updateMembersOE(sch.getOwner(), "sch_players(" + sch.getId() + ",NP)", false, false);
             updateMembersOE(sch.getOwner(), "sch_players(" + sch.getId() + "," + sch.getPlayersQty() + ")", false, true);
+            sendReply(sender, mId, "ok");
         }
     }
     
@@ -333,6 +337,7 @@ public class OrgManager extends AgArch {
             newGr.setOwner(sender);
 
             updateMembersOE(currentOE.getAgents(), "group(" + specId + "," + newGr.getId() + ")[owner(" + sender + ")," + annot + "]", false, true);
+            sendReply(sender, mId, newGr.getId());
         }
     }
     
@@ -389,6 +394,7 @@ public class OrgManager extends AgArch {
 
             // sent a new copy of OE
             updateMembersOE(currentOE.getAgents(), "group(" + gr.getGrSpec().getId() + "," + gr.getId() + ")", true, false);            
+            sendReply(sender, mId, "ok");
         }
     }
 
@@ -429,6 +435,7 @@ public class OrgManager extends AgArch {
                     updateMembersOE(gi.getPlayers(), "scheme_group(" + sch.getId() + "," + gi.getId() + ")", true, true);
                 }
             }
+            sendReply(sender, mId, sch.getId());
         }
     }
 
@@ -457,6 +464,7 @@ public class OrgManager extends AgArch {
             sch.addResponsibleGroup(gr);
 
             updateMembersOE(gr.getPlayers(), "scheme_group(" + schId + "," + grId + ")", true, true);
+            sendReply(sender, mId, "ok");
         }
     }
     
@@ -479,6 +487,7 @@ public class OrgManager extends AgArch {
             act(currentOE, sch);
             // send untell to agents
             updateMembersOE(currentOE.getAgents(), "scheme(" + sch.getSpec().getId() + "," + sch.getId() + ")[owner(" + sch.getOwner() + ")]", false, false);
+            sendReply(sender, mId, "ok");
         }
         protected void act(OE currentOE, SchemeInstance sch) throws MoiseException {
             currentOE.finishScheme(sch);        	
@@ -526,6 +535,7 @@ public class OrgManager extends AgArch {
                 gi.setImpossible(sender);
             }
             updateMembersOE(sch.getPlayers(), "goal_state(" + gi.getScheme().getId() + "," + gi.getSpec().getId() + ")", true, true);
+            sendReply(sender, mId, "ok");
         }
     }
 
@@ -565,6 +575,7 @@ public class OrgManager extends AgArch {
             gi.setArgumentValue(arg, value);
 
             updateMembersOE(sch.getPlayers(), "goal_state(" + gi.getScheme().getId() + "," + gi.getSpec().getId() + ")", true, true);
+            sendReply(sender, mId, "ok");
         }
     }
 
