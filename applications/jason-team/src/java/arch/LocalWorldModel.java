@@ -124,7 +124,7 @@ public class LocalWorldModel extends WorldModel {
     public void addCow(int x, int y) {
         add(WorldModel.COW, x, y);
         cows.add(new Vec( this, x, y));        
-        increp(cowsrep, x, y, 2, 1);
+        increp(cowsrep, x, y, 3, 1);
     }
     
 

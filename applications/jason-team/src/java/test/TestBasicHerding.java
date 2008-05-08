@@ -1,6 +1,7 @@
 package test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import jason.environment.grid.Location;
 
 import java.util.ArrayList;
@@ -110,10 +111,10 @@ public class TestBasicHerding {
     @Test
     public void testCowsRepMat() throws Exception {
         scenario1();
-        assertEquals(2, model.getCowsRep(5,38));
-        assertEquals(1, model.getCowsRep(5,37));
-        assertEquals(0, model.getCowsRep(5,36));
-        assertEquals(5, model.getCowsRep(5,40));
+        assertEquals(4, model.getCowsRep(5,38));
+        assertEquals(2, model.getCowsRep(5,37));
+        assertEquals(1, model.getCowsRep(5,36));
+        assertEquals(8, model.getCowsRep(5,40));
     }
 
     @Test
@@ -149,7 +150,7 @@ public class TestBasicHerding {
         scenario1();
         Search s = new Search(model, cowboy.getLocation(model), new Location(8,37), null, true, true, true, false, null);
         Nodo path = s.search();
-        assertEquals(13, s.normalPath(path).size());
+        assertEquals(15, s.normalPath(path).size());
     }
 
     @Test
@@ -176,10 +177,15 @@ public class TestBasicHerding {
         
         Location byIA =  hp.getAgTarget(clusterLocs, Formation.one, cowboy.getLocation(model));
         assertEquals(new Location(6,38), byIA);
+
+        assertEquals("[6,38, 9,41, 3,37, 11,45, 0,37]", hp.formationPlaces(clusterLocs, Formation.five).toString());
         
         byIA =  hp.getAgTarget(clusterLocs, Formation.six, cowboy.getLocation(model));
-        assertEquals(new Location(6,39), byIA);
-        
+        assertEquals(new Location(8,39), byIA);
+
+        assertEquals("[8,39, 5,37, 10,43, 1,37, 12,46, 0,37]", hp.formationPlaces(clusterLocs, Formation.six).toString());
+
+        /*
         // add an agent in 6,39
         model.add(WorldModel.AGENT, 6,39);
         byIA =  hp.getAgTarget(clusterLocs, Formation.six, cowboy.getLocation(model));
@@ -203,7 +209,8 @@ public class TestBasicHerding {
         // add an agent in 5,37
         //model.add(WorldModel.AGENT, 5,37);
         //byIA =  new herd_position().getAgTarget(model, Formation.six,cowboy.getLocation(model));
-        //assertEquals(new Location(5,37), byIA);        
+        //assertEquals(new Location(5,37), byIA);
+         */
     }
 
     @Test 
@@ -222,20 +229,20 @@ public class TestBasicHerding {
         assertEquals(new Location(11,49), byIA);
 
         List<Location> form =  hp.formationPlaces(clusterLocs, Formation.four);
-        assertEquals("[6,48, 11,49, 6,49, 12,48]", form.toString());
+        assertTrue(form.contains(new Location(11,49)));
+        assertTrue(form.contains(new Location(6,49)));
+        assertTrue(form.contains(new Location(6,48)));
+        assertTrue(form.contains(new Location(15,48)));
     }
 
     @Test 
     public void scouterPos() throws Exception {
         scenario1();
-        Location byIA =  new scouter_pos().getScouterTarget(model, new Location(2,46), new Location(6,42));
-        assertEquals(new Location(5,49), byIA);
-
-        byIA =  new scouter_pos().getScouterTarget(model, new Location(2,46), new Location(3,42));
-        assertEquals(new Location(6,47), byIA);
+        Location byIA =  new scouter_pos().getScouterTarget(model, new Location(2,46), new Location(5,44));
+        assertEquals(new Location(6,46), byIA);
 
         byIA =  new scouter_pos().getScouterTarget(model, new Location(9,46), new Location(9,42));
-        assertEquals(new Location(22,46), byIA);
+        assertEquals(new Location(22,42), byIA);
     }
 
     /*

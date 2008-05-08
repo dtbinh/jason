@@ -41,13 +41,13 @@ public class herd_position extends DefaultInternalAction {
     public static final int    agDistanceInFormation = 4;
 
     public enum Formation { 
-    	one   { int[] getDistances() { return new int[] { 0 }; } }, 
-    	two   { int[] getDistances() { return new int[] { sd, -sd }; } },
-    	three { int[] getDistances() { return new int[] { 0, d, -d }; } },
-    	four  { int[] getDistances() { return new int[] { sd, -sd, d+sd, -(d+sd) }; } },
-    	five  { int[] getDistances() { return new int[] { 0, d, -d, d*2, -d*2 }; } },
-    	six   { int[] getDistances() { return new int[] { sd, -sd, d+sd, -(d+sd), d*2+sd, -(d*2+sd) }; } };
-    	abstract int[] getDistances();
+    	one   { Vec[] getDistances() { return new Vec[] { new Vec(0,0) }; } }, 
+        two   { Vec[] getDistances() { return new Vec[] { new Vec(sd,0), new Vec(-sd, 0) }; } },
+        three { Vec[] getDistances() { return new Vec[] { new Vec(0,0),  new Vec(d, -1), new Vec(-d, -1) }; } },
+    	four  { Vec[] getDistances() { return new Vec[] { new Vec(sd,0), new Vec(-sd, 0), new Vec(d+sd, -2), new Vec(-(d+sd), -2) }; } },
+        five  { Vec[] getDistances() { return new Vec[] { new Vec(0,0),  new Vec(d, -1), new Vec(-d, -1), new Vec(d*2,-3), new Vec(-d*2,-3) }; } },
+    	six   { Vec[] getDistances() { return new Vec[] { new Vec(sd,0), new Vec(-sd, 0), new Vec(d+sd, -2), new Vec(-(d+sd), -2), new Vec(d*2+sd, -4), new Vec(-(d*2+sd), -4) }; } };
+    	abstract Vec[] getDistances();
     	private static final int d  = agDistanceInFormation;
     	private static final int sd = agDistanceInFormation/2;
     };
@@ -165,66 +165,54 @@ public class herd_position extends DefaultInternalAction {
         int n = Math.min(stepsFromCenter, np.size());
 
         Vec cowstarget = new Vec(model, s.getNodeLocation(np.get(n)));
-        Vec agsTarget  = mean.sub(cowstarget);
+        
+        // find cow farthest of corral
+        Vec farcow = null;
+        for (Vec c: cows)
+            if (farcow == null || farcow.getLocation(model).maxBorder(model.getCorralCenter()) < c.getLocation(model).maxBorder(model.getCorralCenter()))
+                farcow = c;
+        
+        
+        Vec agsTarget  = mean.sub(cowstarget).newMagnitude(farcow.sub(mean).magnitude()+1);
+        //System.out.println("Ags target = "+agsTarget+" mean = "+mean + " far cow is "+farcow);
         List<Location> r = new ArrayList<Location>();
-        int initAgTS = 1;
-        for (int dist: formation.getDistances()) { // 2, -2, 6, -6, ....
-        	Vec agTarget = agsTarget;
-        	//Location l = agTarget.add(mean).getLocation(model);
-        	
-        	//System.out.println(".......  "+dist+" antes angle "+agTarget);
-        	if (dist >= 0)
-        		agTarget = agTarget.turn90CW();
-        	else
-        		agTarget = agTarget.turn90ACW();
-        	
-        	Location l = findFirstFreeLocTowardsTarget(agTarget, mean.add(agsTarget), initAgTS, dist, model);
+        for (Vec position: formation.getDistances()) { // 2, -2, 6, -6, ....
+        	//System.out.println(".......  "+position+" + "+agsTarget+" = " + agTarget);
+        	Location l = findFirstFreeLocTowardsTarget(agsTarget, position, mean, model);
         	//System.out.println(" =       "+dist+" result  "+l);
-        	if (l != null) {
-        	    l = pathToNearCow(l, clusterLocs);
-        	    if ( !model.inGrid(l) || model.hasObject(WorldModel.OBSTACLE, l) || r.contains(l))
-        	        l = model.nearFree(l, r);
-                r.add( l );
+        	if (l == null) {
+                l = model.nearFree(agsTarget.add(mean).getLocation(model), r);              
+        	} else {
+                //l = pathToNearCow(l, clusterLocs);
+                if ( !model.inGrid(l) || model.hasObject(WorldModel.OBSTACLE, l) || r.contains(l))
+                    l = model.nearFree(l, r);
         	}
-        	
-        	/*
-        	Location lastloc = null;
-        	boolean  uselast = false;
-        	for (int agTargetSize = initAgTS; agTargetSize <= Math.abs(dist); agTargetSize++) {
-        		l = agTarget.newMagnitude(agTargetSize).add(mean).add(agsTarget).getLocation(model);
-        		//System.out.println("pos angle "+agTargetSize);
-            	uselast = (!model.inGrid(l) || model.hasObject(WorldModel.OBSTACLE, l)) && lastloc != null; 
-        		if (uselast) {
-                	r.add(pathToNearCow(model, lastloc));
-        			break;
-        		}
-        		lastloc = l;
-        	}
-        	if (!uselast)
-        		r.add(pathToNearCow(model, l));
-        	*/
-        	
-        	if (dist < 0)
-        		initAgTS = Math.abs(dist)+1;
+            r.add( l );
         }
         //System.out.println("all places "+r);
         return r;
     }
     
-    public static Location findFirstFreeLocTowardsTarget(Vec target, Vec ref, int initialSize, int maxSize, LocalWorldModel model) {
+    public static Location findFirstFreeLocTowardsTarget(Vec start, Vec direction, Vec ref, LocalWorldModel model) {
+        Vec startandref = start.add(ref);
+        Vec t = start.turn90CW();
+        t = t.newAngle(t.angle()+direction.angle());
+
+        //System.out.println(start + " to "+ direction + " = " + end);
+        Location l = start.add(ref).getLocation(model);
     	Location lastloc = null;
-    	maxSize = Math.abs(maxSize);
-    	Location l = ref.getLocation(model);
-    	for (int s = initialSize; s <= maxSize; s++) {
-    		l = target.newMagnitude(s).add(ref).getLocation(model);
-    		//System.out.println("pos angle "+s+" = "+l);
-        	if ( (!model.inGrid(l) || model.hasObject(WorldModel.OBSTACLE, l)) && lastloc != null)
+        int maxSize = (int)direction.magnitude();
+    	for (int s = 1; s <= maxSize; s++) {
+    	    l = t.newMagnitude(s).add(startandref).getLocation(model);
+    		//System.out.println(" test "+s+" = "+l+" -- ");
+        	if ( (!model.inGrid(l) || model.hasObject(WorldModel.OBSTACLE, l)  || model.hasObject(WorldModel.CORRAL, l)) && lastloc != null)
         		return lastloc;
     		lastloc = l;
     	}
-    	return l; //ref.getLocation(model); //target.add(ref).getLocation(model);
+    	return l;
     }
     
+    /*
     private Location pathToNearCow(Location t, List<Location> cluster) {
     	Location near = null;
         for (Location c: cluster) {
@@ -243,6 +231,7 @@ public class herd_position extends DefaultInternalAction {
         }
     	return t;
     }
+    */
     
 	/*
     public Location nearFreeForAg(LocalWorldModel model, Location ag, Location t) throws Exception {

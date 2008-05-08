@@ -172,7 +172,6 @@ public class ACProxy extends ACAgent implements Runnable {
 					if (cnl.item(j).getNodeType() == Element.ELEMENT_NODE && cellx != 0 && celly != 0) {
 
 						Element type = (Element)cnl.item(j);
-						
 						if (type.getNodeName().equals("agent")) {
 							if (type.getAttribute("type").equals("ally")) {
 							    // allies are managed by communication

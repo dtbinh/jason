@@ -289,18 +289,18 @@ public class OrgManager extends AgArch {
                     mpi = sender.getMissions().iterator();
                     String evUnCom = "commitment(" + sender + "," + mp.getMission().getId() + "," + sch.getId() + ")";
                     updateMembersOE(sch.getPlayers(), evUnCom, false, false);
-                    if (!sch.isPlayer(sender)) {
+                    //if (!sch.isPlayer(sender)) {
                         updateMembersOE(sender, evUnCom, false, false);
-                    }
+                    //}
                 }
             } else {
                 sch = currentOE.findScheme(schId);
                 sender.removeMission(misId, schId);
                 String evUnCom = "commitment(" + sender + "," + misId + "," + sch.getId() + ")";
                 updateMembersOE(sender, evUnCom, false, false);
-                if (!sch.isPlayer(sender)) {
+                //if (!sch.isPlayer(sender)) {
                     updateMembersOE(sch.getPlayers(), evUnCom, false, false);
-                }
+                //}
             }
 
             updateMembersOE(sender, (String) null, true, true);

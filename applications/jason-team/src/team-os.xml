@@ -38,7 +38,7 @@
 
             <sub-groups>
                 
-                <group-specification id="exploration_grp" min="3" max="3" >
+                <group-specification id="exploration_grp" min="0" max="3" >
                     <roles>
                         <role id="explorer" min="1" max="1"/>
                         <role id="scouter"  min="0" max="1"/>
@@ -48,7 +48,7 @@
                 <group-specification id="herding_grp" min="0" max="6" >
                     <roles>
                         <role id="herder"  min="1" max="1"/>
-                        <role id="herdboy" min="0" max="3"/>
+                        <role id="herdboy" min="0" max="5"/>
                     </roles>
                 </group-specification>
 

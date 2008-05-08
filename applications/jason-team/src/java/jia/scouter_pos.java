@@ -56,8 +56,8 @@ public class scouter_pos extends DefaultInternalAction {
     public Location getScouterTarget(LocalWorldModel model, Location leaderPos, Location leaderTarget) throws Exception {
     	Vec leader = new Vec(model, leaderPos);
     	Vec target = new Vec(model, leaderTarget).sub(leader);
-    	target = target.turn90CW();
-    	return herd_position.findFirstFreeLocTowardsTarget(target, leader, 1, WorldModel.agPerceptionRatio*2-3, model);
+    	Vec me     = new Vec(WorldModel.agPerceptionRatio*2-3,0);
+    	return herd_position.findFirstFreeLocTowardsTarget(target, me, leader, model);
     }
 }
 

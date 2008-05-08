@@ -12,6 +12,7 @@
   <- !create_herding_gr.
   
 +!create_herding_gr
+   : not .intend(create_herding_gr)
   <- .print("ooo Creating herding group.");
      .my_name(Me);
 	 
@@ -66,7 +67,7 @@
 	  play(Me, herder, Gi) &
 	  current_cluster(MyC)
   <-  // for all other groups
-      .for( group_leader(Gj, L) & L \== Me & Me < L) {
+      .for( group_leader(Gj, L) & L \== Me & Me < L & not play(L,herdboy,Gi)) {
 	     .print("ooo Checking merging with ",Gj);
          // ask their cluster
          .send(L, askOne, current_cluster(_), current_cluster(TC));
@@ -76,7 +77,8 @@
             .print("ooo Merging my herding group ",Gi," with ",Gj, " lead by ",L);
             .send(L, achieve, change_role(herdboy,Gi))
 		 }
-	  }.
+	  };
+	  .wait(2000). // give some time for them to adopt the roles before check merging again
 +!check_merge.
 	 	 
 
@@ -85,15 +87,37 @@
 +!define_formation[scheme(Sch),mission(Mission)]
   <- .print("ooo I should define the formation of my group!");
      ?my_group_players(G, herder);
-	 jia.cluster(Cluster,CAsList);
-	 -+current_cluster(CAsList);
-	 jia.herd_position(.length(G),Cluster,L);
+     jia.cluster(Cluster,CAsList);
+     -+current_cluster(CAsList);
+     jia.herd_position(.length(G),Cluster,L);
      .print("ooo Formation is ",L, " for agents ",G," in cluster ", Cluster);
-	 !alloc_all(G,L).
+     !alloc_all(G,L).
 	 
 { end }
 
-+!alloc_all([],_).
+// version "near agent of each position 
++!alloc_all([],[]).
++!alloc_all([],L) <- .print("ooo there is no agent for the formation ",L).
++!alloc_all(G,[]) <- .print("ooo there is no place in the formation for ",G).
++!alloc_all(Agents,[pos(X,Y)|TLoc])
+  <- !find_closest(Agents,pos(X,Y),HA);
+     .print("ooo Allocating position ",pos(X,Y)," to agent ",HA);
+     .send(HA,tell,target(X,Y));
+	 .delete(HA,Agents,TAg);
+     !alloc_all(TAg,TLoc).
+
++!find_closest(Agents, pos(FX,FY), NearAg) // find the agent near to pos(X,Y)
+  <- .my_name(Me);
+     .findall(d(D,Ag),
+              .member(Ag,Agents) & (ally_pos(Ag,AgX,AgY) | Ag == Me & pos(AgX,AgY,_)) & jia.path_length(FX,FY,AgX,AgY,D),
+			  Distances);
+	 //.print("Distances for ",pos(FX,FY)," are ",Distances);
+	 .min(Distances,d(_,NearAg)).
+	 
+/* 
+// version "near  place of the agent"
++!alloc_all([],[]).
++!alloc_all(G,[]) <- .print("ooo there is no place in the formation for ",G).
 +!alloc_all([HA|TA],LA)
   <- !find_closest(HA,LA,pos(X,Y),NLA);
      .print("ooo Alocating position ",pos(X,Y)," to agent ",HA);
@@ -111,10 +135,10 @@
 	 .delete(MinDist,ListPos,Rest).
 	 //!closest(ListPos,[],[MinDist|Rest],pos(X,Y),9999).
 
-
 calc_distances([],[],_) :- true.
 calc_distances([pos(Fx,Fy)|TP], [d(D,pos(Fx,Fy))|TD], pos(AgX,AgY))
   :- jia.path_length(Fx,Fy,AgX,AgY,D) & calc_distances(TP, TD, pos(AgX,AgY)).
+*/
 
 /*
 +!closest([],S,S,_,_).

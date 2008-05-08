@@ -189,7 +189,7 @@ public class OrgAgent extends AgArch {
             // fail the IA
             PlanBody pbody = pi.peek().getPlan().getBody();
             pbody.add(0, new PlanBodyImpl(BodyType.internalAction, new InternalActionLiteral(".fail")));
-            getTS().getLogger().warning("Error in organisational action: "+content);
+            getTS().getLogger().warning("Error in organisational action '"+body+"': "+content);
         } else {
             // try to unify the return value
             //System.out.println("answer is "+content+" or "+DefaultTerm.parse(content)+" with body "+body);
