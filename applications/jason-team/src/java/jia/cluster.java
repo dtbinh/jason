@@ -80,7 +80,7 @@ public class cluster extends DefaultInternalAction {
     		vs.add(v.sub(mean));
     	
     	Collections.sort(vs);
-    	
+
     	List<Vec> cs = new ArrayList<Vec>();
     	if (!vs.isEmpty()) 
     		cs.add(vs.remove(0));
@@ -104,7 +104,6 @@ public class cluster extends DefaultInternalAction {
         		}
     		}
     	}
-    	
         List<Location> clusterLocs = new ArrayList<Location>();
         for (Vec v: cs) {
             // place all cows in ref to 0,0

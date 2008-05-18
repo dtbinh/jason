@@ -68,11 +68,11 @@ cow_perception_ratio(4).
 // remove all groups and schemes (only agent1 does that)
 +!remove_org
    : .my_name(gaucho1)
-  <- .if( group(team,Old) ) {
+  <- if( group(team,Old) ) {
         jmoise.remove_group(Old)
      };
      
-     .for( scheme(_,SchId) ) {
+     for( scheme(_,SchId) ) {
         jmoise.remove_scheme(SchId)
      }.
 +!remove_org.
@@ -93,20 +93,20 @@ cow_perception_ratio(4).
 	 .print("ooo Adopting the role ",NewRole," in group ",GT,", as asked by ",S);
 	 
 	 // give up all missions
-	 .while( commitment(Me,M,Sch) ) {
+	 while( commitment(Me,M,Sch) ) {
 	    .print("ooo removing my mission ",M," in ",Sch);
 	    jmoise.remove_mission(M,Sch)
 	 };
 
      // if I play herder in another group, ...
-     .if( play(Me,herder,G) & G \== GT) {
+     if( play(Me,herder,G) & G \== GT) {
 	    // ask all herdboys to also change the group
 	    .findall(Boy,play(Boy,herdboy,G),HerdBoys);
 		.send(HerdBoys, achieve, change_role(herdboy,GT))
 	 };
   
 	 // if I play any other role, give it up
-     .while( play(Me,R,OG) & OG \== GT) {
+     while( play(Me,R,OG) & OG \== GT) {
         jmoise.remove_role(R,OG)
      };
 

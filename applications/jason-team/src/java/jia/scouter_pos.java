@@ -57,7 +57,7 @@ public class scouter_pos extends DefaultInternalAction {
     	Vec leader = new Vec(model, leaderPos);
     	Vec target = new Vec(model, leaderTarget).sub(leader);
     	Vec me     = new Vec(WorldModel.agPerceptionRatio*2-3,0);
-    	return herd_position.findFirstFreeLocTowardsTarget(target, me, leader, model);
+    	return model.nearFree(herd_position.findFirstFreeLocTowardsTarget(target, me, leader, model), null);
     }
 }
 

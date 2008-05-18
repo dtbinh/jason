@@ -20,7 +20,7 @@ public class OrgMaintenanceGoal implements Directive {
         try {
             Agent newAg = new Agent();
             
-            PlanBody endofplan = null;
+            PlanBodyImpl endofplan = null;
             Literal  goal = null;
             
             //ListTerm annots = ListTermImpl.parseList("[scheme(SchId),mission(MissionId),group(GroupId)]");

@@ -4,13 +4,7 @@
 
 /* -- plans for herding groups creation -- */
 
-// if see cow and is not herding, create the herding group and change roles
-+cow(_,_,_)
-   : .my_name(Me) & 
-     play(Me,explorer,_) &
-     not .desire(create_herding_gr) // to avoid creating several groups
-  <- !create_herding_gr.
-  
+
 +!create_herding_gr
    : not .intend(create_herding_gr)
   <- .print("ooo Creating herding group.");
@@ -44,7 +38,7 @@
 -play(Me,herder,_)
    : .my_name(Me)
   <- .wait(4000);
-     .for( group(herding_grp,G)[owner(Me)] ) {
+     for( group(herding_grp,G)[owner(Me)] ) {
 	    -group_leader(G,Me);
         .broadcast(untell, group_leader(G,Me));
 	    jmoise.remove_group(G);
@@ -67,13 +61,13 @@
 	  play(Me, herder, Gi) &
 	  current_cluster(MyC)
   <-  // for all other groups
-      .for( group_leader(Gj, L) & L \== Me & Me < L & not play(L,herdboy,Gi)) {
+      for( group_leader(Gj, L) & L \== Me & Me < L & not play(L,herdboy,Gi)) {
 	     .print("ooo Checking merging with ",Gj);
          // ask their cluster
          .send(L, askOne, current_cluster(_), current_cluster(TC));
 		 .intersection(MyC,TC,I);
 		 
-		 .if (.length(I) > 0) {
+		 if (.length(I) > 0) {
             .print("ooo Merging my herding group ",Gi," with ",Gj, " lead by ",L);
             .send(L, achieve, change_role(herdboy,Gi))
 		 }
@@ -154,12 +148,8 @@ calc_distances([pos(Fx,Fy)|TP], [d(D,pos(Fx,Fy))|TD], pos(AgX,AgY))
 /* -- plans for the goals of all roles (herder and herdboy) -- */
 
 
-//{ begin maintenance_goal("+pos(_,_,_)") }
-
 // This goal behaviour is set by the message "tell target" of the leader of the group
 +!be_in_formation[scheme(Sch),mission(Mission)]
   <- .print("ooo I should be in formation!");
      .suspend.
-	 
-// { end }
 

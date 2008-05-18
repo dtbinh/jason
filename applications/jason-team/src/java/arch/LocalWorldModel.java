@@ -5,7 +5,6 @@ import jason.asSyntax.NumberTerm;
 import jason.bb.BeliefBase;
 import jason.environment.grid.Location;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -151,30 +150,33 @@ public class LocalWorldModel extends WorldModel {
         int w = 0;
         Location newl;
         if (occupied == null) occupied = Collections.emptyList(); 
-        List<Location> options = new ArrayList<Location>();
+        //List<Location> options = new ArrayList<Location>();
         while (true) {
-        	options.clear();
+        	//options.clear();
         	for (int y=l.y-w+1; y<l.y+w; y++) {
         		//System.out.println(" "+(l.x+w)+" "+y);
         		//System.out.println(" "+(l.x-w)+" "+y);
         	    newl = new Location(l.x-w,y);
         		if (isFree(newl) && !occupied.contains(newl)) 
-        			options.add(newl);
+        		    //options.add(newl);
+        		    return newl;
         		newl = new Location(l.x+w,y);
         		if (isFree(newl) && !occupied.contains(newl)) 
-        			options.add(newl);
+        			//options.add(newl);
+        		    return newl;
         	}
         	for (int x=l.x-w; x<=l.x+w;x++) {
         	    newl = new Location(x,l.y-w);
                 if (isFree(newl) && !occupied.contains(newl)) 
-                    options.add(newl);
+                    //options.add(newl);
+                    return newl;
                 newl = new Location(x,l.y+w);
                 if (isFree(newl) && !occupied.contains(newl)) 
-                    options.add(newl);
+                    //options.add(newl);
+                    return newl;
         	}
-        	//System.out.println(w + " " + options);
-        	if (!options.isEmpty()) 
-        		return options.get(random.nextInt(options.size()));
+        	//if (!options.isEmpty()) 
+        	//	return options.get(random.nextInt(options.size()));
             w++;
         }
     }

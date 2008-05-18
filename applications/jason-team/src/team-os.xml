@@ -79,12 +79,14 @@
                 <goal id="goto_near_unvisited" ds="go to the near unvisited location inside the area of the group" type="maintenance"/>
                 <goal id="share_seen_cows"     ds="share seen cows with other agents in the scheme" type="maintenance"/>
                 <goal id="follow_leader"       ds="follows the leader of the scheme/group" type="maintenance"/>
+                <goal id="change_to_herding"   ds="verify if necessary to create the herding group" type="maintenance"/>
               </plan>
             </goal>
             
             <mission id="explore" min="1">
                 <goal id="goto_near_unvisited" />
                 <goal id="share_seen_cows" />
+                <goal id="change_to_herding" />
             </mission>
             <mission id="scout" >
                 <goal id="follow_leader" />

@@ -5,31 +5,12 @@
 
 /* -- initial goals -- */
 
-//!create_team_group.
 
 /*
    -- plans for new match 
    -- create the initial exploration groups and areas 
 */
 
-
-/* plans for the team's groups creation */
-
-/*
-+!create_team_group
-   : .my_name(gaucho1)
-  <- .print("oooo creating new team group ------------------------------------------------- "); 
-     !remove_org;
-     jmoise.create_group(team).
-+!create_team_group.
-*/
-
-/*+group(team,GId)                         // agent 1 is responsible for the creation of exploration groups 
-   : .my_name(gaucho1)
-  <- jmoise.create_group(exploration_grp,GId);
-     jmoise.create_group(exploration_grp,GId);
-     jmoise.create_group(exploration_grp,GId). */
-	 
 
 /* plans for agents with odd id */
 
@@ -43,11 +24,11 @@
   <- .my_name(Me);
 
      // create the team, if necessary
-	 .if( Me == gaucho1 & not group(team,_) ) {
+	 if( Me == gaucho1 & not group(team,_) ) {
          jmoise.create_group(team) 
 	 };
 
-     .if( not group(exploration_grp,_)[owner(Me)] ) {
+     if( not group(exploration_grp,_)[owner(Me)] ) {
 	    ?group(team,TeamGroup); // get the team Id
         jmoise.create_group(exploration_grp,TeamGroup,G);
 		.print("ooo Group ",G," created")
@@ -60,7 +41,7 @@
      ?pos(MyX,MyY,_); // wait my pos
      
      // wait others pos
-     .while( .count(ally_pos(_,_,_), N) & N < 5 ) {
+     while( .count(ally_pos(_,_,_), N) & N < 5 ) {
         .print("ooo waiting others pos ");
         .wait("+ally_pos(_,_,_)", 500, _)
      };
@@ -99,7 +80,7 @@
 -play(Me,explorer,_)
    : .my_name(Me)
   <- .wait(4000);
-     .for( group(exploration_grp,G)[owner(Me)] ) {
+     for( group(exploration_grp,G)[owner(Me)] ) {
 	    .print("ooo Removing group ",G," since I am not in the group anymore");
 	    jmoise.remove_group(G);
 		.wait(4000)
@@ -151,6 +132,17 @@
 */  
 
 
+{ begin maintenance_goal("+pos(_,_,_)") }
+
++!change_to_herding[scheme(Sch),mission(Mission)]
+   : cow(_,_,_)
+  <- .print("ooo I see some cow, create the herding group");
+     !!create_herding_gr.
+
++!change_to_herding[scheme(Sch),mission(Mission)].
+	 
+{ end }	 
+
 
 /* -- plans for the goals of role scouter -- */
 
@@ -165,7 +157,7 @@
      jia.dist(MyX, MyY, LX, LY, DistanceToLeader);
      
      // If I am far from him, go to him
-     .if( DistanceToLeader > (AGPR * 2) -3) {
+     if( DistanceToLeader > (AGPR * 2) -3) {
         .print("ooo Approaching leader.");
      	-+target(LX,LY)
      }{

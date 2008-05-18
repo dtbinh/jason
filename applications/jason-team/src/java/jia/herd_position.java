@@ -155,7 +155,7 @@ public class herd_position extends DefaultInternalAction {
             return null;
         
         Vec mean = Vec.mean(cows);
-        int stepsFromCenter = (int)Math.round(Vec.max(cows).sub(mean).magnitude())+1;
+        int stepsFromCenter = Math.max(4, (int)Math.round(Vec.max(cows).sub(mean).magnitude())+1);
         //Vec max = Vec.max(cows);
         
         // run A* to see the cluster target in n steps
@@ -165,13 +165,11 @@ public class herd_position extends DefaultInternalAction {
         int n = Math.min(stepsFromCenter, np.size());
 
         Vec cowstarget = new Vec(model, s.getNodeLocation(np.get(n)));
-        
         // find cow farthest of corral
         Vec farcow = null;
         for (Vec c: cows)
             if (farcow == null || farcow.getLocation(model).maxBorder(model.getCorralCenter()) < c.getLocation(model).maxBorder(model.getCorralCenter()))
                 farcow = c;
-        
         
         Vec agsTarget  = mean.sub(cowstarget).newMagnitude(farcow.sub(mean).magnitude()+1);
         //System.out.println("Ags target = "+agsTarget+" mean = "+mean + " far cow is "+farcow);
@@ -179,7 +177,7 @@ public class herd_position extends DefaultInternalAction {
         for (Vec position: formation.getDistances()) { // 2, -2, 6, -6, ....
         	//System.out.println(".......  "+position+" + "+agsTarget+" = " + agTarget);
         	Location l = findFirstFreeLocTowardsTarget(agsTarget, position, mean, model);
-        	//System.out.println(" =       "+dist+" result  "+l);
+        	//System.out.println(" =       "+position+" result  "+l);
         	if (l == null) {
                 l = model.nearFree(agsTarget.add(mean).getLocation(model), r);              
         	} else {
@@ -200,8 +198,10 @@ public class herd_position extends DefaultInternalAction {
 
         //System.out.println(start + " to "+ direction + " = " + end);
         Location l = start.add(ref).getLocation(model);
-    	Location lastloc = null;
+    	//Location lastloc = null;
         int maxSize = (int)direction.magnitude();
+        l = t.newMagnitude(maxSize).add(startandref).getLocation(model);
+        /*
     	for (int s = 1; s <= maxSize; s++) {
     	    l = t.newMagnitude(s).add(startandref).getLocation(model);
     		//System.out.println(" test "+s+" = "+l+" -- ");
@@ -209,6 +209,7 @@ public class herd_position extends DefaultInternalAction {
         		return lastloc;
     		lastloc = l;
     	}
+    	*/
     	return l;
     }
     

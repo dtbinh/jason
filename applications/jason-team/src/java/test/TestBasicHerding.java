@@ -29,7 +29,7 @@ public class TestBasicHerding {
     
     @Before
     public void scenario() {
-        model = new LocalWorldModel(50,50, WorldModel.agPerceptionRatio, null);
+        model = new LocalWorldModel(50,50, WorldModel.agsByTeam, null);
         model.setCorral(new Location(0,49), new Location(2,49));
         model.wall(7, 44, 7, 49);
     }
@@ -38,7 +38,7 @@ public class TestBasicHerding {
         cowboy = new Vec(3,5);
         model.add(WorldModel.AGENT, cowboy.getLocation(model));
 
-        addToModel(
+        addCowsToModel(
                 new Vec(6,7),
                 new Vec(5,30),
                 new Vec(4,8),
@@ -50,7 +50,7 @@ public class TestBasicHerding {
         cowboy = new Vec(11,3);
         model.add(WorldModel.AGENT, cowboy.getLocation(model));
         
-        addToModel(
+        addCowsToModel(
                 new Vec(8,0),
                 new Vec(9,0),
                 new Vec(10,0),
@@ -62,12 +62,31 @@ public class TestBasicHerding {
                 new Vec(10,2));
     }
 
+    public void scenario3() {
+        model = new LocalWorldModel(50,19, WorldModel.agsByTeam, null);
+        model.setCorral(new Location(8,0), new Location(12,2));
+        model.wall(7, 0, 7, 2);
+        cowboy = new Vec(10,12);
+        model.add(WorldModel.AGENT, cowboy.getLocation(model));
+        
+        addCowsToModel(
+                new Vec(1,16),
+                new Vec(2,14),
+                new Vec(3,13),
+                new Vec(5,14),
+                new Vec(6,12),
+                new Vec(6,13),
+                new Vec(20,2),
+                new Vec(20,3),
+                new Vec(20,4));
+    }
+
     @Test
     public void bigCluster() {
         // big cluster
         for (int x = 10; x < 30; x++) {
             for (int y = 5; y < 20; y++) {
-                addToModel(new Vec(model,x,y));
+                addCowsToModel(new Vec(model,x,y));
             }
         }
         
@@ -75,7 +94,7 @@ public class TestBasicHerding {
         assertEquals(model.getCows().size(), cowsl.size());
     }
 
-    private void addToModel(Vec... cows) {
+    private void addCowsToModel(Vec... cows) {
         for (int i=0; i<cows.length; i++) {
             Location l = cows[i].getLocation(model);
             model.addCow(l.x, l.y);
@@ -183,7 +202,7 @@ public class TestBasicHerding {
         byIA =  hp.getAgTarget(clusterLocs, Formation.six, cowboy.getLocation(model));
         assertEquals(new Location(8,39), byIA);
 
-        assertEquals("[8,39, 5,37, 10,43, 1,37, 12,46, 0,37]", hp.formationPlaces(clusterLocs, Formation.six).toString());
+        assertEquals("[8,39, 5,37, 10,43, 1,37, 12,46, 0,34]", hp.formationPlaces(clusterLocs, Formation.six).toString());
 
         /*
         // add an agent in 6,39
@@ -231,15 +250,32 @@ public class TestBasicHerding {
         List<Location> form =  hp.formationPlaces(clusterLocs, Formation.four);
         assertTrue(form.contains(new Location(11,49)));
         assertTrue(form.contains(new Location(6,49)));
-        assertTrue(form.contains(new Location(6,48)));
+        assertTrue(form.contains(new Location(3,48)));
         assertTrue(form.contains(new Location(15,48)));
+    }
+
+    @Test 
+    public void formationSc3() throws Exception {
+        scenario3();
+
+        List<Location> clusterLocs = cluster.getCluster(model, WorldModel.cowPerceptionRatio);
+        assertEquals(6, clusterLocs.size());
+
+        herd_position hp = new herd_position();
+        hp.setModel(model);
+
+        List<Location> form =  hp.formationPlaces(clusterLocs, Formation.four);
+        assertTrue(form.contains(new Location(0,4)) || form.contains(new Location(0,3)));
+        assertTrue(form.contains(new Location(0,8)));
+        assertTrue(form.contains(new Location(0,1)) || form.contains(new Location(0,0)));
+        assertTrue(form.contains(new Location(4,11)));
     }
 
     @Test 
     public void scouterPos() throws Exception {
         scenario1();
         Location byIA =  new scouter_pos().getScouterTarget(model, new Location(2,46), new Location(5,44));
-        assertEquals(new Location(6,46), byIA);
+        assertEquals(new Location(6,49), byIA);
 
         byIA =  new scouter_pos().getScouterTarget(model, new Location(9,46), new Location(9,42));
         assertEquals(new Location(22,42), byIA);
