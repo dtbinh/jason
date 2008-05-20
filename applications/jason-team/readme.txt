@@ -45,7 +45,8 @@ To run this team:
    you can see the agent mind state with
 
          ant -f gauchos.xml mind-view
-   
+         
+   or in the files stored in directory mind-ag-gaucho1
 
 7. to enable/disable the graphical view of some agent, add gui=yes
    or gui=no in the agent's option (.mas2j file)

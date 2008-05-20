@@ -1,26 +1,28 @@
 /* -- plans for exploration phase -- */
 
 
-/* -- initial beliefs -- */
-
-/* -- initial goals -- */
-
-
 /*
    -- plans for new match 
    -- create the initial exploration groups and areas 
 */
 
 
-/* plans for agents with odd id */
-
 +gsize(_,_)                             // new match has started 
+  <- !define_areas;
+     !create_exploration_gr.
+
++!define_areas
+  <- ?gsize(W,H);
+	 X = math.round(((W*H)/3)/H);
+	 +group_area(0, area(0,   0,       X,   H-1));
+	 +group_area(1, area(X+1, 0,       W-1, H/2));
+	 +group_area(2, area(X+1, (H/2)+1, W-1, H-1)).
+	 
++!create_exploration_gr
    : .my_name(Me) &
      agent_id(Me,AgId) &
-     AgId mod 2 == 1                    // I have an odd Id
-  <- !create_exploration_gr.
-
-+!create_exploration_gr
+     AgId mod 2 == 1 &          // I have an odd Id and thus have to create a exploring group
+	 not .intend(create_exploration_gr)
   <- .my_name(Me);
 
      // create the team, if necessary
@@ -28,6 +30,7 @@
          jmoise.create_group(team) 
 	 };
 
+	 // create the exploration group
      if( not group(exploration_grp,_)[owner(Me)] ) {
 	    ?group(team,TeamGroup); // get the team Id
         jmoise.create_group(exploration_grp,TeamGroup,G);
@@ -35,10 +38,53 @@
      } {
 	    ?group(exploration_grp,G)[owner(Me)]
      };
+     
+     // adopt role explorer in the group
+     !change_role(explorer,G).
++!create_exploration_gr.
+     
+// If if start playing explorer in a group that has no scheme, create the scheme
++play(Me,explorer,G)
+   : .my_name(Me) &
+     not scheme_group(_,G)
+  <- jmoise.create_scheme(explore_sch, [G]).
+     
+// If I stop playing explorer, destroy the explore groups I've created
+-play(Me,explorer,_)
+   : .my_name(Me)
+  <- for( group(exploration_grp,G)[owner(Me)] ) {
+	    .print("ooo Removing group ",G," since I am not in the group anymore");
+	    jmoise.remove_group(G);
+		.wait(4000)
+	 }.
+
 	 
-     .print("ooo Recruiting scouters for my explorer group ",G);
+/*+group(exploration_grp,_)                // compute the area of the groups
+   : .my_name(gaucho1) &
+     group(team,TeamId) &
+     .findall(GId, group(exploration_grp,GId)[super_gr(TeamId)], LG) &
+	 LG = [G1,G2,G3]                     // there are three groups
+
++group_area(ID,G,A)[source(self)]
+  <- .broadcast(tell, group_area(ID,G,A)).  
+*/
+	 
+/* -- plans for the goals of role explorer -- */
+
++!find_scouter[scheme(Sch),group(G)]
+  <- .print("ooo Recruiting scouters for my explorer group ",G);
   
-     ?pos(MyX,MyY,_); // wait my pos
+     // test if I received the area of my group
+     //?group_area(AreaId,G,A);
+     //.print("ooo Scouters candidates =", LSOdd," in area ",group_area(AreaId,G,A));
+	 
+     !find_scouter([], G);
+	 jmoise.set_goal_state(Sch, find_scouter, satisfied).
+	 
++!find_scouter(_,G) // if someone plays scouter in my group, it is ok.
+   : play(_,scouter,G).
++!find_scouter([],G)
+  <- ?pos(MyX,MyY,_); // wait my pos
      
      // wait others pos
      while( .count(ally_pos(_,_,_), N) & N < 5 ) {
@@ -51,17 +97,7 @@
               ally_pos(AgName,X,Y) & agent_id(AgName,Id) & Id mod 2 == 0 & jia.path_length(MyX, MyY, X, Y, D),
               LOdd);
      .sort(LOdd, LSOdd);
-
-     // test if I received the area of my group
-     ?group_area(AreaId,G,A);
-     .print("ooo Scouters candidates =", LSOdd," in area ",group_area(AreaId,G,A));
-     
-     // adopt role explorer in the group
-     jmoise.adopt_role(explorer,G);
-     !find_scouter(LSOdd, G).
-     
-+!find_scouter([],_)
-  <- .print("ooo I did not find a scouter to work with me!").
+	 !find_scouter(LSOdd,G).
 +!find_scouter([ag_d(_,AgName)|_],GId)
   <- .print("ooo Ask ",AgName," to play scouter");
      .send(AgName, achieve, play_role(scouter,GId));
@@ -70,47 +106,16 @@
   <- .print("ooo find_scouter failure, try another agent.");
      !find_scouter(LSOdd,GId).  
      
-// If if start playing explorer in a group that has no scheme, create the scheme
-+play(Me,explorer,G)
-   : .my_name(Me) &
-     not scheme_group(_,G)
-  <- jmoise.create_scheme(explore_sch, [G]).
-     
-// If I stop playing explorer, destroy the explore groups I've created
--play(Me,explorer,_)
-   : .my_name(Me)
-  <- .wait(4000);
-     for( group(exploration_grp,G)[owner(Me)] ) {
-	    .print("ooo Removing group ",G," since I am not in the group anymore");
-	    jmoise.remove_group(G);
-		.wait(4000)
-	 }.
 
 	 
-+group(exploration_grp,_)                // compute the area of the groups
-   : .my_name(gaucho1) &
-     group(team,TeamId) &
-     .findall(GId, group(exploration_grp,GId)[super_gr(TeamId)], LG) &
-	 LG = [G1,G2,G3]                     // there are three groups
-  <- ?gsize(W,H);
-	 X = math.round(((W*H)/3)/H);
-	 +group_area(0, G1, area(0,   0,       X,   H-1));
-	 +group_area(1, G2, area(X+1, 0,       W-1, H/2));
-	 +group_area(2, G3, area(X+1, (H/2)+1, W-1, H-1)). 
-
-+group_area(ID,G,A)[source(self)]
-  <- .broadcast(tell, group_area(ID,G,A)).  
-
-	 
-/* -- plans for the goals of role explorer -- */
-
 { begin maintenance_goal("+at_target") }
 
 +!goto_near_unvisited[scheme(Sch),mission(Mission)]
   <- .print("ooo I should find the nearest unvisited location and go there!");
      .my_name(Me); 
-     ?play(Me,explorer,GroupId);    // get the group where I play explorer
-     ?group_area(_,GroupId, Area);  // get the area of this group
+	 ?agent_id(Me,MyId);
+     ?group_area(MyId div 2, Area);  // get the area of my group
+	 
      ?pos(MeX, MeY, _);             // get my location
      jia.near_least_visited(MeX, MeY, Area, TargetX, TargetY);
      -+target(TargetX, TargetY).
@@ -160,7 +165,7 @@
      if( DistanceToLeader > (AGPR * 2) -3) {
         .print("ooo Approaching leader.");
      	-+target(LX,LY)
-     }{
+     } {
         .print("ooo being in formation with leader.");
         .send(Leader,askOne,target(_,_),target(TX,TY));
         jia.scouter_pos(LX, LY, TX, TY, SX, SY);

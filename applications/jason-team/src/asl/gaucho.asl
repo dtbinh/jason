@@ -32,7 +32,7 @@ cow_perception_ratio(4).
 /* -- plans -- */
 
 +?pos(X, Y, S)       <- .wait("+pos(X,Y,S)").
-+?group_area(Id,G,A) <- .wait("+group_area(Id,G,A)").
+//+?group_area(Id,G,A) <- .wait("+group_area(Id,G,A)").
 +?gsize(W,H)         <- .wait("+gsize(W,H)").
 +?group(team,G)      <- .wait("+group(team,G)", 500, _); ?group(team,G).
 +?ally_pos(Name,X,Y) : .my_name(Name) <- ?pos(X,Y,_).
@@ -90,7 +90,7 @@ cow_perception_ratio(4).
    
 +!change_role(NewRole,GT)[source(S)]
   <- .my_name(Me); 
-	 .print("ooo Adopting the role ",NewRole," in group ",GT,", as asked by ",S);
+	 .print("ooo Changing to role ",NewRole," in group ",GT,", as asked by ",S);
 	 
 	 // give up all missions
 	 while( commitment(Me,M,Sch) ) {
@@ -99,7 +99,7 @@ cow_perception_ratio(4).
 	 };
 
      // if I play herder in another group, ...
-     if( play(Me,herder,G) & G \== GT) {
+     if( NewRole == herdboy & play(Me,herder,G) & G \== GT) {
 	    // ask all herdboys to also change the group
 	    .findall(Boy,play(Boy,herdboy,G),HerdBoys);
 		.send(HerdBoys, achieve, change_role(herdboy,GT))
@@ -112,11 +112,13 @@ cow_perception_ratio(4).
 
      jmoise.adopt_role(NewRole,GT).
 	 
+-!change_role(R,G)	 
+  <- !change_role(R,G).
   
 +!play_role(R,G)
    : .my_name(Me) & play(Me,R,G).
 +!play_role(Role,Group)[source(Ag)]
-  <- .print("ooo Adopting role ",Role," in group ",Group,", asked by ",Ag);
+  <- .print("ooo Adopting role ",Role," in group ",Group,", as asked by ",Ag);
      jmoise.adopt_role(Role, Group).
 	 
 // finish the scheme if it has no more players
@@ -128,17 +130,21 @@ cow_perception_ratio(4).
 
 // when I have an obligation or permission to a mission, commit to it
 +obligation(Sch, Mission) 
-  <- jmoise.commit_mission(Mission,Sch).
+  <- .print("ooo Obligation to commit to mission ",Mission);
+     jmoise.commit_mission(Mission,Sch).
 +permission(Sch, Mission)
-  <- jmoise.commit_mission(Mission,Sch).
+  <- .print("ooo Permission to commit to mission ",Mission);
+     jmoise.commit_mission(Mission,Sch).
 
 // when I am not obligated to a mission anymore, uncommit
 -obligation(Sch, Mission)
    : .my_name(Me) & commitment(Me,Mission,Sch)
-  <- jmoise.remove_mission(Mission,Sch).
+  <- .print("ooo I don't have obligation for the mission ",Mission," anymore, remove the commit");
+     jmoise.remove_mission(Mission,Sch).
 -permission(Sch, Mission)
    : .my_name(Me) & commitment(Me,Mission,Sch)
-  <- jmoise.remove_mission(Mission,Sch).
+  <- .print("ooo I don't have permission for the mission ",Mission," anymore, remove the commit");
+     jmoise.remove_mission(Mission,Sch).
 
 // when I am not committed to a mission anymore, remove all goals based on that mission
 -commitment(Me,Mission,Sch)

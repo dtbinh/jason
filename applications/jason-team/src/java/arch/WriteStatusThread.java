@@ -59,7 +59,7 @@ public class WriteStatusThread extends Thread {
         String fileName = "world-status.txt";
         File dirmind = null;
         try {
-        	dirmind = new File("tmp-ag-mind");
+        	dirmind = new File("mind-ag-"+owner.getAgName());
         	dirmind.mkdir();
         } catch (Exception e) {
         	dirmind = null;

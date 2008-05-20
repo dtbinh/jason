@@ -123,8 +123,10 @@ public class OrgAgent extends AgArch {
                             i.remove();
                             if (content.startsWith("goal_state")) { 
                                 // the state of a scheme i belong to has changed
-                                updateGoalBels( Pred.parsePred(content) );
+                                // add all goals of the scheme in BB
+                                updateGoalBels = true;
                                 updateGoalEvt  = true;
+                                // Note: must change all goals, because the state of others may also change (waiting->possible)
                             } else {
                                 Literal cl = addAsBel(content);
                                 
@@ -132,7 +134,9 @@ public class OrgAgent extends AgArch {
                                     // this message is generated when my group becomes
                                     // responsible for a scheme
                                     generateObligationPermissionEvents(cl);
-                                } else if (content.startsWith("commitment")) { 
+                                } else if (content.startsWith("commitment")) {
+                                    // add all goals of the scheme in BB
+                                    updateGoalBels = true;
                                     // I need to generate AS Triggers like !<orggoal> since some scheme becomes well formed
                                     updateGoalEvt  = true;
                                 }
@@ -144,11 +148,21 @@ public class OrgAgent extends AgArch {
                             
                             if (content.startsWith("scheme")) {
                                 String schId = cl.getTerm(1).toString();
-                                removeAchieveGoalsOfSch(schId);
+                                cleanGoalsOfSch(schId);
                                 removeBeliefs(schId);
                             } else if (content.startsWith("scheme_group")) {
-                                removeObligationPermissionBeliefs(cl, "obligation");
-                                removeObligationPermissionBeliefs(cl, "permission");
+                                Term sch = cl.getTerm(0);
+                                Term gr  = cl.getTerm(1);
+                                removeObligationPermissionBeliefs(sch, gr, "obligation");
+                                removeObligationPermissionBeliefs(sch, gr, "permission");
+                            } else if (content.startsWith("commitment")) {
+                                // if I remove my commit, remove the goals from BB
+                                String schId = cl.getTerm(2).toString();
+                                SchemeInstance sch = currentOE.findScheme(schId);
+                                if (sch != null && !sch.isPlayer(getMyOEAgent())) {
+                                    cleanGoalsOfSch(schId);
+                                    removeBeliefs(schId);
+                                }
                             }
                         }                        
                     }
@@ -237,13 +251,10 @@ public class OrgAgent extends AgArch {
     }
     
     
-    private void removeObligationPermissionBeliefs(Pred m, String type) throws RevisionFailedException {
+    private void removeObligationPermissionBeliefs(Term sch, Term gr, String type) throws RevisionFailedException {
         // computes this agent obligations in the scheme
-        Term sch   = m.getTerm(0);
-        Term grId  = m.getTerm(1);
-        
         Structure giAnnot = new Structure("group");
-        giAnnot.addTerm(grId);
+        giAnnot.addTerm(gr);
         
         Literal obl = new Literal(type);
         obl.addTerms(sch,new UnnamedVar());
@@ -327,7 +338,7 @@ public class OrgAgent extends AgArch {
    		return null;
    	}
 
-    void removeAchieveGoalsOfSch(String schId) {
+    void cleanGoalsOfSch(String schId) {
         Iterator<GoalInstance> i = alreadyGeneratedEvents.iterator();
         while (i.hasNext()) {
             GoalInstance gi = i.next();
@@ -377,7 +388,7 @@ public class OrgAgent extends AgArch {
     /** add/remove bel regarding the goals' state */
     void updateGoalBels() throws RevisionFailedException {
         // for all missions
-        // for all goals
+        // for all goals of the mission's scheme
         // if not in BB, add
         // if different from BB, remove/add
         for (MissionPlayer mp : getMyOEAgent().getMissions()) {

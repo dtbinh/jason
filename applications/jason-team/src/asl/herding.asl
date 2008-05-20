@@ -1,9 +1,7 @@
 /* -- plans for herding phase -- */
 
-/* -- initial beliefs -- */
 
 /* -- plans for herding groups creation -- */
-
 
 +!create_herding_gr
    : not .intend(create_herding_gr)
@@ -37,15 +35,21 @@
 // If I stop playing herder, destroy the herding groups I've created
 -play(Me,herder,_)
    : .my_name(Me)
-  <- .wait(4000);
-     for( group(herding_grp,G)[owner(Me)] ) {
+  <- for( group(herding_grp,G)[owner(Me)] ) {
 	    -group_leader(G,Me);
         .broadcast(untell, group_leader(G,Me));
 	    jmoise.remove_group(G);
 		.wait(4000)
 	 }.
-
 	 
+// If I stop playing herboy (because the group was destroied by the herder),
+// I should try yo create my new exploration group
+-play(Me,herdboy,_)
+   : .my_name(Me)
+  <- .print("ooo I do not play herdboy anymore, try to play a role in an exploration group.");
+     !create_exploration_gr.
+
+  
 /* -- plans for the goals of role herder -- */
 
 { begin maintenance_goal("+pos(_,_,_)") }
@@ -84,8 +88,9 @@
      jia.cluster(Cluster,CAsList);
      -+current_cluster(CAsList);
      jia.herd_position(.length(G),Cluster,L);
-     .print("ooo Formation is ",L, " for agents ",G," in cluster ", Cluster);
-     !alloc_all(G,L).
+	 .reverse(L,RL); // use the reversed list so to priorise the border positions
+     .print("ooo Formation is ",RL, " for agents ",G," in cluster ", Cluster);
+     !alloc_all(G,RL).
 	 
 { end }
 
@@ -143,6 +148,23 @@ calc_distances([pos(Fx,Fy)|TP], [d(D,pos(Fx,Fy))|TD], pos(AgX,AgY))
   <- .concat(Aux,[pos(XH,YH)],Aux2);
      !closest(T,Aux2,S,pos(XP,YP),LD).
 */
+
+
+{ begin maintenance_goal("+pos(_,_,_)") }
+
++!change_to_exploring[scheme(Sch),mission(Mission)]
+   : not cow(_,_,_)
+  <- .print("ooo I see no cow anymore");
+     // wait two cycles to decide to change the formation (due to fault perception we may not see the cows)
+	 .wait("+pos(_,_,_)");
+	 .wait("+pos(_,_,_)");
+	 if (not cow(_,_,_)) {
+        !!create_exploration_gr
+	 }.
+
++!change_to_exploring[scheme(Sch),mission(Mission)].
+
+{ end }
 
 
 /* -- plans for the goals of all roles (herder and herdboy) -- */
