@@ -23,9 +23,7 @@
      agent_id(Me,AgId) &
      AgId mod 2 == 1 &          // I have an odd Id and thus have to create a exploring group
 	 not .intend(create_exploration_gr)
-  <- .my_name(Me);
-
-     // create the team, if necessary
+  <- // create the team, if necessary
 	 if( Me == gaucho1 & not group(team,_) ) {
          jmoise.create_group(team) 
 	 };

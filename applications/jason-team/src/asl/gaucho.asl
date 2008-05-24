@@ -52,14 +52,14 @@ cow_perception_ratio(4).
 /* -- plans for the goals of all roles -- */
 
 
-+!share_seen_cows[scheme(Sch)] <- .print("ooo start sharing cows in scheme ",Sch); .suspend.
+//+!share_seen_cows[scheme(Sch)] <- .print("ooo start sharing cows in scheme ",Sch); .suspend.
 
 // simple implementation of share_cows (see TODO above)
 +cow(Id,X,Y)[source(percept)]
-   : .intend(share_seen_cows) & .my_name(Me) & play(Me,_,Gr)
+   : .my_name(Me) & play(Me,_,Gr) // .intend(share_seen_cows) 
   <- jmoise.broadcast(Gr, tell, cow(Id,X,Y)).
 -cow(Id,X,Y)[source(percept)]
-   : .intend(share_seen_cows) & .my_name(Me) & play(Me,_,Gr)
+   : .my_name(Me) & play(Me,_,Gr) // .intend(share_seen_cows) 
   <- jmoise.broadcast(Gr, untell, cow(Id,X,Y)).
 
 

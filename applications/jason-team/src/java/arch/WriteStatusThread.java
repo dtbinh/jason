@@ -57,16 +57,11 @@ public class WriteStatusThread extends Thread {
         reset();
         
         String fileName = "world-status.txt";
-        File dirmind = null;
-        try {
-        	dirmind = new File("mind-ag-"+owner.getAgName());
-        	dirmind.mkdir();
-        } catch (Exception e) {
-        	dirmind = null;
-        }
         
         PrintWriter out = null;
         try {
+            asl2xml transformer = new asl2xml();
+            
             out = new PrintWriter(fileName);
             PrintWriter map = new PrintWriter("map-status.txt");
             while (true) {
@@ -111,19 +106,26 @@ public class WriteStatusThread extends Thread {
                     out.flush();
                     
                     
-                    // store the agent'd mind
-                    if (dirmind != null) {
-                        String agmind = new asl2xml().transform(owner.getTS().getAg().getAgState());
-                        String filename = String.format("%5d.xml",owner.getCycle()).replaceAll(" ","0");
-                        FileWriter outmind = new FileWriter(new File(dirmind.getName()+"/"+filename));
-                        outmind.write(agmind);
-                        outmind.close();
+                    // store the agents' mind
+                    for (CowboyArch arch : agents) {
+                        try {
+                            File dirmind = new File("mind-ag/"+arch.getAgName());
+                            if (!dirmind.exists())
+                                dirmind.mkdirs();
+                            String agmind = transformer.transform(arch.getTS().getAg().getAgState());
+                            String filename = String.format("%5d.xml",arch.getCycle()).replaceAll(" ","0");
+                            FileWriter outmind = new FileWriter(new File(dirmind+"/"+filename));
+                            outmind.write(agmind);
+                            outmind.close();
+                        } catch (Exception e) {
+                            System.out.println("error getting agent status "+e);                            
+                        }
                     }
                     
                 } catch (InterruptedException e) { // no problem, quit the thread
                     return;
                 } catch (Exception e) {
-                    System.out.println("error getting agent status "+e);
+                    System.out.println("error in writing status "+e);
                     sleep(1000);
                 }
             }

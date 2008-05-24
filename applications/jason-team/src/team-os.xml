@@ -92,12 +92,12 @@
             <mission id="explore" min="1">
                 <goal id="find_scouter" />
                 <goal id="goto_near_unvisited" />
-                <goal id="share_seen_cows" />
+                <!--goal id="share_seen_cows" /-->
                 <goal id="change_to_herding" />
             </mission>
             <mission id="scout" >
                 <goal id="follow_leader" />
-                <goal id="share_seen_cows" />
+                <!--goal id="share_seen_cows" /-->
             </mission>
         </scheme>
         
@@ -116,12 +116,12 @@
                 <goal id="recruit" />
                 <goal id="define_formation" />
                 <goal id="be_in_formation" />
-                <goal id="share_seen_cows" />
+                <!--goal id="share_seen_cows" /-->
                 <goal id="change_to_exploring" />
             </mission>
             <mission id="help_herder" >
                 <goal id="be_in_formation" />
-                <goal id="share_seen_cows" />
+                <!--goal id="share_seen_cows" /-->
             </mission>
         </scheme>
     </functional-specification>

@@ -93,7 +93,7 @@
 
     <target name="run" depends="compile" >
         <delete failonerror="no" includeEmptyDirs="true" verbose="false">
-            <fileset dir="mind-ag-gaucho1" includes="*.xml"/>
+            <fileset dir="mind-ag" includes="**/*.xml"/>
         </delete>
 
     	<echo message="Running project ${ant.project.name}" />
