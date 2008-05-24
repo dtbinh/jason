@@ -42,13 +42,14 @@
 		.wait(4000)
 	 }.
 	 
-// If I stop playing herboy (because the group was destroied by the herder),
+// If I stop playing herdboy (because the group was destroied by the herder),
 // I should try yo create my new exploration group
+/* This plan does not work with merging!
 -play(Me,herdboy,_)
    : .my_name(Me)
   <- .print("ooo I do not play herdboy anymore, try to play a role in an exploration group.");
      !create_exploration_gr.
-
+*/
   
 /* -- plans for the goals of role herder -- */
 
@@ -152,17 +153,20 @@ calc_distances([pos(Fx,Fy)|TP], [d(D,pos(Fx,Fy))|TD], pos(AgX,AgY))
 
 { begin maintenance_goal("+pos(_,_,_)") }
 
-+!change_to_exploring[scheme(Sch),mission(Mission)]
++!change_to_exploring[scheme(Sch),mission(Mission),group(Gr)]
    : not cow(_,_,_)
   <- .print("ooo I see no cow anymore");
      // wait two cycles to decide to change the formation (due to fault perception we may not see the cows)
 	 .wait("+pos(_,_,_)");
 	 .wait("+pos(_,_,_)");
 	 if (not cow(_,_,_)) {
-        !!create_exploration_gr
+	    .findall(P, play(P,herdboy,Gr), ListBoys);
+        !!create_exploration_gr;
+		// ask helpers in my group to change the role (or create a exploration group if we merged)
+		.send(ListBoys, achieve, create_exploration_gr)
 	 }.
 
-+!change_to_exploring[scheme(Sch),mission(Mission)].
++!change_to_exploring[scheme(Sch),mission(Mission),group(Gr)].
 
 { end }
 

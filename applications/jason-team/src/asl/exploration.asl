@@ -141,7 +141,7 @@
 
 +!change_to_herding[scheme(Sch),mission(Mission)]
    : cow(_,_,_)
-  <- .print("ooo I see some cow, create the herding group");
+  <- .print("ooo I see some cows, create the herding group");
      !!create_herding_gr.
 
 +!change_to_herding[scheme(Sch),mission(Mission)].

@@ -3,12 +3,10 @@
 ** Functioning (we have noting, but I not sure we need...)
 ** computation of ideal locations of an agent to maintain a formation (can we use maintainance goal pattern?)
 * herding strategy
-  details
 * exploration strategy
-  details  
-* new scenarios
 * protocols
 * faster simulator
+* DONE new scenarios
 * DONE Vectors (operations)
   CLOSED: [2008-04-20 Sun 22:23]
 * DONE develop a team of dummies to play against

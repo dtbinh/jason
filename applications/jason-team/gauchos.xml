@@ -31,9 +31,8 @@
 	    <copy file="../jason-moise/lib/jmoise.jar" todir="lib" />
 	    <copy file="../jason-moise/lib/moise.jar" todir="lib" />
 
-    	<mkdir dir="tmp-ag-mind" />
         <delete failonerror="no" includeEmptyDirs="true" verbose="false">
-            <fileset dir="massim-server/backup" includes="*"/>
+            <fileset dir="massim-server/backup" includes="**/*.xml"/>
         </delete>
     </target>
     <target name="user-end">

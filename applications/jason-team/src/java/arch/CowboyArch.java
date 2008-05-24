@@ -141,7 +141,7 @@ public class CowboyArch extends IdentifyCrashed {
     }
 
 	/** update the model with obstacle and share them with the team mates */
-	void obstaclePerceived(int x, int y, Literal p) {
+	public void obstaclePerceived(int x, int y, Literal p) {
 		if (! model.hasObject(WorldModel.OBSTACLE, x, y)) {
 			model.add(WorldModel.OBSTACLE, x, y);
 			if (acView != null) acView.addObject(WorldModel.OBSTACLE, x, y);

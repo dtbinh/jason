@@ -68,17 +68,22 @@ public class WriteStatusThread extends Thread {
         PrintWriter out = null;
         try {
             out = new PrintWriter(fileName);
+            PrintWriter map = new PrintWriter("map-status.txt");
             while (true) {
                 try {
+                    // write map
+                    map.println("\n\n** Agent "+owner.getAgName()+" in cycle "+owner.getCycle()+"\n");
+                    //for (int i=0; i<model.getNbOfAgs(); i++) {
+                        // out.println("miner"+(i+1)+" is carrying "+model.getGoldsWithAg(i)+" gold(s), at "+model.getAgPos(i));
+                    //}
+                    map.println(owner.getModel().toString());
+                    map.flush();
+                    
+                    // write location of the agents
                     long timebefore = System.currentTimeMillis();
                     waitNextCycle();
                     long cycletime = System.currentTimeMillis() - timebefore;
                     
-                    //out.println("\n\n** Agent "+getAgName()+" in cycle "+cycle+"\n");
-                    //for (int i=0; i<model.getNbOfAgs(); i++) {
-                        // out.println("miner"+(i+1)+" is carrying "+model.getGoldsWithAg(i)+" gold(s), at "+model.getAgPos(i));
-                    //}
-                    //out.println(model.toString());
                     StringBuilder s = new StringBuilder(String.format("Step %5d : ", owner.getCycle()-1));
                     for (int agId=0; agId<WorldModel.agsByTeam; agId++) {
                     	if (agents[agId] != null) {
@@ -119,6 +124,7 @@ public class WriteStatusThread extends Thread {
                     return;
                 } catch (Exception e) {
                     System.out.println("error getting agent status "+e);
+                    sleep(1000);
                 }
             }
         } catch (Exception e) {

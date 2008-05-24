@@ -52,7 +52,7 @@ cow_perception_ratio(4).
 /* -- plans for the goals of all roles -- */
 
 
-+!share_seen_cows <- .print("ooo start sharing cows."); .suspend.
++!share_seen_cows[scheme(Sch)] <- .print("ooo start sharing cows in scheme ",Sch); .suspend.
 
 // simple implementation of share_cows (see TODO above)
 +cow(Id,X,Y)[source(percept)]
@@ -98,7 +98,7 @@ cow_perception_ratio(4).
 	    jmoise.remove_mission(M,Sch)
 	 };
 
-     // if I play herder in another group, ...
+     // if I play herder in another group, and my new role is herdboy (the groups are merging)...
      if( NewRole == herdboy & play(Me,herder,G) & G \== GT) {
 	    // ask all herdboys to also change the group
 	    .findall(Boy,play(Boy,herdboy,G),HerdBoys);
@@ -130,10 +130,10 @@ cow_perception_ratio(4).
 
 // when I have an obligation or permission to a mission, commit to it
 +obligation(Sch, Mission) 
-  <- .print("ooo Obligation to commit to mission ",Mission);
+  <- .print("ooo Obligation to commit to mission ",Mission, " in scheme ", Sch);
      jmoise.commit_mission(Mission,Sch).
 +permission(Sch, Mission)
-  <- .print("ooo Permission to commit to mission ",Mission);
+  <- .print("ooo Permission to commit to mission ",Mission, " in scheme ", Sch);
      jmoise.commit_mission(Mission,Sch).
 
 // when I am not obligated to a mission anymore, uncommit
@@ -149,11 +149,13 @@ cow_perception_ratio(4).
 // when I am not committed to a mission anymore, remove all goals based on that mission
 -commitment(Me,Mission,Sch)
    : .my_name(Me)
-  <- .drop_desire(_[scheme(Sch),mission(Mission)]).
+  <- .print("ooo Removing all desires related to scheme ",Sch," and mission ",Mission);
+     .drop_desire(_[scheme(Sch),mission(Mission)]).
 
 // if some scheme is finished, drop all intentions related to it.
--scheme(_Spec,Id)
-  <- .drop_desire(_[scheme(Id)]).
+-scheme(_Spec,Sch)
+  <- .print("ooo Removing all desires related to scheme ",Sch);
+     .drop_desire(_[scheme(Sch)]).
 
 
 /* -- includes -- */

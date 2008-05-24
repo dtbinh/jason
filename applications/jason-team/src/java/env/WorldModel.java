@@ -164,28 +164,33 @@ public class WorldModel extends GridWorldModel {
     }
     
     public String toString() {
-    	StringBuilder s = new StringBuilder();
+    	StringBuilder s = new StringBuilder("|");
 
-    	s.append("---------------------------------------------\n|");
+    	for (int i = 0; i < getWidth(); i++) {
+    	    s.append('-');
+    	}
+    	s.append("|\n");
+    	String bar = s.toString();
     	for (int j = 0; j < getHeight(); j++) {
+    	    s.append('|');
     		for (int i = 0; i < getWidth(); i++) {
             	if (hasObject(OBSTACLE, i, j)) {
             		s.append('X');
-            	} else if (hasObject(CORRAL, i, j)) {
-            		s.append('-');
             	} else if (hasObject(AGENT, i, j)) {
             		s.append((getAgAtPos(i, j)+1)+"");
             	} else if (hasObject(COW, i, j)) {
             		s.append('c');
             	} else if (hasObject(ENEMY, i, j)) {
             		s.append('E');
+                } else if (hasObject(CORRAL, i, j)) {
+                    s.append('-');
             	} else {
             		s.append(' ');
             	}
             }
-            s.append("|\n|");
+            s.append("|\n");
         }
-    	s.append("---------------------------------------------\n");
+    	s.append(bar);
     	
     	return s.toString();
     }
