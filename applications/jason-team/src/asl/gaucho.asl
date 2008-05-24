@@ -42,22 +42,38 @@ cow_perception_ratio(4).
      .drop_all_desires;
      !remove_org.
 
-+!restart.
++!restart
+   : .my_name(Me) &
+     agent_id(Me,AgId) &
+     AgId mod 2 == 1       // I have an odd Id
+  <- .print("*** restart -- odd ***"); 
+     !create_exploration_gr.
++!restart
+  <- .print("*** restart -- even ***"); 
+     .my_name(Me);
+  
+     // if I play any role, give it up
+     while( play(Me,R,OG) ) {
+        jmoise.remove_role(R,OG)
+     };
+	 
+     // try to adopt scouter in some exploration
+     .findall(GE, group(exploration_grp,GE),  LGE);
+     !try_adopt(scouter,LGE);
+	 
+	 // if I still have no role, try herdboy
+	 if ( not play(Me,_,_) ) {
+        .findall(GH, group(herding_grp,GH),  LGH);
+	    !try_adopt(herdboy,LGH)
+	 }.
 
-/*
-se for impar
-  create_gr
-se for par
-  1. tenta entrar explorer
-  2.a tenta herding
-  2.b no que tem o menor nro de vacas
-*/
-
-  //<- //.print("*** restart ***"); 
-     //.drop_all_desires;
-     //.abolish(cow(_,_,_)).
-     // TODO: what to do?
-     //!decide_target.
++!try_adopt(Role,[]).
++!try_adopt(Role,[G|_])
+  <- .print("ooo try role ",Role, " in ",G);
+     jmoise.adopt_role(Role,G).
+-!try_adopt(Role,[_|RG])
+  <- !try_adopt(Role,RG).
+  
 
 /* -- plans for the goals of all roles -- */
 
@@ -71,9 +87,9 @@ se for par
      //jmoise.broadcast(Gr, tell, cow(Id,X,Y)).
 	 .send(Leader, tell, cow(Id,X,Y)).
 -cow(Id,X,Y)[source(percept)]
-   : .my_name(Me) & play(Me,_,Gr) & (play(Leader,explorer,Gr) | play(Leader,herder,Gr)) // .intend(share_seen_cows) 
-  <- //jmoise.broadcast(Gr, untell, cow(Id,X,Y)).
-     .send(Leader, untell, cow(Id,X,Y)).
+   : .my_name(Me) & play(Me,_,Gr) //& (play(Leader,explorer,Gr) | play(Leader,herder,Gr)) // .intend(share_seen_cows) 
+  <- jmoise.broadcast(Gr, untell, cow(Id,X,Y)).
+     //.send(Leader, untell, cow(Id,X,Y)).
 
 
 /* -- general organisational plans -- */

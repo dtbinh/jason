@@ -64,6 +64,7 @@ public class UniqueBelsBB extends DefaultBeliefBase {
 							}
 						}
 					}
+					// TODO: prefer source(percept) info
 					if (equals) {
 						remove = true;
 					}
