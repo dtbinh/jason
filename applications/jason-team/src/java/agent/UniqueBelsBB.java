@@ -51,6 +51,9 @@ public class UniqueBelsBB extends DefaultBeliefBase {
 				while (relevant.hasNext() && !remove) {
 					linbb = relevant.next();
 
+					// check equality of all terms that are "key"
+					// if some key is different, no problem
+					// otherwise, remove the current bel
 					boolean equals = true;
 					for (int i = 0; i<kbArity; i++) {
 						Term kbt = kb.getTerm(i);

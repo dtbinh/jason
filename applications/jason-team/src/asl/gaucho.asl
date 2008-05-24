@@ -43,6 +43,16 @@ cow_perception_ratio(4).
      !remove_org.
 
 +!restart.
+
+/*
+se for impar
+  create_gr
+se for par
+  1. tenta entrar explorer
+  2.a tenta herding
+  2.b no que tem o menor nro de vacas
+*/
+
   //<- //.print("*** restart ***"); 
      //.drop_all_desires;
      //.abolish(cow(_,_,_)).
@@ -54,13 +64,16 @@ cow_perception_ratio(4).
 
 //+!share_seen_cows[scheme(Sch)] <- .print("ooo start sharing cows in scheme ",Sch); .suspend.
 
-// simple implementation of share_cows (see TODO above)
+// simple implementation of share_cows 
 +cow(Id,X,Y)[source(percept)]
-   : .my_name(Me) & play(Me,_,Gr) // .intend(share_seen_cows) 
-  <- jmoise.broadcast(Gr, tell, cow(Id,X,Y)).
+   : .my_name(Me) & play(Me,_,Gr) & (play(Leader,explorer,Gr) | play(Leader,herder,Gr)) // .intend(share_seen_cows) 
+  <- //.print("ooo broadcast ",cow(Id,X,Y));
+     //jmoise.broadcast(Gr, tell, cow(Id,X,Y)).
+	 .send(Leader, tell, cow(Id,X,Y)).
 -cow(Id,X,Y)[source(percept)]
-   : .my_name(Me) & play(Me,_,Gr) // .intend(share_seen_cows) 
-  <- jmoise.broadcast(Gr, untell, cow(Id,X,Y)).
+   : .my_name(Me) & play(Me,_,Gr) & (play(Leader,explorer,Gr) | play(Leader,herder,Gr)) // .intend(share_seen_cows) 
+  <- //jmoise.broadcast(Gr, untell, cow(Id,X,Y)).
+     .send(Leader, untell, cow(Id,X,Y)).
 
 
 /* -- general organisational plans -- */
