@@ -40,6 +40,7 @@ cow_perception_ratio(4).
 +end_of_simulation(_Result)
   <- -end_of_simulation(_);
      .drop_all_desires;
+	 .abolish(cow(_,_,_));
      !remove_org.
 
 +!restart
@@ -50,13 +51,9 @@ cow_perception_ratio(4).
      !create_exploration_gr.
 +!restart
   <- .print("*** restart -- even ***"); 
+     !quite_all_missions_roles;
+
      .my_name(Me);
-  
-     // if I play any role, give it up
-     while( play(Me,R,OG) ) {
-        jmoise.remove_role(R,OG)
-     };
-	 
      // try to adopt scouter in some exploration
      .findall(GE, group(exploration_grp,GE),  LGE);
      !try_adopt(scouter,LGE);
@@ -67,7 +64,7 @@ cow_perception_ratio(4).
 	    !try_adopt(herdboy,LGH)
 	 }.
 
-+!try_adopt(Role,[]).
++!try_adopt(_Role,[]).
 +!try_adopt(Role,[G|_])
   <- .print("ooo try role ",Role, " in ",G);
      jmoise.adopt_role(Role,G).
@@ -81,15 +78,19 @@ cow_perception_ratio(4).
 //+!share_seen_cows[scheme(Sch)] <- .print("ooo start sharing cows in scheme ",Sch); .suspend.
 
 // simple implementation of share_cows 
-+cow(Id,X,Y)[source(percept)]
-   : .my_name(Me) & play(Me,_,Gr) & (play(Leader,explorer,Gr) | play(Leader,herder,Gr)) // .intend(share_seen_cows) 
-  <- //.print("ooo broadcast ",cow(Id,X,Y));
++cow(Id,X,Y)[source(percept),step(C)]
+   : .my_name(Me) & play(Me,_,Gr) & 
+     (play(Leader,explorer,Gr) | play(Leader,herder,Gr)) &
+	 Leader \== Me // .intend(share_seen_cows) 
+  <- //.print("ooo send cow ",cow(Id,X,Y));
      //jmoise.broadcast(Gr, tell, cow(Id,X,Y)).
-	 .send(Leader, tell, cow(Id,X,Y)).
+	 .send(Leader, tell, cow(Id,X,Y)[step(C)]).
 -cow(Id,X,Y)[source(percept)]
-   : .my_name(Me) & play(Me,_,Gr) //& (play(Leader,explorer,Gr) | play(Leader,herder,Gr)) // .intend(share_seen_cows) 
-  <- jmoise.broadcast(Gr, untell, cow(Id,X,Y)).
+   //: .my_name(Me) & play(Me,_,Gr) //& (play(Leader,explorer,Gr) | play(Leader,herder,Gr)) // .intend(share_seen_cows) 
+  <- //.print("ooo broadcast untell cow ",cow(Id,X,Y));
+     .broadcast( untell, cow(Id,X,Y)).
      //.send(Leader, untell, cow(Id,X,Y)).
+
 
 
 /* -- general organisational plans -- */
@@ -121,24 +122,13 @@ cow_perception_ratio(4).
   <- .my_name(Me); 
 	 .print("ooo Changing to role ",NewRole," in group ",GT,", as asked by ",S);
 	 
-	 // give up all missions
-	 while( commitment(Me,M,Sch) ) {
-	    .print("ooo removing my mission ",M," in ",Sch);
-	    jmoise.remove_mission(M,Sch)
-	 };
-
      // if I play herder in another group, and my new role is herdboy (the groups are merging)...
      if( NewRole == herdboy & play(Me,herder,G) & G \== GT) {
 	    // ask all herdboys to also change the group
 	    .findall(Boy,play(Boy,herdboy,G),HerdBoys);
 		.send(HerdBoys, achieve, change_role(herdboy,GT))
 	 };
-  
-	 // if I play any other role, give it up
-     while( play(Me,R,OG) & OG \== GT) {
-        jmoise.remove_role(R,OG)
-     };
-
+     !quite_all_missions_roles;
      jmoise.adopt_role(NewRole,GT).
 	 
 -!change_role(R,G)	 
@@ -149,6 +139,22 @@ cow_perception_ratio(4).
 +!play_role(Role,Group)[source(Ag)]
   <- .print("ooo Adopting role ",Role," in group ",Group,", as asked by ",Ag);
      jmoise.adopt_role(Role, Group).
+
++!quite_all_missions_roles
+  <- .my_name(Me);
+  
+     // give up all missions
+	 while( commitment(Me,M,Sch) ) {
+        .print("ooo removing my mission ",M," in ",Sch);
+        jmoise.remove_mission(M,Sch)
+	 };
+
+	 // if I play any other role, give it up
+     while( play(Me,R,OG) ) {
+        .print("ooo removing my role ",R," in ",OG);
+        jmoise.remove_role(R,OG)
+     }.
+
 	 
 // finish the scheme if it has no more players
 // and it was created by me

@@ -105,7 +105,6 @@ public class OrgAgent extends AgArch {
                     currentOE = (OE) m.getPropCont();
                     i.remove();
                 } else if (m.getSender().equals(getOrgManagerName())) {
-                    
                     // the content is a normal predicate
                     final String content   = m.getPropCont().toString();
                     
@@ -146,15 +145,16 @@ public class OrgAgent extends AgArch {
                             i.remove();
                             Literal cl = delAsBel(content);
                             
-                            if (content.startsWith("scheme")) {
+                            if (content.startsWith("scheme_group")) {
+                                Term sch = cl.getTerm(0);
+                                Term gr  = cl.getTerm(1);
+                                logger.info("***** xxxx removing sch grp "+content);
+                                removeObligationPermissionBeliefs(sch, gr, "obligation");
+                                removeObligationPermissionBeliefs(sch, gr, "permission");
+                            } else if (content.startsWith("scheme")) {
                                 String schId = cl.getTerm(1).toString();
                                 cleanGoalsOfSch(schId);
                                 removeBeliefs(schId);
-                            } else if (content.startsWith("scheme_group")) {
-                                Term sch = cl.getTerm(0);
-                                Term gr  = cl.getTerm(1);
-                                removeObligationPermissionBeliefs(sch, gr, "obligation");
-                                removeObligationPermissionBeliefs(sch, gr, "permission");
                             } else if (content.startsWith("commitment")) {
                                 // if I remove my commit, remove the goals from BB
                                 String schId = cl.getTerm(2).toString();

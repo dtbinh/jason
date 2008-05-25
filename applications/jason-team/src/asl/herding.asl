@@ -38,6 +38,7 @@
   <- for( group(herding_grp,G)[owner(Me)] ) {
 	    -group_leader(G,Me);
         .broadcast(untell, group_leader(G,Me));
+        .print("ooo removing the group ",G);
 	    jmoise.remove_group(G);
 		.wait(4000)
 	 }.
@@ -88,10 +89,14 @@
      ?my_group_players(G, herder);
      jia.cluster(Cluster,CAsList);
      -+current_cluster(CAsList);
-     jia.herd_position(.length(G),Cluster,L);
-	 .reverse(L,RL); // use the reversed list so to priorise the border positions
-     .print("ooo Formation is ",RL, " for agents ",G," in cluster ", Cluster);
-     !alloc_all(G,RL).
+     if ( .length(CAsList) > 0) {
+        jia.herd_position(.length(G),Cluster,L);
+        .reverse(L,RL); // use the reversed list so to priorise the border positions
+        .print("ooo Formation is ",RL, " for agents ",G," in cluster ", Cluster);
+        !alloc_all(G,RL)
+     }{
+        .print("ooo No cluster to define the formation!")
+     }.
 	 
 { end }
 

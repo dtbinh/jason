@@ -2,6 +2,7 @@ package arch;
 
 import jason.asSyntax.Literal;
 import jason.asSyntax.NumberTermImpl;
+import jason.asSyntax.Structure;
 import jason.environment.grid.Location;
 
 import java.util.ArrayList;
@@ -187,7 +188,10 @@ public class ACProxy extends ACAgent implements Runnable {
                             int cowId = Integer.parseInt(type.getAttribute("ID"));
                             Literal lc = new Literal("cow");
                             lc.addTerms(new NumberTermImpl( cowId ), new NumberTermImpl( absx), new NumberTermImpl(absy));
-                            percepts.add( lc); //CowboyArch.createCellPerception(absx, absy, lc));
+                            Structure stepannot = new Structure("step",1); 
+                            stepannot.addTerm(new NumberTermImpl(step));
+                            lc.addAnnot(stepannot);
+                            percepts.add(lc);
                             //arq.cowPerceived(absx, absy);
                             
                         } else if (type.getNodeName().equals("obstacle")) { 

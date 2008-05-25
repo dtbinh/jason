@@ -32,7 +32,7 @@
 	    <copy file="../jason-moise/lib/moise.jar" todir="lib" />
 
         <delete failonerror="no" includeEmptyDirs="true" verbose="false">
-            <fileset dir="massim-server/backup" includes="**/*.xml"/>
+            <fileset dir="massim-server/backup" includes="**/*"/>
         </delete>
     </target>
     <target name="user-end">

@@ -148,9 +148,7 @@ public class CowboyArch extends IdentifyCrashed {
 			Message m = new Message("tell", null, null, p);
 			try {
 				broadcast(m);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			} catch (Exception e) {	e.printStackTrace(); }
 		}		
 	}
 

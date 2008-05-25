@@ -68,7 +68,7 @@ public class direction extends DefaultInternalAction {
                     // Test impossible path
                     Search s = new Search(model, from, to, arch); // search without agent/cows as obstacles
                     int fixtimes = 0;
-                    while (s.search() == null && arch.isRunning() && fixtimes < 10) {
+                    while (s.search() == null && arch.isRunning() && fixtimes < 100) { // the number should be great enough to set all corral as obstacles 
                         fixtimes++; // to avoid being in this loop forever 
                         // if search is null, it is impossible in the scenario to goto n, set it as obstacle  
                         ts.getLogger().info("[direction] No possible path to "+to+" setting as obstacle.");
