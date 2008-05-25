@@ -67,7 +67,7 @@ public class WriteStatusThread extends Thread {
             while (true) {
                 try {
                     // write map
-                    map.println("\n\n** Agent "+owner.getAgName()+" in cycle "+owner.getCycle()+"\n");
+                    map.println("\n\n** Agent "+owner.getAgName()+" in cycle "+owner.getSimStep()+"\n");
                     //for (int i=0; i<model.getNbOfAgs(); i++) {
                         // out.println("miner"+(i+1)+" is carrying "+model.getGoldsWithAg(i)+" gold(s), at "+model.getAgPos(i));
                     //}
@@ -79,7 +79,7 @@ public class WriteStatusThread extends Thread {
                     waitNextCycle();
                     long cycletime = System.currentTimeMillis() - timebefore;
                     
-                    StringBuilder s = new StringBuilder(String.format("Step %5d : ", owner.getCycle()-1));
+                    StringBuilder s = new StringBuilder(String.format("Step %5d : ", owner.getSimStep()-1));
                     for (int agId=0; agId<WorldModel.agsByTeam; agId++) {
                     	if (agents[agId] != null) {
 	                        Location agp = agents[agId].getLastLocation();
@@ -113,7 +113,7 @@ public class WriteStatusThread extends Thread {
                             if (!dirmind.exists())
                                 dirmind.mkdirs();
                             String agmind = transformer.transform(arch.getTS().getAg().getAgState());
-                            String filename = String.format("%5d.xml",arch.getCycle()).replaceAll(" ","0");
+                            String filename = String.format("%5d.xml",arch.getSimStep()).replaceAll(" ","0");
                             FileWriter outmind = new FileWriter(new File(dirmind+"/"+filename));
                             outmind.write(agmind);
                             outmind.close();

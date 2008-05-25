@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import agent.SelectEvent;
 import env.ACViewer;
 import env.WorldModel;
 import env.WorldView;
@@ -40,7 +41,7 @@ public class CowboyArch extends IdentifyCrashed {
 	String   massimBackDir = null;
 	ACViewer acView        = null;
 	
-	int        cycle  = 0;
+	int        simStep  = 0;
 	
 	WriteStatusThread writeStatusThread = null;
 	
@@ -175,8 +176,8 @@ public class CowboyArch extends IdentifyCrashed {
 	    return lastAct;
 	}
 	
-	public int getCycle() {
-	    return cycle;
+	public int getSimStep() {
+	    return simStep;
 	}
 	
 	
@@ -240,21 +241,6 @@ public class CowboyArch extends IdentifyCrashed {
     	model.clearCows();
     }
     
-    //void cowPerceived(int x, int y) {
-    //	model.addCow(x,y);
-    //}
-    
-    /*
-    void sendCowsToTeam() {
-		try {
-			Message m = new Message("tell-cows", null, null, new ArrayList<Location>(model.getCows()));
-			broadcast(m);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}    	
-    }
-    */
-
     void enemyPerceived(int x, int y) {
         model.add(WorldModel.ENEMY, x, y); 
     }
@@ -266,10 +252,11 @@ public class CowboyArch extends IdentifyCrashed {
         if (view != null) view.dispose();
     }
 	
-    void setCycle(int s) {
-    	cycle = s;
-    	super.setCycleNumber(cycle);
-		if (view != null) view.setCycle(cycle);
+    void setSimStep(int s) {
+        ((SelectEvent)getTS().getAg()).cleanCows();
+    	simStep = s;
+    	super.setCycleNumber(simStep);
+		if (view != null) view.setCycle(simStep);
         if (writeStatusThread != null) writeStatusThread.go();
     }
     
@@ -361,7 +348,7 @@ public class CowboyArch extends IdentifyCrashed {
             }
 		}
     }
-	
+
     public static int getAgId(String agName) {
 		return (Integer.parseInt(agName.substring(agName.length()-1))) - 1;    	
     }

@@ -232,7 +232,6 @@ public class OrgManager extends AgArch {
                     updateMembersOE(sender, "play(" + rp.getPlayer().getId() + "," + rp.getRole().getId() + "," + gr.getId() + ")", false, false);                
                 }
                 for (SchemeInstance sch : gr.getRespSchemes()) {
-                    logger.info("xxxx send remove sch grp "+sch.getId()+" to "+sender);
                     updateMembersOE(sender, "scheme_group(" + sch.getId() + "," + grId + ")", false, false);
                 }
             }
@@ -364,8 +363,6 @@ public class OrgManager extends AgArch {
 
             // also send untell scheme_group (if it is the case)
             for (SchemeInstance sch: gr.getRespSchemes()) {
-                logger.info("xxxx send remove sch grp "+sch.getId()+" to "+gr.getPlayers());
-
                 updateMembersOE(gr.getPlayers(), "scheme_group(" + sch.getId() + "," + grId + ")", false, false);
             }
             // untell players

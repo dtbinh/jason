@@ -148,7 +148,6 @@ public class OrgAgent extends AgArch {
                             if (content.startsWith("scheme_group")) {
                                 Term sch = cl.getTerm(0);
                                 Term gr  = cl.getTerm(1);
-                                logger.info("***** xxxx removing sch grp "+content);
                                 removeObligationPermissionBeliefs(sch, gr, "obligation");
                                 removeObligationPermissionBeliefs(sch, gr, "permission");
                             } else if (content.startsWith("scheme")) {

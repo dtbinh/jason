@@ -82,7 +82,7 @@ public class ACArchitecture extends CowboyArch {
 		percepts = p;
 		waitSleepThread.newCycle();
 		getTS().getUserAgArch().getArchInfraTier().wake();
-    	setCycle(step);
+    	setSimStep(step);
 	}
 	
 	/** all actions block its intention and succeed in the end of the cycle, 
@@ -160,7 +160,7 @@ public class ACArchitecture extends CowboyArch {
 	    
 	    void newCycle() {
 	    	cycleCounter++;
-	    	if (getCycle() == 1) cycleCounter = 1;
+	    	if (getSimStep() == 1) cycleCounter = 1;
 	    	
             StringBuilder notsent = new StringBuilder();
             if (toExecute.size() > 1) {
@@ -192,7 +192,7 @@ public class ACArchitecture extends CowboyArch {
 	        }
 	        timestartcycle = System.currentTimeMillis();
 
-            logger.info(w+"Last sent action was "+lastActionInCurrentCycle+" for cycle "+getCycle()+ timetoact + notsent);            
+            logger.info(w+"Last sent action was "+lastActionInCurrentCycle+" for cycle "+getSimStep()+ timetoact + notsent);            
             setLastAct(lastActionInCurrentCycle);
             lastActionInCurrentCycle = null;
 	    }

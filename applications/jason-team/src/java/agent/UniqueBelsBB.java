@@ -3,11 +3,15 @@ package agent;
 import jason.asSemantics.Agent;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.Literal;
+import jason.asSyntax.NumberTerm;
+import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 import jason.bb.DefaultBeliefBase;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,8 +31,10 @@ public class UniqueBelsBB extends DefaultBeliefBase {
 
     Map<String,Literal> uniqueBels = new HashMap<String,Literal>();
     Unifier             u = new Unifier();
+    Agent               myAgent;
     
     public void init(Agent ag, String[] args) {
+        this.myAgent = ag;
     	for (int i=0; i<args.length; i++) {
     		Literal arg = Literal.parseLiteral(args[i]);
     		uniqueBels.put(arg.getFunctor(), arg);
@@ -75,6 +81,41 @@ public class UniqueBelsBB extends DefaultBeliefBase {
 			}
 		}
 		return super.add(bel);
+	}
+	
+	public void remove_old_bels(Literal bel, String timeAnnot, int maxAge, int curAge) {
+        Iterator<Literal> relevant = getCandidateBeliefs(bel, null);
+        if (relevant != null) {
+            List<Literal> toDel = new ArrayList<Literal>();
+            while (relevant.hasNext()) {
+                Literal linbb = relevant.next();
+
+                // find greatest timeAnnot
+                Structure bTime = null;
+                if (linbb.hasAnnot()) {
+                    for (Term t: linbb.getAnnots()) {
+                        if (t.isStructure()) {
+                            Structure s = (Structure)t;
+                            if (s.getFunctor().equals(timeAnnot)) {
+                                if (bTime == null || bTime.compareTo(s) < 0)
+                                    bTime = s;
+                            }
+                        }
+                    }
+                    
+                    // if bTime was found
+                    if (bTime != null) {
+                        int age = (int)((NumberTerm)bTime.getTerm(0)).solve();
+                        if (curAge - age > maxAge)
+                            toDel.add(linbb);
+                    }
+                }
+            }
+            for (Literal l: toDel) {
+                myAgent.getLogger().info("Removing "+l+" from BB because it is too old (current step is "+curAge+")");
+                remove(l);
+            }
+        }
 	}
 
 }
