@@ -108,6 +108,7 @@ public class WriteStatusThread extends Thread {
                     
                     // store the agents' mind
                     for (CowboyArch arch : agents) {
+			if (arch == null) break;
                         try {
                             File dirmind = new File("mind-ag/"+arch.getAgName());
                             if (!dirmind.exists())
