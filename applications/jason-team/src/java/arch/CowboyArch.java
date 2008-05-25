@@ -3,6 +3,7 @@ package arch;
 import jason.JasonException;
 import jason.ReceiverNotFoundException;
 import jason.RevisionFailedException;
+import jason.architecture.AgArch;
 import jason.asSemantics.Intention;
 import jason.asSemantics.Message;
 import jason.asSyntax.Atom;
@@ -28,7 +29,7 @@ import env.WorldView;
  *  
  *   @author Jomi
  */
-public class CowboyArch extends IdentifyCrashed {
+public class CowboyArch extends AgArch { //IdentifyCrashed {
 
 	LocalWorldModel model = null;
 	WorldView       view  = null;
@@ -77,11 +78,13 @@ public class CowboyArch extends IdentifyCrashed {
 		if (writeStatusThread != null) writeStatusThread.interrupt();
 		super.stopAg();
 	}
-	
+
+	/*
 	@Override
 	public boolean isCrashed() {
 	    return playing && super.isCrashed();
 	}
+	*/
 	
     void setSimId(String id) {
         simId = id;

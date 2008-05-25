@@ -197,11 +197,10 @@ public class herd_position extends DefaultInternalAction {
         t = t.newAngle(t.angle()+direction.angle());
 
         //System.out.println(start + " to "+ direction + " = " + end);
-        Location l = start.add(ref).getLocation(model);
-    	//Location lastloc = null;
         int maxSize = (int)direction.magnitude();
-        l = t.newMagnitude(maxSize).add(startandref).getLocation(model);
-        /*
+        Location l = t.newMagnitude(maxSize).add(startandref).getLocation(model);
+        
+        Location lastloc = null;
     	for (int s = 1; s <= maxSize; s++) {
     	    l = t.newMagnitude(s).add(startandref).getLocation(model);
     		//System.out.println(" test "+s+" = "+l+" -- ");
@@ -209,7 +208,7 @@ public class herd_position extends DefaultInternalAction {
         		return lastloc;
     		lastloc = l;
     	}
-    	*/
+    	
     	return l;
     }
     

@@ -67,7 +67,7 @@ public class ACArchitecture extends CowboyArch {
 	
 	@Override
 	public List<Literal> perceive() {
-	    agDidPerceive(); // for crash control
+	    /* agDidPerceive(); // for crash control */
 		return new ArrayList<Literal>(percepts); // it must be a copy!
 	}
 

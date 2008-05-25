@@ -97,8 +97,12 @@ public class UniqueBelsBB extends DefaultBeliefBase {
                         if (t.isStructure()) {
                             Structure s = (Structure)t;
                             if (s.getFunctor().equals(timeAnnot)) {
-                                if (bTime == null || bTime.compareTo(s) < 0)
+                                if (bTime == null) {
                                     bTime = s;
+                                } else if (bTime.compareTo(s) < 0) {
+                                    linbb.delAnnot(bTime); // remove old time annot
+                                    bTime = s;
+                                }
                             }
                         }
                     }
