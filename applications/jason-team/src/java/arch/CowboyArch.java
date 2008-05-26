@@ -3,7 +3,6 @@ package arch;
 import jason.JasonException;
 import jason.ReceiverNotFoundException;
 import jason.RevisionFailedException;
-import jason.architecture.AgArch;
 import jason.asSemantics.Intention;
 import jason.asSemantics.Message;
 import jason.asSyntax.Atom;
@@ -19,6 +18,7 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import jmoise.OrgAgent;
 import agent.SelectEvent;
 import env.ACViewer;
 import env.WorldModel;
@@ -29,7 +29,7 @@ import env.WorldView;
  *  
  *   @author Jomi
  */
-public class CowboyArch extends AgArch { //IdentifyCrashed {
+public class CowboyArch extends OrgAgent { //IdentifyCrashed {
 
 	LocalWorldModel model = null;
 	WorldView       view  = null;

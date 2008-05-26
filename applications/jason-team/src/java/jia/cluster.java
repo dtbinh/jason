@@ -29,6 +29,8 @@ import env.WorldModel;
  */
 public class cluster extends DefaultInternalAction {
     
+	private static final int MAXCLUSTERSIZE = 15;
+	
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
         try {
@@ -103,6 +105,10 @@ public class cluster extends DefaultInternalAction {
         			}
         		}
     		}
+    		
+    		// do not get too big clusters
+    		if (cs.size() > MAXCLUSTERSIZE)
+    			break;
     	}
         List<Location> clusterLocs = new ArrayList<Location>();
         for (Vec v: cs) {

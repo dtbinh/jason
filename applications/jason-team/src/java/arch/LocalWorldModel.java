@@ -145,16 +145,12 @@ public class LocalWorldModel extends WorldModel {
     }
 
     private void increp(int[][] m, int x, int y, int maxr, int value) {
-    	System.out.println("in for "+x+" "+y+" "+value);
-        for (int r = 1; r <= maxr; r++) {
-        	System.out.println("  "+r);
+        for (int r = 1; r <= maxr; r++)
             for (int c = x-r; c <= x+r; c++)
                 for (int l = y-r; l <= y+r; l++)
                     if (inGrid(c,l)) {
-                    	System.out.println("    "+c+" "+l+" +"+value);
                         m[c][l] += value;
                     }
-        }
     }
 
     // occupied means the places that can not be considered as nearFree

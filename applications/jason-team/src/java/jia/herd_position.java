@@ -44,9 +44,9 @@ public class herd_position extends DefaultInternalAction {
     	one   { Vec[] getDistances() { return new Vec[] { new Vec(0,0) }; } }, 
         two   { Vec[] getDistances() { return new Vec[] { new Vec(sd,0), new Vec(-sd, 0) }; } },
         three { Vec[] getDistances() { return new Vec[] { new Vec(0,0),  new Vec(d, -1), new Vec(-d, -1) }; } },
-    	four  { Vec[] getDistances() { return new Vec[] { new Vec(sd,0), new Vec(-sd, 0), new Vec(d+sd, -2), new Vec(-(d+sd), -2) }; } },
-        five  { Vec[] getDistances() { return new Vec[] { new Vec(0,0),  new Vec(d, -1), new Vec(-d, -1), new Vec(d*2,-3), new Vec(-d*2,-3) }; } },
-    	six   { Vec[] getDistances() { return new Vec[] { new Vec(sd,0), new Vec(-sd, 0), new Vec(d+sd, -2), new Vec(-(d+sd), -2), new Vec(d*2+sd, -4), new Vec(-(d*2+sd), -4) }; } };
+    	four  { Vec[] getDistances() { return new Vec[] { new Vec(sd,0), new Vec(-sd, 0), new Vec(d+sd, -3), new Vec(-(d+sd), -3) }; } },
+        five  { Vec[] getDistances() { return new Vec[] { new Vec(0,0),  new Vec(d, -1), new Vec(-d, -1), new Vec(d*2-1,-4), new Vec(-d*2,-4) }; } },
+    	six   { Vec[] getDistances() { return new Vec[] { new Vec(sd,0), new Vec(-sd, 0), new Vec(d+sd, -3), new Vec(-(d+sd), -3), new Vec(d*2+sd-2, -6), new Vec(-(d*2+sd-2), -6) }; } };
     	abstract Vec[] getDistances();
     	private static final int d  = agDistanceInFormation;
     	private static final int sd = agDistanceInFormation/2;

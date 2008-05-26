@@ -59,17 +59,17 @@ cow_perception_ratio(4).
      !try_adopt(scouter,LGE);
 	 
 	 // if I still have no role, try herdboy
-	 if ( not play(Me,_,_) ) {
+      if ( not play(Me,_,_) ) {
         .findall(GH, group(herding_grp,GH),  LGH);
-	    !try_adopt(herdboy,LGH)
-	 }.
+        !try_adopt(herdboy,LGH)
+      }.
 
 +!try_adopt(_Role,[]).
 +!try_adopt(Role,[G|_])
   <- .print("ooo try role ",Role, " in ",G);
      jmoise.adopt_role(Role,G).
 -!try_adopt(Role,[_|RG])
-  <- !try_adopt(Role,RG).
+  <- .wait(500); !try_adopt(Role,RG).
   
 
 /* -- plans for the goals of all roles -- */

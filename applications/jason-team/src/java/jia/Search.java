@@ -192,10 +192,8 @@ final class GridState implements Estado, Heuristica {
         		c += ia.model.getAgsRep(pos.x, pos.y);
         }
         
-        if (ia.considerEnemyCorralRepulsion) {
-        	System.out.println("using "+ia.model.getEnemyCorralRep(pos.x, pos.y)+" for "+pos);
+        if (ia.considerEnemyCorralRepulsion)
         	c +=  ia.model.getEnemyCorralRep(pos.x, pos.y);
-        }
 
     	return c;
     }
