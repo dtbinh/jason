@@ -61,7 +61,7 @@ public class direction extends DefaultInternalAction {
                 actionsOrder[i2] = actionsOrder[i1];
                 actionsOrder[i1] = temp;
                 
-                Search astar    = new Search(model, from, to, actionsOrder, true, false, true, false, arch);
+                Search astar    = new Search(model, from, to, actionsOrder, true, false, true, false, false, arch);
                 Nodo   solution = astar.search();
 
                 if (solution == null) {
@@ -79,7 +79,7 @@ public class direction extends DefaultInternalAction {
                     }
                     
                     // run A* again
-                    astar    = new Search(model, from, to, actionsOrder, true, false, true, false, arch);
+                    astar    = new Search(model, from, to, actionsOrder, true, false, true, false, false, arch);
                     solution = astar.search();
                 }
 

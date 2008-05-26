@@ -34,6 +34,7 @@ public class LocalWorldModel extends WorldModel {
     int[][]         cowsrep; // cows repulsion 
     int[][]         agsrep;  // agents repulsion
     int[][]         obsrep;  // obstacle repulsion
+    int[][]         enemycorralrep; // repulsion from enemy corral
     
     BeliefBase      bb; // agent's BB
     
@@ -48,29 +49,32 @@ public class LocalWorldModel extends WorldModel {
             for (int j = 0; j < getHeight(); j++)
             	visited[i][j] = 0;
 
-        cowsrep = new int[getWidth()][getHeight()];
+        cowsrep         = new int[getWidth()][getHeight()];
         
-        agsrep  = new int[getWidth()][getHeight()];
+        agsrep          = new int[getWidth()][getHeight()];
+        obsrep          = new int[getWidth()][getHeight()];
+        enemycorralrep  = new int[getWidth()][getHeight()];
         for (int i = 0; i < getWidth(); i++)
-            for (int j = 0; j < getHeight(); j++)
+            for (int j = 0; j < getHeight(); j++) {
             	agsrep[i][j] = 0;
-
-        obsrep  = new int[getWidth()][getHeight()];
-        for (int i = 0; i < getWidth(); i++)
-            for (int j = 0; j < getHeight(); j++)
             	obsrep[i][j] = 0;
+            	enemycorralrep[i][j] = 0;
+            }
 
     }
     
     @Override
     public void add(int value, int x, int y) {
-    	super.add(value, x, y);
     	//if (value == WorldModel.AGENT || value == WorldModel.ENEMY) {
        	if (value == WorldModel.ENEMY) {
             increp(agsrep, x, y, 2, 2);
     	} else if (value == WorldModel.OBSTACLE) {
             increp(obsrep, x, y, 1, 1);
+    	} else if (value == WorldModel.ENEMYCORRAL) {
+            increp(enemycorralrep, x, y, 3, 3);
+            value = OBSTACLE;
     	}
+    	super.add(value, x, y);
     }
     @Override
     public void remove(int value, int x, int y) {
@@ -136,13 +140,21 @@ public class LocalWorldModel extends WorldModel {
     public int getObsRep(int x, int y) {
     	return obsrep[x][y];
     }
+    public int getEnemyCorralRep(int x, int y) {
+    	return enemycorralrep[x][y];
+    }
 
     private void increp(int[][] m, int x, int y, int maxr, int value) {
-        for (int r = 1; r <= maxr; r++)
+    	System.out.println("in for "+x+" "+y+" "+value);
+        for (int r = 1; r <= maxr; r++) {
+        	System.out.println("  "+r);
             for (int c = x-r; c <= x+r; c++)
                 for (int l = y-r; l <= y+r; l++)
-                    if (inGrid(c,l))
-                        m[c][l] += value;       
+                    if (inGrid(c,l)) {
+                    	System.out.println("    "+c+" "+l+" +"+value);
+                        m[c][l] += value;
+                    }
+        }
     }
 
     // occupied means the places that can not be considered as nearFree

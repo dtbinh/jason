@@ -28,6 +28,7 @@ public class Search {
     final boolean         considerCorralAsObstacles;
     final boolean         considerCowsAsObstacles;
     final boolean         considerRepulsionForCows;
+    final boolean         considerEnemyCorralRepulsion;
     int maxDistFromCluster;
     
     WorldModel.Move[]     actionsOrder;    
@@ -52,6 +53,7 @@ public class Search {
     		      boolean considerCorralAsObstacles, 
     		      boolean considerCowsAsObstacles, 
     		      boolean considerRepulsionForCows,
+    		      boolean considerEnemyCorralRepulsion,
     		      AgArch agArch) {
     	
     	this.model = m;
@@ -61,6 +63,7 @@ public class Search {
         this.considerCorralAsObstacles = considerCorralAsObstacles;
         this.considerCowsAsObstacles   = considerCowsAsObstacles;
         this.considerRepulsionForCows  = considerRepulsionForCows;
+        this.considerEnemyCorralRepulsion = considerEnemyCorralRepulsion;
     	this.agArch = agArch;
     	if (actions != null)
     		this.actionsOrder = actions;
@@ -78,7 +81,7 @@ public class Search {
 
     /** used normally to discover the distance from 'from' to 'to' (or if there is path to) */
     Search(LocalWorldModel m, Location from, Location to, AgArch agArch) {
-    	this(m,from,to,null,false, false, false, false, agArch);
+    	this(m,from,to,null,false, false, false, false, false, agArch);
     }
     
     public Nodo search() throws Exception { 
@@ -176,17 +179,25 @@ final class GridState implements Estado, Heuristica {
     public int custo() {
     	if (isRoot)
     		return 0;
+    	
+    	int c = 1;
+    	
         if (ia.considerCowsAsObstacles) 
-        	return ia.model.getCowsRep(pos.x, pos.y)+1;
+        	c += ia.model.getCowsRep(pos.x, pos.y);
 
         if (ia.considerRepulsionForCows) {
         	// consider the cost of agents only if they are near
-        	int c =  ia.model.getObsRep(pos.x, pos.y) + 1;
+        	c +=  ia.model.getObsRep(pos.x, pos.y);
         	if (ia.from.maxBorder(pos) <= ia.maxDistFromCluster) 
         		c += ia.model.getAgsRep(pos.x, pos.y);
-        	return c;
         }
-        return 1;
+        
+        if (ia.considerEnemyCorralRepulsion) {
+        	System.out.println("using "+ia.model.getEnemyCorralRep(pos.x, pos.y)+" for "+pos);
+        	c +=  ia.model.getEnemyCorralRep(pos.x, pos.y);
+        }
+
+    	return c;
     }
 
     public boolean ehMeta() {

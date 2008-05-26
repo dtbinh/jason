@@ -167,9 +167,21 @@ public class TestBasicHerding {
     @Test
     public void testAStar1() throws Exception {
         scenario1();
-        Search s = new Search(model, cowboy.getLocation(model), new Location(8,37), null, true, true, true, false, null);
+        Search s = new Search(model, cowboy.getLocation(model), new Location(8,37), null, true, true, true, false, false, null);
         Nodo path = s.search();
         assertEquals(15, s.normalPath(path).size());
+    }
+
+    @Test
+    public void testAStarPathInEnemyCorral() throws Exception {
+        scenario3();
+        model.add(WorldModel.ENEMYCORRAL, 10, 7);
+        model.add(WorldModel.ENEMYCORRAL, 11, 7);
+        model.add(WorldModel.ENEMYCORRAL, 12, 7);
+        Search s = new Search(model,new Location(12,12), new Location(10,1), null, true, false, true, false, true, null);
+        Nodo path = s.search();
+        System.out.println(s.normalPath(path));
+        //assertEquals(15, s.normalPath(path).size());
     }
 
     @Test

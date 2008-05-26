@@ -197,7 +197,7 @@ public class ACProxy extends ACAgent implements Runnable {
                         } else if (type.getNodeName().equals("obstacle")) { 
 							arq.obstaclePerceived(absx, absy, CowboyArch.createCellPerception(absx, absy, CowboyArch.aOBSTACLE));
                         } else if (type.getNodeName().equals("corral") && type.getAttribute("type").equals("enemy")) { 
-                            arq.obstaclePerceived(absx, absy, CowboyArch.createCellPerception(absx, absy, CowboyArch.aOBSTACLE));
+                            arq.enemyCorralPerceived(absx, absy, CowboyArch.createCellPerception(absx, absy, CowboyArch.aENEMYCORRAL));
                             
                         //} else if (type.getNodeName().equals("empty")) {
                         //    percepts.add(CowboyArch.createCellPerception(cellx, celly, CowboyArch.aEMPTY));

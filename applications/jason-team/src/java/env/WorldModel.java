@@ -18,6 +18,7 @@ public class WorldModel extends GridWorldModel {
     public static final int   ENEMY  = 64;
     public static final int   TARGET = 128; // one agent target location
     public static final int   FORPLACE = 256; // a place in a formation
+    public static final int   ENEMYCORRAL = 512; // a place in a formation
 
     public static final int   nbActions = 8;
 

@@ -48,10 +48,11 @@ public class CowboyArch extends AgArch { //IdentifyCrashed {
 	
 	protected Logger logger = Logger.getLogger(CowboyArch.class.getName());
 
-	public static Atom aOBSTACLE = new Atom("obstacle");
-	public static Atom aENEMY    = new Atom("enemy");
-	public static Atom aALLY     = new Atom("ally");
-	public static Atom aEMPTY    = new Atom("empty");
+	public static Atom aOBSTACLE    = new Atom("obstacle");
+	public static Atom aENEMY       = new Atom("enemy");
+	public static Atom aENEMYCORRAL = new Atom("enemycorral");
+	public static Atom aALLY        = new Atom("ally");
+	public static Atom aEMPTY       = new Atom("empty");
 	
 	
 	@Override
@@ -148,6 +149,17 @@ public class CowboyArch extends AgArch { //IdentifyCrashed {
 	public void obstaclePerceived(int x, int y, Literal p) {
 		if (! model.hasObject(WorldModel.OBSTACLE, x, y)) {
 			model.add(WorldModel.OBSTACLE, x, y);
+			if (acView != null) acView.addObject(WorldModel.OBSTACLE, x, y);
+			Message m = new Message("tell", null, null, p);
+			try {
+				broadcast(m);
+			} catch (Exception e) {	e.printStackTrace(); }
+		}		
+	}
+
+	public void enemyCorralPerceived(int x, int y, Literal p) {
+		if (! model.hasObject(WorldModel.ENEMYCORRAL, x, y)) {
+			model.add(WorldModel.ENEMYCORRAL, x, y);
 			if (acView != null) acView.addObject(WorldModel.OBSTACLE, x, y);
 			Message m = new Message("tell", null, null, p);
 			try {
@@ -323,6 +335,17 @@ public class CowboyArch extends AgArch { //IdentifyCrashed {
 	    				}
 	    				//getTS().getAg().getLogger().info("received obs="+p);
 	    				
+	    			} else if (ms.startsWith("cell") && ms.endsWith(aENEMYCORRAL.toString()+")") && model != null) {
+	                        im.remove();
+
+	                        Literal p = (Literal)m.getPropCont();
+		    				int x = (int)((NumberTerm)p.getTerm(0)).solve();
+		    				int y = (int)((NumberTerm)p.getTerm(1)).solve();
+		    				if (model.inGrid(x,y)) {
+		    					model.add(WorldModel.ENEMYCORRAL, x, y);
+		    					if (acView != null) acView.addObject(WorldModel.OBSTACLE, x, y);
+		    				}
+		    				
 	    			} else if (ms.startsWith("my_status") && model != null) {
                         im.remove(); 
 
