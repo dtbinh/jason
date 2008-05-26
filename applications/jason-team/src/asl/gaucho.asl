@@ -37,6 +37,11 @@ cow_perception_ratio(4).
 +?group(team,G)      <- .wait("+group(team,G)", 500, _); ?group(team,G).
 +?ally_pos(Name,X,Y) : .my_name(Name) <- ?pos(X,Y,_).
 
++corral(UpperLeftX,UpperLeftY,DownRightX,DownRightY)
+  <- .print(UpperLeftX,UpperLeftY,DownRightX,DownRightY); 
+     -+corral_center( (UpperLeftX + DownRightX)/2, (UpperLeftY + DownRightY)/2).
+
+  
 +end_of_simulation(_Result)
   <- -end_of_simulation(_);
      .drop_all_desires;

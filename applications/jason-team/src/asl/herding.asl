@@ -65,17 +65,26 @@
 +!check_merge
     : .my_name(Me) &
 	  play(Me, herder, Gi) &
+      .count(play(_,_,Gi), N) & N < 3 & // only merge small group
 	  current_cluster(MyC)
   <-  // for all other groups
-      for( group_leader(Gj, L) & L \== Me & Me < L & not play(L,herdboy,Gi)) {
+      for( group_leader(Gj, L) & Me < L & L \== Me & not play(L,herdboy,Gi)) { // 
 	     .print("ooo Checking merging with ",Gj);
          // ask their cluster
          .send(L, askOne, current_cluster(_), current_cluster(TC));
 		 .intersection(MyC,TC,I);
 		 
 		 if (.length(I) > 0) {
-            .print("ooo Merging my herding group ",Gi," with ",Gj, " lead by ",L);
-            .send(L, achieve, change_role(herdboy,Gi))
+            //MyC = [pos(MyCX,MyCY)|_];
+            //TC  = [pos(TCX,TCY)|_];
+            //?corral_center(CorralX, CorralY);
+            //jia.path_length(MyCX,MyCY,CorralX,CorralY,MCD);
+            //jia.path_length(TCX,TCY,CorralX,CorralY,TCD);
+            //.print("ooo check merging: my distance to corral = ",MCD," other group distance = ",TCD);
+            //if (MCD <= TCD) {
+               .print("ooo Merging my herding group ",Gi," with ",Gj, " lead by ",L);
+               .send(L, achieve, change_role(herdboy,Gi))
+            //}
 		 }
 	  };
 	  .wait(2000). // give some time for them to adopt the roles before check merging again
@@ -91,9 +100,9 @@
      -+current_cluster(CAsList);
      if ( .length(CAsList) > 0) {
         jia.herd_position(.length(G),Cluster,L);
-        .reverse(L,RL); // use the reversed list so to priorise the border positions
-        .print("ooo Formation is ",RL, " for agents ",G," in cluster ", Cluster);
-        !alloc_all(G,RL)
+        //.reverse(L,RL); // use the reversed list so to priorise the border positions
+        .print("ooo Formation is ",L, " for agents ",G," in cluster ", Cluster);
+        !alloc_all(G,L)
      }{
         .print("ooo No cluster to define the formation!")
      }.
