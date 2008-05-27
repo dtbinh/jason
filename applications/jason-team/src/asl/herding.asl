@@ -90,6 +90,16 @@
 	  .wait(2000). // give some time for them to adopt the roles before check merging again
 +!check_merge.
 	 	 
+{ begin maintenance_goal("+pos(_,_,_)") }
+
++!release_boys[scheme(Sch),mission(Mission),group(Gr)]
+   : .count(play(_,herdboy,Gr),N) & N > 4
+  <- .print("xxx release gaucho5 from my herding group");
+     .send(gaucho5,achieve,create_exploration_gr);
+     .send(gaucho6,achieve,restart).
++!release_boys[scheme(Sch),mission(Mission),group(Gr)].
+
+{ end }
 
 { begin maintenance_goal("+pos(_,_,_)") }
 

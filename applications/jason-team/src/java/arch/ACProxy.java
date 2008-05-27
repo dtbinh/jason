@@ -185,14 +185,17 @@ public class ACProxy extends ACAgent implements Runnable {
 							}
                             
                         } else if (type.getNodeName().equals("cow")) {
-                            int cowId = Integer.parseInt(type.getAttribute("ID"));
-                            Literal lc = new Literal("cow");
-                            lc.addTerms(new NumberTermImpl( cowId ), new NumberTermImpl( absx), new NumberTermImpl(absy));
-                            Structure stepannot = new Structure("step",1); 
-                            stepannot.addTerm(new NumberTermImpl(step));
-                            lc.addAnnot(stepannot);
-                            percepts.add(lc);
-                            //arq.cowPerceived(absx, absy);
+                            // ignore cows in the border, they complicate all :-)
+                            if (absx < arq.getModel().getWidth()-1 && absx != 0 && absy != 00 && absy < arq.getModel().getHeight()-1) {
+                                int cowId = Integer.parseInt(type.getAttribute("ID"));
+                                Literal lc = new Literal("cow");
+                                lc.addTerms(new NumberTermImpl( cowId ), new NumberTermImpl( absx), new NumberTermImpl(absy));
+                                Structure stepannot = new Structure("step",1); 
+                                stepannot.addTerm(new NumberTermImpl(step));
+                                lc.addAnnot(stepannot);
+                                percepts.add(lc);
+                                //arq.cowPerceived(absx, absy);
+                            }
                             
                         } else if (type.getNodeName().equals("obstacle")) { 
 							arq.obstaclePerceived(absx, absy, CowboyArch.createCellPerception(absx, absy, CowboyArch.aOBSTACLE));

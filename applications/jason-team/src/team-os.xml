@@ -105,6 +105,7 @@
             <goal id="herd_cows" >
               <plan operator="parallel">
                 <goal id="recruit"             ds="recruit more herdboys depending on the size of the cows cluster" type="maintenance"/>
+                <goal id="release_boys"        ds="if the number of agents too much, release some boyd" type="maintenance"/>
                 <goal id="define_formation"    ds="compute the ideal location of each member of the group and share this information with them" type="maintenance"/>
                 <goal id="be_in_formation"     ds="go to the place allocated to the agent in the formation" type="maintenance"/>
                 <goal id="share_seen_cows"     ds="share seen cows with other agents in the scheme" type="maintenance"/>
@@ -114,6 +115,7 @@
             
             <mission id="herd" min="1">
                 <goal id="recruit" />
+                <goal id="release_boys" />
                 <goal id="define_formation" />
                 <goal id="be_in_formation" />
                 <!--goal id="share_seen_cows" /-->

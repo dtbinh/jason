@@ -38,8 +38,7 @@ cow_perception_ratio(4).
 +?ally_pos(Name,X,Y) : .my_name(Name) <- ?pos(X,Y,_).
 
 +corral(UpperLeftX,UpperLeftY,DownRightX,DownRightY)
-  <- .print(UpperLeftX,UpperLeftY,DownRightX,DownRightY); 
-     -+corral_center( (UpperLeftX + DownRightX)/2, (UpperLeftY + DownRightY)/2).
+  <- -+corral_center( (UpperLeftX + DownRightX)/2, (UpperLeftY + DownRightY)/2).
 
   
 +end_of_simulation(_Result)
@@ -52,7 +51,10 @@ cow_perception_ratio(4).
    : .my_name(Me) &
      agent_id(Me,AgId) &
      AgId mod 2 == 1       // I have an odd Id
-  <- .print("*** restart -- odd ***"); 
+  <- .print("*** restart -- odd ***");
+     ?random_pos(X,Y);
+     +target(X,Y);
+     .wait("+at_target",10000,_);
      !create_exploration_gr.
 +!restart
   <- .print("*** restart -- even ***"); 
@@ -68,7 +70,7 @@ cow_perception_ratio(4).
         .findall(GH, group(herding_grp,GH),  LGH);
         !try_adopt(herdboy,LGH)
       }.
-
+  
 +!try_adopt(_Role,[]).
 +!try_adopt(Role,[G|_])
   <- .print("ooo try role ",Role, " in ",G);
@@ -136,8 +138,9 @@ cow_perception_ratio(4).
      !quite_all_missions_roles;
      jmoise.adopt_role(NewRole,GT).
 	 
--!change_role(R,G)	 
-  <- !change_role(R,G).
+// causes a loop:
+// -!change_role(R,G)	 
+//  <- .wait(500); !change_role(R,G).
   
 +!play_role(R,G)
    : .my_name(Me) & play(Me,R,G).

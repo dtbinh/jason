@@ -29,7 +29,7 @@ import env.WorldView;
  *  
  *   @author Jomi
  */
-public class CowboyArch extends OrgAgent { //IdentifyCrashed {
+public class CowboyArch extends IdentifyCrashed { //IdentifyCrashed OrgAgent{
 
 	LocalWorldModel model = null;
 	WorldView       view  = null;
@@ -80,12 +80,10 @@ public class CowboyArch extends OrgAgent { //IdentifyCrashed {
 		super.stopAg();
 	}
 
-	/*
 	@Override
 	public boolean isCrashed() {
 	    return playing && super.isCrashed();
 	}
-	*/
 	
     void setSimId(String id) {
         simId = id;
@@ -380,3 +378,4 @@ public class CowboyArch extends OrgAgent { //IdentifyCrashed {
     }
 
 }
+

@@ -29,7 +29,7 @@ import env.WorldModel;
  */
 public class cluster extends DefaultInternalAction {
     
-	private static final int MAXCLUSTERSIZE = 15;
+	private static final int MAXCLUSTERSIZE = 25;
 	
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
@@ -40,7 +40,7 @@ public class cluster extends DefaultInternalAction {
             	return false;
             //Location agLoc = model.getAgPos(arch.getMyId());
 
-        	List<Location> locs = getCluster(model, WorldModel.cowPerceptionRatio);
+        	List<Location> locs = getCluster(model, 3); //WorldModel.cowPerceptionRatio);
         	
         	if (args.length == 1) {
                 return un.unifies(args[0], new ObjectTermImpl(locs));        	    
@@ -95,7 +95,7 @@ public class cluster extends DefaultInternalAction {
         		Vec v = i.next();
         		
         		Iterator<Vec> j = cs.iterator();
-        		while (j.hasNext()) {
+        		while (j.hasNext() && cs.size() < MAXCLUSTERSIZE) {
             		Vec c = j.next();
         			if (c.sub(v).magnitude() < maxDist) {
         				cs.add(v);

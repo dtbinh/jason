@@ -78,7 +78,9 @@
 	 
      !find_scouter([], G);
 	 jmoise.set_goal_state(Sch, find_scouter, satisfied).
-	 
+-!find_scouter[scheme(Sch),group(G)]
+  <- .wait(1000); !find_scouter[scheme(Sch),group(G)].
+  
 +!find_scouter(_,G) // if someone plays scouter in my group, it is ok.
    : play(_,scouter,G).
 +!find_scouter([],G)
@@ -140,12 +142,42 @@
 +!change_to_herding[scheme(Sch),mission(Mission)]
    : cow(_,_,_)
   <- .print("ooo I see some cows, create the herding group");
-     !!create_herding_gr.
+     // check these cows are being herded by other group
+     .findall(L, group_leader(_,L),Leaders);
+     !ask_all_cows(Leaders,LCows);
+     .findall(cow(ID,X,Y), cow(ID,X,Y), MyCows);
+     .intersection(MyCows, LCows, Common);
+     .print("xxx all cows in herding groups are ",LCows," my are ",MyCows," intersection is ",Common);
+     if ( Common == [] ) {
+        .print("xxx start herding");
+        !!create_herding_gr
+     }{
+        !check_small_herd_grp(Leaders)
+     }.
 
 +!change_to_herding[scheme(Sch),mission(Mission)].
 	 
 { end }	 
 
++!ask_all_cows([],[]).
++!ask_all_cows([L|Leaders],Cows)
+  <- .send(L,askAll,cow(_,_,_),LC);
+     .print("xxx cows from ",L," are ",LC);
+     !ask_all_cows(Leaders,RC);
+     .concat(LC,RC,Cows).
+
+     
++!check_small_herd_grp([]).
++!check_small_herd_grp([L|Leaders])
+  <- .send(L,askAll,play(_, herdboy, _), LBoys);
+     .send(L,askOne,current_cluster(_),current_cluster(LCluster));
+     .print("xxx boys of ",L," are ",LBoys," his cluster size is ", .length(LCluster));
+     if (.length(LBoys) < 2 & .length(LCluster) > 10) {
+        .print("xxx start herding");
+        !!create_herding_gr
+     }{
+        !check_small_herd_grp(Leaders)
+     }.
 
 /* -- plans for the goals of role scouter -- */
 

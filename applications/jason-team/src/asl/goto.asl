@@ -5,13 +5,12 @@
 /* -- useful rules */ 
 
 // find a free random location
-/*
 random_pos(X,Y) :- 
    pos(AgX,AgY,_) &
    jia.random(RX,40)   & RX > 5 & X = (RX-20)+AgX & X > 0 &
    jia.random(RY,40,5) & RY > 5 & Y = (RY-20)+AgY &
    not jia.obstacle(X,Y).
-*/
+
 
 
 /* -- plans to move to a destination represented in the belief target(X,Y) 

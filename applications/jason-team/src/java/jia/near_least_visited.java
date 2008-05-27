@@ -50,7 +50,9 @@ public class near_least_visited extends DefaultInternalAction {
                 Location n = model.getNearLeastVisited(ag, tr, bl);
                 if (n != null) {
                     Search s = new Search(model, ag, n, ts.getUserAgArch());
-                    while (s.search() == null && ts.getUserAgArch().isRunning()) {
+                    int loopcount = 0;
+                    while (s.search() == null && ts.getUserAgArch().isRunning() && loopcount < 5) {
+                        loopcount++;
                         // if search is null, it is impossible in the scenario to goto n, set it as obstacle  
                         ts.getLogger().info("[near least unvisited] No possible path to "+n+" setting as obstacle.");
                         model.add(WorldModel.OBSTACLE, n);

@@ -236,9 +236,12 @@ public class LocalWorldModel extends WorldModel {
             logger.info(line);
         }
         */
+       	Location better = null;
     	
     	//int visitedTarget = 0;
-    	while (true) {
+       	int loopcount = 0;
+    	while (loopcount < 100) {
+            loopcount++;
 
         	int x = agloc.x;
         	int y = agloc.y;
@@ -246,9 +249,9 @@ public class LocalWorldModel extends WorldModel {
         	int dx = 0;
         	int dy = 0;
         	int stage = 1;//(x % 2 == 0 ? 1 : 2);
-        	Location better = null;
-        	
+        	better = null;
 	    	while (w < getWidth()) { //( (w/2+distanceToBorder) < getWidth()) {
+                
 	    		switch (stage) {
 	    			case 1: if (dx < w) {
 	    				    	dx++;
@@ -300,6 +303,7 @@ public class LocalWorldModel extends WorldModel {
 			}
 	    	minVisited++;
     	}
+        return better;
     }
     
 

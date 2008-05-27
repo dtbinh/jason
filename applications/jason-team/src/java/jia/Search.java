@@ -188,8 +188,8 @@ final class GridState implements Estado, Heuristica {
         if (ia.considerRepulsionForCows) {
         	// consider the cost of agents only if they are near
         	c +=  ia.model.getObsRep(pos.x, pos.y);
-        	if (ia.from.maxBorder(pos) <= ia.maxDistFromCluster) 
-        		c += ia.model.getAgsRep(pos.x, pos.y);
+        	//if (ia.from.maxBorder(pos) <= ia.maxDistFromCluster) 
+        	//    c += ia.model.getAgsRep(pos.x, pos.y);
         }
         
         if (ia.considerEnemyCorralRepulsion)
