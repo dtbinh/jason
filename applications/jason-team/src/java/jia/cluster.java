@@ -29,7 +29,7 @@ import env.WorldModel;
  */
 public class cluster extends DefaultInternalAction {
     
-	private static final int MAXCLUSTERSIZE = 25;
+	private static final int MAXCLUSTERSIZE = 15;
 	
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
@@ -81,7 +81,8 @@ public class cluster extends DefaultInternalAction {
     	for (Vec v: cows)
     		vs.add(v.sub(mean));
     	
-    	Collections.sort(vs);
+        if (vs.size() > 4)
+            Collections.sort(vs); // sort only big clusters (for small clusters, to sort causes a kind of oscillation)
 
     	List<Vec> cs = new ArrayList<Vec>();
     	if (!vs.isEmpty()) 

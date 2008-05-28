@@ -147,9 +147,8 @@
      !ask_all_cows(Leaders,LCows);
      .findall(cow(ID,X,Y), cow(ID,X,Y), MyCows);
      .intersection(MyCows, LCows, Common);
-     .print("xxx all cows in herding groups are ",LCows," my are ",MyCows," intersection is ",Common);
+     //.print("xxx all cows in herding groups are ",LCows," my are ",MyCows," intersection is ",Common);
      if ( Common == [] ) {
-        .print("xxx start herding");
         !!create_herding_gr
      }{
         !check_small_herd_grp(Leaders)
@@ -162,7 +161,7 @@
 +!ask_all_cows([],[]).
 +!ask_all_cows([L|Leaders],Cows)
   <- .send(L,askAll,cow(_,_,_),LC);
-     .print("xxx cows from ",L," are ",LC);
+     //.print("xxx cows from ",L," are ",LC);
      !ask_all_cows(Leaders,RC);
      .concat(LC,RC,Cows).
 
@@ -171,9 +170,8 @@
 +!check_small_herd_grp([L|Leaders])
   <- .send(L,askAll,play(_, herdboy, _), LBoys);
      .send(L,askOne,current_cluster(_),current_cluster(LCluster));
-     .print("xxx boys of ",L," are ",LBoys," his cluster size is ", .length(LCluster));
+     //.print("xxx boys of ",L," are ",LBoys," his cluster size is ", .length(LCluster));
      if (.length(LBoys) < 2 & .length(LCluster) > 10) {
-        .print("xxx start herding");
         !!create_herding_gr
      }{
         !check_small_herd_grp(Leaders)

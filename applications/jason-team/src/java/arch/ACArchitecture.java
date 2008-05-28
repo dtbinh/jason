@@ -221,6 +221,7 @@ public class ACArchitecture extends CowboyArch {
 	            try {
                     lastAction = null;
                     waitSleep();
+                    
 	                if (lastAction != null) {
                         lastActionInCurrentCycle = lastAction.getActionTerm().getTerm(0).toString();
 	                    proxy.sendAction(lastActionInCurrentCycle);
