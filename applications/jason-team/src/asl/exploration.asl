@@ -171,7 +171,7 @@
   <- .send(L,askAll,play(_, herdboy, _), LBoys);
      .send(L,askOne,current_cluster(_),current_cluster(LCluster));
      //.print("xxx boys of ",L," are ",LBoys," his cluster size is ", .length(LCluster));
-     if (.length(LBoys) < 2 & .length(LCluster) > 10) {
+     if (.length(LBoys) < 2 & .length(LCluster) > (.length(LBoys)+1)*5) {
         !!create_herding_gr
      }{
         !check_small_herd_grp(Leaders)

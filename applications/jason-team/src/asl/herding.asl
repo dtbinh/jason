@@ -65,7 +65,7 @@
 +!check_merge
     : .my_name(Me) &
 	  play(Me, herder, Gi) &
-      .count(play(_,_,Gi), N) & N < 3 & // only merge small group
+      //.count(play(_,_,Gi), N) & N < 3 & // only merge small group
 	  current_cluster(MyC)
   <-  // for all other groups
       for( group_leader(Gj, L) & Me < L & L \== Me & not play(L,herdboy,Gi)) { // 
