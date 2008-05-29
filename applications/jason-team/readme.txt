@@ -5,7 +5,7 @@
  * 
  * By 
  *   Jomi F. Hubner     (EMSE, France) 
- *   Rafael  H. Bordini (Durhma, UK)
+ *   Rafael  H. Bordini (Durham, UK)
  *   Gauthier Picard    (EMSE, France)
  */
 

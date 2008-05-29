@@ -82,7 +82,7 @@ public class TestBasicHerding {
     }
 
     @Test
-    public void bigCluster() {
+    public void bigCluster() throws Exception {
         // big cluster
         for (int x = 10; x < 30; x++) {
             for (int y = 5; y < 20; y++) {
@@ -90,8 +90,8 @@ public class TestBasicHerding {
             }
         }
         
-        List<Location> cowsl = cluster.getCluster(model, WorldModel.cowPerceptionRatio);
-        assertEquals(model.getCows().size(), cowsl.size());
+        List<Location> cowsl = cluster.getCluster(model, WorldModel.cowPerceptionRatio, null);
+        assertEquals(cluster.MAXCLUSTERSIZE, cowsl.size());
     }
 
     private void addCowsToModel(Vec... cows) {
@@ -189,7 +189,7 @@ public class TestBasicHerding {
         scenario1();
         
         // find center/clusterise
-        List<Location> clusterLocs = cluster.getCluster(model, WorldModel.cowPerceptionRatio);
+        List<Location> clusterLocs = cluster.getCluster(model, WorldModel.cowPerceptionRatio, null);
         List<Vec> cowsl = cluster.location2vec(model, clusterLocs);
         //Vec stddev = Vec.stddev(cowsl, Vec.mean(cowsl));
         assertEquals(3, cowsl.size());
@@ -249,7 +249,7 @@ public class TestBasicHerding {
         scenario2();
         model.add(WorldModel.ENEMY, 11,48);
 
-        List<Location> clusterLocs = cluster.getCluster(model, WorldModel.cowPerceptionRatio);
+        List<Location> clusterLocs = cluster.getCluster(model, WorldModel.cowPerceptionRatio, null);
         List<Vec> cowsl = cluster.location2vec(model, clusterLocs);
         assertEquals(9, cowsl.size());
         
@@ -270,7 +270,7 @@ public class TestBasicHerding {
     public void formationSc3() throws Exception {
         scenario3();
 
-        List<Location> clusterLocs = cluster.getCluster(model, WorldModel.cowPerceptionRatio);
+        List<Location> clusterLocs = cluster.getCluster(model, WorldModel.cowPerceptionRatio, null);
         assertEquals(6, clusterLocs.size());
 
         herd_position hp = new herd_position();

@@ -13,13 +13,13 @@ import jason.environment.grid.Location;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 
 import arch.CowboyArch;
 import arch.LocalWorldModel;
+import busca.Nodo;
 import env.WorldModel;
 
 /** 
@@ -29,7 +29,7 @@ import env.WorldModel;
  */
 public class cluster extends DefaultInternalAction {
     
-	private static final int MAXCLUSTERSIZE = 15;
+	public static final int MAXCLUSTERSIZE = 15;
 	
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
@@ -38,9 +38,8 @@ public class cluster extends DefaultInternalAction {
         	LocalWorldModel model = arch.getModel();
             if (model == null)
             	return false;
-            //Location agLoc = model.getAgPos(arch.getMyId());
 
-        	List<Location> locs = getCluster(model, 3); //WorldModel.cowPerceptionRatio);
+        	List<Location> locs = getCluster(model, WorldModel.cowPerceptionRatio, arch);
         	
         	if (args.length == 1) {
                 return un.unifies(args[0], new ObjectTermImpl(locs));        	    
@@ -61,10 +60,10 @@ public class cluster extends DefaultInternalAction {
         return false;
     }
     
-    public static List<Location> getCluster(LocalWorldModel model, int maxDist) {
+    public static List<Location> getCluster(LocalWorldModel model, int maxDist, CowboyArch arch) throws Exception {
     	/*
-			Vs = set of all seen cows (sorted by distance to the centre of cluster)
-			Cs  = { the cow near to the center of Vs }
+			Vs = set of all seen cows
+			Cs  = { the cow near to the corral }
 
 			add = true
 			while (add)
@@ -75,6 +74,29 @@ public class cluster extends DefaultInternalAction {
       					add = true
     	*/
         Collection<Vec> cows = model.getCows();
+        
+        // find cow near corral
+        Vec near = null;
+        int nearDist = 0;
+        for (Vec v: cows) {
+            // use A* to get the distance from this cow to corral
+            Nodo solution = new Search(model, v.getLocation(model), model.getCorralCenter(), arch).search();
+            if (solution != null) {
+                int d = solution.getProfundidade();
+                if (near == null || d < nearDist) {
+                    near = v;
+                    nearDist = d;
+                }
+            }
+        }
+        
+        List<Vec> cs = new ArrayList<Vec>();
+        if (near != null) {
+            cs.add(near);
+            cows.remove(near);
+        }
+        
+        /* OLD strategy
     	Vec mean = Vec.mean( cows );
     	List<Vec> vs = new ArrayList<Vec>();
     	// place all cows in ref to mean
@@ -83,15 +105,16 @@ public class cluster extends DefaultInternalAction {
     	
         if (vs.size() > 4)
             Collections.sort(vs); // sort only big clusters (for small clusters, to sort causes a kind of oscillation)
-
-    	List<Vec> cs = new ArrayList<Vec>();
-    	if (!vs.isEmpty()) 
-    		cs.add(vs.remove(0));
+        
+        if (!vs.isEmpty()) 
+            cs.add(vs.remove(0));
+        */
+        
     	
     	boolean add = true;
     	while (add) {
     		add = false;
-    		Iterator<Vec> i = vs.iterator();
+    		Iterator<Vec> i = cows.iterator(); //vs.iterator();
     		while (i.hasNext()) {
         		Vec v = i.next();
         		
@@ -114,9 +137,9 @@ public class cluster extends DefaultInternalAction {
         List<Location> clusterLocs = new ArrayList<Location>();
         for (Vec v: cs) {
             // place all cows in ref to 0,0
-            clusterLocs.add(v.add(mean).getLocation(model));
+            clusterLocs.add(v.getLocation(model));
+            //clusterLocs.add(v.add(mean).getLocation(model));
         }
-    	
         return clusterLocs;
     }
     

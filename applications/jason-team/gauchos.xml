@@ -115,7 +115,7 @@
 
     <target name="clean" >
         <delete failonerror="no" includeEmptyDirs="true" verbose="true">
-            <fileset dir="${basedir}" includes="**/*.class"/>
+            <fileset dir="${basedir}/bin" includes="**/*.class"/>
         </delete>
     </target>
 

@@ -82,7 +82,7 @@
             //jia.path_length(TCX,TCY,CorralX,CorralY,TCD);
             //.print("ooo check merging: my distance to corral = ",MCD," other group distance = ",TCD);
             //if (MCD <= TCD) {
-               .print("ooo Merging my herding group ",Gi," with ",Gj, " lead by ",L);
+               .print("ooo merging my herding group ",Gi," with ",Gj, " lead by ",L);
                .send(L, achieve, change_role(herdboy,Gi))
             //}
 		 }
@@ -92,11 +92,36 @@
 	 	 
 { begin maintenance_goal("+pos(_,_,_)") }
 
-+!release_boys[scheme(Sch),mission(Mission),group(Gr)]
+/*+!release_boys[scheme(Sch),mission(Mission),group(Gr)]
    : .count(play(_,herdboy,Gr),N) & N > 4
   <- .print("xxx release gaucho5 from my herding group");
      .send(gaucho5,achieve,create_exploration_gr);
      .send(gaucho6,achieve,restart).
+     */
++!release_boys[scheme(Sch),mission(Mission),group(Gr)]
+   : .count(play(_,herdboy,Gr),N) &
+     (N > 3 | (N > 1 & current_cluster(CAsList) & .length(CAsList) < 5))
+      
+  <- .print("xxx release an agent of my herding group");
+     
+     // try an odd agent first
+     if (play(gaucho5,herdboy,Gr)) { // & agent_id(AgName,Id) & Id mod 2 == 1) {
+        .send(gaucho5,achieve,restart)
+     }{
+       if (play(gaucho6,herdboy,Gr)) { // & agent_id(AgName,Id) & Id mod 2 == 0) {
+          .send(gaucho6,achieve,restart)
+       }{
+         if (play(gaucho3,herdboy,Gr)) {
+            .send(gaucho3,achieve,restart)
+         }{
+           if (play(gaucho4,herdboy,Gr)) {
+              .send(gaucho4,achieve,restart)
+           }
+         }
+       }
+     };
+     .wait("+pos(_,_,_)"); // wait an extra step before try to release agents again
+     .wait("+pos(_,_,_)").
 +!release_boys[scheme(Sch),mission(Mission),group(Gr)].
 
 { end }
