@@ -54,7 +54,7 @@ cow_perception_ratio(4).
   <- .print("*** restart -- odd ***");
      ?random_pos(X,Y);
      +target(X,Y);
-     .wait("+at_target",10000,_);
+     .wait("+at_target",1000,_);
      !create_exploration_gr.
 +!restart
   <- .print("*** restart -- even ***"); 
