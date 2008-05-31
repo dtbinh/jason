@@ -1,7 +1,11 @@
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
 
 import jason.architecture.*;
 import jason.asSemantics.ActionExec;
+import jason.asSyntax.Literal;
 
 import javax.swing.*;
 
@@ -9,13 +13,24 @@ import javax.swing.*;
 public class AuctioneerGUI extends AgArch {
 
     JTextArea jt;
-
     JFrame    f;
+    
+    int auctionId = 0;
 
     public AuctioneerGUI() {
-        f = new JFrame("Auctioneer agent");
         jt = new JTextArea(10, 30);
-        f.getContentPane().add(new JScrollPane(jt));
+        JButton auction = new JButton("Start new auction");
+        auction.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                auctionId++;
+                getTS().getC().addAchvGoal(Literal.parseLiteral("start_auction("+auctionId+")"), null);
+            }
+        });
+        
+        f = new JFrame("Auctioneer agent");
+        f.getContentPane().setLayout(new BorderLayout());
+        f.getContentPane().add(BorderLayout.CENTER, new JScrollPane(jt));
+        f.getContentPane().add(BorderLayout.SOUTH, auction);
         f.pack();
         f.setVisible(true);
     }

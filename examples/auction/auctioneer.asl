@@ -2,13 +2,13 @@
 
 /* beliefs and rules */ 
 
-auction(1).
 all_bids_received(N) :- .count(place_bid(N,_),3). 
 
 /* plans */
 
-+auction(N) : true 
-    <- +winner(N, noone, 0);
++!start_auction(N) : true      // this goal is created by the GUI of the agent 
+    <- -+auction(N);
+       -+winner(N, noone, 0);
        .broadcast(tell, auction(N)).
 
 // receive bid and check for new winner
@@ -24,14 +24,11 @@ all_bids_received(N) :- .count(place_bid(N,_),3).
    <- !check_end(N).
 
 +!check_end(N) 
-   :  auction(N) & N < 7 & 
-      all_bids_received(N) & 
+   :  all_bids_received(N) & 
       winner(N,W,Vl)
    <- .print("Winner is ",W," with ", Vl);
       show_winner(N,W); // show it in the GUI
       .broadcast(tell, winner(W));
-      .abolish(place_bid(N,_));
-      -winner(N,_,_);
-      -+auction(N+1).
+      .abolish(place_bid(N,_)).
 +!check_end(_).
 
