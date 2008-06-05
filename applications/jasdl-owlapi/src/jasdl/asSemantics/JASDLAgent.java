@@ -42,7 +42,6 @@ import jason.JasonException;
 import jason.RevisionFailedException;
 import jason.architecture.AgArch;
 import jason.asSemantics.Intention;
-import jason.asSemantics.Option;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.Literal;
@@ -84,7 +83,7 @@ import com.clarkparsia.explanation.SatisfiabilityConverter;
  * @author Tom Klapiscak
  *
  */
-public class JASDLAgent extends JmcaAgent {
+public class JASDLAgent extends JmcaAgent{
 
 	private JASDLOntologyManager jom;
 
@@ -102,9 +101,7 @@ public class JASDLAgent extends JmcaAgent {
 
 
 		// override plan library
-		setPL(new JASDLPlanLibrary(this));
-		
-		
+		setPL(new JASDLPlanLibrary(this));		
 
 	}
 
@@ -124,12 +121,17 @@ public class JASDLAgent extends JmcaAgent {
 		for(SEPlan se : ((JASDLPlanLibrary)getPL()).getSEPlans()){
 			getLogger().finest(se.getTrigger().toString());
 		}
+		
+		//getTS().getC().addEventListener(new JASDLCircumstanceListener(this));
 
 		return ts;
 	}
 	
 	
 	
+	
+
+
 	@Override
 	public List<Literal>[] brf(Literal beliefToAdd, Literal beliefToDel, Intention i) throws RevisionFailedException {
 		// TODO: what annotations should revision contractions contain? all! (or none? - same effect)
@@ -270,6 +272,8 @@ public class JASDLAgent extends JmcaAgent {
 		}
 		getJom().refreshReasoner();
 	}
+	
+	
 	
 
 	/**

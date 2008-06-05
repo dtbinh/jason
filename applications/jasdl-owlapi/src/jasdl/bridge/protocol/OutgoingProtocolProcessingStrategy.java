@@ -24,7 +24,6 @@ import jasdl.bridge.JASDLOntologyManager;
 import jasdl.bridge.factory.SELiteralFactory;
 import jasdl.bridge.seliteral.SELiteral;
 import jasdl.bridge.seliteral.SELiteralAllDifferentAssertion;
-import jasdl.util.JASDLCommon;
 import jasdl.util.exception.JASDLException;
 import jasdl.util.exception.JASDLNotEnrichedException;
 import jasdl.util.exception.JASDLUnknownMappingException;

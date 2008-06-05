@@ -20,13 +20,8 @@
 package jasdl.util.owlapi.rendering;
 
 import jasdl.bridge.JASDLOntologyManager;
-import jasdl.bridge.mapping.aliasing.Alias;
-import jasdl.util.exception.JASDLException;
-import jasdl.util.exception.JASDLUnknownMappingException;
 
-import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLEntity;
-import org.semanticweb.owl.util.ShortFormProvider;
 
 public class URIOWLObjectShortFormProvider extends NormalisingOWLObjectShortFormProvider {
 	

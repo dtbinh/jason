@@ -1,15 +1,20 @@
 package jasdl;
 
-import java.net.URI;
-import java.util.Arrays;
-import java.util.List;
-
 import jasdl.bridge.mapping.aliasing.Alias;
 import jasdl.bridge.mapping.aliasing.DecapitaliseMappingStrategy;
 import jasdl.bridge.mapping.aliasing.MappingStrategy;
 import jason.asSyntax.Atom;
 
+import java.net.URI;
+import java.util.Arrays;
+import java.util.List;
+
 public class JASDLParams {
+	/**
+	 * Namespace of the JASDL configuration ontology
+	 */
+	public static String JASDL_OWL_NS = "http://www.dur.ac.uk/t.g.klapiscak/onts/owl2mas/jasdl.owl#";
+	
 	public static float DEFAULT_TRUST_RATING = 0;
 	
 	public static String JASDL_TG_CAUSE_RETAIN_ANNOTS = "JASDL_TG_CAUSE_RETAIN_ANNOTS";

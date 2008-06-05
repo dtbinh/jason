@@ -20,8 +20,8 @@
 package jasdl.bridge.seliteral;
 
 import jasdl.bridge.JASDLOntologyManager;
-import jasdl.util.exception.JASDLInvalidSELiteralException;
 import jasdl.util.exception.JASDLException;
+import jasdl.util.exception.JASDLInvalidSELiteralException;
 import jason.asSyntax.ListTerm;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Term;

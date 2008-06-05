@@ -23,10 +23,8 @@ import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.Atom;
-import jason.asSyntax.Literal;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
-import jason.asSyntax.VarTerm;
 
 import java.util.logging.Logger;
 

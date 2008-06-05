@@ -31,7 +31,6 @@ import org.semanticweb.owl.model.OWLDataProperty;
 import org.semanticweb.owl.model.OWLDataType;
 import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.model.OWLEntityVisitor;
-import org.semanticweb.owl.model.OWLException;
 import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLNamedObjectVisitor;
 import org.semanticweb.owl.model.OWLObject;

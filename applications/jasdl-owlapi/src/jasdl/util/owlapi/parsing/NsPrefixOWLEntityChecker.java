@@ -19,8 +19,6 @@
  */
 package jasdl.util.owlapi.parsing;
 
-import java.net.URI;
-
 import jasdl.bridge.JASDLOntologyManager;
 import jasdl.bridge.factory.AliasFactory;
 import jasdl.bridge.mapping.aliasing.Alias;

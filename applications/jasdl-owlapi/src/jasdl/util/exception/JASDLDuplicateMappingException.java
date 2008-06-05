@@ -19,7 +19,6 @@
  */
 package jasdl.util.exception;
 
-import jason.JasonException;
 
 public class JASDLDuplicateMappingException extends JASDLException {
 	public JASDLDuplicateMappingException(String message) {

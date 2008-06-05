@@ -19,7 +19,6 @@
  */
 package jasdl.util.exception;
 
-import jason.JasonException;
 
 public class JASDLUnknownMappingException extends JASDLException {
 	public JASDLUnknownMappingException(String message) {

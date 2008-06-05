@@ -19,21 +19,18 @@
  */
 package jasdl.bb;
 
-import jasdl.JASDLParams;
 import jasdl.asSemantics.JASDLAgent;
 import jasdl.bb.bebops.JASDLIncisionFunction;
 import jasdl.bb.bebops.JASDLKernelsetFilter;
 import jasdl.bb.bebops.JASDLReasonerFactory;
 import jasdl.bridge.seliteral.SELiteral;
 import jasdl.bridge.seliteral.SELiteralAllDifferentAssertion;
-import jasdl.bridge.seliteral.SELiteralClassAssertion;
 import jasdl.util.exception.JASDLException;
 import jasdl.util.exception.JASDLNotEnrichedException;
 import jason.asSemantics.Agent;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Term;
-import jason.asSyntax.VarTerm;
 import jason.bb.BeliefBase;
 import jason.bb.DefaultBeliefBase;
 
@@ -50,7 +47,6 @@ import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLAnnotation;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLAxiomAnnotationAxiom;
-import org.semanticweb.owl.model.OWLClassAssertionAxiom;
 import org.semanticweb.owl.model.OWLDifferentIndividualsAxiom;
 import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLIndividualAxiom;

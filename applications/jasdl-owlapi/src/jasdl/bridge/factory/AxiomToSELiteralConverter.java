@@ -41,7 +41,6 @@ import java.util.Vector;
 import java.util.logging.Logger;
 
 import org.mindswap.pellet.owlapi.Reasoner;
-import org.semanticweb.owl.inference.OWLReasonerException;
 import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLAxiomAnnotationAxiom;
@@ -54,8 +53,6 @@ import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLIndividualAxiom;
 import org.semanticweb.owl.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owl.model.OWLOntology;
-import org.semanticweb.owl.model.OWLOntologyChangeException;
-import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLTypedConstant;
 import org.semanticweb.owl.model.RemoveAxiom;
 import org.semanticweb.owl.vocab.XSDVocabulary;
@@ -212,7 +209,9 @@ public class AxiomToSELiteralConverter {
 				object = DefaultTerm.parse(constant.getLiteral().toString());
 			}
 		} else {
-			throw new JASDLException("JASDL does not support untyped data ranges such as: " + axiom);
+			// Untyped, assume string to be on the safe side
+			object = DefaultTerm.parse("\"" + constant.getLiteral().toString() + "\"");
+			//throw new JASDLException("JASDL does not support untyped data ranges such as: " + axiom);
 		}
 		return jom.getSELiteralFactory().construct(alias, subject, object, getAnnots(alias, axiom));
 	}

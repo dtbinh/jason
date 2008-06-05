@@ -35,21 +35,14 @@ import jason.asSyntax.StringTermImpl;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 
-import java.net.URI;
-import java.util.Collections;
 import java.util.Set;
 
-import org.semanticweb.owl.model.AddAxiom;
-import org.semanticweb.owl.model.OWLAnnotation;
-import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDescription;
 import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLIndividualAxiom;
 import org.semanticweb.owl.model.OWLObject;
 import org.semanticweb.owl.model.OWLOntology;
-
-import uk.ac.manchester.cs.owl.OWLLabelAnnotationImpl;
 
 /**
  * Wraps around a Jason literal to provide ontology-related functionality. Follows the "Decorator" design pattern.

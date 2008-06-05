@@ -19,7 +19,6 @@
  */
 package jasdl.util;
 
-import static jasdl.util.JASDLCommon.getCurrentDir;
 import jasdl.bridge.JASDLOntologyManager;
 import jasdl.bridge.seliteral.SELiteral;
 import jasdl.util.exception.JASDLException;
@@ -248,6 +247,15 @@ public class JASDLCommon {
 	 */
 	public static URI getRelativeLocalURI(String suffix){
 		return URI.create("file:///" + getCurrentDir().replace("\\", "/") + suffix);
+	}
+	
+	/**
+	 * Currently used only by owl2mas object property handlers
+	 * @param string
+	 * @return
+	 */
+	public static String dropLast(String string){
+		return string.substring(0, string.length()-1);
 	}
 
 }

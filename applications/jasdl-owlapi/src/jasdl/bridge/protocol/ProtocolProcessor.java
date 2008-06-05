@@ -1,7 +1,6 @@
 package jasdl.bridge.protocol;
 
 import jasdl.bridge.JASDLOntologyManager;
-import jasdl.bridge.factory.SELiteralFactory;
 import jasdl.bridge.mapping.aliasing.MappingStrategy;
 import jasdl.util.exception.JASDLException;
 import jasdl.util.exception.JASDLMessageContentException;

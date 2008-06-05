@@ -30,8 +30,6 @@ import jason.asSyntax.Term;
 
 import java.util.logging.Logger;
 
-import org.coode.manchesterowlsyntax.ManchesterOWLSyntaxDescriptionParser;
-
 /**
  * @author Tom Klapiscak
  * 

@@ -19,7 +19,6 @@
  */
 package jasdl.bb.bebops;
 
-import org.mindswap.pellet.PelletOptions;
 import org.mindswap.pellet.owlapi.Reasoner;
 import org.semanticweb.owl.inference.OWLReasoner;
 import org.semanticweb.owl.model.OWLOntologyManager;

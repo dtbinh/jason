@@ -32,7 +32,6 @@ import jasdl.bridge.mapping.aliasing.DefinitionManager;
 import jasdl.bridge.mapping.aliasing.MappingStrategy;
 import jasdl.bridge.mapping.label.LabelManager;
 import jasdl.bridge.mapping.label.OntologyURIManager;
-import jasdl.util.JASDLCommon;
 import jasdl.util.exception.JASDLDuplicateMappingException;
 import jasdl.util.exception.JASDLException;
 import jasdl.util.exception.JASDLInvalidSELiteralException;
@@ -120,7 +119,7 @@ public class JASDLOntologyManager {
 	private boolean annotationGatheringEnabled;
 	
 
-	public JASDLOntologyManager(Logger logger) {
+	public JASDLOntologyManager(Logger logger) throws OWLException{
 		this.logger = logger;
 		this.personalOntologyURI = URI.create("http://self.ontology/default.owl");
 		aliasManager = new AliasManager();
@@ -144,6 +143,7 @@ public class JASDLOntologyManager {
 		manchesterNsPrefixDescriptionParser = new ManchesterOWLSyntaxDescriptionParser(getOntologyManager().getOWLDataFactory(), new NsPrefixOWLEntityChecker(this));
 		manchesterURIDescriptionParser = new ManchesterOWLSyntaxDescriptionParser(getOntologyManager().getOWLDataFactory(), new URIOWLEntityChecker(this));
 
+		
 	}
 	
 	/**
@@ -400,11 +400,13 @@ public class JASDLOntologyManager {
 				getReasoner().loadOntologies(imports);
 				getReasoner().classify();
 			} catch (OWLReasonerException e) {
-				throw new JASDLException("Unable to load " + uri + ". Reason: " + e);
+				throw new JASDLException("Unable to load " + uri, e);
 			}
 			initOntology(ontology, label, uri, ontology.getURI(), false); // (successfully) loaded ontologies never personal			
 			applyMappingStrategies(ontology, strategies);
 			getLogger().fine("Loaded ontology from " + uri + " and assigned label " + label);
+			
+			
 			return ontology;
 		} catch (OWLOntologyCreationException e) {
 			throw new JASDLException("Unable to load ontology", e);
@@ -596,15 +598,19 @@ public class JASDLOntologyManager {
 		refreshReasoner();
 
 	}
+	
+	public void refreshReasoner() throws JASDLException{
+		refreshReasoner(getReasoner());
+	}
 
-	public void refreshReasoner() throws JASDLException {
+	public void refreshReasoner(OWLReasoner refresh) throws JASDLException {
 		try {
-			if (getReasoner() instanceof uk.ac.manchester.cs.factplusplus.owlapi.Reasoner) {
+			if (refresh instanceof uk.ac.manchester.cs.factplusplus.owlapi.Reasoner) {
 				((uk.ac.manchester.cs.factplusplus.owlapi.Reasoner) getReasoner()).classify();
-			} else if (getReasoner() instanceof org.mindswap.pellet.owlapi.Reasoner) {
+			} else if (refresh instanceof org.mindswap.pellet.owlapi.Reasoner) {
 				((org.mindswap.pellet.owlapi.Reasoner) getReasoner()).refresh();
 			} else {
-				getReasoner().classify();
+				refresh.classify();
 			}
 		} catch (OWLReasonerException e) {
 			throw new JASDLException("Unable to refresh reasoner. Reason: " + e);
@@ -638,13 +644,17 @@ public class JASDLOntologyManager {
 	 * @return
 	 * @throws JASDLException
 	 */
-	public boolean areOntologiesConsistent() throws JASDLException {
-		if (getReasoner() instanceof org.mindswap.pellet.owlapi.Reasoner) {
-			return ((org.mindswap.pellet.owlapi.Reasoner) getReasoner()).isConsistent();
+	public boolean areOntologiesConsistent(OWLReasoner check) throws JASDLException {
+		if (check instanceof org.mindswap.pellet.owlapi.Reasoner) {
+			return ((org.mindswap.pellet.owlapi.Reasoner) check).isConsistent();
 		} else {
 			//TODO: FaCT++
 			throw new JASDLException("isBBConsistent not implemented for FaCT++ reasoner");
 		}
+	}
+	
+	public boolean areOntologiesConsistent() throws JASDLException{
+		return areOntologiesConsistent(getReasoner());
 	}
 
 	public OWLDataFactory getOWLDataFactory() {

@@ -20,9 +20,6 @@
 package jasdl.architecture;
 
 import jasdl.asSemantics.JASDLAgent;
-import jasdl.bridge.protocol.IncomingProtocolProcessingStrategy;
-import jasdl.bridge.protocol.OutgoingProtocolProcessingStrategy;
-import jasdl.bridge.protocol.ProtocolProcessingStrategy;
 import jasdl.bridge.protocol.ProtocolProcessor;
 import jasdl.util.exception.JASDLException;
 import jason.JasonException;

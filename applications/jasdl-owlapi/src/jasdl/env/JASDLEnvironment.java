@@ -30,6 +30,7 @@ import jason.environment.Environment;
 import java.util.logging.Logger;
 
 import org.mindswap.pellet.owlapi.Reasoner;
+import org.semanticweb.owl.model.OWLException;
 
 /**
  * Has its own JasdlOntologyManager which is used to maintain its own set of mappings which SE-percepts should be defined in terms of. 
@@ -48,9 +49,13 @@ public class JASDLEnvironment extends Environment {
 
 
 	@Override
-	public void init(String[] args) {
+	public void init(String[] args){
 		super.init(args);
-		jom = new JASDLOntologyManager(Logger.getLogger(this.getClass().getName()));
+		try {
+			jom = new JASDLOntologyManager(Logger.getLogger(this.getClass().getName()));
+		} catch (OWLException e) {
+			throw new RuntimeException(e);
+		}
 		jom.setReasoner(new Reasoner(jom.getOntologyManager()));
 		processor = new ProtocolProcessor(jom, JASDLParams.DEFAULT_MAPPING_STRATEGIES);
 	}

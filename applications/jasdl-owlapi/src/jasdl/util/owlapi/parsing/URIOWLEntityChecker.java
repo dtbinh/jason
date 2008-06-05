@@ -25,10 +25,8 @@ import jasdl.util.exception.JASDLException;
 
 import java.net.URI;
 
-import org.semanticweb.owl.expression.OWLEntityChecker;
 import org.semanticweb.owl.model.OWLClass;
 import org.semanticweb.owl.model.OWLDataProperty;
-import org.semanticweb.owl.model.OWLDataType;
 import org.semanticweb.owl.model.OWLEntity;
 import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLObjectProperty;

@@ -24,7 +24,6 @@ import jason.asSemantics.Unifier;
 import jason.asSyntax.Term;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author Tom Klapiscak

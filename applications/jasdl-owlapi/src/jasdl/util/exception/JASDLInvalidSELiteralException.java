@@ -19,7 +19,6 @@
  */
 package jasdl.util.exception;
 
-import jason.JasonException;
 
 public class JASDLInvalidSELiteralException extends JASDLException {
 	public JASDLInvalidSELiteralException(String message) {
