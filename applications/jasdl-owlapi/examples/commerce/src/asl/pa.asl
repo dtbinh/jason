@@ -27,6 +27,7 @@
  */
 +!suitable(ProductClass, ShopClass, Qty)
 	<-		
+	
 		?isEmployedBy(Customer);
 		
 		?hasOrder(Customer, Order)[o(c)];

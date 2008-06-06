@@ -45,13 +45,13 @@ import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 
 import commerce.env.CommerceEnvironment;
-import commerce.env.model.ModelCustomer;
-import commerce.env.model.ModelCustomerListener;
+import commerce.model.CustomerModel;
+import commerce.model.ModelCustomerListener;
 
 public class CustomerUIPanel extends JPanel implements ModelCustomerListener{
 	private JTextField productDescriptionField;
 	private JButton submitButton;
-	private ModelCustomer customer;
+	private CustomerModel customer;
 	private CommerceEnvironment env;
 	private JSpinner qty;
 	private JTextField shopDescriptionField;
@@ -61,15 +61,15 @@ public class CustomerUIPanel extends JPanel implements ModelCustomerListener{
 	private Object lastQty;
 	
 	private List<ExampleRequest> examples = Arrays.asList(new ExampleRequest[] {
-			new ExampleRequest("c:bread and c:hasPrice some double [< 1.6]", "{s:shop2}", "Bread initially asking shop2 that costs under £1.6 (will propagate to shop1 to find \"hovis\")"),
-			new ExampleRequest("c:rootVegetable or c:greenVegetable", "s:butchers", "Any type of root or green vegetable initially asking shop2 (will propagate to shop1 to find \"sweet_potatoes\" and shop3 to find \"iceburg_lettuce\" and \"potatoes\")"),
-			new ExampleRequest("c:beef and c:hasWeight some double [>= 500]", "s:supermarket or s:greenGrocers", "Any type of beef product weighting more than 500 grams (will propogate to shop2 to find \"farmer_jims_rump_steak\" and \"tescos_sirloin_steak\")"),
+			new ExampleRequest("c:bread and c:hasPrice some double [< 1.6]", "{s:a_butchers}", "Bread initially asking a_butchers that costs under £1.6 (will propagate to shop1 to find \"hovis\")"),
+			new ExampleRequest("c:rootVegetable or c:greenVegetable", "s:butchers", "Any type of root or green vegetable initially asking a_butchers (will propagate to shop1 to find \"sweet_potatoes\" and shop3 to find \"iceburg_lettuce\" and \"potatoes\")"),
+			new ExampleRequest("c:beef and c:hasWeight some double [>= 500]", "s:supermarket or s:greenGrocers", "Any type of beef product weighting more than 500 grams (will propogate to a_butchers to find \"farmer_jims_rump_steak\" and \"tescos_sirloin_steak\")"),
 			new ExampleRequest("c:product", "s:shop", "Any type of product, initially asking any type of shop (will find many matches)")
 		});
 	private JTextArea englishDescriptionField;
 	
 	
-	public CustomerUIPanel(CommerceEnvironment env, ModelCustomer customer){
+	public CustomerUIPanel(CommerceEnvironment env, CustomerModel customer){
 		super();
 		this.customer = customer;
 		

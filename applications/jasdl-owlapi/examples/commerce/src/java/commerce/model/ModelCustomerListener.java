@@ -17,21 +17,22 @@
  *  along with JASDL.  If not, see <http://www.gnu.org/licenses/>.
  *  
  */
-package commerce.exception;
+package commerce.model;
 
-import commerce.exception.AgentModelException;
-
-public class ModelMobileAgentException extends AgentModelException {
-
-	public ModelMobileAgentException() {
-	}
-
-	public ModelMobileAgentException(String msg, Exception cause) {
-		super(msg, cause);
-	}
-
-	public ModelMobileAgentException(String msg) {
-		super(msg);
-	}
-
+/**
+ * Classes interested in events from a ModelCustomer should implement this class and add themselves as a listener to ModelCustomer
+ * @author tom
+ *
+ */
+public interface ModelCustomerListener {
+	
+	/**
+	 * Listener implementations should return true iff they approve of this brand as a purchase.
+	 * All listeners must approve for the choice to be accepted
+	 * @param brand
+	 * @return
+	 */	
+	public boolean approve(String brand);
+	
+	public void message(String message);
 }

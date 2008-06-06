@@ -20,7 +20,6 @@
 package commerce.env;
 // Environment code for project commerce.mas2j
 
-import static jasdl.util.JASDLCommon.getCurrentDir;
 import jasdl.bridge.factory.AliasFactory;
 import jasdl.bridge.mapping.aliasing.Alias;
 import jasdl.bridge.mapping.aliasing.DecapitaliseMappingStrategy;
@@ -38,25 +37,29 @@ import jason.asSyntax.VarTerm;
 
 import java.awt.Dimension;
 import java.awt.Point;
-import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
-import commerce.env.model.CommerceModel;
-import commerce.env.model.ModelAgent;
-import commerce.env.model.ModelCustomer;
-import commerce.env.model.ModelDeliveryVan;
-import commerce.env.model.ModelObject;
-import commerce.env.model.ModelShop;
-import commerce.exception.ModelAgentException;
+import owl2mas.exception.OWL2MASInvalidMASOntologyException;
+import owl2mas.model.AgentModel;
+import owl2mas.model.ObjectModel;
+
+import commerce.exception.AgentModelException;
+import commerce.model.CommerceModel;
+import commerce.model.CustomerModel;
+import commerce.model.DeliveryVanModel;
+import commerce.model.ShopModel;
+import commerce.view.CommerceView;
+
+
 
 
 
 /**
  * 
  * 
- * @author tom
+ * @author Tom Klapiscak
  *
  */
 public class CommerceEnvironment extends JASDLEnvironment{
@@ -79,14 +82,21 @@ public class CommerceEnvironment extends JASDLEnvironment{
     	
     	System.out.println("Agents loading... please wait.");
     	
-    	model = new CommerceModel(new Dimension(20, 20), this);
+    	try {
+			model = new CommerceModel(this, new Dimension(20, 20));
+		} catch (OWL2MASInvalidMASOntologyException e) {
+			throw new RuntimeException("Unable to instantiate commerce model", e);
+		}
+		
+		
+		System.out.println("Objects: "+model.getObjects());
     	
     	view = new CommerceView(model, this);
     	   
     	// for each customer set-up a UI Panel
-    	for(ModelObject o : model.getObjects()){
-    		if(o instanceof ModelCustomer){
-    			view.addCustomer((ModelCustomer)o);
+    	for(ObjectModel o : model.getObjects()){
+    		if(o instanceof CustomerModel){
+    			view.addCustomer((CustomerModel)o);
     		}
     	}
     	
@@ -105,30 +115,24 @@ public class CommerceEnvironment extends JASDLEnvironment{
     
 
     private void updatePercepts(){
-    	synchronized(model.getObjects()){ 
-	    	try{    	  	
-	    		model.updateObjects();	    		
-	    			
-		    	for(ModelObject o : model.getObjects()){
-		    		if(o instanceof ModelAgent){
-		    			clearPercepts(o.getId().toString());	
-		    		}
-		    	}
-		    	clearPercepts();
-		    	
-		    	// Add individual percepts for each ModelAgent (determined by ModelAgent#getPercepts)
-		    	for(ModelObject o : model.getObjects()){
-		    		if(o instanceof ModelAgent){
-		    			ModelAgent agent = (ModelAgent)o;
-		    			agent.addPercepts();
-		    		}
-		    	}   
-		
-		    	
-	    	}catch(JASDLException e){
-	    		e.printStackTrace();
-	    		
+    	synchronized(model.getObjects()){ 	  	
+    		model.updateObjects();	    		
+    			
+	    	for(ObjectModel o : model.getObjects()){
+	    		if(o instanceof AgentModel){
+	    			clearPercepts(o.getId().toString());	
+	    		}
 	    	}
+	    	clearPercepts();
+	    	
+	    	// Add individual percepts for each ModelAgent (determined by ModelAgent#getPercepts)
+	    	for(ObjectModel o : model.getObjects()){
+	    		if(o instanceof AgentModel){
+	    			AgentModel agent = (AgentModel)o;
+	    			agent.addPercepts();
+	    		}
+	    	}   
+
     	}    	
     }
 
@@ -160,11 +164,11 @@ public class CommerceEnvironment extends JASDLEnvironment{
     			i++;
     		}
     		
-	    	ModelAgent agent = (ModelAgent)model.getObjectById(new Atom(agName));    	
+    		AgentModel agent = (AgentModel)model.getObjectById(new Atom(agName));    	
 	    	
 	    	// Actions that can be performed by delivery vans
-	    	if(agent instanceof ModelDeliveryVan){
-	    		ModelDeliveryVan van = (ModelDeliveryVan)agent;
+	    	if(agent instanceof DeliveryVanModel){
+	    		DeliveryVanModel van = (DeliveryVanModel)agent;
 	    		if(action.getFunctor().equals("load")){
 	    			van.load((Atom)terms[0]);
 	    		}else if(action.getFunctor().equals("unload")){
@@ -175,19 +179,19 @@ public class CommerceEnvironment extends JASDLEnvironment{
 	    							(int)((NumberTermImpl)terms[0]).solve(),
 	    							(int)((NumberTermImpl)terms[1]).solve()));
 	    		}else{
-	    			throw new ModelAgentException("Unknown action");
+	    			throw new AgentModelException("Unknown action");
 	    		}
 	    	}
 	    	
-	    	if(agent instanceof ModelShop){
-	    		ModelShop shop = (ModelShop)agent;
+	    	if(agent instanceof ShopModel){
+	    		ShopModel shop = (ShopModel)agent;
 	    		if(action.getFunctor().equals("deploy")){
 	    			shop.deploy((Atom)terms[0], shop.getProductByBrand(terms[1].toString()), (int)((NumberTerm)terms[2]).solve());
 	    		}
 	    	}
 	    	
-	    	if(agent instanceof ModelCustomer){
-	    		ModelCustomer customer = (ModelCustomer)agent;
+	    	if(agent instanceof CustomerModel){
+	    		CustomerModel customer = (CustomerModel)agent;
 	    		if(action.getFunctor().equals("request_product")){
 	    			customer.request(terms[0].toString(), terms[1].toString(), (int)((NumberTerm)terms[2]).solve());
 	    		}
@@ -204,7 +208,7 @@ public class CommerceEnvironment extends JASDLEnvironment{
 	    	
 	    	
 	    	
-    	}catch(ModelAgentException e){
+    	}catch(AgentModelException e){
     		agentLogger.info("Unable to complete action "+action+". Reason: ");
     		e.printStackTrace();    		
     		return false;    

@@ -13,5 +13,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/jasdl-owlapi/lib/pellet/pellet.jar" sourcepath="/home/tom/workspace/pellet/src"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/owl2mas"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

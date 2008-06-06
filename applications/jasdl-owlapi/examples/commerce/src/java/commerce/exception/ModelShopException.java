@@ -19,7 +19,7 @@
  */
 package commerce.exception;
 
-public class ModelShopException extends ModelAgentException {
+public class ModelShopException extends AgentModelException {
 
 	public ModelShopException() {
 	}

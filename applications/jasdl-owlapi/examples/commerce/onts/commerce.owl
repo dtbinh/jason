@@ -14,13 +14,13 @@
 
 <rdf:RDF xmlns="http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#"
      xml:base="http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl"
-     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:commerce="http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#"
      xmlns:owl11="http://www.w3.org/2006/12/owl11#"
      xmlns:owl11xml="http://www.w3.org/2006/12/owl11-xml#"
-     xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-     xmlns:commerce="http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#">
+     xmlns:owl="http://www.w3.org/2002/07/owl#">
     <owl:Ontology rdf:about="">
         <rdfs:comment
             >Individuals (i.e. brands of product) are not instantiated in this ontology schema (since product catalogue varies between shops and should not be shared information). Instead, they are instantiated by the CommerceModel class using SE-Percepts.</rdfs:comment>
@@ -38,15 +38,6 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
-    
-
-
-    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl#contains -->
-
-    <owl:ObjectProperty rdf:about="#contains">
-        <rdf:type rdf:resource="&owl;TransitiveProperty"/>
-        <rdfs:domain rdf:resource="#Product"/>
-    </owl:ObjectProperty>
     
 
 
@@ -169,8 +160,6 @@
 
     <owl:Class rdf:about="#Beef">
         <rdfs:subClassOf rdf:resource="#MeatProduct"/>
-        <owl:disjointWith rdf:resource="#Chicken"/>
-        <owl:disjointWith rdf:resource="#Lamb"/>
     </owl:Class>
     
 
@@ -187,6 +176,7 @@
 
     <owl:Class rdf:about="#Butter">
         <rdfs:subClassOf rdf:resource="#Dairy"/>
+        <owl:disjointWith rdf:resource="#Cream"/>
     </owl:Class>
     
 
@@ -195,6 +185,8 @@
 
     <owl:Class rdf:about="#Chicken">
         <rdfs:subClassOf rdf:resource="#MeatProduct"/>
+        <owl:disjointWith rdf:resource="#Beef"/>
+        <owl:disjointWith rdf:resource="#Fish"/>
         <owl:disjointWith rdf:resource="#Lamb"/>
     </owl:Class>
     
@@ -204,8 +196,6 @@
 
     <owl:Class rdf:about="#Cream">
         <rdfs:subClassOf rdf:resource="#Dairy"/>
-        <owl:disjointWith rdf:resource="#Butter"/>
-        <owl:disjointWith rdf:resource="#Milk"/>
     </owl:Class>
     
 
@@ -223,7 +213,6 @@
     <owl:Class rdf:about="#Fish">
         <rdfs:subClassOf rdf:resource="#MeatProduct"/>
         <owl:disjointWith rdf:resource="#Beef"/>
-        <owl:disjointWith rdf:resource="#Chicken"/>
         <owl:disjointWith rdf:resource="#Lamb"/>
     </owl:Class>
     
@@ -249,6 +238,7 @@
 
     <owl:Class rdf:about="#Lamb">
         <rdfs:subClassOf rdf:resource="#MeatProduct"/>
+        <owl:disjointWith rdf:resource="#Beef"/>
     </owl:Class>
     
 
@@ -257,7 +247,6 @@
 
     <owl:Class rdf:about="#MeatProduct">
         <rdfs:subClassOf rdf:resource="#Grocery"/>
-        <owl:disjointWith rdf:resource="#Vegetable"/>
     </owl:Class>
     
 
@@ -267,6 +256,7 @@
     <owl:Class rdf:about="#Milk">
         <rdfs:subClassOf rdf:resource="#Dairy"/>
         <owl:disjointWith rdf:resource="#Butter"/>
+        <owl:disjointWith rdf:resource="#Cream"/>
     </owl:Class>
     
 
@@ -310,6 +300,7 @@
 
     <owl:Class rdf:about="#Vegetable">
         <rdfs:subClassOf rdf:resource="#Grocery"/>
+        <owl:disjointWith rdf:resource="#MeatProduct"/>
     </owl:Class>
     
 

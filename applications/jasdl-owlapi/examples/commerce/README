@@ -51,3 +51,14 @@ This example application is in a very early stage of development and so is a bit
 		society.owl	- An ontology describing a society of agents and how they are related to one another
 
 *******************************************************
+
+
+Some Notes: 
+		-	in the interests of simplicitly, all agents make use of the same label mappings for ontologies
+			and (automatic and manual) alias mappings for ontological entities.
+			These could be set arbitrarily for each agent (and the .asl code updated accordingly) and JASDL would
+			still function correctly.
+		-	Although ontology URIs reference related local resources on the file system, they could equally reference (reachable) remote or local
+			resources (e.g. http://www.dur.ac.uk/t.g.klapiscak/onts/commerce.owl). In fact, any valid URI can be used here.
+		-	Since we make extensive use of inverse object properties, we enable the experimental "contraction" feature to ensure their removals
+			are	properly handled.

@@ -75,6 +75,13 @@ shopInSameCompany(Shop) :-
  *				...
  */ 
 
++?milk(Brand)[o(c), id(ID), stockist(Me), jasdl_tg_cause(OriginalQuery)] :
+	OriginalQuery	// the agent has found a suitable product within its belief base
+		<-
+		.print("Recieved request and is able to service it");
+		.my_name(Me);
+		jasdl.ia.get_individual(OriginalQuery, Brand).
+
 /**
  * We are unable to find a suitable product, moreover, we are unable to establish a possible stockist to try on behalf of the PA.
  * Notice that the plans below also with "not OriginalQuery" in their context will take precence over this one,

@@ -9,23 +9,23 @@ import java.util.Set;
 
 import org.semanticweb.owl.model.OWLIndividual;
 
-import owl2mas.OWL2MAS;
+import owl2mas.OWL2MASLoader;
 import owl2mas.exception.OWL2MASInvalidMASOntologyException;
 import owl2mas.handler.ObjectPropertyHandler;
 
 public class DefaultMappingStrategyClassHandler implements ObjectPropertyHandler{
 
-	public void handle(OWLIndividual agent, Set<OWLIndividual> values, OWL2MAS owl2mas, HashMap<String, String> optionMap) throws OWL2MASInvalidMASOntologyException {
-		Set<OWLIndividual> defaultMappingStrategyIs = owl2mas.getPellet().getRelatedIndividuals(
+	public void handle(OWLIndividual agent, Set<OWLIndividual> values, OWL2MASLoader loader, HashMap<String, String> optionMap) throws OWL2MASInvalidMASOntologyException {
+		Set<OWLIndividual> defaultMappingStrategyIs = loader.getPellet().getRelatedIndividuals(
 				agent, 
-				owl2mas.getFactory().getOWLObjectProperty(URI.create(JASDLParams.JASDL_OWL_NS + "default_mapping_strategy")));
+				loader.getFactory().getOWLObjectProperty(URI.create(JASDLParams.JASDL_OWL_NS + "default_mapping_strategy")));
 		
 		String defaultMappingStrategies = "";
 		
 		for(OWLIndividual defaultMappingStrategyI : defaultMappingStrategyIs){
-			String mappingStrategyClassName = owl2mas.getPellet().getRelatedValue(
+			String mappingStrategyClassName = loader.getPellet().getRelatedValue(
 					defaultMappingStrategyI, 
-					owl2mas.getFactory().getOWLDataProperty(URI.create(owl2mas.getMAS_NS() + "hasClassName"))).getLiteral();
+					loader.getFactory().getOWLDataProperty(URI.create(loader.getMAS_NS() + "hasClassName"))).getLiteral();
 			
 			defaultMappingStrategies += mappingStrategyClassName+",";
 		}

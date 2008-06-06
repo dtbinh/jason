@@ -19,18 +19,17 @@
  */
 package commerce.exception;
 
-import commerce.exception.AgentModelException;
+public class AgentModelException extends CommerceException{
 
-public class ModelMobileAgentException extends AgentModelException {
-
-	public ModelMobileAgentException() {
+	public AgentModelException() {
+		super();
 	}
 
-	public ModelMobileAgentException(String msg, Exception cause) {
+	public AgentModelException(String msg, Exception cause) {
 		super(msg, cause);
 	}
-
-	public ModelMobileAgentException(String msg) {
+	
+	public AgentModelException(String msg) {
 		super(msg);
 	}
 

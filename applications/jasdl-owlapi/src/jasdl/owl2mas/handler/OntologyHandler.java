@@ -9,24 +9,24 @@ import java.util.Set;
 
 import org.semanticweb.owl.model.OWLIndividual;
 
-import owl2mas.OWL2MAS;
+import owl2mas.OWL2MASLoader;
 import owl2mas.exception.OWL2MASInvalidMASOntologyException;
 import owl2mas.handler.ObjectPropertyHandler;
 
 public class OntologyHandler implements ObjectPropertyHandler{
 
 
-	public void handle(OWLIndividual agent, Set<OWLIndividual> values, OWL2MAS owl2mas, HashMap<String, String> optionMap) throws OWL2MASInvalidMASOntologyException {
+	public void handle(OWLIndividual agent, Set<OWLIndividual> values, OWL2MASLoader loader, HashMap<String, String> optionMap) throws OWL2MASInvalidMASOntologyException {
 	
 		String labels = "";
 		for(OWLIndividual ontology : values){
-			String label = owl2mas.getPellet().getRelatedValue(
+			String label = loader.getPellet().getRelatedValue(
 					ontology, 
-					owl2mas.getFactory().getOWLDataProperty(URI.create(JASDLParams.JASDL_OWL_NS + "ontology_label"))).getLiteral();
+					loader.getFactory().getOWLDataProperty(URI.create(JASDLParams.JASDL_OWL_NS + "ontology_label"))).getLiteral();
 			
-			String uri = owl2mas.getPellet().getRelatedValue(
+			String uri = loader.getPellet().getRelatedValue(
 					ontology, 
-					owl2mas.getFactory().getOWLDataProperty(URI.create(JASDLParams.JASDL_OWL_NS + "ontology_uri"))).getLiteral();
+					loader.getFactory().getOWLDataProperty(URI.create(JASDLParams.JASDL_OWL_NS + "ontology_uri"))).getLiteral();
 			
 			labels+=label+",";
 			
@@ -35,17 +35,17 @@ public class OntologyHandler implements ObjectPropertyHandler{
 			
 			// manual mappings
 			String manualMappings = "";
-			Set<OWLIndividual> manualMappingIs = owl2mas.getPellet().getRelatedIndividuals(ontology, owl2mas.getFactory().getOWLObjectProperty(URI.create(JASDLParams.JASDL_OWL_NS + "ontology_manual_mapping")));
+			Set<OWLIndividual> manualMappingIs = loader.getPellet().getRelatedIndividuals(ontology, loader.getFactory().getOWLObjectProperty(URI.create(JASDLParams.JASDL_OWL_NS + "ontology_manual_mapping")));
 			
 			if(!manualMappingIs.isEmpty()){
 				for(OWLIndividual manualMappingI : manualMappingIs){
-					String alias = owl2mas.getPellet().getRelatedValue(
+					String alias = loader.getPellet().getRelatedValue(
 							manualMappingI, 
-							owl2mas.getFactory().getOWLDataProperty(URI.create(JASDLParams.JASDL_OWL_NS + "manual_mapping_alias"))).getLiteral();
+							loader.getFactory().getOWLDataProperty(URI.create(JASDLParams.JASDL_OWL_NS + "manual_mapping_alias"))).getLiteral();
 					
-					String fragment = owl2mas.getPellet().getRelatedValue(
+					String fragment = loader.getPellet().getRelatedValue(
 							manualMappingI, 
-							owl2mas.getFactory().getOWLDataProperty(URI.create(JASDLParams.JASDL_OWL_NS + "manual_mapping_fragment"))).getLiteral();
+							loader.getFactory().getOWLDataProperty(URI.create(JASDLParams.JASDL_OWL_NS + "manual_mapping_fragment"))).getLiteral();
 					
 					manualMappings += alias+"="+fragment+",";
 				}				
@@ -55,15 +55,15 @@ public class OntologyHandler implements ObjectPropertyHandler{
 			
 			// mapping strategies
 			String mappingStrategies = "";
-			Set<OWLIndividual> mappingStrategyIs = owl2mas.getPellet().getRelatedIndividuals(
+			Set<OWLIndividual> mappingStrategyIs = loader.getPellet().getRelatedIndividuals(
 					ontology, 
-					owl2mas.getFactory().getOWLObjectProperty(URI.create(JASDLParams.JASDL_OWL_NS + "ontology_mapping_strategy")));
+					loader.getFactory().getOWLObjectProperty(URI.create(JASDLParams.JASDL_OWL_NS + "ontology_mapping_strategy")));
 			
 			if(!mappingStrategyIs.isEmpty()){
 				for(OWLIndividual mappingStrategyI : mappingStrategyIs){
-					String mappingStrategyClassName = owl2mas.getPellet().getRelatedValue(
+					String mappingStrategyClassName = loader.getPellet().getRelatedValue(
 							mappingStrategyI, 
-							owl2mas.getFactory().getOWLDataProperty(URI.create(owl2mas.getMAS_NS() + "hasClassName"))).getLiteral();
+							loader.getFactory().getOWLDataProperty(URI.create(loader.getMAS_NS() + "hasClassName"))).getLiteral();
 					
 					mappingStrategies += mappingStrategyClassName+",";
 				}				
