@@ -1,6 +1,6 @@
 package owl2mas.exception;
 
-public class OWL2MASInvalidMASOntologyException extends Exception{
+public class OWL2MASInvalidMASOntologyException extends OWL2MASException{
 
 	public OWL2MASInvalidMASOntologyException() {
 		super();

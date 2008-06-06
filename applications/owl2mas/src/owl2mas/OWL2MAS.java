@@ -17,19 +17,15 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Set;
 
-import org.mindswap.pellet.owlapi.Reasoner;
-import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.inference.OWLReasonerAdapter;
 import org.semanticweb.owl.model.OWLAnnotation;
 import org.semanticweb.owl.model.OWLConstant;
-import org.semanticweb.owl.model.OWLDataFactory;
 import org.semanticweb.owl.model.OWLDataProperty;
 import org.semanticweb.owl.model.OWLException;
 import org.semanticweb.owl.model.OWLIndividual;
 import org.semanticweb.owl.model.OWLObjectProperty;
 import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
-import org.semanticweb.owl.model.OWLOntologyManager;
 
 import owl2mas.exception.OWL2MASInvalidMASOntologyException;
 import owl2mas.exception.OWL2MASParameterNotSetException;
@@ -42,31 +38,8 @@ import owl2mas.handler.ObjectPropertyHandler;
  * @author Tom Klapiscak
  *
  */
-public class OWL2MAS {
+public class OWL2MAS extends OWL2MASLoader{
 	
-	private URI MAS_URI;	
-	private OWLOntologyManager manager;
-	private OWLOntology O_MAS;	
-	private String MAS_NS;
-	private Reasoner pellet;
-	private OWLDataFactory factory;
-	private OWLIndividual soc;
-	
-	public OWL2MAS(){
-		MAS_URI = URI.create("file:///home/tom/workspace/jason/applications/owl2mas/onts/mas.owl");
-		manager = OWLManager.createOWLOntologyManager();
-		try {
-			O_MAS = manager.loadOntology(MAS_URI);
-		} catch (OWLOntologyCreationException e) {
-			throw new RuntimeException(e);
-		}
-		pellet = new Reasoner(manager);
-		
-		MAS_NS = O_MAS.getURI()+"#";
-		
-		factory = manager.getOWLDataFactory();
-		
-	}
 	
 
 	/**
@@ -302,7 +275,7 @@ public class OWL2MAS {
 			
 		}else{
 		
-			File projectFile = new File(projectDir+"__MAS.mas2j");
+			File projectFile = new File("MAS.mas2j");
 			
 			PrintWriter writer;
 			try {
@@ -338,41 +311,7 @@ public class OWL2MAS {
 	
 	
 	
-	public OWLDataFactory getFactory() {
-		return factory;
-	}
 
-
-	public OWLOntologyManager getManager() {
-		return manager;
-	}
-
-
-	public String getMAS_NS() {
-		return MAS_NS;
-	}
-
-
-	public URI getMAS_URI() {
-		return MAS_URI;
-	}
-
-
-	public OWLOntology getO_MAS() {
-		return O_MAS;
-	}
-
-
-	public Reasoner getPellet() {
-		return pellet;
-	}
-	
-	
-
-
-	public OWLIndividual getSoc() {
-		return soc;
-	}
 
 
 	/**

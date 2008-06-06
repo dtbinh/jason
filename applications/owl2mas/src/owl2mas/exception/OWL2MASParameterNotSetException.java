@@ -1,6 +1,6 @@
 package owl2mas.exception;
 
-public class OWL2MASParameterNotSetException extends Exception{
+public class OWL2MASParameterNotSetException extends OWL2MASException{
 
 	public OWL2MASParameterNotSetException() {
 		super();
