@@ -30,6 +30,7 @@ import org.semanticweb.owl.model.OWLOntologyCreationException;
 import owl2mas.exception.OWL2MASInvalidMASOntologyException;
 import owl2mas.exception.OWL2MASParameterNotSetException;
 import owl2mas.handler.ObjectPropertyHandler;
+import owl2mas.util.OWL2MASCommon;
 
 /**
  * Agent designers should extend the base ontology (mas.owl) in order to describe their specific MAS.
@@ -255,7 +256,7 @@ public class OWL2MAS extends OWL2MASLoader{
 		try {
 			uri = new URI(args[2]);
 			if (!uri.isAbsolute()) {
-				uri = getRelativeLocalURI(args[2]); // try relative path
+				uri = OWL2MASCommon.getRelativeLocalURI(args[2]); // try relative path
 			}
 		} catch (URISyntaxException e) {
 			throw new RuntimeException(e);
@@ -306,33 +307,5 @@ public class OWL2MAS extends OWL2MASLoader{
 		
 	}
 	
-	
-	
-	
-	
-	
-
-
-
-	/**
-	 * Now works for both linux and windows
-	 * @param suffix
-	 * @return
-	 */
-	public static URI getRelativeLocalURI(String suffix){
-		return URI.create("file:///" + getCurrentDir().replace("\\", "/") + "/" + suffix);
-	}
-	
-	
-	public static String getCurrentDir() {
-		File dir1 = new File(".");
-		String strCurrentDir = "";
-		try {
-			strCurrentDir = dir1.getCanonicalPath();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return strCurrentDir;
-	}
 
 }

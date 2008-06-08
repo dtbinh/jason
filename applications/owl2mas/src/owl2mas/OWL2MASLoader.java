@@ -10,6 +10,8 @@ import org.semanticweb.owl.model.OWLOntology;
 import org.semanticweb.owl.model.OWLOntologyCreationException;
 import org.semanticweb.owl.model.OWLOntologyManager;
 
+import owl2mas.util.OWL2MASCommon;
+
 public class OWL2MASLoader {
 	protected URI MAS_URI;	
 	protected OWLOntologyManager manager;
@@ -20,7 +22,7 @@ public class OWL2MASLoader {
 	protected OWLIndividual soc;
 	
 	public OWL2MASLoader(){
-		MAS_URI = URI.create("file:///home/tom/workspace/jason/applications/owl2mas/onts/mas.owl");
+		MAS_URI = URI.create("http://www.dur.ac.uk/t.g.klapiscak/onts/owl2mas/mas.owl");
 		manager = OWLManager.createOWLOntologyManager();
 		try {
 			O_MAS = manager.loadOntology(MAS_URI);
