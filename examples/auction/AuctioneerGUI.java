@@ -14,16 +14,18 @@ public class AuctioneerGUI extends AgArch {
 
     JTextArea jt;
     JFrame    f;
-    
+    JButton auction;
+
     int auctionId = 0;
 
     public AuctioneerGUI() {
         jt = new JTextArea(10, 30);
-        JButton auction = new JButton("Start new auction");
+        auction = new JButton("Start new auction");
         auction.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 auctionId++;
                 getTS().getC().addAchvGoal(Literal.parseLiteral("start_auction("+auctionId+")"), null);
+                auction.setEnabled(false);
             }
         });
         
@@ -39,6 +41,7 @@ public class AuctioneerGUI extends AgArch {
         if (action.getActionTerm().getFunctor().startsWith("show_winner")) {
             jt.append("Winner of auction  " + action.getActionTerm().getTerm(0));
             jt.append(" is " + action.getActionTerm().getTerm(1) + "\n");
+            auction.setEnabled(true);
         }
         super.act(action,feedback); // send the action to the environment to be performed.
     }

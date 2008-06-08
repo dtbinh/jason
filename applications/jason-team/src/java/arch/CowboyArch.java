@@ -29,7 +29,7 @@ import env.WorldView;
  *  
  *   @author Jomi
  */
-public class CowboyArch extends IdentifyCrashed { //IdentifyCrashed OrgAgent{
+public class CowboyArch extends IdentifyCrashed { 
 
 	LocalWorldModel model = null;
 	WorldView       view  = null;

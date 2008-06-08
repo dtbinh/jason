@@ -10,13 +10,13 @@
 // loop printing dots
 +!dots 
   <- .print(".");
-	 !!dots.
+     !!dots.
 
 // another loop that resumes and suspend the start
 +!control
   <- .wait(30);
      .suspend(dots); // suspend the intention with goal dots
-	 .println;
+     .println;
      .wait(200);
-	 .resume(dots);  // resume it
-	 !!control.
+     .resume(dots);  // resume it
+     !!control.

@@ -6,45 +6,56 @@ New features
 . (experimental) control of the execution in plan's body with if, while
   and for.
 
-  if ( <expression> ) {
+  --- if ----
+  syntax:
+
+  if ( <logical formula> ) {
      <plan_body1>
-  [ } else { <plan_body2> }
+  [ } else { <plan_body2> ]
   };
 
-  if <expression> is true, <plan_body1> is executed; otherwise, 
+  if <logical formula> holds, <plan_body1> is executed; otherwise, 
   <plan_body2> is executed.
 
-  e.g.: if (vl(X) & X > 10) {
+  e.g.: if (vl(X) & X > 10) { // where vl(X) is a belief
            .print("value > 10")
         }
 
+  --- while ---
+  syntax:
 
-  while ( <expression> ) {
+  while ( <logical formula> ) {
     <plan_body>
   };
 
-  while <expression> is true, the <plan_body> is executed.
+  while <logical formula> holds, the <plan_body> is executed.
 
   e.g.: while (vl(X) & X > 10) {
-           -+vl(X+1);
+           -+vl(X+1)
         }
 
-  for ( <expression> ) {
+  --- for ---
+  syntax:
+
+  for ( <logical formula> ) {
     <plan_body>
   };
 
-  for all unifications of <expression> the <plan_body> is executed.
+  for all unifications of <logical formula> the <plan_body> is executed.
  
   e.g.: for ( vl(X) ) {
-          .print(X);
+          .print(X)
         };
         for ( .member(X,[a,b,c]) ) {
-          .print(X);
+          .print(X)
+        };
+        for ( .range(I,1,10) ) {
+           .print(I)    // print all values from 1 to 10
         };
  
 
 New examples and demos:
-. demos/gui: two simple example of how to make a GUI for agents
+. demos/gui: two simple examples of how to make a GUI for agents
 . example/food-simulation: implementation of the scenario of simulation
         presented in http://jasss.soc.surrey.ac.uk/1/3/3.html
 

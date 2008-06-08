@@ -24,7 +24,9 @@ public class TestLoop {
                 
                 "+!test3 <- L=4; for( p(N,a) & N < L) { jason.asunit.print(N) }; jason.asunit.print(end). "+
 
-                "+!test4 <- for( .member(N, [1,3,4]), { jason.asunit.print(N) }); jason.asunit.print(end). "
+                "+!test4 <- for( .member(N, [1,3,4]), { jason.asunit.print(N) }); jason.asunit.print(end). " +
+                
+                "+!test5 <- for( .range(I, 1, 4), { jason.asunit.print(I) }); jason.asunit.print(end). "
         );
     }
     
@@ -51,6 +53,16 @@ public class TestLoop {
     public void testFor2() {
         ag.addGoal("test4");
         ag.assertPrint("4", 10);
+        ag.assertPrint("end", 10);
+    }
+
+    @Test
+    public void testFor3() {
+        ag.addGoal("test5");
+        ag.assertPrint("1", 4);
+        ag.assertPrint("2", 4);
+        ag.assertPrint("3", 4);
+        ag.assertPrint("4", 4);
         ag.assertPrint("end", 10);
     }
 }

@@ -10,35 +10,32 @@
  */
 
 
-To run this team:
+To run this team Jason 1.1.2 is required.
 
-1. update sources of Jason and JMoise+
-     cd Jason-svn
-     svn update
-     ant plugin
-   
-2. run massim-server
-     cd applications/jason-team/massim-server
+Steps:
+
+1. run massim-server
+     cd massim-server
      ./startServer.sh
 
    or some configuration for test
      ./startServerTest.sh conf/<some conf file>.xml
 
-3. run dummies (written in Jason)
+2. run dummies (written in Jason)
      ant -f dummies.xml
  
    or those written by the Contest developers  
      cd ../massim-agents
      ./startAgents.sh
 
-4. run Jason team 
+3. run Jason team 
 
      ant -f gauchos.xml
 
-5. start the simulation
+4. start the simulation
    go to shell running startServer.sh and press ENTER
 
-6. you can get the agents location with the command
+5. you can get the agents location with the command
    
          tail -f world-status.txt 
 
@@ -46,9 +43,9 @@ To run this team:
 
          ant -f gauchos.xml mind-view
          
-   or in the files stored in directory mind-ag-gaucho1
+   or in the files stored in directory mind-ag
 
-7. to enable/disable the graphical view of some agent, add gui=yes
+6. to enable/disable the graphical view of some agent, add gui=yes
    or gui=no in the agent's option (.mas2j file)
    
    
