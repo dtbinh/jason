@@ -5,6 +5,7 @@ import jason.environment.Environment;
 
 import java.awt.Dimension;
 import java.awt.Point;
+import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,7 +23,7 @@ public class CommerceModel extends owl2mas.model.Model{
 	private CommerceView view;   
 
 	public CommerceModel(Environment env, Dimension gridSize) throws OWL2MASInvalidMASOntologyException {
-		super(env);
+		super(env, "soc", URI.create("file:onts/society.owl"));
 		this.gridSize = gridSize;
 		initCatalogues();
 	}

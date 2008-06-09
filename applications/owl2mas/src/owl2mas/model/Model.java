@@ -28,7 +28,7 @@ public class Model {
 	 */	
 	private List<ObjectModel> removeQueue;
 	
-	public Model(Environment env) throws OWL2MASInvalidMASOntologyException{
+	public Model(Environment env, String socName, URI o_uri) throws OWL2MASInvalidMASOntologyException{
 		objects = new HashSet<ObjectModel>();
 		addQueue = new Vector<ObjectModel>();
 		removeQueue = new Vector<ObjectModel>();
@@ -36,18 +36,9 @@ public class Model {
 		ModelLoader loader = new ModelLoader(this, env);
 		objects.addAll(
 				loader.load(
-						"soc", 
-						URI.create("file:///home/tom/workspace/jason/applications/jasdl-owlapi/examples/commerce/onts/society.owl")));
+						socName, 
+						o_uri));
 		
-		
-	}
-	
-	public static void main(String[] args){
-		try {
-			Model model = new Model(new Environment());
-		} catch (OWL2MASInvalidMASOntologyException e) {
-			throw new RuntimeException(e);
-		}
 		
 	}
 	
