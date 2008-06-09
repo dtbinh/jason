@@ -18,12 +18,12 @@ public class TestIF {
         ag.parseAScode(
                 "b(3). " +
                 "+!test1 <- a1; "+
-                "           .if( b(X), {jason.asunit.print(X); b1}, {jason.asunit.print(no)}); "+
+                "           if( b(X), {jason.asunit.print(X); b1}, {jason.asunit.print(no)}); "+
                 "           a2. "+
                 
                 "+!test2 <- -b(_); !test1. "+
                 
-                "+!test3 <- .if( b(X), { Y = X*10; Z = 10 }, { Y = 60; Z=20 }); jason.asunit.print(Y,\" \",Z). "+
+                "+!test3 <- if( b(X), { Y = X*10; Z = 10 }, { Y = 60; Z=20 }); jason.asunit.print(Y,\" \",Z). "+
                 "+!test4 <- -b(_); !test3. "
         );
     }

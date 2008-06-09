@@ -53,7 +53,7 @@ import moise.os.fs.Goal.GoalType;
   */
 public class OrgAgent extends AgArch {
 
-    private static final Term managerSource          = DefaultTerm.parse("source(orgManager)");
+    private static final Term managerSource          = Pred.createSource("orgManager");
     private static final Atom rootAtom               = new Atom("root");
 
     private Logger            logger                 = Logger.getLogger(OrgAgent.class.getName());
