@@ -18,7 +18,7 @@
 
 
 	<!-- For conveniently building bebops, jason and jmca if present -->
-		<property name="jason.dir"	value="../../../jason"/>
+		<property name="jason.dir"	value="../.."/>
 		<property name="apps.dir"	value="${jason.dir}/applications"/>
 		<property name="bebops.dir" value="${apps.dir}/bebops"/>
 		<property name="bebops.jar"	value="${bebops.dir}/lib/bebops.jar"/>	

@@ -1,7 +1,7 @@
 /*
     Jason Project
 
-    -- created on June 06, 2008
+    -- created on June 09, 2008
 */
 
 MAS soc {
@@ -10,19 +10,19 @@ MAS soc {
    environment: commerce.env.CommerceEnvironment
 
    agents:
-       a_greengrocers shop.asl [jasdl_s_uri="/onts/society.owl", jasdl_c_uri="/onts/commerce.owl", jasdl_ontologies="c,s", jasdl_useContraction="true"] agentArchClass jasdl.architecture.JASDLAgArch agentClass jasdl.asSemantics.JASDLAgent beliefBaseClass jasdl.bb.JASDLBeliefBase;
-       delivery_van_4 delivery_van.asl [jasdl_s_uri="/onts/society.owl", jasdl_c_uri="/onts/commerce.owl", jasdl_ontologies="c,s", jasdl_useContraction="true"] agentArchClass jasdl.architecture.JASDLAgArch agentClass jasdl.asSemantics.JASDLAgent beliefBaseClass jasdl.bb.JASDLBeliefBase;
-       a_supermarket shop.asl [jasdl_s_uri="/onts/society.owl", jasdl_c_uri="/onts/commerce.owl", jasdl_ontologies="c,s", jasdl_useContraction="true"] agentArchClass jasdl.architecture.JASDLAgArch agentClass jasdl.asSemantics.JASDLAgent beliefBaseClass jasdl.bb.JASDLBeliefBase;
-       toms_pa pa.asl [jasdl_s_uri="/onts/society.owl", jasdl_c_uri="/onts/commerce.owl", jasdl_ontologies="c,s", jasdl_useContraction="true"] agentArchClass jasdl.architecture.JASDLAgArch agentClass jasdl.asSemantics.JASDLAgent beliefBaseClass jasdl.bb.JASDLBeliefBase;
-       a_butchers shop.asl [jasdl_s_uri="/onts/society.owl", jasdl_c_uri="/onts/commerce.owl", jasdl_ontologies="c,s", jasdl_useContraction="true"] agentArchClass jasdl.architecture.JASDLAgArch agentClass jasdl.asSemantics.JASDLAgent beliefBaseClass jasdl.bb.JASDLBeliefBase;
-       jims_pa pa.asl [jasdl_s_uri="/onts/society.owl", jasdl_c_uri="/onts/commerce.owl", jasdl_ontologies="c,s", jasdl_useContraction="true"] agentArchClass jasdl.architecture.JASDLAgArch agentClass jasdl.asSemantics.JASDLAgent beliefBaseClass jasdl.bb.JASDLBeliefBase;
-       caz customer.asl [jasdl_s_uri="/onts/society.owl", jasdl_c_uri="/onts/commerce.owl", jasdl_ontologies="c,s", jasdl_useContraction="true"] agentArchClass jasdl.architecture.JASDLAgArch agentClass jasdl.asSemantics.JASDLAgent beliefBaseClass jasdl.bb.JASDLBeliefBase;
-       cazs_pa pa.asl [jasdl_s_uri="/onts/society.owl", jasdl_c_uri="/onts/commerce.owl", jasdl_ontologies="c,s", jasdl_useContraction="true"] agentArchClass jasdl.architecture.JASDLAgArch agentClass jasdl.asSemantics.JASDLAgent beliefBaseClass jasdl.bb.JASDLBeliefBase;
-       delivery_van_1 delivery_van.asl [jasdl_s_uri="/onts/society.owl", jasdl_c_uri="/onts/commerce.owl", jasdl_ontologies="c,s", jasdl_useContraction="true"] agentArchClass jasdl.architecture.JASDLAgArch agentClass jasdl.asSemantics.JASDLAgent beliefBaseClass jasdl.bb.JASDLBeliefBase;
-       delivery_van_3 delivery_van.asl [jasdl_s_uri="/onts/society.owl", jasdl_c_uri="/onts/commerce.owl", jasdl_ontologies="c,s", jasdl_useContraction="true"] agentArchClass jasdl.architecture.JASDLAgArch agentClass jasdl.asSemantics.JASDLAgent beliefBaseClass jasdl.bb.JASDLBeliefBase;
-       jim customer.asl [jasdl_s_uri="/onts/society.owl", jasdl_c_uri="/onts/commerce.owl", jasdl_ontologies="c,s", jasdl_useContraction="true"] agentArchClass jasdl.architecture.JASDLAgArch agentClass jasdl.asSemantics.JASDLAgent beliefBaseClass jasdl.bb.JASDLBeliefBase;
-       tom customer.asl [jasdl_s_uri="/onts/society.owl", jasdl_c_uri="/onts/commerce.owl", jasdl_ontologies="c,s", jasdl_useContraction="true"] agentArchClass jasdl.architecture.JASDLAgArch agentClass jasdl.asSemantics.JASDLAgent beliefBaseClass jasdl.bb.JASDLBeliefBase;
-       delivery_van_2 delivery_van.asl [jasdl_s_uri="/onts/society.owl", jasdl_c_uri="/onts/commerce.owl", jasdl_ontologies="c,s", jasdl_useContraction="true"] agentArchClass jasdl.architecture.JASDLAgArch agentClass jasdl.asSemantics.JASDLAgent beliefBaseClass jasdl.bb.JASDLBeliefBase;
+       delivery_van_1 delivery_van.asl [jasdl_ontologies="c,s", jasdl_s_uri="/onts/society.owl", jasdl_c_uri="/onts/commerce.owl", jasdl_useContraction="true"] agentArchClass jasdl.architecture.JASDLAgArch agentClass jasdl.asSemantics.JASDLAgent beliefBaseClass jasdl.bb.JASDLBeliefBase;
+       caz customer.asl [jasdl_ontologies="c,s", jasdl_s_uri="/onts/society.owl", jasdl_c_uri="/onts/commerce.owl", jasdl_useContraction="true"] agentArchClass jasdl.architecture.JASDLAgArch agentClass jasdl.asSemantics.JASDLAgent beliefBaseClass jasdl.bb.JASDLBeliefBase;
+       a_butchers shop.asl [jasdl_ontologies="c,s", jasdl_s_uri="/onts/society.owl", jasdl_c_uri="/onts/commerce.owl", jasdl_useContraction="true"] agentArchClass jasdl.architecture.JASDLAgArch agentClass jasdl.asSemantics.JASDLAgent beliefBaseClass jasdl.bb.JASDLBeliefBase;
+       a_greengrocers shop.asl [jasdl_ontologies="c,s", jasdl_s_uri="/onts/society.owl", jasdl_c_uri="/onts/commerce.owl", jasdl_useContraction="true"] agentArchClass jasdl.architecture.JASDLAgArch agentClass jasdl.asSemantics.JASDLAgent beliefBaseClass jasdl.bb.JASDLBeliefBase;
+       jims_pa pa.asl [jasdl_ontologies="c,s", jasdl_s_uri="/onts/society.owl", jasdl_c_uri="/onts/commerce.owl", jasdl_useContraction="true"] agentArchClass jasdl.architecture.JASDLAgArch agentClass jasdl.asSemantics.JASDLAgent beliefBaseClass jasdl.bb.JASDLBeliefBase;
+       tom customer.asl [jasdl_ontologies="c,s", jasdl_s_uri="/onts/society.owl", jasdl_c_uri="/onts/commerce.owl", jasdl_useContraction="true"] agentArchClass jasdl.architecture.JASDLAgArch agentClass jasdl.asSemantics.JASDLAgent beliefBaseClass jasdl.bb.JASDLBeliefBase;
+       delivery_van_2 delivery_van.asl [jasdl_ontologies="c,s", jasdl_s_uri="/onts/society.owl", jasdl_c_uri="/onts/commerce.owl", jasdl_useContraction="true"] agentArchClass jasdl.architecture.JASDLAgArch agentClass jasdl.asSemantics.JASDLAgent beliefBaseClass jasdl.bb.JASDLBeliefBase;
+       delivery_van_3 delivery_van.asl [jasdl_ontologies="c,s", jasdl_s_uri="/onts/society.owl", jasdl_c_uri="/onts/commerce.owl", jasdl_useContraction="true"] agentArchClass jasdl.architecture.JASDLAgArch agentClass jasdl.asSemantics.JASDLAgent beliefBaseClass jasdl.bb.JASDLBeliefBase;
+       delivery_van_4 delivery_van.asl [jasdl_ontologies="c,s", jasdl_s_uri="/onts/society.owl", jasdl_c_uri="/onts/commerce.owl", jasdl_useContraction="true"] agentArchClass jasdl.architecture.JASDLAgArch agentClass jasdl.asSemantics.JASDLAgent beliefBaseClass jasdl.bb.JASDLBeliefBase;
+       toms_pa pa.asl [jasdl_ontologies="c,s", jasdl_s_uri="/onts/society.owl", jasdl_c_uri="/onts/commerce.owl", jasdl_useContraction="true"] agentArchClass jasdl.architecture.JASDLAgArch agentClass jasdl.asSemantics.JASDLAgent beliefBaseClass jasdl.bb.JASDLBeliefBase;
+       a_supermarket shop.asl [jasdl_ontologies="c,s", jasdl_s_uri="/onts/society.owl", jasdl_c_uri="/onts/commerce.owl", jasdl_useContraction="true"] agentArchClass jasdl.architecture.JASDLAgArch agentClass jasdl.asSemantics.JASDLAgent beliefBaseClass jasdl.bb.JASDLBeliefBase;
+       cazs_pa pa.asl [jasdl_ontologies="c,s", jasdl_s_uri="/onts/society.owl", jasdl_c_uri="/onts/commerce.owl", jasdl_useContraction="true"] agentArchClass jasdl.architecture.JASDLAgArch agentClass jasdl.asSemantics.JASDLAgent beliefBaseClass jasdl.bb.JASDLBeliefBase;
+       jim customer.asl [jasdl_ontologies="c,s", jasdl_s_uri="/onts/society.owl", jasdl_c_uri="/onts/commerce.owl", jasdl_useContraction="true"] agentArchClass jasdl.architecture.JASDLAgArch agentClass jasdl.asSemantics.JASDLAgent beliefBaseClass jasdl.bb.JASDLBeliefBase;
 
    classpath: "../../lib/**/*.jar"; 
    aslSourcePath: "src/asl"; 
