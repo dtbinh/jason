@@ -62,7 +62,8 @@ New examples and demos:
 Bugs fixed:
 . BUF add annotation "source(percept)" in the perception deletion event
 . drop_desire does not remove desires in Circumstance.Event correctly 
-  when annotations are used. 
+  when annotations are used
+. print works like println
 
 
 -------------

@@ -1,3 +1,4 @@
+/* -- strategic agent -- */
 
 // food in my position
 +step(_) : food(X,Y,my_pos,_) <- eat.

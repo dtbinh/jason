@@ -1,13 +1,15 @@
 /*
     Jason Project
 
-    -- create on December 20, 2007   
-    
     -- Food Simulation --
 
    based on the description available at
    http://jasss.soc.surrey.ac.uk/1/3/3.html
-    
+
+   used in the chapter about Jason in the book
+   "Agents, Simulation and Applications" by
+   Adelinde M. Uhrmacher and Danny Weyns
+   
 */
 
 /*
