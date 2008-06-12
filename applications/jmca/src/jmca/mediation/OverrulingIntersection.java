@@ -47,7 +47,7 @@ public class OverrulingIntersection<T> implements MediationStrategy<T>{
 		List<T> intersection = new Vector<T>();
 		intersection.addAll(elements);
 		for(SelectionStrategy selectionStrategy : selectionStrategies){
-			List<T> chosen = selectionStrategy.select(elements);		
+			List<T> chosen = selectionStrategy.select(elements, intersection);		
 			intersection.retainAll(chosen);
 			if(intersection.isEmpty()){ // no agreement, override earlier selections
 				intersection = chosen;

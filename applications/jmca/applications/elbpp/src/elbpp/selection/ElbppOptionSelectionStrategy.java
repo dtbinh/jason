@@ -50,7 +50,7 @@ public class ElbppOptionSelectionStrategy extends SelectionStrategy<Option>{
 	}
 
 	
-	public List<Option> select(List<Option> options){
+	public List<Option> select(List<Option> options, List<Option> intersection){
 		List<Option> chosen = new Vector<Option>();
 		
 		// get highest priority in list:

@@ -47,7 +47,7 @@ public class AlphaOptionSelectionStrategy extends SelectionStrategy<Option>{
 		super(master);
 	}
 	
-	public List<Option> select(List<Option> options){
+	public List<Option> select(List<Option> options, List<Option> intersection){
 		Comparator<Option> comp = new Comparator<Option>(){
 			public int compare(Option a, Option b) {
 				String af = a.getPlan().getLabel().getFunctor();

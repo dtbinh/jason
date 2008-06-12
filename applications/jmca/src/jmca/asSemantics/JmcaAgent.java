@@ -34,7 +34,6 @@ import jason.bb.BeliefBase;
 import jason.runtime.Settings;
 
 import java.lang.reflect.Constructor;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +43,7 @@ import java.util.Vector;
 import jmca.mediation.MediationStrategy;
 import jmca.selection.SelectionStrategy;
 import jmca.util.Common;
+import jmca.util.JMCAParams;
 import jmca.util.JmcaException;
 
 
@@ -83,13 +83,7 @@ public class JmcaAgent extends jason.asSemantics.Agent {
 	 */
 	private HashMap<Class, MediationStrategy> aspectMediationStrategyMap;
 	
-	/**
-	 * A static list of aspect types (classes) this Jmca supports (current Option, Message, Intention, Event, ActionExec)
-	 */
-	private static Vector<Class> aspects = new Vector<Class>();
-	static{
-		aspects.addAll(Arrays.asList(new Class[] {Option.class, Message.class, Intention.class, Event.class, ActionExec.class}));
-	}	
+	
 	
 	
 	/**
@@ -99,7 +93,7 @@ public class JmcaAgent extends jason.asSemantics.Agent {
 	public TransitionSystem initAg(AgArch arch, BeliefBase bb, java.lang.String asSrc, Settings stts) throws JasonException{
 		aspectSelectionStrategyMap = new HashMap<Class, List<SelectionStrategy>>();
 		aspectMediationStrategyMap = new HashMap<Class, MediationStrategy>();
-		for(Class aspect : aspects){
+		for(Class aspect : JMCAParams.aspects){
 			aspectSelectionStrategyMap.put(aspect, getSelectionStrategyClasses(this, arch, bb, asSrc, stts, aspect));
 			aspectMediationStrategyMap.put(aspect, getMediationStrategyClass(stts, aspect));
 		}
@@ -167,7 +161,8 @@ public class JmcaAgent extends jason.asSemantics.Agent {
 		try{
 			asList = strategy.apply(modules, asList);
 		}catch(JmcaException e){
-			getLogger().severe("Error in jmca "+getUCN(aspect)+" selection. Reason: "+e);
+			getLogger().severe("Error in jmca "+getUCN(aspect)+" selection. Reason: ");
+			e.printStackTrace();
 			return null;
 		}
 		if(asList.isEmpty()){

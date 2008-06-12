@@ -22,7 +22,12 @@ package jmca.util;
 
 import jason.JasonException;
 
-public class JmcaException extends JasonException {
+public class JmcaException extends JasonException {	
+	
+	public JmcaException(String msg, Exception cause) {
+		super(msg, cause);
+	}
+
 	public JmcaException(String message){
 		super(message);
 	}

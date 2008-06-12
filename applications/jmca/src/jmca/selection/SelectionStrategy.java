@@ -47,7 +47,7 @@ public abstract class SelectionStrategy<T>{
 	 * @return					a set of acceptable aspects
 	 * @throws JmcaException
 	 */
-	public abstract List<T> select(List<T> from) throws JmcaException;
+	public abstract List<T> select(List<T> from, List<T>intersection) throws JmcaException;
 	
 	public String toString(){
 		return master.toString();
