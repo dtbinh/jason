@@ -25,6 +25,7 @@ import jasdl.util.JASDLCommon;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Plan;
+import jason.asSyntax.PlanBody;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Trigger;
 
@@ -53,9 +54,7 @@ public class SEPlan extends Plan{
 		Unifier un = super.isRelevant(te);
 		if(un == null){
 			try {
-				if(JASDLCommon.isMoreSpecific(te.getLiteral(), this.getTrigger().getLiteral(), agent.getJom())){					
-					
-					
+				if(JASDLCommon.isMoreSpecific(te.getLiteral(), this.getTrigger().getLiteral(), agent.getJom())){						
 					
 					Literal trigger = te.getLiteral();
 					Literal oldLiteral = getTrigger().getLiteral();
@@ -77,21 +76,9 @@ public class SEPlan extends Plan{
 					newLiteral.delAnnot(oldO);
 					newLiteral.addAnnot(triggerO);
 					
-					getTrigger().setLiteral(newLiteral);			
+					getTrigger().setLiteral(newLiteral);	
 					
-					
-					Literal jasdl_tg_cause_annot = (Literal)trigger.getAnnots("jasdl_tg_cause").get(0);
-					Literal jasdl_tg_cause = (Literal)te.getLiteral().clone();
-					
-					// musn't retain annots, except "o"
-					jasdl_tg_cause.clearAnnots();
-					jasdl_tg_cause.addAnnot(triggerO);
-					
-					// mutate the term
-					jasdl_tg_cause_annot.setTerm(0, jasdl_tg_cause);
-					
-					
-					un = new Unifier();
+					un = new Unifier();					
 					
 					if(un.unifiesNoUndo(getTrigger(), te)){
 						return un;

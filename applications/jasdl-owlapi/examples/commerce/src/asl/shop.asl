@@ -59,7 +59,7 @@ shopInSameCompany(Shop) :-
  * of whom it should submit the delivery request to.
  */
 @found_product_for_PA
-+?product(Brand)[o(c), id(ID), stockist(Me), jasdl_tg_cause(OriginalQuery)] :
++?product(Brand)[o(c), id(ID), stockist(Me)] : jasdl.ia.get_tg_cause(OriginalQuery, false) &
 	OriginalQuery	// the agent has found a suitable product within its belief base
 		<-
 		.print("Recieved request and is able to service it");
@@ -69,13 +69,13 @@ shopInSameCompany(Shop) :-
 /** TODO: Match other, more specific, types of product and opportunistically present special offers to the PA
  * i.e. "buy two get one free on all types of milk" using a plan such as:
  *
- * +?milk(Brand)[o(c), id(ID), stockist(Me), jasdl_tg_cause(OriginalQuery)] :
+ * +?milk(Brand)[o(c), id(ID), stockist(Me)] : jasdl.ia.get_tg_cause(OriginalQuery, false) &
  * 		OriginalQuery
  *			<-
  *				...
  */ 
 
-+?milk(Brand)[o(c), id(ID), stockist(Me), jasdl_tg_cause(OriginalQuery)] :
++?milk(Brand)[o(c), id(ID), stockist(Me)] : jasdl.ia.get_tg_cause(OriginalQuery, false) &
 	OriginalQuery	// the agent has found a suitable product within its belief base
 		<-
 		.print("Recieved request and is able to service it");
@@ -88,7 +88,7 @@ shopInSameCompany(Shop) :-
  * since their are both more specific than owl:thing (which is the most general concept) - additionally, plan ordering
  * is irrelevant here since JASDL automatically assigns precence according to concept specificity for trigger generalisation
  */
-+?thing(Brand)[o(owl), id(ID), stockist(_), jasdl_tg_cause(OriginalQuery)] :
++?thing(Brand)[o(owl), id(ID), stockist(_)] :  jasdl.ia.get_tg_cause(OriginalQuery, false) &
 	not OriginalQuery	// the agent has not found a suitable product within its belief base
 	<-
 		!reset(ID);
@@ -98,7 +98,7 @@ shopInSameCompany(Shop) :-
 /**
  * Requested a type of product that this agent cannot supply, try asking any other shop.
  */
-+?product(Brand)[o(c), id(ID), stockist(Stockist), jasdl_tg_cause(OriginalQuery)] :
++?product(Brand)[o(c), id(ID), stockist(Stockist)] : jasdl.ia.get_tg_cause(OriginalQuery, false) & .print(OriginalQuery) &
 	not OriginalQuery &	// the agent has not found a suitable product within its belief base
 	possibleStockist(ID, "s:shop", Try)
 		<-
@@ -109,7 +109,7 @@ shopInSameCompany(Shop) :-
 /**
  * Requested a type of vegetable product that this agent cannot supply, try asking a greengrocer or a supermarket.
  */
-+?vegetable(Brand)[o(c), id(ID), stockist(Stockist), jasdl_tg_cause(OriginalQuery)] :
++?vegetable(Brand)[o(c), id(ID), stockist(Stockist)] : jasdl.ia.get_tg_cause(OriginalQuery, false) &
 	not OriginalQuery &	// the agent has not found a suitable product within its belief base
 	possibleStockist(ID, "s:greenGrocers or s:supermarket", Try)
 		<-
@@ -120,7 +120,7 @@ shopInSameCompany(Shop) :-
 /**
  * Requested a type of meat product that this agent cannot supply, try asking a butchers.
  */
-+?meatProduct(Brand)[o(c), id(ID), stockist(Stockist), jasdl_tg_cause(OriginalQuery)] :
++?meatProduct(Brand)[o(c), id(ID), stockist(Stockist)] : jasdl.ia.get_tg_cause(OriginalQuery, false) &
 	not OriginalQuery &	// the agent has not found a suitable product within its belief base
 	possibleStockist(ID, "s:butchers", Try)
 		<-
@@ -137,9 +137,8 @@ shopInSameCompany(Shop) :-
 		.print("Trying ", PossibleStockist);
 		.add_annot(Query, id(ID), Q1);
 		.add_annot(Q1, stockist(Stockist), Q2);
-		.add_annot(Q2, jasdl_tg_cause(_), Q3);	
-		.send(PossibleStockist, askOne, Q3, Q3);	
-		jasdl.ia.get_individual(Q3, Answer).
+		.send(PossibleStockist, askOne, Q2, Q2);	
+		jasdl.ia.get_individual(Q2, Answer).
 		
 	
 /**

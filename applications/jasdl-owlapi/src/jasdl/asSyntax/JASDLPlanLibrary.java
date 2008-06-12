@@ -67,11 +67,14 @@ public class JASDLPlanLibrary extends PlanLibrary {
 		if (containsSELiteral(p.getTrigger().getLiteral())) {
 			SEPlan sePlan = new SEPlan(agent, p);
 			
+			/*
 			try {
 				insertSEPlan(sePlan);
 			} catch (OWLException e) {
 				throw new JasonException("Error placing SE-Plan "+p, e);
 			}
+			*/
+			sePlans.add(sePlan);
 			
 			super.add(sePlan);
 		} else {
@@ -115,7 +118,7 @@ public class JASDLPlanLibrary extends PlanLibrary {
 				if(candidate instanceof SEPlan){
 					candidate = (SEPlan)candidate.clone();
 					SEPlan seCandidate = (SEPlan)candidate;
-					if(seCandidate.isRelevant(te) != null){
+					if(seCandidate.isRelevant(te) != null){						
 						candidates.add(candidate);
 					}
 				}

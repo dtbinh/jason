@@ -9,6 +9,7 @@
     <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
     <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
     <!ENTITY mas "http://www.dur.ac.uk/t.g.klapiscak/onts/owl2mas/mas.owl#" >
+    <!ENTITY jmca "http://www.dur.ac.uk/t.g.klapiscak/onts/owl2mas/jmca.owl#" >
     <!ENTITY jasdl "http://www.dur.ac.uk/t.g.klapiscak/onts/owl2mas/jasdl.owl#" >
     <!ENTITY society "http://www.dur.ac.uk/t.g.klapiscak/onts/owl2mas/society.owl#" >
 ]>
@@ -19,6 +20,7 @@
      xmlns:owl2xml="http://www.w3.org/2006/12/owl2-xml#"
      xmlns:mas="http://www.dur.ac.uk/t.g.klapiscak/onts/owl2mas/mas.owl#"
      xmlns:jasdl="http://www.dur.ac.uk/t.g.klapiscak/onts/owl2mas/jasdl.owl#"
+     xmlns:jmca="http://www.dur.ac.uk/t.g.klapiscak/onts/owl2mas/jmca.owl#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:society="http://www.dur.ac.uk/t.g.klapiscak/onts/owl2mas/society.owl#"
      xmlns:owl2="http://www.w3.org/2006/12/owl2#"
@@ -57,6 +59,18 @@
     <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/owl2mas/jasdl.owl#hasOntology -->
 
     <owl:ObjectProperty rdf:about="&jasdl;hasOntology"/>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/owl2mas/jmca.owl#hasSelectionStrategyClass -->
+
+    <owl:ObjectProperty rdf:about="&jmca;hasSelectionStrategyClass"/>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/owl2mas/jmca.owl#hasSelectionStrategyClassEntry -->
+
+    <owl:ObjectProperty rdf:about="&jmca;hasSelectionStrategyClassEntry"/>
     
 
 
@@ -158,6 +172,12 @@
     
 
 
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/owl2mas/jmca.owl#hasPosition -->
+
+    <owl:DatatypeProperty rdf:about="&jmca;hasPosition"/>
+    
+
+
     <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/owl2mas/mas.owl#agentModelDataProperty -->
 
     <owl:DatatypeProperty rdf:about="&mas;agentModelDataProperty"/>
@@ -222,6 +242,12 @@
     <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/owl2mas/jasdl.owl#Ontology -->
 
     <owl:Class rdf:about="&jasdl;Ontology"/>
+    
+
+
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/owl2mas/jmca.owl#SelectionStrategyClassEntry -->
+
+    <owl:Class rdf:about="&jmca;SelectionStrategyClassEntry"/>
     
 
 
@@ -362,6 +388,12 @@
     
 
 
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/owl2mas/jasdl.owl#MostSpecificOptionSelectionStrategyClass -->
+
+    <rdf:Description rdf:about="&jasdl;MostSpecificOptionSelectionStrategyClass"/>
+    
+
+
     <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/owl2mas/mas.owl#Centralised -->
 
     <rdf:Description rdf:about="&mas;Centralised"/>
@@ -377,6 +409,15 @@
     
 
 
+    <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/owl2mas/society.owl#MostSpecificOptionSelectionStrategyClassEntry -->
+
+    <jmca:SelectionStrategyClassEntry rdf:about="#MostSpecificOptionSelectionStrategyClassEntry">
+        <jmca:hasPosition rdf:datatype="&xsd;integer">1</jmca:hasPosition>
+        <jmca:hasSelectionStrategyClass rdf:resource="&jasdl;MostSpecificOptionSelectionStrategyClass"/>
+    </jmca:SelectionStrategyClassEntry>
+    
+
+
     <!-- http://www.dur.ac.uk/t.g.klapiscak/onts/owl2mas/society.owl#a_butchers -->
 
     <Butchers rdf:about="#a_butchers">
@@ -387,6 +428,7 @@
         <mas:hasAgentArchClass rdf:resource="&jasdl;JASDLAgArch"/>
         <mas:hasAgentClass rdf:resource="&jasdl;JASDLAgent"/>
         <mas:hasBeliefBaseClass rdf:resource="&jasdl;JASDLBeliefBase"/>
+        <jmca:hasSelectionStrategyClassEntry rdf:resource="#MostSpecificOptionSelectionStrategyClassEntry"/>
         <jasdl:hasOntology rdf:resource="#commerce"/>
         <employs rdf:resource="#delivery_van_2"/>
         <jasdl:hasOntology rdf:resource="#society"/>
@@ -404,6 +446,7 @@
         <mas:hasAgentArchClass rdf:resource="&jasdl;JASDLAgArch"/>
         <mas:hasAgentClass rdf:resource="&jasdl;JASDLAgent"/>
         <mas:hasBeliefBaseClass rdf:resource="&jasdl;JASDLBeliefBase"/>
+        <jmca:hasSelectionStrategyClassEntry rdf:resource="#MostSpecificOptionSelectionStrategyClassEntry"/>
         <jasdl:hasOntology rdf:resource="#commerce"/>
         <employs rdf:resource="#delivery_van_3"/>
         <jasdl:hasOntology rdf:resource="#society"/>
@@ -421,6 +464,7 @@
         <mas:hasAgentArchClass rdf:resource="&jasdl;JASDLAgArch"/>
         <mas:hasAgentClass rdf:resource="&jasdl;JASDLAgent"/>
         <mas:hasBeliefBaseClass rdf:resource="&jasdl;JASDLBeliefBase"/>
+        <jmca:hasSelectionStrategyClassEntry rdf:resource="#MostSpecificOptionSelectionStrategyClassEntry"/>
         <jasdl:hasOntology rdf:resource="#commerce"/>
         <employs rdf:resource="#delivery_van_1"/>
         <employs rdf:resource="#delivery_van_4"/>
@@ -439,6 +483,7 @@
         <mas:hasAgentArchClass rdf:resource="&jasdl;JASDLAgArch"/>
         <mas:hasAgentClass rdf:resource="&jasdl;JASDLAgent"/>
         <mas:hasBeliefBaseClass rdf:resource="&jasdl;JASDLBeliefBase"/>
+        <jmca:hasSelectionStrategyClassEntry rdf:resource="#MostSpecificOptionSelectionStrategyClassEntry"/>
         <employs rdf:resource="#cazs_pa"/>
         <jasdl:hasOntology rdf:resource="#commerce"/>
         <jasdl:hasOntology rdf:resource="#society"/>
@@ -454,6 +499,7 @@
         <mas:hasAgentArchClass rdf:resource="&jasdl;JASDLAgArch"/>
         <mas:hasAgentClass rdf:resource="&jasdl;JASDLAgent"/>
         <mas:hasBeliefBaseClass rdf:resource="&jasdl;JASDLBeliefBase"/>
+        <jmca:hasSelectionStrategyClassEntry rdf:resource="#MostSpecificOptionSelectionStrategyClassEntry"/>
         <jasdl:hasOntology rdf:resource="#commerce"/>
         <jasdl:hasOntology rdf:resource="#society"/>
     </PA>
@@ -481,6 +527,7 @@
         <mas:hasAgentArchClass rdf:resource="&jasdl;JASDLAgArch"/>
         <mas:hasAgentClass rdf:resource="&jasdl;JASDLAgent"/>
         <mas:hasBeliefBaseClass rdf:resource="&jasdl;JASDLBeliefBase"/>
+        <jmca:hasSelectionStrategyClassEntry rdf:resource="#MostSpecificOptionSelectionStrategyClassEntry"/>
         <jasdl:hasOntology rdf:resource="#commerce"/>
         <jasdl:hasOntology rdf:resource="#society"/>
     </DeliveryVan>
@@ -498,6 +545,7 @@
         <mas:hasAgentArchClass rdf:resource="&jasdl;JASDLAgArch"/>
         <mas:hasAgentClass rdf:resource="&jasdl;JASDLAgent"/>
         <mas:hasBeliefBaseClass rdf:resource="&jasdl;JASDLBeliefBase"/>
+        <jmca:hasSelectionStrategyClassEntry rdf:resource="#MostSpecificOptionSelectionStrategyClassEntry"/>
         <jasdl:hasOntology rdf:resource="#commerce"/>
         <jasdl:hasOntology rdf:resource="#society"/>
     </DeliveryVan>
@@ -515,6 +563,7 @@
         <mas:hasAgentArchClass rdf:resource="&jasdl;JASDLAgArch"/>
         <mas:hasAgentClass rdf:resource="&jasdl;JASDLAgent"/>
         <mas:hasBeliefBaseClass rdf:resource="&jasdl;JASDLBeliefBase"/>
+        <jmca:hasSelectionStrategyClassEntry rdf:resource="#MostSpecificOptionSelectionStrategyClassEntry"/>
         <jasdl:hasOntology rdf:resource="#commerce"/>
         <jasdl:hasOntology rdf:resource="#society"/>
     </DeliveryVan>
@@ -532,6 +581,7 @@
         <mas:hasAgentArchClass rdf:resource="&jasdl;JASDLAgArch"/>
         <mas:hasAgentClass rdf:resource="&jasdl;JASDLAgent"/>
         <mas:hasBeliefBaseClass rdf:resource="&jasdl;JASDLBeliefBase"/>
+        <jmca:hasSelectionStrategyClassEntry rdf:resource="#MostSpecificOptionSelectionStrategyClassEntry"/>
         <jasdl:hasOntology rdf:resource="#commerce"/>
         <jasdl:hasOntology rdf:resource="#society"/>
     </DeliveryVan>
@@ -548,6 +598,7 @@
         <mas:hasAgentArchClass rdf:resource="&jasdl;JASDLAgArch"/>
         <mas:hasAgentClass rdf:resource="&jasdl;JASDLAgent"/>
         <mas:hasBeliefBaseClass rdf:resource="&jasdl;JASDLBeliefBase"/>
+        <jmca:hasSelectionStrategyClassEntry rdf:resource="#MostSpecificOptionSelectionStrategyClassEntry"/>
         <jasdl:hasOntology rdf:resource="#commerce"/>
         <employs rdf:resource="#jims_pa"/>
         <jasdl:hasOntology rdf:resource="#society"/>
@@ -563,6 +614,7 @@
         <mas:hasAgentArchClass rdf:resource="&jasdl;JASDLAgArch"/>
         <mas:hasAgentClass rdf:resource="&jasdl;JASDLAgent"/>
         <mas:hasBeliefBaseClass rdf:resource="&jasdl;JASDLBeliefBase"/>
+        <jmca:hasSelectionStrategyClassEntry rdf:resource="#MostSpecificOptionSelectionStrategyClassEntry"/>
         <jasdl:hasOntology rdf:resource="#commerce"/>
         <jasdl:hasOntology rdf:resource="#society"/>
     </PA>
@@ -624,6 +676,7 @@
         <mas:hasAgentArchClass rdf:resource="&jasdl;JASDLAgArch"/>
         <mas:hasAgentClass rdf:resource="&jasdl;JASDLAgent"/>
         <mas:hasBeliefBaseClass rdf:resource="&jasdl;JASDLBeliefBase"/>
+        <jmca:hasSelectionStrategyClassEntry rdf:resource="#MostSpecificOptionSelectionStrategyClassEntry"/>
         <jasdl:hasOntology rdf:resource="#commerce"/>
         <jasdl:hasOntology rdf:resource="#society"/>
         <employs rdf:resource="#toms_pa"/>
@@ -639,6 +692,7 @@
         <mas:hasAgentArchClass rdf:resource="&jasdl;JASDLAgArch"/>
         <mas:hasAgentClass rdf:resource="&jasdl;JASDLAgent"/>
         <mas:hasBeliefBaseClass rdf:resource="&jasdl;JASDLBeliefBase"/>
+        <jmca:hasSelectionStrategyClassEntry rdf:resource="#MostSpecificOptionSelectionStrategyClassEntry"/>
         <jasdl:hasOntology rdf:resource="#commerce"/>
         <jasdl:hasOntology rdf:resource="#society"/>
     </PA>

@@ -51,8 +51,8 @@
 		
 		// Ask for all brands that match these criteria
 		.send(Shop, askOne,
-			productInStock(Brand)[o(self), id(ID), stockist(Stockist), jasdl_tg_cause(_)],
-			productInStock(Brand)[o(self), id(ID), stockist(Stockist), jasdl_tg_cause(_)]);			
+			productInStock(Brand)[o(self), id(ID), stockist(Stockist)],
+			productInStock(Brand)[o(self), id(ID), stockist(Stockist)]);			
 
 		// ask for the customer's approval
 		!!approve(ID, Brand, ProductDescription, Shop, Qty, Order, Stockist).

@@ -25,7 +25,6 @@ import jasdl.asSyntax.JASDLPlanLibrary;
 import jasdl.asSyntax.SEPlan;
 import jasdl.bb.JASDLBeliefBase;
 import jasdl.bb.bebops.JASDLIncisionFunction;
-import jasdl.bb.bebops.JASDLKernelsetFilter;
 import jasdl.bb.bebops.JASDLReasonerFactory;
 import jasdl.bridge.JASDLOntologyManager;
 import jasdl.bridge.factory.AxiomToSELiteralConverter;
@@ -38,37 +37,34 @@ import jasdl.bridge.mapping.label.OntologyURIManager;
 import jasdl.bridge.seliteral.SELiteral;
 import jasdl.util.exception.JASDLException;
 import jasdl.util.exception.JASDLNotEnrichedException;
+import jasdl.util.owlapi.IndividualAxiomToDescriptionConverter;
 import jason.JasonException;
 import jason.RevisionFailedException;
 import jason.architecture.AgArch;
 import jason.asSemantics.Intention;
 import jason.asSemantics.TransitionSystem;
-import jason.asSemantics.Unifier;
 import jason.asSyntax.Literal;
 import jason.bb.BeliefBase;
 import jason.runtime.Settings;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
 import jmca.asSemantics.JmcaAgent;
 
-import org.mindswap.pellet.owlapi.Reasoner;
+import org.semanticweb.owl.apibinding.OWLManager;
 import org.semanticweb.owl.inference.OWLReasoner;
-import org.semanticweb.owl.model.AddAxiom;
 import org.semanticweb.owl.model.OWLAxiom;
 import org.semanticweb.owl.model.OWLDataFactory;
 import org.semanticweb.owl.model.OWLDescription;
-import org.semanticweb.owl.model.OWLOntology;
+import org.semanticweb.owl.model.OWLIndividualAxiom;
 import org.semanticweb.owl.model.OWLOntologyManager;
 import org.semanticweb.owl.model.RemoveAxiom;
 
-import bebops.semirevision.BeliefBaseSemiRevisor;
-import bebops.util.exception.BebopsRevisionFailedException;
+import bebops.common.TBoxAxiomKernelsetFilter;
 
-import com.clarkparsia.explanation.SatisfiabilityConverter;
+import com.clarkparsia.explanation.BlackBoxExplanation;
 
 /**
  * JASDL's extension to JMCA agent (and hence the default Jason agent).
@@ -122,155 +118,102 @@ public class JASDLAgent extends JmcaAgent{
 			getLogger().finest(se.getTrigger().toString());
 		}
 		
-		//getTS().getC().addEventListener(new JASDLCircumstanceListener(this));
 
 		return ts;
 	}
-	
-	
-	
-	
 
-
+	
+	
+	
 	@Override
 	public List<Literal>[] brf(Literal beliefToAdd, Literal beliefToDel, Intention i) throws RevisionFailedException {
-		// TODO: what annotations should revision contractions contain? all! (or none? - same effect)
-
-		// No! the same. -a[x] only undermines assertions leading to a[x]!
-		// if we are performing belief-revision all annotations will be gathered (shortcut - use none?) ensuring axiom will be obliterated
-		// annotations never solely lead to conflicts.
-
-		if (!config.isBeliefRevisionEnabled()) { // if experimental feature is disabled
+		
+		// if experimental feature is disabled or we are only removing (in which case brf need not be applied - OWL-DL is monotonic)
+		if (!config.isBeliefRevisionEnabled() || beliefToDel != null) { 
 			return super.brf(beliefToAdd, beliefToDel, i);
-		}
-
-		List<Literal> addList = new Vector<Literal>();
-		List<Literal> removeList = new Vector<Literal>();
-
-		// NO LONGER APPLICABLE: For efficiency reasons: no need to check beliefs to be contracted if established by BB revisor (since they are implicitly grounded)
-
-		// just accept beliefToDel. Assumption: Deletions never lead to inconsistencies?!
-		if (beliefToDel != null) {
-			getLogger().finest("Revise: -" + beliefToDel);
-			removeList.add(beliefToDel);
-		} else if (beliefToAdd != null) {
-			if (config.isBeliefRevisionEnabled()) {
-				try {
-					getLogger().fine("Revise: +" + beliefToAdd);
-					SELiteral sl = getSELiteralFactory().construct(beliefToAdd);
-					if (JASDLParams.USE_BEBOPS_BELIEF_REVISION) {
-						applyBebopsBeliefRevision(sl);
-					} else {
-						applyPelletOnlyBeliefRevision(sl);
-					}
-					// *** this point is only reached if the addition is accepted ***
-					addList.add(beliefToAdd);
-				} catch (BebopsRevisionFailedException e) {
-					throw new RevisionFailedException("", e);
-				} catch (RevisionFailedException e) {
-					getLogger().info("brf: rejected " + beliefToAdd);
-					throw e; // propagate upwards
-				} catch (JASDLNotEnrichedException e) {
-					addList.add(beliefToAdd);// can't perform DL-based belief revision on SN-Literals
-				} catch (Exception e) {
-					throw new RuntimeException("Error encountered during belief revision ", e);
-				}
-
-			} else {
-				addList.add(beliefToAdd); //brf disabled, just accept belief (legacy consistency assurance will be applied later)
-			}
-		} else {
-			throw new RuntimeException("Unexpected behaviour, both beliefToAdd and beliefToDel are non-null...?");
-		}
-		List<Literal>[] toReturn = null;
-
-		for (Literal removed : removeList) {
-			// we need to ground unground removals
-			Unifier u = null;
+		}		
+				
+		
+		if(beliefToAdd != null){
+			
+			// temporarily disable contraction and annotation gathering
+			boolean prevAnnotationGathering = getConfig().isAnnotationGatheringEnabled();
+			boolean prevContraction = getConfig().isContractionEnabled();			
+			getConfig().setAnnotationGatheringEnabled(false);
+			getConfig().setContractionEnabled(false);
+			
+			SELiteral sl;
+			OWLAxiom l;
 			try {
-				u = i.peek().getUnif(); // get from current intention
+				sl = getSELiteralFactory().construct(beliefToAdd);
+				l = getSELiteralToAxiomConverter().create(sl);				
+				
+				List<Literal> addList = new Vector<Literal>();
+				List<Literal> delList = new Vector<Literal>();
+				
+				// Add the belief
+				if (!getBB().add(beliefToAdd)) throw new RevisionFailedException("Addition of "+beliefToAdd+" failed");
+				addList.add(beliefToAdd);
+				getJom().refreshReasoner();
+				
+				OWLDescription desc = new IndividualAxiomToDescriptionConverter(jom.getOntologyManager().getOWLDataFactory()).convert(l);				
+				while(!jom.areOntologiesConsistent()){
+										
+					getLogger().info("Attemping to accommodate "+beliefToAdd);
+					
+					BlackBoxExplanation bbgen = new BlackBoxExplanation(OWLManager.createOWLOntologyManager()); // need to use fresh ontology manager to avoid pollution from explanation process
+					bbgen.setOntology(sl.getOntology());
+					bbgen.setReasoner(jom.getReasoner());
+					bbgen.setReasonerFactory(new JASDLReasonerFactory());		
+					
+					Set<OWLAxiom> just = bbgen.getExplanation(desc);
+					
+					just.add(l); // SEMI-revision: can reject incoming belief
+					
+					TBoxAxiomKernelsetFilter filter = new TBoxAxiomKernelsetFilter();			
+					Set<OWLAxiom> filtered = filter.filterSingleKernel(just);					
+					JASDLIncisionFunction incisor = new JASDLIncisionFunction(this, sl);
+					Set<OWLAxiom> incised = incisor.applyToOne(filtered);
+					
+					getLogger().info("Justification for "+sl+": "+just);
+					getLogger().info("... Filtered: "+filtered);
+					getLogger().info("... Incised: "+incised);
+					
+					if(incised.contains(l)){
+						// roll back changes
+						if (!getBB().remove(beliefToAdd)) throw new RevisionFailedException("Rollback  of "+beliefToAdd+" addition failed");						
+						for(Literal del : delList){
+							if (!getBB().add(del)) throw new RevisionFailedException("Rollback  of "+del+" removal failed");
+						}						
+						throw new RevisionFailedException("Rejected new belief "+l);
+					}else{						
+						for(OWLAxiom del : incised){							
+							SELiteral delsl = getAxiomToSELiteralConverter().convert((OWLIndividualAxiom)del);		
+							getLogger().info("... removing "+delsl+"   "+del);							
+							if (!getBB().remove(delsl.getLiteral())) throw new RevisionFailedException("Removal of "+delsl+" failed");							
+							delList.add(delsl.getLiteral());
+						}						
+					}
+					
+					
+				}		
+				
+				return new List[]{addList,delList};
+				
+			} catch (JASDLNotEnrichedException e){
+				return super.brf(beliefToAdd, beliefToDel, i);
 			} catch (Exception e) {
-				u = new Unifier();
+				throw new RevisionFailedException("", e);
+			} finally{				
+				getLogger().info("Finally restoring contraction and annotation gathering status");
+				getConfig().setAnnotationGatheringEnabled(prevAnnotationGathering);
+				getConfig().setContractionEnabled(prevContraction);
 			}
-			if (believes(removed, u)) {
-				removed.apply(u);
-				if (getBB().remove(removed)) {
-					if (toReturn == null) {
-						toReturn = new List[2];
-						toReturn[0] = new Vector<Literal>();
-						toReturn[1] = new Vector<Literal>();
-					}
-					toReturn[1].add(removed);
-				}
-			}
+			
+
 		}
-
-		// affect BB
-		for (Literal added : addList) {
-			if (getBB().add(added)) {
-				if (toReturn == null) {
-					toReturn = new List[2];
-					toReturn[0] = new Vector<Literal>();
-					toReturn[1] = new Vector<Literal>();
-				}
-				toReturn[0].add(added);
-			}
-		}
-
-		return toReturn;
-	}
-
-	private void applyPelletOnlyBeliefRevision(SELiteral sl) throws Exception {
-		OWLAxiom axiomToAdd = getSELiteralToAxiomConverter().create(sl);
-		Reasoner pellet = (org.mindswap.pellet.owlapi.Reasoner) getReasoner();
-		getOntologyManager().applyChange(new AddAxiom(sl.getOntology(), axiomToAdd));
-		getJom().refreshReasoner();
-
-		while (!pellet.isConsistent()) {
-			getJom().refreshReasoner();
-			SatisfiabilityConverter con = new SatisfiabilityConverter(getOWLDataFactory());
-			OWLDescription desc = con.convert(axiomToAdd);
-			pellet.getKB().setDoExplanation(true);
-			pellet.isSatisfiable(desc);
-			Set<OWLAxiom> explanation = pellet.getExplanation();
-
-			explanation = new JASDLKernelsetFilter().filterSingleKernel(explanation);
-			getLogger().fine("Incremental explanation: " + explanation);
-
-			explanation = new JASDLIncisionFunction(this, sl).applyToOne(explanation);
-			getLogger().fine("Remove: " + explanation);
-
-			if (explanation.equals(Collections.singleton(axiomToAdd))) {
-				// Axiom has been rejected,
-				getOntologyManager().applyChange(new RemoveAxiom(sl.getOntology(), axiomToAdd));
-				getJom().refreshReasoner();
-				throw new RevisionFailedException("" + sl);
-			} else {
-				for (OWLAxiom revision : explanation) {
-					for (OWLOntology ontology : getOntologyManager().getOntologies()) { // across all known ontologies
-						getOntologyManager().applyChange(new RemoveAxiom(ontology, revision));
-					}
-				}
-				getJom().refreshReasoner();
-			}
-		}
-		/** Will only be reached if addition has been accepted */
-		// remove the axiom added only for the purpose of explanation generation
-		getOntologyManager().applyChange(new RemoveAxiom(sl.getOntology(), axiomToAdd));
-		getJom().refreshReasoner();
-	}
-
-	private void applyBebopsBeliefRevision(SELiteral sl) throws Exception {
-		OWLAxiom axiomToAdd = getSELiteralToAxiomConverter().create(sl);
-		BeliefBaseSemiRevisor bbrev = new BeliefBaseSemiRevisor(getOntologyManager(), new JASDLReasonerFactory(), getLogger());
-		Set<OWLAxiom> revisions = bbrev.revise(axiomToAdd, new JASDLKernelsetFilter(), new JASDLIncisionFunction(this, sl));
-		// *** this point is only reached if the addition is accepted ***
-		for (OWLAxiom revision : revisions) {
-			for (OWLOntology ontology : getOntologyManager().getOntologies()) { // across all known ontologies
-				getOntologyManager().applyChange(new RemoveAxiom(ontology, revision));
-			}
-		}
-		getJom().refreshReasoner();
+		
+		throw new RuntimeException("Unexpected behaviour, both beliefToAdd and beliefToDel are non-null.");		
 	}
 	
 	
@@ -341,3 +284,58 @@ public class JASDLAgent extends JmcaAgent{
 	}
 
 }
+/**
+private void applyPelletOnlyBeliefRevision(SELiteral sl) throws Exception {
+	OWLAxiom axiomToAdd = getSELiteralToAxiomConverter().create(sl);
+	Reasoner pellet = (org.mindswap.pellet.owlapi.Reasoner) getReasoner();
+	getOntologyManager().applyChange(new AddAxiom(sl.getOntology(), axiomToAdd));
+	getJom().refreshReasoner();
+
+	while (!pellet.isConsistent()) {
+		getJom().refreshReasoner();
+		SatisfiabilityConverter con = new SatisfiabilityConverter(getOWLDataFactory());
+		OWLDescription desc = con.convert(axiomToAdd);
+		pellet.getKB().setDoExplanation(true);
+		pellet.isSatisfiable(desc);
+		Set<OWLAxiom> explanation = pellet.getExplanation();
+
+		explanation = new JASDLKernelsetFilter().filterSingleKernel(explanation);
+		getLogger().fine("Incremental explanation: " + explanation);
+
+		explanation = new JASDLIncisionFunction(this, sl).applyToOne(explanation);
+		getLogger().fine("Remove: " + explanation);
+
+		if (explanation.equals(Collections.singleton(axiomToAdd))) {
+			// Axiom has been rejected,
+			getOntologyManager().applyChange(new RemoveAxiom(sl.getOntology(), axiomToAdd));
+			getJom().refreshReasoner();
+			throw new RevisionFailedException("" + sl);
+		} else {
+			for (OWLAxiom revision : explanation) {
+				for (OWLOntology ontology : getOntologyManager().getOntologies()) { // across all known ontologies
+					getOntologyManager().applyChange(new RemoveAxiom(ontology, revision));
+				}
+			}
+			getJom().refreshReasoner();
+		}
+	}
+	// Will only be reached if addition has been accepted
+	// remove the axiom added only for the purpose of explanation generation
+	getOntologyManager().applyChange(new RemoveAxiom(sl.getOntology(), axiomToAdd));
+	getJom().refreshReasoner();
+}
+
+private void applyBebopsBeliefRevision(SELiteral sl) throws Exception {
+	OWLAxiom axiomToAdd = getSELiteralToAxiomConverter().create(sl);
+	BeliefBaseSemiRevisor bbrev = new BeliefBaseSemiRevisor(getOntologyManager(), new JASDLReasonerFactory(), getLogger());
+	Set<OWLAxiom> revisions = bbrev.revise(axiomToAdd, new JASDLKernelsetFilter(), new JASDLIncisionFunction(this, sl));
+	// *** this point is only reached if the addition is accepted ***
+	for (OWLAxiom revision : revisions) {
+		for (OWLOntology ontology : getOntologyManager().getOntologies()) { // across all known ontologies
+			getOntologyManager().applyChange(new RemoveAxiom(ontology, revision));
+			//TODO: Use Jason's standard mechanisms, avoid contraction though!
+		}
+	}
+	getJom().refreshReasoner();
+}
+**/

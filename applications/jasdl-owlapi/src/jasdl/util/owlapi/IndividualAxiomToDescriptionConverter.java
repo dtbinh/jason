@@ -75,7 +75,6 @@ import org.semanticweb.owl.model.SWRLRule;
  * @author Tom Klapiscak
  *
  */
-@Deprecated
 public class IndividualAxiomToDescriptionConverter implements OWLAxiomVisitor {
 
 	private OWLDataFactory factory;

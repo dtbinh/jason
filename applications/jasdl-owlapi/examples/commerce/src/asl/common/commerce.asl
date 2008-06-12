@@ -46,7 +46,7 @@
 	purchase(ID)[o(c)]
 	<-		
 		-hasProductDescription(ID, _)[o(c), source(_)];
-		-includedIn(ID, _)[o(c), source(_)];
+		.abolish(includedIn(ID, _)[o(c), source(_)]);
 		-hasQuantity(ID, _)[o(c), source(_)];
 		-purchase(ID)[o(c), source(_)];
 		-hasShop(ID, _)[o(c), source(_)].

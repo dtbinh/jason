@@ -29,6 +29,7 @@ import jasdl.util.exception.JASDLException;
 import jasdl.util.exception.JASDLNotEnrichedException;
 import jason.asSemantics.Agent;
 import jason.asSemantics.Unifier;
+import jason.asSyntax.Atom;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Term;
 import jason.bb.BeliefBase;
@@ -70,6 +71,7 @@ public class JASDLBeliefBase extends DefaultBeliefBase {
 	@Override
 	public boolean add(Literal l) {
 		getLogger().fine("Adding " + l);
+		
 		try {
 
 			SELiteral sl = agent.getSELiteralFactory().construct(l);

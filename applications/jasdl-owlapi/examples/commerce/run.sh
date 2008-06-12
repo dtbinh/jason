@@ -5,7 +5,7 @@ if [ ! -f $OWL2MAS_JAR ] ; then
 	exit 0
 fi
 
-export CLASSPATH=$CLASSPATH:$PWD/../../lib/jasdl.jar
+export CLASSPATH=$CLASSPATH:$PWD/../../lib/jasdl.jar:$PWD/../../../jmca/lib/jmca.jar
 
 bash $OWL2MAS_HOME/owl2mas.sh . soc ./onts/society.owl false $1
 
