@@ -96,15 +96,17 @@ public class JASDLBeliefBase extends DefaultBeliefBase {
 			}
 
 			if (!containsAxiom || !containsAllAnnots) {
-				if (!agent.getConfig().isBeliefRevisionEnabled()) { // if brf disabled, resort to legacy consistency maintenance mechanism 					
-					if (!agent.getJom().areOntologiesConsistent()) {
-						getLogger().info("legacy consistency assurance: rejected " + axiom);
-						RemoveAxiom rem = new RemoveAxiom(ontology, axiom);
-						agent.getOntologyManager().applyChange(rem);
-						agent.getJom().refreshReasoner();
-						return false;
-					}
-				}
+				
+			// 13-06-2008: Moved to brf
+			//	if (!agent.getConfig().isBeliefRevisionEnabled()) { // if brf disabled, resort to legacy consistency maintenance mechanism 					
+			//		if (!agent.getJom().areOntologiesConsistent()) {
+			//			getLogger().info("legacy consistency assurance: rejected " + axiom);
+			//			RemoveAxiom rem = new RemoveAxiom(ontology, axiom);
+			//			agent.getOntologyManager().applyChange(rem);
+			//			agent.getJom().refreshReasoner();
+			//			return false;
+			//		}
+			//	}
 
 				if (l.hasAnnot(TPercept)) {
 					percepts.add(l);

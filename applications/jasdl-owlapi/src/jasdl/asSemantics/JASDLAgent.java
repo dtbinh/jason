@@ -128,8 +128,8 @@ public class JASDLAgent extends JmcaAgent{
 	@Override
 	public List<Literal>[] brf(Literal beliefToAdd, Literal beliefToDel, Intention i) throws RevisionFailedException {
 		
-		// if experimental feature is disabled or we are only removing (in which case brf need not be applied - OWL-DL is monotonic)
-		if (!config.isBeliefRevisionEnabled() || beliefToDel != null) { 
+		// if we are only removing brf need not be applied - OWL-DL is monotonic
+		if (beliefToDel != null) { 
 			return super.brf(beliefToAdd, beliefToDel, i);
 		}		
 				
@@ -140,63 +140,72 @@ public class JASDLAgent extends JmcaAgent{
 			boolean prevAnnotationGathering = getConfig().isAnnotationGatheringEnabled();
 			boolean prevContraction = getConfig().isContractionEnabled();			
 			getConfig().setAnnotationGatheringEnabled(false);
-			getConfig().setContractionEnabled(false);
+			getConfig().setContractionEnabled(false);	
 			
-			SELiteral sl;
-			OWLAxiom l;
 			try {
-				sl = getSELiteralFactory().construct(beliefToAdd);
-				l = getSELiteralToAxiomConverter().create(sl);				
 				
 				List<Literal> addList = new Vector<Literal>();
 				List<Literal> delList = new Vector<Literal>();
 				
+				SELiteral sl = getSELiteralFactory().construct(beliefToAdd);
+				OWLAxiom l = getSELiteralToAxiomConverter().create(sl);						
+				
 				// Add the belief
 				if (!getBB().add(beliefToAdd)) throw new RevisionFailedException("Addition of "+beliefToAdd+" failed");
 				addList.add(beliefToAdd);
-				getJom().refreshReasoner();
 				
-				OWLDescription desc = new IndividualAxiomToDescriptionConverter(jom.getOntologyManager().getOWLDataFactory()).convert(l);				
-				while(!jom.areOntologiesConsistent()){
-										
-					getLogger().info("Attemping to accommodate "+beliefToAdd);
-					
-					BlackBoxExplanation bbgen = new BlackBoxExplanation(OWLManager.createOWLOntologyManager()); // need to use fresh ontology manager to avoid pollution from explanation process
-					bbgen.setOntology(sl.getOntology());
-					bbgen.setReasoner(jom.getReasoner());
-					bbgen.setReasonerFactory(new JASDLReasonerFactory());		
-					
-					Set<OWLAxiom> just = bbgen.getExplanation(desc);
-					
-					just.add(l); // SEMI-revision: can reject incoming belief
-					
-					TBoxAxiomKernelsetFilter filter = new TBoxAxiomKernelsetFilter();			
-					Set<OWLAxiom> filtered = filter.filterSingleKernel(just);					
-					JASDLIncisionFunction incisor = new JASDLIncisionFunction(this, sl);
-					Set<OWLAxiom> incised = incisor.applyToOne(filtered);
-					
-					getLogger().info("Justification for "+sl+": "+just);
-					getLogger().info("... Filtered: "+filtered);
-					getLogger().info("... Incised: "+incised);
-					
-					if(incised.contains(l)){
-						// roll back changes
-						if (!getBB().remove(beliefToAdd)) throw new RevisionFailedException("Rollback  of "+beliefToAdd+" addition failed");						
-						for(Literal del : delList){
-							if (!getBB().add(del)) throw new RevisionFailedException("Rollback  of "+del+" removal failed");
-						}						
+				if(config.isBeliefRevisionEnabled()){
+					//DL BASED SEMI-REVISION	
+						
+					OWLDescription desc = new IndividualAxiomToDescriptionConverter(jom.getOntologyManager().getOWLDataFactory()).convert(l);				
+					while(!jom.areOntologiesConsistent()){
+											
+						getLogger().info("Attemping to accommodate "+beliefToAdd);
+						
+						BlackBoxExplanation bbgen = new BlackBoxExplanation(OWLManager.createOWLOntologyManager()); // need to use fresh ontology manager to avoid pollution from explanation process
+						bbgen.setOntology(sl.getOntology());
+						bbgen.setReasoner(jom.getReasoner());
+						bbgen.setReasonerFactory(new JASDLReasonerFactory());		
+						
+						Set<OWLAxiom> just = bbgen.getExplanation(desc);
+						
+						just.add(l); // SEMI-revision: can reject incoming belief
+						
+						TBoxAxiomKernelsetFilter filter = new TBoxAxiomKernelsetFilter();			
+						Set<OWLAxiom> filtered = filter.filterSingleKernel(just);					
+						JASDLIncisionFunction incisor = new JASDLIncisionFunction(this, sl);
+						Set<OWLAxiom> incised = incisor.applyToOne(filtered);
+						
+						getLogger().fine("Justification for "+sl+": "+just);
+						getLogger().fine("... Filtered: "+filtered);
+						getLogger().fine("... Incised: "+incised);
+						
+						if(incised.contains(l)){
+							// roll back changes
+							if (!getBB().remove(beliefToAdd)) throw new RevisionFailedException("Rollback  of "+beliefToAdd+" addition failed");						
+							for(Literal del : delList){
+								if (!getBB().add(del)) throw new RevisionFailedException("Rollback  of "+del+" removal failed");
+							}						
+							throw new RevisionFailedException("Rejected new belief "+l);
+						}else{						
+							for(OWLAxiom del : incised){							
+								SELiteral delsl = getAxiomToSELiteralConverter().convert((OWLIndividualAxiom)del);		
+								getLogger().info("... removing "+delsl+"   "+del);							
+								if (!getBB().remove(delsl.getLiteral())) throw new RevisionFailedException("Removal of "+delsl+" failed");							
+								delList.add(delsl.getLiteral());
+							}						
+						}
+					}							
+
+				}else{
+					// CONTRADICTION REJECTION					
+					if (!getJom().areOntologiesConsistent()) {
+						getLogger().info("Contradiction rejection  " + beliefToAdd);
+						if (!getBB().remove(beliefToAdd)) throw new RevisionFailedException("Rollback  of "+beliefToAdd+" addition failed");
 						throw new RevisionFailedException("Rejected new belief "+l);
-					}else{						
-						for(OWLAxiom del : incised){							
-							SELiteral delsl = getAxiomToSELiteralConverter().convert((OWLIndividualAxiom)del);		
-							getLogger().info("... removing "+delsl+"   "+del);							
-							if (!getBB().remove(delsl.getLiteral())) throw new RevisionFailedException("Removal of "+delsl+" failed");							
-							delList.add(delsl.getLiteral());
-						}						
 					}
-					
-					
-				}		
+						
+				}
 				
 				return new List[]{addList,delList};
 				
@@ -204,11 +213,11 @@ public class JASDLAgent extends JmcaAgent{
 				return super.brf(beliefToAdd, beliefToDel, i);
 			} catch (Exception e) {
 				throw new RevisionFailedException("", e);
-			} finally{				
-				getLogger().info("Finally restoring contraction and annotation gathering status");
+			}finally{				
+				getLogger().fine("Restoring contraction and annotation gathering status");
 				getConfig().setAnnotationGatheringEnabled(prevAnnotationGathering);
 				getConfig().setContractionEnabled(prevContraction);
-			}
+			}	
 			
 
 		}
