@@ -56,6 +56,8 @@ public class FoodEnvironment extends SteppedEnvironment {
 		id2ag.put(lastUsedId, agName);
 		return lastUsedId;
     }
+
+    // TODO: implement simultaneous attack
     
     @Override
     public boolean executeAction(String agName, Structure action) {

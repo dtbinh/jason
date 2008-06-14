@@ -304,11 +304,26 @@ MAS masid {
   Several items can be added as strings separated by ";". This
   approach is used in the examples/sniffer.
 
-\item If a more customised startup is required for your system, rename
-  bin/build.xml to bin/c-build.xml and edit the c-build.xml script as
-  you want. If a c-build.xml file exists, it is used instead of
-  build.xml and no new script is created each time you execute the
-  system.
+\item If a more customised startup is required for your system, create
+  a file named bin/c-build.xml with the template below:
+
+\begin{verbatim}
+<project name ="mybuild" basedir="..">
+    <import file="build.xml"/>
+	
+    <target name="user-init">
+        <!-- add here all your custom initialisation -->
+    </target>
+	
+    <target name="user-end">
+        <!-- add here all your custom termination -->
+    </target>
+
+    <!-- you can also "override" other tasks from build.xml -->
+</project>
+\end{verbatim}
+  If a c-build.xml file exists, it is used to run your application
+  instead of build.xml.
 \end{enumerate}
 
 \subsection{Which execution modes are available?}

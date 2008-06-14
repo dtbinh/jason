@@ -60,7 +60,7 @@ New examples and demos:
         presented in http://jasss.soc.surrey.ac.uk/1/3/3.html
 
 Bugs fixed:
-. BUF add annotation "source(percept)" in the perception deletion event
+. BUF doesn't add annotation "source(percept)" in the perception deletion event
 . drop_desire does not remove desires in Circumstance.Event correctly 
   when annotations are used
 . print works like println
