@@ -64,6 +64,7 @@ Bugs fixed:
 . drop_desire does not remove desires in Circumstance.Event correctly 
   when annotations are used
 . print works like println
+. =.. with atoms
 
 
 -------------
