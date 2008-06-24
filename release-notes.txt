@@ -65,6 +65,7 @@ Bugs fixed:
   when annotations are used
 . print works like println
 . =.. with atoms
+. unbound vars as arguments for rules (as identified by Stephen Cranefield)
 
 
 -------------
