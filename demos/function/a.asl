@@ -32,7 +32,7 @@ t(x).
 
 /* Initial goals */
 
-//!show_predef_funtion.
+!show_predef_funtion.
 !show_userdef_funtion.
 
 /* Plans */

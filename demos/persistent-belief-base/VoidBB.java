@@ -43,6 +43,7 @@ public class VoidBB implements jason.bb.BeliefBase {
         return new ArrayList<Literal>().iterator();
     }
     
+    @Deprecated
     public Iterator<Literal> getAll() {
         return iterator();
     }
@@ -59,6 +60,7 @@ public class VoidBB implements jason.bb.BeliefBase {
         return new ArrayList<Literal>().iterator();
     }
     
+    @Deprecated
     public Iterator<Literal> getRelevant(Literal l) {
         return new ArrayList<Literal>().iterator();
     }
