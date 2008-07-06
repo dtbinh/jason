@@ -3,7 +3,7 @@ version 1.1.2
 -------------
 
 New features
-. (experimental) control of the execution in plan's body with if, while
+. (experimental) control of the execution in plan bodies with if, while,
   and for.
 
   --- if ----
@@ -17,8 +17,9 @@ New features
   if <logical formula> holds, <plan_body1> is executed; otherwise, 
   <plan_body2> is executed.
 
-  e.g.: if (vl(X) & X > 10) { // where vl(X) is a belief
-           .print("value > 10")
+  e.g.: if (vl(X) & X > 10 & X < 20) { // where vl(X) is a belief
+           .print("value > 10 and ");
+           .print("value < 20")
         }
 
   --- while ---
@@ -41,7 +42,7 @@ New features
     <plan_body>
   };
 
-  for all unifications of <logical formula> the <plan_body> is executed.
+  the <plan_body> is executed for all unifications of <logical formula>.
  
   e.g.: for ( vl(X) ) {
           .print(X)
@@ -55,18 +56,18 @@ New features
  
 
 New examples and demos:
-. demos/gui: two simple examples of how to make a GUI for agents
+. demos/gui: two simple examples of how to make a GUI for individual agents
 . example/food-simulation: implementation of the scenario of simulation
         presented in http://jasss.soc.surrey.ac.uk/1/3/3.html
 
 Bugs fixed:
-. BUF doesn't add annotation "source(percept)" in the perception deletion event
-. drop_desire does not remove desires in Circumstance.Event correctly 
+. BUF didn't add annotation "source(percept)" in the perception deletion event
+. drop_desire did not remove desires in Circumstance.Event correctly 
   when annotations are used
-. print works like println
-. =.. with atoms
-. unbound vars as arguments for rules (as identified by Stephen Cranefield)
-
+. print worked like println
+. problem in =.. with atoms
+. problem in unification whe unbound vars were used as arguments
+  for rules (as identified by Stephen Cranefield)
 
 -------------
 version 1.1.1
