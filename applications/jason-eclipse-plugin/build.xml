@@ -12,12 +12,12 @@
 
 	<property name="dist.properties" value="${basedir}/bin/dist.properties" />
 	<property name="version" value="1" />
-	<property name="release" value="1.1" />
+	<property name="release" value="1.2" />
 	<property name="distDir" value="${basedir}/dist" />
 	<property name="distDirPlugins" value="${distDir}/plugins" />
 	
 	<property name="pluginJar" value="${distDirPlugins}/net.sourceforge.jasonide_${version}.${release}.jar" />
-	<property name="pluginZip" value="${distDir}/jason-eclipse-plugin-${version}.${release}.zip" />
+	<property name="pluginZip" value="${env.HOME}/jason-eclipse-plugin-${version}.${release}.zip" />
 
 	<path id="project.classpath">
 		<pathelement location="${regexpJar}" />
@@ -35,12 +35,8 @@
 		</javac>
 	</target>
 
-	<target name="initJar">
-		<mkdir dir="${distDir}" />
+	<target name="jar" depends="compile">
 		<mkdir dir="${distDirPlugins}" />
-	</target>
-	
-	<target name="jar" depends="compile,initJar">
 		<jar jarfile="${pluginJar}" manifest="${basedir}/META-INF/MANIFEST.MF">
 			<fileset dir="${build.dir}">
 				<include name="**/*.class" />
@@ -52,7 +48,13 @@
 				<include name="plugin.xml" />				
 			</fileset>
 		</jar>
-		
+	</target>
+	
+	<target name="dist">
+		<delete failonerror="no" includeEmptyDirs="true">
+			<fileset dir="${distDir}" />
+		</delete>
+		<antcall target="jar" />
 	    <zip destfile="${pluginZip}" basedir="${distDir}" />
 	</target>
 
