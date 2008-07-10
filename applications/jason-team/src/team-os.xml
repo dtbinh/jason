@@ -85,7 +85,7 @@
 				</goal>
                 <goal id="goto_near_unvisited" ds="go to the near unvisited location inside the area of the group" type="maintenance"/>
                 <goal id="share_seen_cows"     ds="share seen cows with other agents in the scheme" type="maintenance"/>
-                <goal id="follow_leader"       ds="follows the leader of the scheme/group" type="maintenance"/>
+                <goal id="follow_leader"       ds="follow the leader of the scheme/group" type="maintenance"/>
               </plan>
             </goal>
             
@@ -105,11 +105,12 @@
             <goal id="herd_cows" >
               <plan operator="parallel">
                 <goal id="recruit"             ds="recruit more herdboys depending on the size of the cows cluster" type="maintenance"/>
-                <goal id="release_boys"        ds="if the number of agents too much, release some boyd" type="maintenance"/>
+                <goal id="release_boys"        ds="if the group has
+                too much boys, release some" type="maintenance"/>
                 <goal id="define_formation"    ds="compute the ideal location of each member of the group and share this information with them" type="maintenance"/>
                 <goal id="be_in_formation"     ds="go to the place allocated to the agent in the formation" type="maintenance"/>
                 <goal id="share_seen_cows"     ds="share seen cows with other agents in the scheme" type="maintenance"/>
-                <goal id="change_to_exploring" ds="verify if necessary to finish the herding group and create the exploring groups" type="maintenance"/>
+                <goal id="change_to_exploring" ds="verify if it is necessary to finish the herding group and create the exploring group" type="maintenance"/>
               </plan>
             </goal>
             
