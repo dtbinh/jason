@@ -5,7 +5,7 @@
 <organisational-specification 
 
     id="wp"
-    os-version="0.4"
+    os-version="0.6"
   
     xmlns='http://moise.sourceforge.net/os'
     xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'

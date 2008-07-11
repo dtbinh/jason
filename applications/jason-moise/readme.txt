@@ -9,4 +9,4 @@ or
 and start it. The chapter 4 of doc/tutorial.pdf explains in details 
 the examples.
 
-Note: Jason 1.1 is required.
+Note: Jason 1.1.2 is required.

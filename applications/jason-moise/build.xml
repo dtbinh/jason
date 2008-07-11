@@ -8,8 +8,8 @@
     <property environment="env"/>
 
     <property name="version"         value="1"/>
-    <property name="release"         value="1"/>
-    <property name="moiseDir"        value="${env.HOME}/Moise/Moise-svn" />
+    <property name="release"         value="1.2"/>
+    <property name="moiseDir"        value="${env.HOME}/svn-moise" />
     <property name="distDir"         value="${env.HOME}/tmp/jmoise-${version}.${release}" />
     <property name="distFile"        value="${env.HOME}/jason-moise-${version}.${release}" />
     <property name="doc-src-dir"     value="${env.HOME}/programming/Moise-doc" />

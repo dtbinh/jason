@@ -6,11 +6,14 @@ import jason.asSyntax.Term;
 
 /** 
 
-<p>Organisational action: <b><code>jmoise.create_group( GrSpecId [, SuperGrId] )</code></b>: 
-   used by an agent to create a new group based on GrSpecId specification. 
-   GrSpecId is the name of the group in the structural specification, and
-   SuperGrId is the identification of the super group instance. The second parameter
-   is used in case a sub-groups is being created. 
+<p>Organisational action: <b><code>jmoise.create_group( GrSpecId [,
+   SuperGrId] [, newGroupId] )</code></b>: used by an agent to create
+   a new group based on GrSpecId specification.  GrSpecId is the name
+   of the group in the structural specification, and SuperGrId is the
+   identification of the super group instance. The second parameter is
+   used in case a sub-groups is being created. If the last argument is
+   a variable, it unifies with the unique identification given to the
+   new group.
    
 <p>Conditions to succeed (just in case of creation of sub-groups):
 <ul>
