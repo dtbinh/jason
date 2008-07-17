@@ -17,13 +17,17 @@ public class TestVarInContext {
         
         // defines the agent's AgentSpeak code
         ag.parseAScode(
-                "b1[b]. b2[c]. b3[d]. b4[a,d]. "+
+                "b1[b]. b2[c]. b3[d]. b4[a,d]. step(5). b(8)[step(3)]. b(9)[step(0)]."+
                 "+!test1 : P[e] | P[c] <- jason.asunit.print(P). " + 
                 
                 "+!test2 : P[e] & P[c] <- jason.asunit.print(P). " + 
                 "-!test2               <- jason.asunit.print(\"error\"). " + 
                 
-                "+!test3 : P[a] & P[d] <- jason.asunit.print(P). " 
+                "+!test3 : P[a] & P[d] <- jason.asunit.print(P). " +
+                
+                "is_old(P) :- (not P | (step(Current) & P[step(N)] & Current - N > 3)). " +
+                "+!test4(X) : is_old(X) <- jason.asunit.print(1). "+
+                "+!test4(_)             <- jason.asunit.print(2). " 
         );
     }
     
@@ -39,6 +43,12 @@ public class TestVarInContext {
 
         ag.addGoal("test3");
         ag.assertPrint("b4", 5);
+        
+        ag.addGoal("test4(b(8))");
+        ag.assertPrint("2", 5);
+
+        ag.addGoal("test4(b(9))");
+        ag.assertPrint("1", 5);
     }
 
 }
