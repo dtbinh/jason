@@ -12,7 +12,7 @@
   <- .print(".");
      !!dots.
 
-// another loop that resumes and suspend the start
+// another loop that resumes and suspend the "dops" goal
 +!control
   <- .wait(30);
      .suspend(dots); // suspend the intention with goal dots

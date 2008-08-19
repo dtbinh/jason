@@ -142,7 +142,7 @@
 +!change_to_herding[scheme(Sch),mission(Mission)]
    : cow(_,_,_)
   <- .print("ooo I see some cows, create the herding group");
-     // check these cows are being herded by other group
+     // check whether the seen cows are being herded by other group
      .findall(L, group_leader(_,L),Leaders);
      !ask_all_cows(Leaders,LCows);
      .findall(cow(ID,X,Y), cow(ID,X,Y), MyCows);

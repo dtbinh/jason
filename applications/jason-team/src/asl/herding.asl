@@ -98,6 +98,7 @@
      .send(gaucho5,achieve,create_exploration_gr);
      .send(gaucho6,achieve,restart).
      */
+// TODO: find a nice solution for this plan!     
 +!release_boys[scheme(Sch),mission(Mission),group(Gr)]
    : .count(play(_,herdboy,Gr),N) &
      (N > 3 | (N > 1 & current_cluster(CAsList) & .length(CAsList) < 5))

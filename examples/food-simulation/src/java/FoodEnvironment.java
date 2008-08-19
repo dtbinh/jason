@@ -165,7 +165,7 @@ public class FoodEnvironment extends SteppedEnvironment {
         if (name != null) {
             updateAgPercept(name, ag);
         } else {
-        	logger.warning("Can not give perception to "+ag+" bacause it is no registered!");
+        	logger.warning("Can not give perception to "+ag+" because it is no registered!");
         }
     }
 

@@ -58,7 +58,7 @@ cow_perception_ratio(4).
      !create_exploration_gr.
 +!restart
   <- .print("*** restart -- even ***"); 
-     !quite_all_missions_roles;
+     !quit_all_missions_roles;
 
      .my_name(Me);
      // try to adopt scouter in some exploration
@@ -66,10 +66,10 @@ cow_perception_ratio(4).
      !try_adopt(scouter,LGE);
 	 
 	 // if I still have no role, try herdboy
-      if ( not play(Me,_,_) ) {
+     if ( not play(Me,_,_) ) {
         .findall(GH, group(herding_grp,GH),  LGH);
         !try_adopt(herdboy,LGH)
-      }.
+     }.
   
 +!try_adopt(_Role,[]).
 +!try_adopt(Role,[G|_])
@@ -135,7 +135,7 @@ cow_perception_ratio(4).
 	    .findall(Boy,play(Boy,herdboy,G),HerdBoys);
 		.send(HerdBoys, achieve, change_role(herdboy,GT))
 	 };
-     !quite_all_missions_roles;
+     !quit_all_missions_roles;
      jmoise.adopt_role(NewRole,GT).
 	 
 // causes a loop:
@@ -148,7 +148,7 @@ cow_perception_ratio(4).
   <- .print("ooo Adopting role ",Role," in group ",Group,", as asked by ",Ag);
      jmoise.adopt_role(Role, Group).
 
-+!quite_all_missions_roles
++!quit_all_missions_roles
   <- .my_name(Me);
   
      // give up all missions

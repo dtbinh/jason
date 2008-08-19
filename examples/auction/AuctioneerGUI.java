@@ -41,9 +41,13 @@ public class AuctioneerGUI extends AgArch {
         if (action.getActionTerm().getFunctor().startsWith("show_winner")) {
             jt.append("Winner of auction  " + action.getActionTerm().getTerm(0));
             jt.append(" is " + action.getActionTerm().getTerm(1) + "\n");
-            auction.setEnabled(true);
+            action.setResult(true);
+            feedback.add(action);
+            
+            auction.setEnabled(true); // enable GUI button
+        } else {
+			super.act(action,feedback); // send the action to the environment to be performed.
         }
-        super.act(action,feedback); // send the action to the environment to be performed.
     }
 
     public void stopAg() {

@@ -37,6 +37,7 @@ public class MarsEnv extends Environment {
     
     @Override
 	public boolean executeAction(String ag, Structure action) {
+        logger.info(ag+" doing: "+ action);
 		try {
 			if (action.equals(ns)) {
 				model.nextSlot();
