@@ -259,6 +259,7 @@
 		</delete>
 		<delete dir="${distDir}/bin/classes" />
 		<delete dir="${distDir}/doc/faq" />
+		<delete dir="${distDir}/doc/api" />
 		<delete dir="${distDir}/doc/mini-tutorial/src" />
 
 		<tar compression="gzip" tarfile="${distFile}.tgz">
