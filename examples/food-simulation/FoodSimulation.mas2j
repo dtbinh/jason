@@ -67,8 +67,4 @@ MAS normative_simulation {
        reputation [verbose=0] #25;
        
    aslSourcePath: "src/asl"; 
-        t;
-
-        a;
-
 }
