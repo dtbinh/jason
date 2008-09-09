@@ -19,7 +19,7 @@
 	<property name="distDir" value="${env.HOME}/tmp/x/Jason-${version}.${release}" />
 	<property name="distFile" value="${env.HOME}/Jason-${version}.${release}" />
 
-	<property name="jedit.install.dir" value="${basedir}/bin/jedit" />
+	<property name="jedit.install.dir" value="${basedir}/lib/jedit" />
 	<property name="plugin.jar.name" value="jason-jedit-plugin.jar" />
 
 	<path id="run.classpath">
@@ -36,8 +36,8 @@
 		<pathelement location="${basedir}/lib/ant-launcher.jar" />
 		<pathelement location="${basedir}/lib/ant.jar" />
 		<pathelement location="${basedir}/demos/persistent-belief-base/lib/hsqldb.jar" />
-		<pathelement location="${jedit.install.dir}/jars/ErrorList.jar" />
-		<pathelement location="${jedit.install.dir}/jars/SideKick.jar" />
+		<pathelement location="${jedit.install.dir}/ErrorList.jar" />
+		<pathelement location="${jedit.install.dir}/SideKick.jar" />
 		<pathelement location="${jasonJar}" />
 	</path>
 
@@ -223,6 +223,9 @@
 			windowtitle="Jason - AgentSpeak Java Interpreter">
 				<classpath refid="project.classpath" />
 		</javadoc>
+		<exec executable="doxygen">
+			<arg line="doc/jason.doxygen"/>
+		</exec>
 	</target>
 
 	<target name="dist" depends="cleanExamples,plugin" description="Build distribution.">

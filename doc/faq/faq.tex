@@ -25,7 +25,7 @@
 
 
 % ---------------------------------------------------------------------
-\section{Platform Name}
+\section{General}
 
 \subsection{Why is the platform called "Jason"?}
 
@@ -842,11 +842,6 @@ ant jar
 ant plugin
 \end{verbatim}
 
-\textbb{Note}: if you are using Eclipse, set the output directory as
-\texttt{bin/classes}.
-
-
-
 \item create the API documentation:
 \begin{verbatim}
 ant apidoc
@@ -856,5 +851,17 @@ More information is available at
 \htlink{SourceForge page}{http://sourceforge.net/svn/?group_id=98417}.
 
 \end{enumerate}
+
+\subsection{How to create an Eclipse project for \jason?}
+
+\begin{enumerate}
+\item Select new Java Project wizard in Eclipse.
+\item In "create project from existing source" select the directory where
+  \Jason is installed. [Next]
+\item Set \texttt{"src"} directory for the sources.
+\item Set \texttt{"bin/classes"} for "Default output folder".
+\item Add all jars in \texttt{"lib"} for "Libraries". [Finish]
+\end{enumerate}
+
 
 \end{document}
