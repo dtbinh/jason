@@ -6,7 +6,7 @@ import java.util.logging.*;
 
 import javax.swing.JOptionPane;
 
-public class yes_no extends SuspendInternalAction {
+public class yes_no extends ConcurrentInternalAction {
 
     private Logger logger = Logger.getLogger("gui."+yes_no.class.getName());
 
@@ -14,20 +14,20 @@ public class yes_no extends SuspendInternalAction {
     public Object execute(final TransitionSystem ts, Unifier un, final Term[] args) throws Exception {
         try {
             // suspend the intention (max 5 seconds)
-            final String key = suspend(ts, "gui", 5000); 
+            final String key = suspendInt(ts, "gui", 5000); 
 
             // to not block the agent thread, 
-            // create a new thread that show the GUI and resume the intention latter 
-            new Thread() {
+            // create a new task that show the GUI and resume the intention latter 
+            startInternalAction(ts, new Runnable() {
                 public void run() {
                     int answer = JOptionPane.showConfirmDialog(null, args[0].toString());
-                    // resume the intention with success
+                    
                     if (answer == JOptionPane.YES_OPTION)
-                        yes_no.this.resume(ts, key);
+                        resumeInt(ts, key); // resume the intention with success
                     else
-                        fail(ts, key);
+                        failInt(ts, key); // resume the intention with fail
                 }
-            }.start();
+            });
             
             return true;
         } catch (Exception e) {
@@ -44,6 +44,6 @@ public class yes_no extends SuspendInternalAction {
         //resume(ts,intentionKey);
         
         // 2: fail
-        fail(ts, intentionKey);
+        failInt(ts, intentionKey);
     }
 }

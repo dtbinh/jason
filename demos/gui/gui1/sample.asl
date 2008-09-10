@@ -1,7 +1,7 @@
 /* Initial goals */
 
 !start.
-!print.
+!print(system.time).
 
 /* Plans */
 
@@ -14,6 +14,6 @@
 +!start <- gui.yes_no("Is it Ok?"); .print(ok).
 -!start <- .print(nok).
 
-+!print <- .wait(500); .print("."); !!print.
++!print(S) <- .wait(500); .print(". ", system.time-S); !!print(system.time).
 
 
