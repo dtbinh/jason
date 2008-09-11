@@ -41,7 +41,7 @@ public class yes_no extends ConcurrentInternalAction {
     public void timeout(TransitionSystem ts, String intentionKey) {
         // this method have to decide what to do with actions finished by timeout
         // 1: resume
-        //resume(ts,intentionKey);
+        //resumeInt(ts,intentionKey);
         
         // 2: fail
         failInt(ts, intentionKey);

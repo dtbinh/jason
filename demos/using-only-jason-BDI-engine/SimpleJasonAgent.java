@@ -2,8 +2,9 @@
 import jason.architecture.AgArch;
 import jason.asSemantics.ActionExec;
 import jason.asSemantics.Agent;
+import jason.asSemantics.Circumstance;
+import jason.asSemantics.TransitionSystem;
 import jason.asSyntax.Literal;
-import jason.bb.DefaultBeliefBase;
 import jason.infra.centralised.RunCentralisedMAS;
 import jason.runtime.Settings;
 
@@ -32,7 +33,8 @@ public class SimpleJasonAgent extends AgArch {
         // set up the Jason agent
         try {
             Agent ag = new Agent();
-            setTS(ag.initAg(this, new DefaultBeliefBase(), "demo.asl", new Settings()));
+            new TransitionSystem(ag, new Circumstance(), new Settings(), this);
+            ag.initAg("demo.asl");
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Init error", e);
         }

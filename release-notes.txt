@@ -2,6 +2,14 @@
 version 1.1.3
 -------------
 
+New features
+. customised belief bases can be organised in a chain so
+  that several functionalities can be composed. For more
+  information
+  see/run the demo/chain-bb
+  see API doc of ChainBB and ChainBBAdapter
+
+
 New internal actions
 . .term2string: transform term into strings and vice-versa.
 

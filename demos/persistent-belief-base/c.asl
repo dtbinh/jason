@@ -31,4 +31,4 @@
 
 // Rules used to show all books  
 show_all_titles :- book(_, Title, _, _Year, _ISBN) & .println("-- ", Title) & false.
-show_all_titles.
+show_all_titles :- true.

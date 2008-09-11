@@ -4,8 +4,10 @@ import static org.junit.Assert.fail;
 import jason.JasonException;
 import jason.RevisionFailedException;
 import jason.asSemantics.Agent;
+import jason.asSemantics.Circumstance;
 import jason.asSemantics.Event;
 import jason.asSemantics.Intention;
+import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.Literal;
 import jason.asSyntax.LogExpr;
@@ -39,7 +41,11 @@ public class TestAgent extends Agent {
                 arch = new TestArch();
             else
                 arch = new TestArch(agName);
-            arch.getUserAgArch().setTS(initAg(arch.getUserAgArch(), null, null, new Settings()));
+            
+            TransitionSystem ts = new TransitionSystem(this, new Circumstance(), new Settings(), arch.getUserAgArch());
+            setTS(ts);
+            arch.getUserAgArch().setTS(ts);
+            initAg(null);
         } catch (JasonException e) {
             logger.log(Level.SEVERE, "Error creating TestArch", e);
         }

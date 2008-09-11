@@ -19,11 +19,11 @@
 	<property name="distDir" value="${env.HOME}/tmp/x/Jason-${version}.${release}" />
 	<property name="distFile" value="${env.HOME}/Jason-${version}.${release}" />
 
-	<property name="jedit.install.dir" value="${basedir}/lib/jedit" />
+	<property name="jedit.install.dir" value="${basedir}/bin/jedit" />
 	<property name="plugin.jar.name" value="jason-jedit-plugin.jar" />
 
 	<path id="run.classpath">
-		<pathelement location="${jedit.install.dir}/jedit.jar" />
+		<pathelement location="${basedir}/lib/jedit/jedit.jar" />
 		<pathelement location="${saciJar}" />
 		<pathelement location="${jadeJar}" />
 		<pathelement location="${jadeHttpJar}" />
@@ -36,8 +36,8 @@
 		<pathelement location="${basedir}/lib/ant-launcher.jar" />
 		<pathelement location="${basedir}/lib/ant.jar" />
 		<pathelement location="${basedir}/demos/persistent-belief-base/lib/hsqldb.jar" />
-		<pathelement location="${jedit.install.dir}/ErrorList.jar" />
-		<pathelement location="${jedit.install.dir}/SideKick.jar" />
+		<pathelement location="${basedir}/lib/jedit/ErrorList.jar" />
+		<pathelement location="${basedir}/lib/jedit/SideKick.jar" />
 		<pathelement location="${jasonJar}" />
 	</path>
 
@@ -255,17 +255,18 @@
 			<fileset dir="${basedir}" includes="src/**/*" />
 		</copy>
 
-		<delete failonerror="no" includeEmptyDirs="true">
+		<!--delete failonerror="no" includeEmptyDirs="true">
 			<fileset dir="${distDir}" includes=".settings" />
 			<fileset dir="${distDir}" includes=".project" />
 			<fileset dir="${distDir}" includes=".classpath" />
-		</delete>
+		</delete -->
 		<delete dir="${distDir}/bin/classes" />
+		<delete dir="${distDir}/bin/classes-eclipse" />
 		<delete dir="${distDir}/doc/faq" />
 		<delete dir="${distDir}/doc/api" />
 		<delete dir="${distDir}/doc/mini-tutorial/src" />
 
-		<tar compression="gzip" tarfile="${distFile}.tgz">
+		<tar compression="gzip" tarfile="${distFile}.tgz" longfile="gnu">
 			<tarfileset dir="${distDir}/.." mode="755">
 				<include name="Jason-${version}.${release}/**/*.sh" />
 				<include name="Jason-${version}.${release}/**/asl2*" />
@@ -300,7 +301,7 @@
 			<fileset dir="${basedir}/examples" includes="**/MTPs-Main-Container.txt" />
 			<fileset dir="${basedir}/demos"    includes="**/MTPs-Main-Container.txt" />
 						
-			<fileset dir="${basedir}/examples/Sniffer" includes="log.*" />
+			<fileset dir="${basedir}/examples/sniffer" includes="log.*" />
 			<fileset dir="${basedir}/demos/persistent-belief-base" includes="a.bb" />
 
 			<fileset defaultexcludes="no" dir="${basedir}" includes="**/*~" />
