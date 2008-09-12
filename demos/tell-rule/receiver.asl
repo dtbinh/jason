@@ -12,7 +12,7 @@ c.
 
 // customisation of KQML performative tellRule
 +!kqml_received(A,tellRule,Rule,_)
-   <- .print("Received rule(s) ",Rule);
+   <- .print("Received rule(s) ",Rule, " from ",A);
       rules.add_rule(Rule);
       // get all rules and print them
       rules.get_rules(_,LR);
