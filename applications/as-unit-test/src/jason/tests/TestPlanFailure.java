@@ -23,10 +23,10 @@ public class TestPlanFailure {
         		"+!g3(X) : true <- inig2; !g4(X); endg3. "+
         		"+!g4(X) : true <- inig4; !g5(X); endg4. "+
         		"+!g5(_) : true <- .fail. "+
-        		"-!g3(failure) : true <- infailg3. "+
+        		"-!g3(failure)[error(ia_failed)] : true <- infailg3. "+
         		
         		"+!norel <- !j; endnorel. "+
-        		"-!j     <- infailj. "        		
+        		"-!j[error(no_relevant)] <- infailj. "        		
         );
     }
     

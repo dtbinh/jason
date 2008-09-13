@@ -9,6 +9,25 @@ New features
   see/run the demo/chain-bb
   see API doc of ChainBB and ChainBBAdapter
 
+. annotations in failure events. All failure events are now
+  annotated with:
+     error(<atom: error id>): values used by Jason are
+        no_applicable: no applicable plan
+        no_relevant: no relevant plan
+        no_option: no option selected
+        constraint_failed: constraint failed
+        ia_failed: internal action returned false
+        action_failed: action failed in the environment
+        ask_failed: answer for an ask message failed
+        wrong_arguments: throw by internal actions
+        unknown
+
+     error_msg(<string>): the human readable message of the error
+     code(<literal>): the command that failed
+     code_src(<string>): the file where the command is
+     code_line(<int>): the line in the file
+  see demo/failure for an example
+  see code of JasonException and TS for more information
 
 New internal actions
 . .term2string: transform term into strings and vice-versa.

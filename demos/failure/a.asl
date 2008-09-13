@@ -6,9 +6,10 @@
 +!g3(X) : true <- .print(inig3); !g4(X); .print(endg3).
 +!g4(X) : true <- .print(inig4); !g5(X); .print(endg4).
 +!g5(_) : true <- .fail.
--!g3(failure) : true 
-  <- .current_intention(I);
-     .print("In failure handling plan, current intention is: ",I);
+-!g3(failure)[error(ErrorId), error_msg(Msg), code(CodeBody), code_src(CodeSrc), code_line(CodeLine)] : true // get annotations related to the failure (these annotations are optional)
+  <- .print("Error ", ErrorId, " '",Msg,"' by ",CodeBody," in ",CodeSrc,":",CodeLine);
+     .current_intention(I);
+     .print("current intention is: ",I);
 	 I = intention(Id,IntendedMeans);
 	 .println;
 	 .println("*  Intention ",Id, " IM stack:");
