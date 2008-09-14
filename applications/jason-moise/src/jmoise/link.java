@@ -76,7 +76,7 @@ public class link extends DefaultInternalAction {
                             gr = rp.getGroup();
                         }
                         for (OEAgent ag: currentOE.getAgents( gr, link.getTarget())) { // all agents of the target role
-                            Unifier c = un.copy();
+                            Unifier c = un.clone();
 
                             // unifies the type and target
                             if (c.unifies(args[0], new Atom(link.getTypeStr())) && 

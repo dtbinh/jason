@@ -35,7 +35,7 @@ public class random extends DefaultInternalAction {
                 }
 
                 public Unifier next() {
-                    Unifier c = un.copy();
+                    Unifier c = un.clone();
                     c.unifies(args[0], new NumberTermImpl(random.nextInt(max)));
                     return c;
                 }
