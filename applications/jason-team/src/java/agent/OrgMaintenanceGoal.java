@@ -39,7 +39,7 @@ public class OrgMaintenanceGoal implements Directive {
 
                 // add in the end of plan
                 p.getBody().add(endofplan);
-                newAg.getPL().add(p);
+                newAg.getPL().add(p, false);
             }
                 
             // add failure plan:
