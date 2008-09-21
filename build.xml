@@ -220,12 +220,28 @@
 			use="true" 
 			version="true" 
 			author="true" 
-			windowtitle="Jason - AgentSpeak Java Interpreter">
+			windowtitle="Jason - AgentSpeak Java Interpreter"
+			stylesheetfile="doc/faq.css">
 				<classpath refid="project.classpath" />
+				<doclet name="org.umlgraph.doclet.UmlGraphDoc" path="lib/UMLGraph.jar">
+			                        <!--param name="-inferrel"/ -->
+			                        <!--param name="-inferdep"/-->
+			                        <param name="-hide" value="java.*"/>
+			                        <!--param name="-collpackages" value="java.util.*"/-->
+			                        <param name="-qualify"/>
+				                    <!--param name="-collapsible"/-->
+			                        <param name="-postfixpackage"/>
+			                        <param name="-nodefontsize" value="16"/>
+			                        <param name="-nodefontpackagesize" value="12"/>
+				                    <param name="-edgefontsize" value="14"/>
+					
+			                        <param name="-link" value="http://java.sun.com/j2se/1.5.0/docs/guide/javadoc/doclet/spec"/>
+			                        <param name="-link" value="http://java.sun.com/j2se/1.5/docs/api"/>
+			    </doclet>			
 		</javadoc>
-		<exec executable="doxygen">
+		<!--exec executable="doxygen">
 			<arg line="doc/jason.doxygen"/>
-		</exec>
+		</exec-->
 	</target>
 
 	<target name="dist" depends="cleanExamples,plugin" description="Build distribution.">
@@ -263,7 +279,6 @@
 		<delete dir="${distDir}/bin/classes" />
 		<delete dir="${distDir}/bin/classes-eclipse" />
 		<delete dir="${distDir}/doc/faq" />
-		<delete dir="${distDir}/doc/api" />
 		<delete dir="${distDir}/doc/mini-tutorial/src" />
 
 		<tar compression="gzip" tarfile="${distFile}.tgz" longfile="gnu">
