@@ -23,7 +23,7 @@
 	<property name="plugin.jar.name" value="jason-jedit-plugin.jar" />
 
 	<path id="run.classpath">
-		<pathelement location="${basedir}/lib/jedit/jedit.jar" />
+		<pathelement location="${jedit.install.dir}/jedit.jar" />
 		<pathelement location="${saciJar}" />
 		<pathelement location="${jadeJar}" />
 		<pathelement location="${jadeHttpJar}" />
