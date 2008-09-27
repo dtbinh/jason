@@ -21,6 +21,8 @@ package commerce.ui.customer;
 
 import jasdl.util.JASDLCommon;
 import jason.asSyntax.Literal;
+import jason.asSyntax.LiteralImpl;
+import jason.asSyntax.Structure;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -224,7 +226,7 @@ public class CustomerUIPanel extends JPanel implements ModelCustomerListener{
 			// strip newlines
 			productDescription = productDescription.replace("\n", " ");
 			shopDescription = shopDescription.replace("\n", " ");
-			env.executeAction(customer.getId().toString(), Literal.parseLiteral(
+			env.executeAction(customer.getId().toString(), Structure.parse(
 					"request_product(\""+productDescription+"\","+"\""+shopDescription+"\","+qty.getValue()+")"));
 			
 			lastQty = qty.getValue();
@@ -233,7 +235,7 @@ public class CustomerUIPanel extends JPanel implements ModelCustomerListener{
 	
 	class ConfirmOrderButtonActionListener implements ActionListener{
 		public void actionPerformed(ActionEvent event) {			
-			env.executeAction(customer.getId().toString(), Literal.parseLiteral("confirm_order"));
+			env.executeAction(customer.getId().toString(), new LiteralImpl("confirm_order"));
 			ordersModel.clear();
 		}		
 	}

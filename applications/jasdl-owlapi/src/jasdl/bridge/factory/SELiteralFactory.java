@@ -31,6 +31,7 @@ import jason.asSyntax.Atom;
 import jason.asSyntax.ListTerm;
 import jason.asSyntax.ListTermImpl;
 import jason.asSyntax.Literal;
+import jason.asSyntax.LiteralImpl;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 
@@ -109,7 +110,7 @@ public class SELiteralFactory {
 	 * </ul>
 	 */
 	public SELiteral construct(boolean sign, Atom functor, Term[] terms, Term[] annots, Atom label) throws JASDLInvalidSELiteralException {
-		Literal l = new Literal(sign, functor);
+		Literal l = new LiteralImpl(sign, functor);
 
 		// add "o"
 		Structure o = new Structure(JASDLParams.ONTOLOGY_ANNOTATION_FUNCTOR);

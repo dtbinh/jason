@@ -31,6 +31,7 @@ import jasdl.util.exception.JASDLUnknownMappingException;
 import jason.asSyntax.Atom;
 import jason.asSyntax.ListTerm;
 import jason.asSyntax.Literal;
+import jason.asSyntax.LiteralImpl;
 import jason.asSyntax.StringTermImpl;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
@@ -225,7 +226,7 @@ public class SELiteral {
 	 * @return
 	 */
 	public void mutateFunctor(String newFunctor) throws JASDLException {
-		Literal mutated = new Literal(!literal.negated(), newFunctor); // negation dealt with by ~ prefix
+		Literal mutated = new LiteralImpl(!literal.negated(), newFunctor); // negation dealt with by ~ prefix
 		mutated.addTerms(literal.getTerms());
 		mutated.addAnnots(literal.getAnnots());
 		literal = mutated;

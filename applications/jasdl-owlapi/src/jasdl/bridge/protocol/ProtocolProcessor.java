@@ -37,12 +37,18 @@ public class ProtocolProcessor {
 		this.outgoingStrategy = outgoingStrategy;
 	}
 
-	public Structure processIncomingStructure(Structure struct) throws JASDLMessageContentException {
-		return processStructure(struct, incomingStrategy);
+	public Structure processIncomingStructure(Literal struct) throws JASDLMessageContentException {
+        if (struct instanceof Structure)
+            return processStructure((Structure)struct, incomingStrategy);
+        else
+            return processStructure(new Structure(struct), incomingStrategy);
 	}
 
-	public Structure processOutgoingStructure(Structure struct) throws JASDLMessageContentException {
-		return processStructure(struct, outgoingStrategy);
+	public Structure processOutgoingStructure(Literal struct) throws JASDLMessageContentException {
+	    if (struct instanceof Structure)
+	        return processStructure((Structure)struct, outgoingStrategy);
+	    else 
+            return processStructure(new Structure(struct), outgoingStrategy);
 	}
 
 	private Structure processStructure(Structure struct, ProtocolProcessingStrategy strategy) throws JASDLMessageContentException {
@@ -51,9 +57,10 @@ public class ProtocolProcessor {
 		if (struct.getArity() > 0) { // if we have any terms to process!
 			// Process outer SE-enriched content
 			if (struct.isLiteral()) { // processing strategies only apply to Literals
+			    // TODO: (by Jomi): shouldn't the above test be instanceof LiteralImpl? (since for jason 1.2.0 even an Atom is considered a Literal)
 				Literal l = (Literal) struct;
 				try {
-					struct = strategy.process(l, jom);
+					struct = (Structure)strategy.process(l, jom);
 				} catch (JASDLException e) {
 					e.printStackTrace();
 				}

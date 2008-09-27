@@ -169,9 +169,9 @@ public class OWL2MAS extends OWL2MASLoader{
 				
 				agentParams.options = optionMap;
 								
-				try{agentParams.setArchClass(loadClass(agent, factory.getOWLObjectProperty(URI.create(MAS_NS + "hasAgentArchClass"))).className); }catch(OWL2MASParameterNotSetException e){}
+				try{agentParams.setArchClass(loadClass(agent, factory.getOWLObjectProperty(URI.create(MAS_NS + "hasAgentArchClass"))).getClassName()); }catch(OWL2MASParameterNotSetException e){}
 				try{agentParams.setBB(loadClass(agent, factory.getOWLObjectProperty(URI.create(MAS_NS + "hasBeliefBaseClass")))); }catch(OWL2MASParameterNotSetException e){}
-				try{agentParams.setAgClass(loadClass(agent, factory.getOWLObjectProperty(URI.create(MAS_NS + "hasAgentClass"))).className); }catch(OWL2MASParameterNotSetException e){}
+				try{agentParams.setAgClass(loadClass(agent, factory.getOWLObjectProperty(URI.create(MAS_NS + "hasAgentClass"))).getClassName()); }catch(OWL2MASParameterNotSetException e){}
 				
 				// Force #1
 				agentParams.qty = 1;			

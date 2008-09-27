@@ -24,6 +24,7 @@ import jasdl.asSemantics.JASDLAgent;
 import jasdl.util.JASDLCommon;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.Literal;
+import jason.asSyntax.LiteralImpl;
 import jason.asSyntax.Plan;
 import jason.asSyntax.PlanBody;
 import jason.asSyntax.Structure;
@@ -64,7 +65,7 @@ public class SEPlan extends Plan{
 					
 					
 					// create a new literal with functor of trigger
-					Literal newLiteral = new Literal( !oldLiteral.negated(), trigger.getFunctor());
+					Literal newLiteral = new LiteralImpl( !oldLiteral.negated(), trigger.getFunctor());
 					
 					// add the terms from the old literal
 					newLiteral.addTerms(oldLiteral.getTerms());
