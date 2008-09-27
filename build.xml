@@ -49,11 +49,12 @@
 	<condition property="jedit-ok" value="ok">
 		<or>
 			<not>
-				<available file="${basedir}/bin/jedit.tgz" />
+				<available  file="${basedir}/bin/jedit.tgz" />
 			</not>
 			<uptodate targetfile="${jedit.install.dir}" srcfile="${basedir}/bin/jedit.tgz" />
 		</or>
 	</condition>
+
 
 	<target name="untar-jedit" unless="jedit-ok">
 		<echo message="Uncompressing jEdit" />
@@ -66,7 +67,7 @@
 		<mkdir dir="${build.dir}" />
 	</target>
 
-
+	
 	<condition property="parsers-ok" value="ok">
 		<and>
 			<uptodate property="parsers-ok" targetfile="${basedir}/src/jason/mas2j/parser/mas2j.java" srcfile="${basedir}/src/jason/mas2j/parser/MAS2JavaParser.jcc" />
@@ -211,7 +212,34 @@
 		</delete>
 	</target>
 
-	<target name="apidoc" depends="compile">
+	<!-- apidoc related tasks- -->
+
+	<target name="apidoc" depends="compile,apidocsimple,apidocuml,apidoxygen" />
+	
+	<condition property="dot-ok" value="true">
+		<or>
+			<available file="dot"     filepath="${env.PATH}" />
+			<available file="dot.exe" filepath="${env.PATH}" />
+		</or>
+	</condition>
+	<condition property="dot-nok" value="true">
+		<not>
+			<or>
+				<available file="dot"     filepath="${env.PATH}" />
+				<available file="dot.exe" filepath="${env.PATH}" />
+			</or>
+		</not>
+	</condition>
+	<condition property="doxygen-nok" value="true">
+		<not>
+			<or>
+				<available file="doxygen"     filepath="${env.PATH}" />
+				<available file="doxygen.exe" filepath="${env.PATH}" />
+			</or>
+		</not>
+	</condition>
+	
+	<target name="apidocsimple" unless="dot-ok" >
 		<javadoc 
 			destdir="${basedir}/doc/api" 
 			packagenames="jason.*" 
@@ -221,12 +249,28 @@
 			version="true" 
 			author="true" 
 			windowtitle="Jason - AgentSpeak Java Interpreter"
-			stylesheetfile="doc/faq.css">
+			stylesheetfile="doc/faq/faq.css">
+				<classpath refid="project.classpath" />
+		</javadoc>
+	</target>
+	
+	<target name="apidocuml" unless="dot-nok" >
+		<javadoc 
+			destdir="${basedir}/doc/api" 
+			packagenames="jason.*" 
+			sourcepath="${basedir}/src" 
+			excludepackagenames="jason.asSyntax.parser,jason.mas2j.parser" 
+			use="true" 
+			version="true" 
+			author="true" 
+			windowtitle="Jason - AgentSpeak Java Interpreter"
+			stylesheetfile="doc/faq/faq.css">
 				<classpath refid="project.classpath" />
 				<doclet name="org.umlgraph.doclet.UmlGraphDoc" path="lib/UMLGraph.jar">
 			                        <!--param name="-inferrel"/ -->
 			                        <!--param name="-inferdep"/-->
 			                        <param name="-hide" value="java.*"/>
+									<param name="-enumconstants" />
 			                        <!--param name="-collpackages" value="java.util.*"/-->
 			                        <param name="-qualify"/>
 				                    <!--param name="-collapsible"/-->
@@ -234,16 +278,20 @@
 			                        <param name="-nodefontsize" value="16"/>
 			                        <param name="-nodefontpackagesize" value="12"/>
 				                    <param name="-edgefontsize" value="14"/>
-					
 			                        <param name="-link" value="http://java.sun.com/j2se/1.5.0/docs/guide/javadoc/doclet/spec"/>
 			                        <param name="-link" value="http://java.sun.com/j2se/1.5/docs/api"/>
 			    </doclet>			
 		</javadoc>
-		<!--exec executable="doxygen">
+	</target>
+	<target name="apidoxygen" unless="doxygen-nok" >
+		<exec executable="doxygen">
 			<arg line="doc/jason.doxygen"/>
-		</exec-->
+		</exec>
 	</target>
 
+
+	<!-- distribution related tasks -->
+	
 	<target name="dist" depends="cleanExamples,plugin" description="Build distribution.">
 
 		<echo message="Generating Jason ${version}.${release}" />
