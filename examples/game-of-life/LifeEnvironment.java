@@ -1,6 +1,7 @@
 // Environment code for project game-of-life.mas2j
 
 import jason.asSyntax.Literal;
+import jason.asSyntax.LiteralImpl;
 import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Structure;
 import jason.environment.grid.Location;
@@ -43,7 +44,7 @@ public class LifeEnvironment extends jason.environment.SteppedEnvironment {
     @Override
 	protected void stepStarted(int step) {
     	//logger.info("start step "+step);
-    	lstep = new Literal("step");
+    	lstep = new LiteralImpl("step");
         lstep.addTerm(new NumberTermImpl(step+1));
     }
     
@@ -109,7 +110,7 @@ public class LifeEnvironment extends jason.environment.SteppedEnvironment {
         if (model.isAlive(l.x + 1, l.y - 1)) alive++;
         if (model.isAlive(l.x + 1, l.y))     alive++;
         if (model.isAlive(l.x + 1, l.y + 1)) alive++;
-        Literal lAlive = new Literal("alive_neighbors");
+        Literal lAlive = new LiteralImpl("alive_neighbors");
         lAlive.addTerm(new NumberTermImpl(alive));
         addPercept(agName, lAlive);
         

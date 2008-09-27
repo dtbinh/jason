@@ -5,6 +5,7 @@ import jason.RevisionFailedException;
 import jason.architecture.AgArch;
 import jason.asSemantics.Message;
 import jason.asSyntax.Literal;
+import jason.asSyntax.LiteralImpl;
 import jason.asSyntax.NumberTerm;
 import jason.asSyntax.PredicateIndicator;
 import jason.environment.grid.Location;
@@ -151,9 +152,9 @@ public class MinerArch extends AgArch {
 	        	//logger.info("** Arch adding restart for "+getAgName()+", TS="+getTS().getCurrentTask()+", "+getTS().getC());
 	        	getTS().getC().create();
         		
-	        	getTS().getAg().getBB().abolish(new Literal("restart").getPredicateIndicator());
+	        	getTS().getAg().getBB().abolish(new LiteralImpl("restart").getPredicateIndicator());
 	        	getTS().getAg().getBB().abolish(new PredicateIndicator("gold",2)); // tira os ouros
-	        	getTS().getAg().addBel(new Literal("restart"));
+	        	getTS().getAg().addBel(new LiteralImpl("restart"));
 	        	lo2 = new Location(-1,-1); // to not restart again in the next cycle
 	     
 	        	//getTS().stopCycle();

@@ -6,6 +6,7 @@ import jason.architecture.AgArch;
 import jason.asSemantics.Message;
 import jason.asSyntax.Atom;
 import jason.asSyntax.Literal;
+import jason.asSyntax.LiteralImpl;
 import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.StringTermImpl;
 import jason.asSyntax.Structure;
@@ -39,7 +40,7 @@ public class SnifferCentralised extends AgArch implements MsgListener {
 	
 		// add a belief in the agent mind 
 		// format: msgSent(time(YY,MM,DD,HH,MM,SS),id,irt,ilf,sender,receiver,content)
-		Literal e = new Literal("msg_sent");
+		Literal e = new LiteralImpl("msg_sent");
 
         Calendar now = new GregorianCalendar();
 		Structure p = new Structure("time");

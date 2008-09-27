@@ -1,6 +1,7 @@
 package arch;
 
 import jason.asSyntax.Literal;
+import jason.asSyntax.LiteralImpl;
 import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Structure;
 import jason.environment.grid.Location;
@@ -151,7 +152,7 @@ public class ACProxy extends ACAgent implements Runnable {
             arq.setScore(score);
 
             // add location in perception
-			Literal lpos = new Literal("pos");
+			Literal lpos = new LiteralImpl("pos");
 			lpos.addTerms(new NumberTermImpl(agx), new NumberTermImpl(agy), new NumberTermImpl(step));
 			percepts.add(lpos);
 
@@ -188,7 +189,7 @@ public class ACProxy extends ACAgent implements Runnable {
                             // ignore cows in the border, they complicate all :-)
                             if (absx < arq.getModel().getWidth()-1 && absx != 0 && absy != 00 && absy < arq.getModel().getHeight()-1) {
                                 int cowId = Integer.parseInt(type.getAttribute("ID"));
-                                Literal lc = new Literal("cow");
+                                Literal lc = new LiteralImpl("cow");
                                 lc.addTerms(new NumberTermImpl( cowId ), new NumberTermImpl( absx), new NumberTermImpl(absy));
                                 Structure stepannot = new Structure("step",1); 
                                 stepannot.addTerm(new NumberTermImpl(step));

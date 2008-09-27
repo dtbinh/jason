@@ -4,7 +4,6 @@ import jason.JasonException;
 import jason.architecture.AgArch;
 import jason.asSemantics.ActionExec;
 import jason.asSyntax.Literal;
-import jason.asSyntax.Structure;
 import jason.environment.Environment;
 import jason.infra.centralised.CentralisedAgArch;
 import jason.infra.centralised.CentralisedEnvironment;
@@ -20,7 +19,7 @@ public class TestArch extends CentralisedAgArch implements Runnable {
     private Condition condition;
     private int cycle = 0;
     
-    private List<Structure> actions = new ArrayList<Structure>();
+    private List<Literal> actions = new ArrayList<Literal>();
     
     StringBuilder output = new StringBuilder();
 
@@ -40,7 +39,7 @@ public class TestArch extends CentralisedAgArch implements Runnable {
         return cycle;
     }
     
-    public List<Structure> getActions() {
+    public List<Literal> getActions() {
         return actions;
     }
     

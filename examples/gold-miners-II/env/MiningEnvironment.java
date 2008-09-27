@@ -3,6 +3,7 @@ package env;
 import jason.asSyntax.Atom;
 import jason.asSyntax.DefaultTerm;
 import jason.asSyntax.Literal;
+import jason.asSyntax.LiteralImpl;
 import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
@@ -179,7 +180,7 @@ public class MiningEnvironment extends SteppedEnvironment {
     		logger.warning("Error creating world "+e);
     	}
     }
-    public static Literal aCAP   = new Literal("container_has_space");
+    public static Atom aCAP      = new LiteralImpl("container_has_space");
 
     public static Atom aOBSTACLE = new Atom("obstacle");
     public static Atom aGOLD     = new Atom("gold");
@@ -202,11 +203,11 @@ public class MiningEnvironment extends SteppedEnvironment {
         clearPercepts(agName);
         // its location
         Location l = model.getAgPos(ag);
-        Literal p = new Literal("pos");
+        Literal p = new LiteralImpl("pos");
         p.addTerms(new NumberTermImpl(l.x), new NumberTermImpl(l.y), new NumberTermImpl(getStep()));
         addPercept(agName, p);
         
-        Literal cg = new Literal("carrying_gold");
+        Literal cg = new LiteralImpl("carrying_gold");
         cg.addTerm(new NumberTermImpl(model.getGoldsWithAg(ag)));
         addPercept(agName, cg);
         
@@ -255,7 +256,7 @@ public class MiningEnvironment extends SteppedEnvironment {
     }
     
     public static Literal createCellPerception(int x, int y, Atom obj) {
-    	Literal l = new Literal("cell");
+    	Literal l = new LiteralImpl("cell");
     	l.addTerms(new NumberTermImpl(x),
     	           new NumberTermImpl(y),
     	           obj); 

@@ -13,6 +13,7 @@ import jason.asSyntax.Atom;
 import jason.asSyntax.DefaultTerm;
 import jason.asSyntax.InternalActionLiteral;
 import jason.asSyntax.Literal;
+import jason.asSyntax.LiteralImpl;
 import jason.asSyntax.PlanBody;
 import jason.asSyntax.PlanBodyImpl;
 import jason.asSyntax.Pred;
@@ -216,7 +217,7 @@ public class OrgAgent extends AgArch {
         
     }
     
-    private void generateObligationPermissionEvents(Pred m) throws RevisionFailedException {
+    private void generateObligationPermissionEvents(Literal m) throws RevisionFailedException {
         // computes this agent obligations in the scheme
         String schId = m.getTerm(0).toString();
         String grId  = m.getTerm(1).toString();
@@ -255,7 +256,7 @@ public class OrgAgent extends AgArch {
         Structure giAnnot = new Structure("group");
         giAnnot.addTerm(gr);
         
-        Literal obl = new Literal(type);
+        Literal obl = new LiteralImpl(type);
         obl.addTerms(sch,new UnnamedVar());
         obl.addAnnot(giAnnot);
         
@@ -367,7 +368,7 @@ public class OrgAgent extends AgArch {
     }
 
     private Literal buildLiteralToCleanBB(Atom aSchId, PredicateIndicator pred, boolean schInEnd) {
-        Literal l = new Literal(pred.getFunctor());
+        Literal l = new LiteralImpl(pred.getFunctor());
         if (!schInEnd) {
             l.addTerm(aSchId);
         }
@@ -434,7 +435,7 @@ public class OrgAgent extends AgArch {
 
         // create the literal to be added
         VarTerm S = new VarTerm("S");
-        Literal gil = new Literal("goal_state");
+        Literal gil = new LiteralImpl("goal_state");
         gil.addTerms(new Atom(gi.getScheme().getId()), gap, S);
         gil.addAnnot(managerSource);
 

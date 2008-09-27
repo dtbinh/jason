@@ -7,6 +7,7 @@ import jason.asSemantics.Intention;
 import jason.asSemantics.Message;
 import jason.asSyntax.Atom;
 import jason.asSyntax.Literal;
+import jason.asSyntax.LiteralImpl;
 import jason.asSyntax.NumberTerm;
 import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Term;
@@ -18,7 +19,6 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import jmoise.OrgAgent;
 import agent.SelectEvent;
 import env.ACViewer;
 import env.WorldModel;
@@ -235,7 +235,7 @@ public class CowboyArch extends IdentifyCrashed {
     	try {
         	logger.info("** Arch adding restart for "+getAgName());
     	    //getTS().getC().create(); // it is terrible for pending intentions of cowboys!
-        	getTS().getC().addAchvGoal(new Literal("restart"), Intention.EmptyInt);
+        	getTS().getC().addAchvGoal(new LiteralImpl("restart"), Intention.EmptyInt);
         	lo2 = new Location(-1,-1); // to not restart again in the next cycle
     	} catch (Exception e) {
         	logger.info("Error in restart!"+ e);
@@ -243,7 +243,7 @@ public class CowboyArch extends IdentifyCrashed {
 	}
 	
     public static Literal createCellPerception(int x, int y, Term obj) {
-        Literal l = new Literal("cell");
+        Literal l = new LiteralImpl("cell");
         l.addTerms(new NumberTermImpl(x),
                    new NumberTermImpl(y),
                    obj); 
@@ -358,7 +358,7 @@ public class CowboyArch extends IdentifyCrashed {
 	    						if (acView != null) acView.getModel().setAgPos(agid, x, y);
 	    						model.incVisited(x, y);
 	    						//getTS().getAg().getLogger().info("ag pos "+getMinerId(m.getSender())+" = "+x+","+y);
-	    						Literal tAlly = new Literal("ally_pos");
+	    						Literal tAlly = new LiteralImpl("ally_pos");
 	    						tAlly.addTerms(new Atom(m.getSender()), new NumberTermImpl(x), new NumberTermImpl(y));
 	    						getTS().getAg().addBel( tAlly );
 	    					} catch (Exception e) {
