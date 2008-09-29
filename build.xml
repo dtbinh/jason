@@ -239,7 +239,7 @@
         </not>
     </condition>
     
-    <target name="apidocsimple" unless="dot-ok" >
+    <target name="apidocsimple" unless="dot-ok" > <!-- stylesheetfile="doc/faq/faq.css" -->
         <javadoc 
             destdir="${basedir}/doc/api" 
             packagenames="jason.*" 
@@ -249,7 +249,7 @@
             version="true" 
             author="true" 
             windowtitle="Jason - AgentSpeak Java Interpreter"
-            stylesheetfile="doc/faq/faq.css">
+            >
                 <classpath refid="project.classpath" />
         </javadoc>
     </target>
@@ -264,7 +264,7 @@
             version="true" 
             author="true" 
             windowtitle="Jason - AgentSpeak Java Interpreter"
-            stylesheetfile="doc/faq/faq.css">
+            >
                 <classpath refid="project.classpath" />
                 <doclet name="org.umlgraph.doclet.UmlGraphDoc" path="lib/UMLGraph.jar">
                                     <!--param name="-inferrel"/ -->

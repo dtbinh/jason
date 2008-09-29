@@ -9,6 +9,7 @@ import jason.asSemantics.Event;
 import jason.asSemantics.Intention;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
+import jason.asSyntax.ASSyntax;
 import jason.asSyntax.Literal;
 import jason.asSyntax.LogExpr;
 import jason.asSyntax.LogicalFormula;
@@ -89,7 +90,7 @@ public class TestAgent extends Agent {
     
     public void addGoal(String g) {
         try {
-            addGoal(Literal.tryParsingLiteral(g));
+            addGoal(ASSyntax.parseLiteral(g));
         } catch (Exception e) {
             fail("Parsing '"+g+"' as literal for a goal failed!");
         }
@@ -100,7 +101,7 @@ public class TestAgent extends Agent {
     
     public void addBel(String bel) {
         try {
-            super.addBel(Literal.tryParsingLiteral(bel));
+            super.addBel(ASSyntax.parseLiteral(bel));
         } catch (ParseException e) {
             fail("Parsing '"+bel+"' as a belief!");
         } catch (RevisionFailedException e) {
@@ -109,7 +110,7 @@ public class TestAgent extends Agent {
     }
     public void delBel(String bel) {
         try {
-            Literal l = Literal.tryParsingLiteral(bel);
+            Literal l = ASSyntax.parseLiteral(bel);
             if (!l.hasSource()) {
                 l.addAnnot(BeliefBase.TSelf);
             }
@@ -145,7 +146,7 @@ public class TestAgent extends Agent {
     
     public void assertEvt(String te, int maxCycles) {
         try {
-            assertEvt(Trigger.tryParsingTrigger(te), maxCycles);
+            assertEvt(ASSyntax.parseTrigger(te), maxCycles);
         } catch (ParseException e) {
             fail("Parsing '"+te+"' as trigger failed!");
         }
@@ -164,7 +165,7 @@ public class TestAgent extends Agent {
 
     public void assertAct(String act, int maxCycles) {
         try {
-            assertAct(Structure.tryParsingStructure(act), maxCycles);
+            assertAct(ASSyntax.parseStructure(act), maxCycles);
         } catch (ParseException e) {
             fail("Parsing '"+act+"' as action failed!");
         }
