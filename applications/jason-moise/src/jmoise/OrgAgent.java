@@ -9,6 +9,7 @@ import jason.asSemantics.Event;
 import jason.asSemantics.Intention;
 import jason.asSemantics.Message;
 import jason.asSemantics.Unifier;
+import jason.asSyntax.ASSyntax;
 import jason.asSyntax.Atom;
 import jason.asSyntax.DefaultTerm;
 import jason.asSyntax.InternalActionLiteral;
@@ -256,9 +257,7 @@ public class OrgAgent extends AgArch {
         Structure giAnnot = new Structure("group");
         giAnnot.addTerm(gr);
         
-        Literal obl = new LiteralImpl(type);
-        obl.addTerms(sch,new UnnamedVar());
-        obl.addAnnot(giAnnot);
+        Literal obl = ASSyntax.createLiteral(type, sch, new UnnamedVar()).addAnnots(giAnnot);
         
         // find obligation(sch,_)[group(id)]
         Unifier un = new Unifier();

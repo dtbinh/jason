@@ -11,7 +11,6 @@ import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.ASSyntax;
 import jason.asSyntax.Literal;
-import jason.asSyntax.LogExpr;
 import jason.asSyntax.LogicalFormula;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Trigger;
@@ -128,7 +127,7 @@ public class TestAgent extends Agent {
     
     public void assertBel(String formula, int maxCycles) {
         try {
-            assertBel(LogExpr.tryParsingLogExpr(formula), maxCycles);
+            assertBel(ASSyntax.parseFormula(formula), maxCycles);
         } catch (ParseException e) {
             fail("Parsing '"+formula+"' as a formula failed!");
         }

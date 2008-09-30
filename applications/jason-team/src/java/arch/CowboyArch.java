@@ -1,5 +1,7 @@
 package arch;
 
+import static jason.asSyntax.ASSyntax.createLiteral;
+import static jason.asSyntax.ASSyntax.createNumber;
 import jason.JasonException;
 import jason.ReceiverNotFoundException;
 import jason.RevisionFailedException;
@@ -9,7 +11,6 @@ import jason.asSyntax.Atom;
 import jason.asSyntax.Literal;
 import jason.asSyntax.LiteralImpl;
 import jason.asSyntax.NumberTerm;
-import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Term;
 import jason.environment.grid.Location;
 import jason.mas2j.ClassParameters;
@@ -243,11 +244,7 @@ public class CowboyArch extends IdentifyCrashed {
 	}
 	
     public static Literal createCellPerception(int x, int y, Term obj) {
-        Literal l = new LiteralImpl("cell");
-        l.addTerms(new NumberTermImpl(x),
-                   new NumberTermImpl(y),
-                   obj); 
-        return l;
+        return createLiteral("cell", createNumber(x), createNumber(y), obj); 
     }
 
     void initKnownCows() {
@@ -358,8 +355,7 @@ public class CowboyArch extends IdentifyCrashed {
 	    						if (acView != null) acView.getModel().setAgPos(agid, x, y);
 	    						model.incVisited(x, y);
 	    						//getTS().getAg().getLogger().info("ag pos "+getMinerId(m.getSender())+" = "+x+","+y);
-	    						Literal tAlly = new LiteralImpl("ally_pos");
-	    						tAlly.addTerms(new Atom(m.getSender()), new NumberTermImpl(x), new NumberTermImpl(y));
+	    						Literal tAlly = createLiteral("ally_pos", new Atom(m.getSender()), createNumber(x), createNumber(y));
 	    						getTS().getAg().addBel( tAlly );
 	    					} catch (Exception e) {
 	    						e.printStackTrace();

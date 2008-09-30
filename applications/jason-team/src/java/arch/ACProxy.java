@@ -1,5 +1,8 @@
 package arch;
 
+import static jason.asSyntax.ASSyntax.createLiteral;
+import static jason.asSyntax.ASSyntax.createNumber;
+
 import jason.asSyntax.Literal;
 import jason.asSyntax.LiteralImpl;
 import jason.asSyntax.NumberTermImpl;
@@ -152,8 +155,7 @@ public class ACProxy extends ACAgent implements Runnable {
             arq.setScore(score);
 
             // add location in perception
-			Literal lpos = new LiteralImpl("pos");
-			lpos.addTerms(new NumberTermImpl(agx), new NumberTermImpl(agy), new NumberTermImpl(step));
+			Literal lpos = createLiteral("pos", createNumber(agx), createNumber(agy), createNumber(step));
 			percepts.add(lpos);
 
 			arq.initKnownCows();
