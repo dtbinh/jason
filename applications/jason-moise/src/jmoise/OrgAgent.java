@@ -11,7 +11,6 @@ import jason.asSemantics.Message;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.ASSyntax;
 import jason.asSyntax.Atom;
-import jason.asSyntax.DefaultTerm;
 import jason.asSyntax.InternalActionLiteral;
 import jason.asSyntax.Literal;
 import jason.asSyntax.LiteralImpl;
@@ -27,6 +26,7 @@ import jason.asSyntax.VarTerm;
 import jason.asSyntax.PlanBody.BodyType;
 import jason.asSyntax.Trigger.TEOperator;
 import jason.asSyntax.Trigger.TEType;
+import jason.asSyntax.parser.ParseException;
 import jason.mas2j.ClassParameters;
 import jason.runtime.Settings;
 
@@ -211,7 +211,11 @@ public class OrgAgent extends AgArch {
             // if the last arg of body is a free var
             Term lastTerm = body.getTerm(body.getArity()-1); 
             if (!lastTerm.isGround()) {
-                pi.peek().getUnif().unifies(lastTerm, DefaultTerm.parse(content));
+                try {
+                    pi.peek().getUnif().unifies(lastTerm, ASSyntax.parseTerm(content));
+                } catch (ParseException e) {
+                    // no problem, the content is not a term
+                }
                 //System.out.println("un = "+pi.peek().getUnif());
             }
         }
