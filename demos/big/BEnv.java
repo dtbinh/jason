@@ -1,8 +1,8 @@
 // Environment code for project big.mas2j
 
-import jason.asSyntax.*;
-import jason.environment.*;
-import java.util.logging.*;
+import jason.asSyntax.Structure;
+
+import java.util.logging.Logger;
 
 public class BEnv extends jason.environment.Environment {
 

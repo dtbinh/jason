@@ -3,7 +3,6 @@ package env;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
-import jason.asSyntax.DefaultTerm;
 import jason.environment.Environment;
 
 import java.util.Random;
@@ -45,7 +44,7 @@ public class planetEnv extends Environment {
     public final String bs = new String("build_using");
     public final String mr = new String("mine");
     public final String dr = new String("drop");
-    public final Term nc = DefaultTerm.parse("move_to(next_cell)");	
+    public final Term nc = Literal.parseLiteral("move_to(next_cell)");	
 
     public int b1res;
     public int c1res;

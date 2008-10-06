@@ -1,7 +1,6 @@
 package env;
 
 import jason.asSyntax.Atom;
-import jason.asSyntax.DefaultTerm;
 import jason.asSyntax.Literal;
 import jason.asSyntax.LiteralImpl;
 import jason.asSyntax.NumberTermImpl;
@@ -34,13 +33,13 @@ public class MiningEnvironment extends SteppedEnvironment {
     
     Random                  random   = new Random();
 
-    Term                    up       = DefaultTerm.parse("do(up)");
-    Term                    down     = DefaultTerm.parse("do(down)");
-    Term                    right    = DefaultTerm.parse("do(right)");
-    Term                    left     = DefaultTerm.parse("do(left)");
-    Term                    skip     = DefaultTerm.parse("do(skip)");
-    Term                    pick     = DefaultTerm.parse("do(pick)");
-    Term                    drop     = DefaultTerm.parse("do(drop)");
+    Term                    up       = Literal.parseLiteral("do(up)");
+    Term                    down     = Literal.parseLiteral("do(down)");
+    Term                    right    = Literal.parseLiteral("do(right)");
+    Term                    left     = Literal.parseLiteral("do(left)");
+    Term                    skip     = Literal.parseLiteral("do(skip)");
+    Term                    pick     = Literal.parseLiteral("do(pick)");
+    Term                    drop     = Literal.parseLiteral("do(drop)");
 
     boolean                 hasGUI   = true;
     int                     windowSize = 800;

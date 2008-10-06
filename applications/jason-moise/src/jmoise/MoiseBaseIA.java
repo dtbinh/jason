@@ -1,6 +1,5 @@
 package jmoise;
 
-import jason.JasonException;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.Intention;
 import jason.asSemantics.Message;
@@ -34,23 +33,16 @@ public abstract class MoiseBaseIA extends DefaultInternalAction  {
 		if (logger.isLoggable(Level.FINE)) logger.fine("sending: "+acTerm);
 		
 		// send acTerm as message to OrgManager
-		try {
-            OrgAgent oag = (OrgAgent)ts.getUserAgArch();
-	        Message m = new Message("achieve", null, oag.getOrgManagerName(), acTerm);
-            oag.sendMsg(m);
-            
-            if (suspendIntention()) {
-                Intention i = ts.getC().getSelectedIntention();
-                i.setSuspended(true);
-                ts.getC().getPendingIntentions().put("om/"+m.getMsgId(), i);
-            }
-            return true;
-		} catch (JasonException e) {
-		    throw e;
-    	} catch (Exception e) {
-    		logger.log(Level.SEVERE, "Error sending "+acTerm+" to OrgManager.",e);
-    	}
-        return false;
+        OrgAgent oag = (OrgAgent)ts.getUserAgArch();
+        Message m = new Message("achieve", null, oag.getOrgManagerName(), acTerm);
+        oag.sendMsg(m);
+        
+        if (suspendIntention()) {
+            Intention i = ts.getC().getSelectedIntention();
+            i.setSuspended(true);
+            ts.getC().getPendingIntentions().put("om/"+m.getMsgId(), i);
+        }
+        return true;
     }
 	
     @Override

@@ -269,7 +269,7 @@
                 <doclet name="org.umlgraph.doclet.UmlGraphDoc" path="lib/UMLGraph.jar">
                                     <!--param name="-inferrel"/ -->
                                     <!--param name="-inferdep"/-->
-                                    <param name="-hide" value="java.*"/>
+                                    <!--param name="-hide" value="java.*"/-->
                                     <param name="-enumconstants" />
                                     <!--param name="-collpackages" value="java.util.*"/-->
                                     <param name="-qualify"/>
@@ -278,8 +278,8 @@
                                     <param name="-nodefontsize" value="16"/>
                                     <param name="-nodefontpackagesize" value="12"/>
                                     <param name="-edgefontsize" value="14"/>
-                                    <param name="-link" value="http://java.sun.com/j2se/1.5.0/docs/guide/javadoc/doclet/spec"/>
-                                    <param name="-link" value="http://java.sun.com/j2se/1.5/docs/api"/>
+                                    <!--param name="-link" value="http://java.sun.com/j2se/1.5.0/docs/guide/javadoc/doclet/spec"/>
+                                    <param name="-link" value="http://java.sun.com/j2se/1.5/docs/api"/-->
                 </doclet>           
         </javadoc>
     </target>
@@ -289,6 +289,29 @@
         </exec>
     </target>
 
+	<!-- generate only the UML diagrams in PDF format -->
+	<target name="uml" unless="dot-nok" >
+	       	<property name="uml.dir" value="${basedir}/doc/uml"/>
+	       	<property name="src.uml.dir" value="${src.dir}/doc/uml"/>
+	       	<mkdir dir="${uml.dir}"/>
+	       	<javadoc sourcepath="src" packagenames="jason.asSyntax" package="true" >
+	           <doclet name="org.umlgraph.doclet.UmlGraph" path="${basedir}/lib/UMLGraph.jar">
+                   <param name="-hide" value="java.*"/>
+                   <param name="-enumconstants" />
+	               <param name="-d" value="${uml.dir}"/>
+	           </doclet>
+	       	</javadoc>
+			<move file="${uml.dir}/graph.dot" tofile="${uml.dir}/syntax.dot" />
+	        <apply executable="dot" dest="${uml.dir}" parallel="false">
+	         	<arg value="-Tpdf"/>
+	         	<arg value="-o"/>
+	         	<targetfile/>
+	         	<srcfile/>
+	         	<fileset dir="${uml.dir}" includes="*.dot"/>
+	         	<mapper type="glob" from="*.dot" to="*.pdf"/>
+	        </apply>
+	</target>
+	
 
     <!-- distribution related tasks -->
     

@@ -1,7 +1,6 @@
-import java.util.*;
-import jason.*;
-import jason.asSyntax.*;
-import jason.environment.*;
+import jason.asSyntax.Literal;
+import jason.asSyntax.Structure;
+import jason.environment.Environment;
 
 public class RoomEnv extends Environment {
     

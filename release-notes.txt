@@ -46,7 +46,7 @@ API changes
   still works, but 
       new Literal(...)
   have to be written as
-      new LiteralImpl(....)
+      ASSyntax.createLiteral(....)
   see API doc for more details.
   see discussion about the Literal class in the
   jason-developers list.

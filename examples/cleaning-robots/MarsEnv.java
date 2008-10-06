@@ -15,10 +15,10 @@ public class MarsEnv extends Environment {
 	public static final int GSize = 7; // grid size
     public static final int GARB  = 16; // garbage code in grid model
 
-	public static final Term ns = DefaultTerm.parse("next(slot)");
-	public static final Term pg = DefaultTerm.parse("pick(garb)");
-	public static final Term dg = DefaultTerm.parse("drop(garb)");
-	public static final Term bg = DefaultTerm.parse("burn(garb)");
+	public static final Term    ns = Literal.parseLiteral("next(slot)");
+	public static final Term    pg = Literal.parseLiteral("pick(garb)");
+	public static final Term    dg = Literal.parseLiteral("drop(garb)");
+	public static final Term    bg = Literal.parseLiteral("burn(garb)");
 	public static final Literal g1 = Literal.parseLiteral("garbage(r1)");
 	public static final Literal g2 = Literal.parseLiteral("garbage(r2)");
 
