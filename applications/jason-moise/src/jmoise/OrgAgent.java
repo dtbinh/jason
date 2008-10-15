@@ -105,6 +105,7 @@ public class OrgAgent extends AgArch {
                 // check if content is and OE
                 if (m.getPropCont() instanceof OE) {
                     currentOE = (OE) m.getPropCont();
+                    updateBB();
                     i.remove();
                 } else if (m.getSender().equals(getOrgManagerName())) {
                     // the content is a normal predicate
@@ -181,6 +182,25 @@ public class OrgAgent extends AgArch {
             logger.log(Level.SEVERE, "Error!", e);
         }
     }
+    
+    /** update the bel base according to the current OE */
+    void updateBB() throws RevisionFailedException {
+        Agent ag = getTS().getAg();
+        // add players
+        for (RolePlayer myrole: getMyOEAgent().getRoles()) { // for all my groups
+            for (RolePlayer rp: myrole.getGroup().getPlayers()) { // for player of the group I play some role
+                Literal l = rolePlayer2literal(rp);
+                l.addAnnot(managerSource);
+                ag.addBel(l);
+            }
+        }
+        // remove old players
+    }
+        
+    Literal rolePlayer2literal(RolePlayer rp) {
+        return ASSyntax.createLiteral("play", new Atom(rp.getPlayer().getId()), new Atom(rp.getRole().getId()), new Atom(rp.getGroup().getId()));
+    }
+    
 
     private Literal addAsBel(String b) throws RevisionFailedException {
         Literal l = Literal.parseLiteral(b);
