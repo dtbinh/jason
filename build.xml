@@ -266,7 +266,7 @@
             windowtitle="Jason - AgentSpeak Java Interpreter"
             >
                 <classpath refid="project.classpath" />
-                <doclet name="org.umlgraph.doclet.UmlGraphDoc" path="lib/UMLGraph.jar">
+                <doclet name="org.umlgraph.doclet.UmlGraphDoc" path="lib/UmlGraph.jar">
                                     <!--param name="-inferrel"/ -->
                                     <!--param name="-inferdep"/-->
                                     <!--param name="-hide" value="java.*"/-->
