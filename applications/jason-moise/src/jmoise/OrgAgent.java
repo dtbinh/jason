@@ -1,5 +1,6 @@
 package jmoise;
 
+import static jason.asSyntax.ASSyntax.*;
 import jason.JasonException;
 import jason.RevisionFailedException;
 import jason.architecture.AgArch;
@@ -31,6 +32,7 @@ import jason.mas2j.ClassParameters;
 import jason.runtime.Settings;
 
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -182,25 +184,73 @@ public class OrgAgent extends AgArch {
             logger.log(Level.SEVERE, "Error!", e);
         }
     }
+
     
     /** update the bel base according to the current OE */
     void updateBB() throws RevisionFailedException {
-        Agent ag = getTS().getAg();
-        // add players
+        
+        // update "play"
+        List<Literal> toAdd = new ArrayList<Literal>();
+
+        // create list of groups
+        for (GroupInstance gi: currentOE.getAllSubGroupsTree()) {
+            Term typeAnnot;
+            if (gi.getSuperGroup() != null)
+                typeAnnot = createStructure("super_gr", new Atom(gi.getSuperGroup().getId()));
+            else
+                typeAnnot = new Atom("root");
+            Literal l = createLiteral("group", new Atom(gi.getGrSpec().getId()), new Atom(gi.getId()));
+            l.addAnnots(createStructure("owner", new Atom(gi.getOwner().getId())), typeAnnot, managerSource);        
+            toAdd.add(l);
+        }
+        orgBUF(toAdd, groupLiteral);
+        
+        // create list of players
+        toAdd.clear();
         for (RolePlayer myrole: getMyOEAgent().getRoles()) { // for all my groups
             for (RolePlayer rp: myrole.getGroup().getPlayers()) { // for player of the group I play some role
-                Literal l = rolePlayer2literal(rp);
+                Literal l = createLiteral("play", new Atom(rp.getPlayer().getId()), new Atom(rp.getRole().getId()), new Atom(rp.getGroup().getId()));
                 l.addAnnot(managerSource);
-                ag.addBel(l);
+                toAdd.add(l);
             }
-        }
-        // remove old players
-    }
+        }        
+        orgBUF(toAdd, playLiteral);
         
-    Literal rolePlayer2literal(RolePlayer rp) {
-        return ASSyntax.createLiteral("play", new Atom(rp.getPlayer().getId()), new Atom(rp.getRole().getId()), new Atom(rp.getGroup().getId()));
     }
-    
+
+    private void orgBUF(List<Literal> toAdd, PredicateIndicator bel) throws RevisionFailedException {
+        try {            
+            Agent ag = getTS().getAg();
+            List<Literal> toDel = new ArrayList<Literal>();
+            
+            // remove old bels
+            Iterator<Literal> i = ag.getBB().getCandidateBeliefs(bel);
+            if (i != null) {
+                while (i.hasNext()) {
+                    Literal l = i.next();
+                    
+                    // if this play in not in the add list, it should be removed
+                    boolean isInOE = false;
+                    for (Literal p: toAdd) {
+                        if (p.equalsAsStructure(l)) {
+                            isInOE = true;
+                            break;
+                        }
+                    }
+                    if (!isInOE) {
+                        toDel.add(l);
+                    }
+                }
+            }
+            for (Literal l: toDel)
+                ag.delBel(l);      
+            
+            // add new players
+            for (Literal l: toAdd)
+                ag.addBel(l);
+        } catch (ConcurrentModificationException e) {}   
+    }
+       
 
     private Literal addAsBel(String b) throws RevisionFailedException {
         Literal l = Literal.parseLiteral(b);
@@ -370,6 +420,9 @@ public class OrgAgent extends AgArch {
             }
         }
     }
+
+    private static final PredicateIndicator groupLiteral       = new PredicateIndicator("group", 2);
+    private static final PredicateIndicator playLiteral        = new PredicateIndicator("play", 3);
 
     private static final PredicateIndicator obligationLiteral  = new PredicateIndicator("obligation", 2);
     private static final PredicateIndicator permissionLiteral  = new PredicateIndicator("permission", 2);

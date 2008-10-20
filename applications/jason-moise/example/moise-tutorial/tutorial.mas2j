@@ -1,7 +1,7 @@
 MAS write_paper {
    infrastructure: Centralised
    agents:
-       orgManager [osfile="jojOS.xml",gui=yes] 
+       orgManager [osfile="../writePaper/wp-os.xml",gui=yes] // jojOS
                   agentArchClass jmoise.OrgManager;
 
        marcos      agentArchClass gui.OrgAgentGUI;

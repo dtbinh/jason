@@ -56,6 +56,10 @@ public class VoidBB implements jason.bb.BeliefBase {
         return true;
     }
 
+    public Iterator<Literal> getCandidateBeliefs(PredicateIndicator pi) {
+        return new ArrayList<Literal>().iterator();
+    }
+    
     public Iterator<Literal> getCandidateBeliefs(Literal l, Unifier u) {
         return new ArrayList<Literal>().iterator();
     }

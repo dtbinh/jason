@@ -47,10 +47,20 @@ public class OrgAgentGUI extends OrgAgent {
     JTextField args = new JTextField(30);
     JFrame frame;
     
-    String[][] actions = { { "create_group", "spec [,superGrId]" },
-                           { "remove_group", "groupID" },
-                           { "adopt_role",   "role,groupId" },
-                           { "remove_role",  "role,groupId" }
+    String[][] actions = { { "create_group",   "g1,wpgroup" },
+                           { "remove_group",   "g1" },
+                           { "adopt_role",     "editor,g1" },
+                           { "adopt_role",     "writer,g1" },
+                           { "remove_role",    "role,groupId" },
+                           { "create_scheme",  "p1, writePaperSch, [g1]" },
+                           { "abort_scheme",   "schemeId" },
+                           { "remove_scheme",   "schemeId" },
+                           { "add_responsible_group", "schemeId, groupId" },
+                           { "commit_mission", "mManager, p1" },
+                           { "commit_mission", "mColaborator, p1" },
+                           { "commit_mission", "mBib, p1" },
+                           { "remove_mission", "[missionId,] SchemeId" },
+                           { "set_goal_state", "p1, goalId, state" }
     };
     
     protected void startGUI() {
@@ -96,11 +106,25 @@ public class OrgAgentGUI extends OrgAgent {
             }
         });
         
+
+        JButton listBT = new JButton("Update Beliefs");
+        listBT.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        listBels();
+                    }
+                });
+            }
+        });
+
+
         JPanel control = new JPanel(new FlowLayout());
         control.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Actions", TitledBorder.LEFT, TitledBorder.TOP));
         control.add(actionsCB);
         control.add(args);
         control.add(doBT);
+        control.add(listBT);
         
         
         frame = new JFrame(":: "+getAgName()+" interface ::");
