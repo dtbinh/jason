@@ -23,6 +23,8 @@
 
  <links>
   <link from="auctioneer" to="participant" type="communication" scope="intra-group" 
+        extends-sub-groups="false" bi-dir="true"/>
+  <link from="participant" to="participant" type="communication" scope="intra-group" 
         extends-sub-groups="false" bi-dir="false"/>
  </links>
 

@@ -41,6 +41,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import moise.common.MoiseException;
 import moise.oe.GoalInstance;
 import moise.oe.GroupInstance;
 import moise.oe.MissionPlayer;
@@ -93,6 +94,18 @@ public class OrgAgent extends AgArch {
         } catch (Exception e) {
             logger.fine("Error sending add_agent to OrgManager!");
         }        
+    }
+    
+    @Override
+    public void sendMsg(Message m) throws Exception {
+        // check communication link
+        String to = m.getReceiver();
+        if (currentOE == null || to.equals(orgManagerName) || to.equals(getAgName()) ||
+            getMyOEAgent().hasLink("communication", getOE().getAgent(to))) {
+            super.sendMsg(m);
+        } else {
+            throw new MoiseException(getAgName()+" is not allowed to communicate with "+to);
+        }
     }
     
     public void checkMail() {
