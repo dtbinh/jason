@@ -6,9 +6,10 @@ import jason.asSyntax.Term;
 
 /** 
 
-<p>Organisational action: <b><code>jmoise.create_scheme( SchSpecId [, ListOfRespGrs] )</code></b>: 
-   used by an agent to create a new scheme. The second optional parameter is a list of initial 
-   responsible groups.
+<p>Organisational action: <b><code>jmoise.create_scheme( [sch_name(SchId), ] SchSpecId [, ListOfRespGrs] )</code></b>: 
+   used by an agent to create a new scheme. 
+   The first optional parameter is the name of the new scheme.
+   The third optional parameter is a list of initial responsible groups.
    SchSpecId is the name of the scheme specification and
    ListOfRespGrs is a list of group's identifications.
    
@@ -22,6 +23,8 @@ import jason.asSyntax.Term;
 <ul>
 <li> <code>jmoise.create_scheme(wp)</code>: 
      creates new scheme based on specification wp.</li>
+<li> <code>jmoise.create_scheme(sch_name(s1), wp)</code>: 
+     creates new scheme identified by s1 based on specification wp.</li>
 <li> <code>jmoise.create_scheme(wp, [g1, g2])</code>: 
      creates new scheme based on specification wp and set g1 and g2 as responsible
      groups.</li>

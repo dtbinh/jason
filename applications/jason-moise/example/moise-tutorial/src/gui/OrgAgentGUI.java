@@ -27,6 +27,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 
+import moise.oe.GoalInstance;
+
 import jmoise.OrgAgent;
 
 public class OrgAgentGUI extends OrgAgent {
@@ -43,24 +45,21 @@ public class OrgAgentGUI extends OrgAgent {
         frame.setVisible(false);
     }
     
-    JTextArea bels = new JTextArea(20,50);
+    JTextArea bels  = new JTextArea(20,50);
     JTextField args = new JTextField(30);
     JFrame frame;
     
-    String[][] actions = { { "create_group",   "g1,wpgroup" },
+    String[][] actions = { { "create_group",   "gr_name(g1),wpgroup" },
                            { "remove_group",   "g1" },
                            { "adopt_role",     "editor,g1" },
-                           { "adopt_role",     "writer,g1" },
-                           { "remove_role",    "role,groupId" },
-                           { "create_scheme",  "p1, writePaperSch, [g1]" },
+                           { "remove_role",    "editor,g1" },
+                           { "create_scheme",  "sch_name(p1), writePaperSch, [g1]" },
                            { "abort_scheme",   "schemeId" },
-                           { "remove_scheme",   "schemeId" },
+                           { "remove_scheme",  "p1" },
                            { "add_responsible_group", "schemeId, groupId" },
                            { "commit_mission", "mManager, p1" },
-                           { "commit_mission", "mColaborator, p1" },
-                           { "commit_mission", "mBib, p1" },
-                           { "remove_mission", "[missionId,] SchemeId" },
-                           { "set_goal_state", "p1, goalId, state" }
+                           { "remove_mission", "p1" },
+                           { "set_goal_state", "p1, goalId, satisfied" }
     };
     
     protected void startGUI() {
@@ -156,9 +155,15 @@ public class OrgAgentGUI extends OrgAgent {
     }
     
     public void listBels() {
-        bels.setText("");
+        bels.setText("--- beliefs ---\n");
         for (Literal b: getTS().getAg().getBB()) {
             bels.append(b+"\n");
+        }
+        if (getOE() != null) {
+            bels.append("\n--- goals --- \n");
+            for (GoalInstance gi : getMyOEAgent().getPossibleGoals()) {
+                bels.append(gi+"\n");
+            }
         }
     }
     

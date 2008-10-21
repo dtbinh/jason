@@ -21,10 +21,11 @@
 
 // finish the scheme if it has no more players
 // and it was created by me
+/*
 +sch_players(Sch,0) 
    :  .my_name(Me) & scheme(_, Sch)[owner(Me)]
    <- jmoise.remove_scheme(Sch).
-
+*/
    
 /* Deontic events */
 
@@ -40,7 +41,14 @@
 // when the root goal of the scheme is achieved, 
 // remove my missions
 +goal_state(Sch, _[root], achieved) 
-   <- jmoise.remove_mission(Sch).
+   <- jmoise.remove_mission(Sch);
+      .my_name(Me);
+      if (scheme(_,Sch)[owner(Me)]) {
+         if (not sch_players(Sch,0)) {
+            .wait("+sch_players(Sch,0)", 1000, _)
+         };
+         jmoise.remove_scheme(Sch)
+      }.
 
 // if some scheme is finished, drop all intentions related to it.
 -scheme(_Spec,Id)

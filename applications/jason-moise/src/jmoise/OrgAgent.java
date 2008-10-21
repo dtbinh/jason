@@ -1,6 +1,7 @@
 package jmoise;
 
-import static jason.asSyntax.ASSyntax.*;
+import static jason.asSyntax.ASSyntax.createLiteral;
+import static jason.asSyntax.ASSyntax.createStructure;
 import jason.JasonException;
 import jason.RevisionFailedException;
 import jason.architecture.AgArch;
@@ -98,97 +99,65 @@ public class OrgAgent extends AgArch {
         super.checkMail(); // get the messages from arch to circumstance
         
         Circumstance C = getTS().getC();
-        Iterator<Message> i    = C.getMailBox().iterator();
-        boolean updateGoalBels = false;
-        boolean updateGoalEvt  = false;
-        while (i.hasNext()) {
-            try {
+        Iterator<Message> i = C.getMailBox().iterator();
+        
+        boolean shouldUpdate = false;
+        try {
+            while (i.hasNext()) {
                 Message m = i.next();
-                // check if content is and OE
-                if (m.getPropCont() instanceof OE) {
-                    currentOE = (OE) m.getPropCont();
-                    updateBB();
-                    i.remove();
-                } else if (m.getSender().equals(getOrgManagerName())) {
-                    // the content is a normal predicate
-                    final String content   = m.getPropCont().toString();
-                    
-                    // test if it is the result of some org action    
-                    if (m.getInReplyTo() != null) {
-                        // find the intention
-                        Intention pi = C.getPendingIntentions().remove("om/"+m.getInReplyTo());
-                        if (pi != null) {
-                            i.remove();
-                            resumeIntention(pi, content, C);
-                        }
-                    } else {
-                        // add all tells directly in the memory
-                        if (m.getIlForce().equals("tell")) {
-                            i.remove();
-                            if (content.startsWith("goal_state")) { 
-                                // the state of a scheme i belong to has changed
-                                // add all goals of the scheme in BB
-                                updateGoalBels = true;
-                                updateGoalEvt  = true;
-                                // Note: must change all goals, because the state of others may also change (waiting->possible)
-                            } else {
-                                Literal cl = addAsBel(content);
-                                
-                                if (content.startsWith("scheme_group")) {
-                                    // this message is generated when my group becomes
-                                    // responsible for a scheme
-                                    generateObligationPermissionEvents(cl);
-                                } else if (content.startsWith("commitment")) {
-                                    // add all goals of the scheme in BB
-                                    updateGoalBels = true;
-                                    // I need to generate AS Triggers like !<orggoal> since some scheme becomes well formed
-                                    updateGoalEvt  = true;
-                                }
-                            }
 
-                        } else if ( m.getIlForce().equals("untell") ) {
-                            i.remove();
-                            Literal cl = delAsBel(content);
-                            
-                            if (content.startsWith("scheme_group")) {
-                                Term sch = cl.getTerm(0);
-                                Term gr  = cl.getTerm(1);
-                                removeObligationPermissionBeliefs(sch, gr, "obligation");
-                                removeObligationPermissionBeliefs(sch, gr, "permission");
-                            } else if (content.startsWith("scheme")) {
-                                String schId = cl.getTerm(1).toString();
-                                cleanGoalsOfSch(schId);
-                                removeBeliefs(schId);
-                            } else if (content.startsWith("commitment")) {
-                                // if I remove my commit, remove the goals from BB
-                                String schId = cl.getTerm(2).toString();
-                                SchemeInstance sch = currentOE.findScheme(schId);
-                                if (sch != null && !sch.isPlayer(getMyOEAgent())) {
-                                    cleanGoalsOfSch(schId);
-                                    removeBeliefs(schId);
-                                }
+                // check if content comes from orgManager
+                if (m.getSender().equals(getOrgManagerName())) {
+                    i.remove();
+                    if (m.getPropCont() instanceof OE) {
+                        currentOE = (OE) m.getPropCont();
+                        shouldUpdate = true;
+                    } else {                    
+                        // the content is a normal predicate
+                        final String content = m.getPropCont().toString();
+                        
+                        // test if it is the result of some org action    
+                        if (m.getInReplyTo() != null) {
+                            // find the intention
+                            Intention pi = C.getPendingIntentions().remove("om/"+m.getInReplyTo());
+                            if (pi != null) {
+                                resumeIntention(pi, content, C);
                             }
-                        }                        
+                        }
                     }
                 }
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, "Error!", e);
-            }
-        } // while
-        try {
-            if (updateGoalBels)
-                updateGoalBels();
-            if (updateGoalEvt)
-                generateOrgGoalEvents();
+            } // while
+            
+            if (shouldUpdate)
+                updateBB(3);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error!", e);
         }
+
     }
 
     
-    /** update the bel base according to the current OE */
-    void updateBB() throws RevisionFailedException {
-        
+    /** update the bel base according to the current OE  */
+    void updateBB(int n) throws RevisionFailedException, ParseException {
+        if (n == 0) {
+            logger.log(Level.SEVERE, "**** too much concurrent modification", new Exception());
+            return;
+        }
+        try {
+            updateGroup();
+            updateRolePlayer();
+            updateScheme();
+            updateSchemeGroup();
+            updatePermissionsObligations();
+            updateCommitments();
+            updateGoalBels(); // add all goals of the scheme in BB
+            generateOrgGoalEvents(); // I need to generate AS Triggers like !<orggoal> since some scheme becomes well formed
+        } catch (ConcurrentModificationException e) { 
+            updateBB(n-1); // try again
+        }
+    }
+
+    private void updateGroup() throws RevisionFailedException {
         // update "play"
         List<Literal> toAdd = new ArrayList<Literal>();
 
@@ -204,9 +173,11 @@ public class OrgAgent extends AgArch {
             toAdd.add(l);
         }
         orgBUF(toAdd, groupLiteral);
-        
+    }
+
+    private void updateRolePlayer() throws RevisionFailedException {
         // create list of players
-        toAdd.clear();
+        List<Literal> toAdd = new ArrayList<Literal>();
         for (RolePlayer myrole: getMyOEAgent().getRoles()) { // for all my groups
             for (RolePlayer rp: myrole.getGroup().getPlayers()) { // for player of the group I play some role
                 Literal l = createLiteral("play", new Atom(rp.getPlayer().getId()), new Atom(rp.getRole().getId()), new Atom(rp.getGroup().getId()));
@@ -215,13 +186,79 @@ public class OrgAgent extends AgArch {
             }
         }        
         orgBUF(toAdd, playLiteral);
-        
     }
 
-    private void orgBUF(List<Literal> toAdd, PredicateIndicator bel) throws RevisionFailedException {
+    private void updateScheme() throws RevisionFailedException, ParseException {
+        // create list of scheme
+        List<Literal> toAdd = new ArrayList<Literal>();
+        for (SchemeInstance sch: currentOE.getSchemes()) {
+            Literal l = createLiteral("scheme", new Atom(sch.getSpec().getId()), new Atom(sch.getId()));
+            l.addAnnots(createStructure("owner", new Atom(sch.getOwner().getId())), managerSource);        
+            toAdd.add(l);
+
+            if (sch.getOwner().equals(getMyOEAgent())) {
+                // update the number of players
+                getTS().getAg().delBel(createLiteral( "sch_players", new Atom(sch.getId()), new UnnamedVar()));
+                getTS().getAg().addBel(createLiteral( "sch_players", new Atom(sch.getId()), ASSyntax.createNumber(sch.getPlayersQty())));
+            } 
+        }
+        List<Literal> deleted = orgBUF(toAdd, schemeLiteral);
+        
+        for (Literal l: deleted) {
+            cleanGoalsOfSch(l.getTerm(1).toString());
+            removeBeliefs((Atom)l.getTerm(1));
+        }
+    }
+    
+    private void updateSchemeGroup() throws RevisionFailedException {
+        // create list of scheme_group
+        List<Literal> toAdd = new ArrayList<Literal>();
+        for (RolePlayer myrole: getMyOEAgent().getRoles()) { // for all my groups
+            for (SchemeInstance sch : myrole.getGroup().getRespSchemes()) { // for all scheme they are responsible for
+                Literal l = createLiteral("scheme_group", new Atom(sch.getId()), new Atom(myrole.getGroup().getId()));
+                l.addAnnot(managerSource);
+                toAdd.add(l);
+            }
+        }
+        orgBUF(toAdd, schemeGroupLiteral);
+    }
+
+    private void updatePermissionsObligations() throws RevisionFailedException {
+        // create list of obligations/permissions
+        Set<Permission> obligations = new HashSet<Permission>();
+        List<Literal> toAdd = new ArrayList<Literal>();
+        toAdd = createObligation(obligations);
+        orgBUF(toAdd, obligationLiteral);
+        toAdd.clear();
+        toAdd = createPermission(obligations);
+        orgBUF(toAdd, permissionLiteral);
+    }
+
+    private void updateCommitments() throws RevisionFailedException {
+        List<Literal> toAdd = new ArrayList<Literal>();
+        for (MissionPlayer mymission: getMyOEAgent().getMissions()) { 
+            for (MissionPlayer mp: mymission.getScheme().getPlayers()) { 
+                Literal l = createLiteral("commitment", new Atom(mp.getPlayer().getId()), new Atom(mp.getMission().getId()), new Atom(mp.getScheme().getId()));
+                l.addAnnot(managerSource);
+                toAdd.add(l);
+            }
+        }        
+        List<Literal> deleted = orgBUF(toAdd, commitmentLiteral);
+        
+        for (Literal l: deleted) {
+            String schId = l.getTerm(2).toString();
+            SchemeInstance sch = currentOE.findScheme(schId);
+            if (sch != null && !sch.isPlayer(getMyOEAgent())) {
+                cleanGoalsOfSch(schId);
+                removeBeliefs((Atom)l.getTerm(2));
+            }
+        }
+    }
+    
+    private List<Literal> orgBUF(List<Literal> toAdd, PredicateIndicator bel) throws RevisionFailedException {
+        List<Literal> toDel = new ArrayList<Literal>();
         try {            
             Agent ag = getTS().getAg();
-            List<Literal> toDel = new ArrayList<Literal>();
             
             // remove old bels
             Iterator<Literal> i = ag.getBB().getCandidateBeliefs(bel);
@@ -229,11 +266,13 @@ public class OrgAgent extends AgArch {
                 while (i.hasNext()) {
                     Literal l = i.next();
                     
-                    // if this play in not in the add list, it should be removed
                     boolean isInOE = false;
-                    for (Literal p: toAdd) {
+                    Iterator<Literal> ip = toAdd.iterator();
+                    while (ip.hasNext()) {
+                        Literal p = ip.next();
                         if (p.equalsAsStructure(l)) {
                             isInOE = true;
+                            ip.remove();
                             break;
                         }
                     }
@@ -245,26 +284,12 @@ public class OrgAgent extends AgArch {
             for (Literal l: toDel)
                 ag.delBel(l);      
             
-            // add new players
             for (Literal l: toAdd)
                 ag.addBel(l);
         } catch (ConcurrentModificationException e) {}   
+        return toDel;
     }
        
-
-    private Literal addAsBel(String b) throws RevisionFailedException {
-        Literal l = Literal.parseLiteral(b);
-        l.addAnnot(managerSource);
-        getTS().getAg().addBel(l);
-        return l;
-    }
-    private Literal delAsBel(String b) throws RevisionFailedException {
-        Literal l = Literal.parseLiteral(b);
-        l.addAnnot(managerSource);
-        getTS().getAg().delBel(l);
-        return l;
-    }
-
     private void resumeIntention(Intention pi, String content, Circumstance C) {
         pi.setSuspended(false);
         C.addIntention(pi); // add it back in I
@@ -292,62 +317,45 @@ public class OrgAgent extends AgArch {
         
     }
     
-    private void generateObligationPermissionEvents(Literal m) throws RevisionFailedException {
-        // computes this agent obligations in the scheme
-        String schId = m.getTerm(0).toString();
-        String grId  = m.getTerm(1).toString();
-        Set<Permission> obligations = new HashSet<Permission>();
-        if (logger.isLoggable(Level.FINE)) logger.fine("Computing obl/per for " + m + " in obl=" + getMyOEAgent().getObligations() + " and per=" + getMyOEAgent().getPermissions());
+    private List<Literal> createObligation(Set<Permission> obligations) {
+        List<Literal> r = new ArrayList<Literal>();
+        
+        if (logger.isLoggable(Level.FINE)) logger.fine("Computing obl with " + getMyOEAgent().getObligations());
 
         // obligations
         for (Permission p : getMyOEAgent().getObligations()) {
-            if (p.getRolePlayer().getGroup().getId().equals(grId) && p.getScheme().getId().equals(schId)) {
-                obligations.add(p);
-                Literal l = Literal.parseLiteral("obligation(" + p.getScheme().getId() + "," 
-                        + p.getMission().getId() + ")[" + "role(" + p.getRolePlayer().getRole().getId()
-                        + "),group(" + p.getRolePlayer().getGroup().getId() + ")]");
-                l.addAnnot(managerSource);
-                getTS().getAg().addBel(l);
-                if (logger.isLoggable(Level.FINE)) logger.fine("New obligation: " + l);
-            }
+            obligations.add(p);
+            Literal l = createLiteral("obligation", 
+                            new Atom(p.getScheme().getId()),
+                            new Atom(p.getMission().getId()));
+            l.addAnnots(createStructure("role", new Atom(p.getRolePlayer().getRole().getId())),
+                        createStructure("group", new Atom(p.getRolePlayer().getGroup().getId())),
+                        managerSource);
+            r.add(l);
+            if (logger.isLoggable(Level.FINE)) logger.fine("New obligation: " + l);
         }
+        return r;
+    }
+    
+    private List<Literal> createPermission(Set<Permission> obligations)  {
+        List<Literal> r = new ArrayList<Literal>();
+        
+        if (logger.isLoggable(Level.FINE)) logger.fine("Computing per with "+ getMyOEAgent().getPermissions());
 
         // permissions
         for (Permission p : getMyOEAgent().getPermissions()) {
-            if (p.getRolePlayer().getGroup().getId().equals(grId) && p.getScheme().getId().equals(schId) && !obligations.contains(p)) {
-                Literal l = Literal.parseLiteral("permission(" + p.getScheme().getId() + "," 
-                        + p.getMission().getId() + ")[" + "role(" + p.getRolePlayer().getRole().getId()
-                        + "),group(" + p.getRolePlayer().getGroup().getId() + ")]");
-                l.addAnnot(managerSource);
-                getTS().getAg().addBel(l);
+            if (!obligations.contains(p)) {
+                Literal l = createLiteral("permission", 
+                                new Atom(p.getScheme().getId()),
+                                new Atom(p.getMission().getId()));
+                l.addAnnots(createStructure("role", new Atom(p.getRolePlayer().getRole().getId())),
+                            createStructure("group", new Atom(p.getRolePlayer().getGroup().getId())),
+                            managerSource);
+                r.add(l);
                 if (logger.isLoggable(Level.FINE)) logger.fine("New permission: " + l);
             }
         }
-    }
-    
-    
-    private void removeObligationPermissionBeliefs(Term sch, Term gr, String type) throws RevisionFailedException {
-        // computes this agent obligations in the scheme
-        Structure giAnnot = new Structure("group");
-        giAnnot.addTerm(gr);
-        
-        Literal obl = ASSyntax.createLiteral(type, sch, new UnnamedVar()).addAnnots(giAnnot);
-        
-        // find obligation(sch,_)[group(id)]
-        Unifier un = new Unifier();
-        Iterator<Literal> i = getTS().getAg().getBB().getCandidateBeliefs(obl, un);
-        if (i != null) {
-            List<Literal> todel = new ArrayList<Literal>();
-            while (i.hasNext()) {
-                Literal inbb = i.next();
-                un.clear();
-                if (un.unifies(obl, inbb))
-                    todel.add(inbb);
-            }
-            for (Literal l: todel) {
-                getTS().getAg().delBel(l);
-            }
-        }
+        return r;
     }
 
     private void generateOrgGoalEvents() {
@@ -423,7 +431,7 @@ public class OrgAgent extends AgArch {
 
     private static final PredicateIndicator groupLiteral       = new PredicateIndicator("group", 2);
     private static final PredicateIndicator playLiteral        = new PredicateIndicator("play", 3);
-
+    private static final PredicateIndicator schemeLiteral      = new PredicateIndicator("scheme", 2);
     private static final PredicateIndicator obligationLiteral  = new PredicateIndicator("obligation", 2);
     private static final PredicateIndicator permissionLiteral  = new PredicateIndicator("permission", 2);
     private static final PredicateIndicator schemeGroupLiteral = new PredicateIndicator("scheme_group", 2);
@@ -432,15 +440,14 @@ public class OrgAgent extends AgArch {
     private static final PredicateIndicator commitmentLiteral  = new PredicateIndicator("commitment", 3);
 
     /** removes all bels related to a Scheme */
-    void removeBeliefs(String schId) throws RevisionFailedException {
+    private void removeBeliefs(Atom schId) throws RevisionFailedException {
         Agent ag = getTS().getAg();
-        Atom aSchId = new Atom(schId);
-        ag.abolish(buildLiteralToCleanBB(aSchId, obligationLiteral, false), null);
-        ag.abolish(buildLiteralToCleanBB(aSchId, permissionLiteral, false), null);
-        ag.abolish(buildLiteralToCleanBB(aSchId, schemeGroupLiteral, false), null);
-        ag.abolish(buildLiteralToCleanBB(aSchId, goalStateLiteral, false), null);
-        ag.abolish(buildLiteralToCleanBB(aSchId, schPlayersLiteral, false), null);
-        ag.abolish(buildLiteralToCleanBB(aSchId, commitmentLiteral, true), null);
+        //ag.abolish(buildLiteralToCleanBB(aSchId, obligationLiteral, false), null);
+        //ag.abolish(buildLiteralToCleanBB(aSchId, permissionLiteral, false), null);
+        //ag.abolish(buildLiteralToCleanBB(aSchId, schemeGroupLiteral, false), null);
+        ag.abolish(buildLiteralToCleanBB(schId, goalStateLiteral, false), null);
+        ag.abolish(buildLiteralToCleanBB(schId, schPlayersLiteral, false), null);
+        //ag.abolish(buildLiteralToCleanBB(aSchId, commitmentLiteral, true), null);
     }
 
     private Literal buildLiteralToCleanBB(Atom aSchId, PredicateIndicator pred, boolean schInEnd) {
@@ -457,7 +464,7 @@ public class OrgAgent extends AgArch {
         return l;
     }
     
-    OEAgent getMyOEAgent() {
+    protected OEAgent getMyOEAgent() {
         return currentOE.getAgent(getAgName());
     }
 
@@ -511,8 +518,7 @@ public class OrgAgent extends AgArch {
 
         // create the literal to be added
         VarTerm S = new VarTerm("S");
-        Literal gil = new LiteralImpl("goal_state");
-        gil.addTerms(new Atom(gi.getScheme().getId()), gap, S);
+        Literal gil = createLiteral("goal_state", new Atom(gi.getScheme().getId()), gap, S);
         gil.addAnnot(managerSource);
 
         Unifier u = new Unifier();

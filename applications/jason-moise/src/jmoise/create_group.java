@@ -6,11 +6,13 @@ import jason.asSyntax.Term;
 
 /** 
 
-<p>Organisational action: <b><code>jmoise.create_group( GrSpecId [,
+<p>Organisational action: <b><code>jmoise.create_group( [gr_name(GrName),] GrSpecId [,
    SuperGrId] [, newGroupId] )</code></b>: used by an agent to create
-   a new group based on GrSpecId specification.  GrSpecId is the name
+   a new group based on GrSpecId specification. If the first parameter
+   is a structure with functor gr_name, the term of this structure it will be
+   the name of the new group.  GrSpecId is the name
    of the group in the structural specification, and SuperGrId is the
-   identification of the super group instance. The second parameter is
+   identification of the super group instance. The third parameter is
    used in case a sub-groups is being created. If the last argument is
    a variable, it unifies with the unique identification given to the
    new group.
@@ -32,6 +34,8 @@ import jason.asSyntax.Term;
 <ul>
 <li> <code>jmoise.create_group(team)</code>: 
      creates a new root group based on specification of a team.</li>
+<li> <code>jmoise.create_group(gr_name(g1), team)</code>: 
+     creates a new root group named g1 based on specification of a team.</li>
 <li> <code>jmoise.create_group(team,G)</code>: 
      creates a new root group based on specification of a team and unifies in G the identification of the new group.</li>
 <li> <code>jmoise.create_group(defence, team0)</code>: 

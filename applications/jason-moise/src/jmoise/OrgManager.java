@@ -6,6 +6,7 @@ import jason.asSemantics.Message;
 import jason.asSyntax.ListTerm;
 import jason.asSyntax.Pred;
 import jason.asSyntax.StringTerm;
+import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 import jason.mas2j.ClassParameters;
 import jason.runtime.Settings;
@@ -140,7 +141,7 @@ public class OrgManager extends AgArch {
             try {
                 if (agSender == null) {
                     agSender = currentOE.addAgent(m.getSender());
-                    updateMembersOE(currentOE.getAgent(m.getSender()), (String) null, true, true);
+                    updateMembersOE(currentOE.getAgent(m.getSender()));
                 }
                 
                 // get content
@@ -191,25 +192,7 @@ public class OrgManager extends AgArch {
             GroupInstance gr = currentOE.findGroup(grId);
 
             // send new OE to the members of the group
-            updateMembersOE(gr.getAgents(true), null, true, true);
-
-            /*
-            // notify others in the group about this new player
-            updateMembersOE(gr.getAgents(true), rolePlayer2str(nrp), true, true);
-
-            // send players of the group to the sender
-            for (RolePlayer rp : gr.getPlayers(null, true)) {
-                if (!rp.getPlayer().equals(sender)) {
-                    updateMembersOE(sender, rolePlayer2str(rp), false, true);
-                }
-            }
-            */
-
-            // send schemes of this group to sender
-            for (SchemeInstance sch : gr.getRespSchemes()) {
-                updateMembersOE(sender, "scheme_group(" + sch.getId() + "," + grId + ")", false, true);
-            }
-            
+            updateMembersOE(gr.getAgents(true));
             sendReply(sender, mId, "ok");
         }        
     }
@@ -226,27 +209,10 @@ public class OrgManager extends AgArch {
             GroupInstance gr = currentOE.findGroup(grId);
 
             // notify other players
-            updateMembersOE(gr.getAgents(true), null, true, false);
+            updateMembersOE(gr.getAgents(true));
             // and the sender (that is not in the group anymore)
-            updateMembersOE(sender, null, true, false);
+            updateMembersOE(sender);
             
-            /*
-            // notify other players
-            updateMembersOE(gr.getAgents(true), rolePlayer2str(orp), false, false);
-            
-            // and the sender
-            updateMembersOE(sender, "play(" + sender + "," + roleId + "," + grId + ")", true, false);
-            */
-            
-            // if the agent is not member of the group anymore, remove other informations of the group
-            if (!gr.getAgents(false).contains(sender)) {
-                /*for (RolePlayer rp : gr.getPlayers()) {
-                    updateMembersOE(sender, rolePlayer2str(rp), false, false);                
-                }*/
-                for (SchemeInstance sch : gr.getRespSchemes()) {
-                    updateMembersOE(sender, "scheme_group(" + sch.getId() + "," + grId + ")", false, false);
-                }
-            }
             sendReply(sender, mId, "ok");
         }
     }
@@ -258,24 +224,12 @@ public class OrgManager extends AgArch {
         public void process(OE currentOE, Pred command, OEAgent sender, String mId) throws MoiseException {
             String misId = command.getTerm(0).toString();
             String schId = command.getTerm(1).toString();
-            MissionPlayer nmp = sender.commitToMission(misId, schId);
+            sender.commitToMission(misId, schId);
 
             SchemeInstance sch = currentOE.findScheme(schId);
 
             // notify to the scheme players the new player
-            updateMembersOE(sch.getPlayers(), missionPlayer2str(nmp), true, true);
-
-            // notify to the sender the other commitments of the scheme
-            for (MissionPlayer mp : sch.getPlayers()) {
-                if (!mp.getPlayer().equals(sender)) {
-                    updateMembersOE(sender, missionPlayer2str(mp), false, true);
-                }
-            }
-
-            if (sch.getPlayersQty() > 1) {
-                updateMembersOE(sch.getOwner(), "sch_players(" + sch.getId() + ",NP)", false, false);
-            }
-            updateMembersOE(sch.getOwner(), "sch_players(" + sch.getId() + "," + sch.getPlayersQty() + ")", false, true);
+            updateMembersOE(sch.getPlayers());
             sendReply(sender, mId, "ok");
         }
     }
@@ -302,27 +256,16 @@ public class OrgManager extends AgArch {
                     MissionPlayer mp = mpi.next();
                     sender.removeMission(mp.getMission().getId(), schId);
                     mpi = sender.getMissions().iterator();
-                    String evUnCom = missionPlayer2str(mp);
-                    updateMembersOE(sch.getPlayers(), evUnCom, false, false);
-                    //if (!sch.isPlayer(sender)) {
-                        updateMembersOE(sender, evUnCom, false, false);
-                    //}
                 }
             } else {
-                sch = currentOE.findScheme(schId);
                 MissionPlayer omp = sender.removeMission(misId, schId);
-                String evUnCom = missionPlayer2str(omp);
-                updateMembersOE(sender, evUnCom, false, false);
-                //if (!sch.isPlayer(sender)) {
-                    updateMembersOE(sch.getPlayers(), evUnCom, false, false);
-                //}
+                sch = omp.getScheme();
             }
 
-            updateMembersOE(sender, (String) null, true, true);
+            updateMembersOE(sch.getPlayers());
+            updateMembersOE(sender);
+            updateMembersOE(sch.getOwner()); // the owner my be removed its mission already
 
-            // notify owner that it can finish the scheme
-            updateMembersOE(sch.getOwner(), "sch_players(" + sch.getId() + ",NP)", false, false);
-            updateMembersOE(sch.getOwner(), "sch_players(" + sch.getId() + "," + sch.getPlayersQty() + ")", false, true);
             sendReply(sender, mId, "ok");
         }
     }
@@ -333,24 +276,39 @@ public class OrgManager extends AgArch {
             return "create_group";
         }
         public void process(OE currentOE, Pred command, OEAgent sender, String mId) throws MoiseException {
-            boolean isNewRoot = command.getArity() == 1;
+            boolean isNewRoot;
+            String grName = null;
+            String specId = null;
+            if (command.getTerm(0).toString().startsWith("gr_name")) {
+                grName = ((Structure)command.getTerm(0)).getTerm(0).toString();
+                specId = command.getTerm(1).toString();
+                isNewRoot = command.getArity() == 2;
+            } else {
+                specId = command.getTerm(0).toString();
+                isNewRoot = command.getArity() == 1;
+            }
+            
             GroupInstance newGr;
-            String specId = command.getTerm(0).toString();
             if (isNewRoot) {
-                newGr = currentOE.addGroup(specId);
+                if (grName == null)
+                    newGr = currentOE.addGroup(specId);
+                else
+                    newGr = currentOE.addGroup(grName,specId);
             } else {
                 String superGrId = command.getTerm(1).toString();
                 GroupInstance superGr = currentOE.findGroup(superGrId);
                 if (superGr == null) {
-                    sendReply(sender, mId, "error(\"the group " + superGrId + " does not exist\")");
+                    sendReply(sender, mId, "error(\"the super-group " + superGrId + " does not exist\")");
                     return;
                 }
-                newGr = superGr.addSubGroup(specId);
+                if (grName == null)
+                    newGr = superGr.addSubGroup(specId);
+                else
+                    newGr = superGr.addSubGroup(grName,specId);
             }
             newGr.setOwner(sender);
 
-            //updateMembersOE(currentOE.getAgents(), group2str(newGr), false, true);
-            updateMembersOE(currentOE.getAgents(), null, true, true);
+            updateMembersOE(currentOE.getAgents());
             sendReply(sender, mId, newGr.getId());
         }
     }
@@ -371,41 +329,12 @@ public class OrgManager extends AgArch {
                 sendReply(sender, mId, "error(\"you are not the owner of the group " + grId + ", so you can not remove it\")");
             }
 
-            gr.checkRemove(); // TODO: does not work!
+            //gr.checkRemove();
 
-            // also send untell scheme_group (if it is the case)
-            for (SchemeInstance sch: gr.getRespSchemes()) {
-                updateMembersOE(gr.getPlayers(), "scheme_group(" + sch.getId() + "," + grId + ")", false, false);
-            }
-            
-            /*
-            // untell players
-            for (RolePlayer rp: gr.getPlayers()) {
-                updateMembersOE(gr.getAgents(true), rolePlayer2str(rp), false, false);
-            }
-            */
-
-            // send changes for subgroups of gr
-            for (GroupInstance sg: gr.getAllSubGroupsTree()) {
-                //updateMembersOE(currentOE.getAgents(), group2str(sg), false, false);
-                // also send untell scheme_group (if it is the case)
-                for (SchemeInstance sch: sg.getRespSchemes()) {
-                    updateMembersOE(sg.getPlayers(), "scheme_group(" + sch.getId() + "," + sg.getId() + ")", false, false);
-                }
-                // untell players
-                /*
-                for (RolePlayer rp: sg.getPlayers()) {
-                    updateMembersOE(sg.getAgents(true), rolePlayer2str(rp), false, false);
-                }
-                */
-            }
-            
-            // have to remove after sending the untells
             currentOE.removeGroup(grId);
 
             // sent a new copy of OE
-            //updateMembersOE(currentOE.getAgents(), group2str(gr), true, false);
-            updateMembersOE(currentOE.getAgents(), null, true, true);
+            updateMembersOE(currentOE.getAgents());
             sendReply(sender, mId, "ok");
         }
     }
@@ -416,21 +345,8 @@ public class OrgManager extends AgArch {
         }
         public void process(OE currentOE, Pred command, OEAgent sender, String mId) throws MoiseException {
             // send new OE to all
-            updateMembersOE(currentOE.getAgents(), null, true, true);
-            /*
-            // send created groups
-            for (GroupInstance gr: currentOE.getGroups()) {
-                sendGr(sender, gr);
-            }
-            */
+            updateMembersOE(currentOE.getAgents());
         }
-        /*
-        private void sendGr(OEAgent to, GroupInstance gr) {
-            updateMembersOE(to, group2str(gr), false, true);
-            for (GroupInstance sg: gr.getSubGroups())
-                sendGr(to, sg);
-        }
-        */
     }
 
     class CreateScheme implements OrgManagerCommand {
@@ -438,23 +354,41 @@ public class OrgManager extends AgArch {
             return "create_scheme";
         }
         public void process(OE currentOE, Pred command, OEAgent sender, String mId) throws MoiseException {
-            String schSpecId = command.getTerm(0).toString();
-            SchemeInstance sch = currentOE.startScheme(schSpecId.toString());
-            sch.setOwner(sender);
-            updateMembersOE(currentOE.getAgents(), scheme2str(sch), true, true);
+            String schId = null;
+            String schSpecId;
+            ListTerm groups = null;
+            if (command.getTerm(0).toString().startsWith("sch_name")) {
+                schId = ((Structure)command.getTerm(0)).getTerm(0).toString();
+                schSpecId = command.getTerm(1).toString();
+                if (command.getArity() == 3)
+                    groups = (ListTerm)command.getTerm(2);
+            } else {
+                schSpecId = command.getTerm(0).toString();
+                if (command.getArity() == 2)
+                    groups = (ListTerm)command.getTerm(1);
+            }
+
+            SchemeInstance sch;
+            if (schId == null)
+                sch = currentOE.startScheme(schSpecId);
+            else
+                sch = currentOE.startScheme(schId, schSpecId);
             
-            if (command.getArity() > 1) {
+            sch.setOwner(sender);
+            
+            if (groups != null) {
                 // set the initial groups
-                for (Term gr: (ListTerm)command.getTerm(1)) {
+                for (Term gr: groups) {
                     GroupInstance gi = currentOE.findGroup(gr.toString());
                     if (gi == null) {
                         sendReply(sender, mId, "error(\"the group " + gr + " does not exist\")");
                         return;
                     }
                     sch.addResponsibleGroup(gi);
-                    updateMembersOE(gi.getPlayers(), "scheme_group(" + sch.getId() + "," + gi.getId() + ")", true, true);
                 }
             }
+            
+            updateMembersOE(currentOE.getAgents());
             sendReply(sender, mId, sch.getId());
         }
     }
@@ -483,7 +417,7 @@ public class OrgManager extends AgArch {
 
             sch.addResponsibleGroup(gr);
 
-            updateMembersOE(gr.getPlayers(), "scheme_group(" + schId + "," + grId + ")", true, true);
+            updateMembersOE(gr.getPlayers());
             sendReply(sender, mId, "ok");
         }
     }
@@ -502,11 +436,12 @@ public class OrgManager extends AgArch {
             
             if (sch.getSpec().getFS().getBoolProperty("only-owner-can-remove-scheme", true) && !sender.equals(sch.getOwner())) {
                 sendReply(sender, mId, "error(\"you are not the owner of the scheme " + schId + ", so you can not change it\")");
+                return;
             }
 
             act(currentOE, sch);
             // send untell to agents
-            updateMembersOE(currentOE.getAgents(), scheme2str(sch), false, false);
+            updateMembersOE(currentOE.getAgents());
             sendReply(sender, mId, "ok");
         }
         protected void act(OE currentOE, SchemeInstance sch) throws MoiseException {
@@ -554,7 +489,8 @@ public class OrgManager extends AgArch {
             } else if (state.equals("impossible")) {
                 gi.setImpossible(sender);
             }
-            updateMembersOE(sch.getPlayers(), "goal_state(" + gi.getScheme().getId() + "," + gi.getSpec().getId() + ")", true, true);
+
+            updateMembersOE(sch.getPlayers());
             sendReply(sender, mId, "ok");
         }
     }
@@ -594,34 +530,11 @@ public class OrgManager extends AgArch {
 
             gi.setArgumentValue(arg, value);
 
-            updateMembersOE(sch.getPlayers(), "goal_state(" + gi.getScheme().getId() + "," + gi.getSpec().getId() + ")", true, true);
+            updateMembersOE(sch.getPlayers()); 
             sendReply(sender, mId, "ok");
         }
     }
 
-    /*
-    String group2str(GroupInstance gr) {
-        String sga = "root";
-        if (gr.getSuperGroup() != null)
-            sga = "super_gr("+gr.getSuperGroup().getId()+")";
-        return "group(" + gr.getGrSpec().getId() + "," + gr.getId() + ")[owner(" + gr.getOwner().getId() +"),"+sga+"]";        
-    }
-    
-    
-    String rolePlayer2str(RolePlayer rp) {
-        return "play(" + rp.getPlayer().getId() + "," + rp.getRole().getId() + "," + rp.getGroup().getId() + ")";
-    }
-    */
-    
-    String scheme2str(SchemeInstance sch) {
-        return "scheme(" + sch.getSpec().getId() + "," + sch.getId() + ")[owner(" + sch.getOwner().getId() + ")]";        
-    }
-    
-    String missionPlayer2str(MissionPlayer mp) {
-        return "commitment(" + mp.getPlayer().getId() + "," + mp.getMission().getId() + "," + mp.getScheme().getId() + ")";
-    }
-    
-    
     void sendReply(OEAgent to, String mId, String content) {
         try {
             Message r = new Message("tell", null, to.getId(), content);
@@ -643,8 +556,9 @@ public class OrgManager extends AgArch {
         }
     }
 
+    /* send OE to a set of agents */
     @SuppressWarnings("unchecked")
-	private void updateMembersOE(Collection ags, Object pEnv, boolean sendOE, boolean tell) {
+	private void updateMembersOE(Collection ags) {
         Set<OEAgent> all = new HashSet<OEAgent>(); // to remove duplicates
         Iterator iAgs = ags.iterator();
         while (iAgs.hasNext()) {
@@ -657,26 +571,19 @@ public class OrgManager extends AgArch {
 
         }
         for (OEAgent ag : all) {
-            updateMembersOE(ag, pEnv, sendOE, tell);
+            updateMembersOE(ag);
         }
     }
 
-    private void updateMembersOE(OEAgent ag, Object pEnv, boolean sendOE, boolean tell) {
+    /** send OE to one agent */
+    private void updateMembersOE(OEAgent ag) {
         if (!ag.getId().equals("orgManager")) {
             try {
-                if (sendOE) {
-                    Message moe = new Message("tell", null, ag.getId(), null);
-                    moe.setPropCont(currentOE); //partialOE(ag)); // TODO: the clone of OE is not working!
-                    sendMsg(moe);
-                }
-                if (pEnv != null) {
-                    String perf = "tell";
-                    if (!tell)
-                        perf = "untell";
-                    sendMsg(new Message(perf, null, ag.getId(), pEnv));
-                }
+                Message moe = new Message("tell", null, ag.getId(), null);
+                moe.setPropCont(currentOE.clone()); //partialOE(ag)); // TODO: the clone of OE is not working!
+                sendMsg(moe);
             } catch (Exception e) {
-                logger.log(Level.SEVERE, "Error sending update to " + ag + " (" + pEnv + ").", e);
+                logger.log(Level.SEVERE, "Error sending update to " + ag, e);
             }
         }
     }
