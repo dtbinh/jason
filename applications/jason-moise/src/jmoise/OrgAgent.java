@@ -1,6 +1,8 @@
 package jmoise;
 
 import static jason.asSyntax.ASSyntax.createLiteral;
+import static jason.asSyntax.ASSyntax.createNumber;
+import static jason.asSyntax.ASSyntax.createString;
 import static jason.asSyntax.ASSyntax.createStructure;
 import jason.JasonException;
 import jason.RevisionFailedException;
@@ -222,7 +224,7 @@ public class OrgAgent extends AgArch {
             if (sch.getOwner().equals(getMyOEAgent())) {
                 // update the number of players
                 getTS().getAg().delBel(createLiteral( "sch_players", new Atom(sch.getId()), new UnnamedVar()));
-                getTS().getAg().addBel(createLiteral( "sch_players", new Atom(sch.getId()), ASSyntax.createNumber(sch.getPlayersQty())));
+                getTS().getAg().addBel(createLiteral( "sch_players", new Atom(sch.getId()), createNumber(sch.getPlayersQty())));
             } 
         }
         List<Literal> deleted = orgBUF(toAdd, schemeLiteral);
@@ -251,9 +253,7 @@ public class OrgAgent extends AgArch {
         Set<Permission> obligations = new HashSet<Permission>();
         List<Literal> toAdd = new ArrayList<Literal>();
         toAdd = createObligation(obligations);
-        //getTS().getLogger().info("** obliations "+toAdd);
-        List<Literal> deleted = orgBUF(toAdd, obligationLiteral);
-        //getTS().getLogger().info("** new obli "+toAdd+", deleted "+deleted);
+        orgBUF(toAdd, obligationLiteral);
         toAdd.clear();
         toAdd = createPermission(obligations);
         orgBUF(toAdd, permissionLiteral);
@@ -323,8 +323,16 @@ public class OrgAgent extends AgArch {
         if (content.startsWith("error")) {
             // fail the IA
             PlanBody pbody = pi.peek().getPlan().getBody();
-            pbody.add(0, new PlanBodyImpl(BodyType.internalAction, new InternalActionLiteral(".fail")));
-            getTS().getLogger().warning("Error in organisational action '"+body+"': "+content);
+            Literal fail = new InternalActionLiteral(".fail");
+            String msg = content.substring(7,content.length()-2);
+            fail.addTerm(createStructure("error_msg", createString(msg)));
+            fail.addTerm(createStructure("code", createString(body.toString())));
+            if (body.getSrcInfo() != null) {
+                fail.addTerm(createStructure("code_src", createString(body.getSrcInfo().getSrcFile())));
+                fail.addTerm(createStructure("code_line", createNumber(body.getSrcInfo().getBeginSrcLine())));
+            }
+            pbody.add(0, new PlanBodyImpl(BodyType.internalAction, fail));
+            //getTS().getLogger().warning("Error in organisational action '"+body+"': "+content);
         } else {
             // try to unify the return value
             //System.out.println("answer is "+content+" or "+DefaultTerm.parse(content)+" with body "+body);

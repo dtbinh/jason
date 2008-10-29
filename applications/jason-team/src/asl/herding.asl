@@ -11,7 +11,7 @@
      // create the new  group
      ?group(team,TeamId);
      jmoise.create_group(herding_grp, TeamId, HG);
-	 .print("ooo Group ",HG," created.");
+	 .print("ooo Herding group ",HG," created.");
 	 
 	 // store the list of scouter in my group
      ?play(Me,explorer,EG);

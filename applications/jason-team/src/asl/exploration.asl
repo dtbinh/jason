@@ -32,7 +32,7 @@
      if( not group(exploration_grp,_)[owner(Me)] ) {
 	    ?group(team,TeamGroup); // get the team Id
         jmoise.create_group(exploration_grp,TeamGroup,G);
-		.print("ooo Group ",G," created")
+		.print("ooo Exploration group ",G," created")
      } {
 	    ?group(exploration_grp,G)[owner(Me)]
      };
@@ -153,7 +153,7 @@
      !ask_all_cows(Leaders,LCows);
      .findall(cow(ID,X,Y), cow(ID,X,Y), MyCows);
      .intersection(MyCows, LCows, Common);
-     //.print("xxx all cows in herding groups are ",LCows," my are ",MyCows," intersection is ",Common);
+     //.print("xxx all cows in herding groups are ",LCows," mine are ",MyCows," intersection is ",Common);
      if ( Common == [] ) {
         !!create_herding_gr
      }{

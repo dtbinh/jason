@@ -147,22 +147,24 @@ cow_perception_ratio(4).
 +!play_role(Role,Group)[source(Ag)]
   <- .print("ooo Adopting role ",Role," in group ",Group,", as asked by ",Ag);
      jmoise.adopt_role(Role, Group).
+-!play_role(_,_)[error_msg(M),code(C)]
+  <- .print("* Error in ",C,": ",M).
 
 +!quit_all_missions_roles
   <- .my_name(Me);
   
 	 // if I play any other role, give it up
      while( play(Me,R,OG) ) {
-        .print("ooo removing my role ",R," in ",OG);
+        .print("ooo Removing my role ",R," in ",OG);
         jmoise.remove_role(R,OG)
-     }/*;
+     };
      
      // give up all missions
 	 while( commitment(Me,M,Sch) ) {
-        .print("ooo removing my mission ",M," in ",Sch);
+        .print("ooo Removing my mission ",M," in ",Sch);
         jmoise.remove_mission(M,Sch)
-	 }*/.
-
+	 }.
+-!quit_all_missions_roles[error_msg(M),code(C)] <- .println("*** ",C," - ",M). // no problem if it fails, it is better to continue
 
 	 
 // finish the scheme if it has no more players
