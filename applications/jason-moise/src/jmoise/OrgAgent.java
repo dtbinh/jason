@@ -67,6 +67,8 @@ public class OrgAgent extends AgArch {
     private Set<GoalInstance> alreadyGeneratedEvents = new HashSet<GoalInstance>();
     private String            orgManagerName         = "orgManager";
     
+    private boolean           checkCommLink          = true;
+    
     @Override
     public void initAg(String agClass, ClassParameters bbPars, String asSrc, Settings stts) throws JasonException {
         super.initAg(agClass, bbPars, asSrc, stts);
@@ -95,16 +97,24 @@ public class OrgAgent extends AgArch {
             logger.fine("Error sending add_agent to OrgManager!");
         }        
     }
+
+    public void setCheckCommunicationLink(boolean check) {
+        checkCommLink = check;
+    }
     
     @Override
     public void sendMsg(Message m) throws Exception {
         // check communication link
-        String to = m.getReceiver();
-        if (currentOE == null || to.equals(orgManagerName) || to.equals(getAgName()) ||
-            getMyOEAgent().hasLink("communication", getOE().getAgent(to))) {
-            super.sendMsg(m);
+        if (checkCommLink) {
+            String to = m.getReceiver();
+            if (currentOE == null || to.equals(orgManagerName) || to.equals(getAgName()) ||
+                getMyOEAgent().hasLink("communication", getOE().getAgent(to))) {
+                super.sendMsg(m);
+            } else {
+                throw new MoiseException(getAgName()+" is not allowed to communicate with "+to+", sender roles are "+getMyOEAgent().getRoles());
+            }
         } else {
-            throw new MoiseException(getAgName()+" is not allowed to communicate with "+to);
+            super.sendMsg(m);
         }
     }
     
@@ -241,7 +251,9 @@ public class OrgAgent extends AgArch {
         Set<Permission> obligations = new HashSet<Permission>();
         List<Literal> toAdd = new ArrayList<Literal>();
         toAdd = createObligation(obligations);
-        orgBUF(toAdd, obligationLiteral);
+        //getTS().getLogger().info("** obliations "+toAdd);
+        List<Literal> deleted = orgBUF(toAdd, obligationLiteral);
+        //getTS().getLogger().info("** new obli "+toAdd+", deleted "+deleted);
         toAdd.clear();
         toAdd = createPermission(obligations);
         orgBUF(toAdd, permissionLiteral);

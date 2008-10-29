@@ -151,24 +151,25 @@ cow_perception_ratio(4).
 +!quit_all_missions_roles
   <- .my_name(Me);
   
-     // give up all missions
-	 while( commitment(Me,M,Sch) ) {
-        .print("ooo removing my mission ",M," in ",Sch);
-        jmoise.remove_mission(M,Sch)
-	 };
-
 	 // if I play any other role, give it up
      while( play(Me,R,OG) ) {
         .print("ooo removing my role ",R," in ",OG);
         jmoise.remove_role(R,OG)
-     }.
+     }/*;
+     
+     // give up all missions
+	 while( commitment(Me,M,Sch) ) {
+        .print("ooo removing my mission ",M," in ",Sch);
+        jmoise.remove_mission(M,Sch)
+	 }*/.
+
 
 	 
 // finish the scheme if it has no more players
 // and it was created by me
-+sch_players(Sch,0) 
-   :  .my_name(Me) & scheme(_, Sch)[owner(Me)]
-   <- jmoise.remove_scheme(Sch).
+//+sch_players(Sch,0) 
+//   :  .my_name(Me) & scheme(_, Sch)[owner(Me)]
+//   <- jmoise.remove_scheme(Sch).
 
 
 // when I have an obligation or permission to a mission, commit to it
@@ -180,14 +181,16 @@ cow_perception_ratio(4).
      jmoise.commit_mission(Mission,Sch).
 
 // when I am not obligated to a mission anymore, uncommit
+/*
 -obligation(Sch, Mission)
    : .my_name(Me) & commitment(Me,Mission,Sch)
-  <- .print("ooo I don't have obligation for the mission ",Mission," anymore, remove the commit");
+  <- .print("ooo I don't have obligation for the mission ",Mission," in ",Sch," anymore, remove the commitment");
      jmoise.remove_mission(Mission,Sch).
 -permission(Sch, Mission)
    : .my_name(Me) & commitment(Me,Mission,Sch)
-  <- .print("ooo I don't have permission for the mission ",Mission," anymore, remove the commit");
+  <- .print("ooo I don't have permission for the mission ",Mission," in ",Sch," anymore, remove the commitment");
      jmoise.remove_mission(Mission,Sch).
+*/
 
 // when I am not committed to a mission anymore, remove all goals based on that mission
 -commitment(Me,Mission,Sch)

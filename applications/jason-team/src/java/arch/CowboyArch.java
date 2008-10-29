@@ -71,6 +71,8 @@ public class CowboyArch extends IdentifyCrashed {
         if (massimBackDir != null && massimBackDir.startsWith("\"")) 
             massimBackDir = massimBackDir.substring(1,massimBackDir.length()-1);
         logger = Logger.getLogger(CowboyArch.class.getName() + ".CA-" + getAgName());
+        
+        setCheckCommunicationLink(false);
 	}
 	
 	@Override

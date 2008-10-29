@@ -8,6 +8,7 @@ import jason.asSyntax.Pred;
 import jason.asSyntax.StringTerm;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
+import jason.infra.centralised.CentralisedAgArch;
 import jason.mas2j.ClassParameters;
 import jason.runtime.Settings;
 
@@ -580,7 +581,11 @@ public class OrgManager extends AgArch {
         if (!ag.getId().equals("orgManager")) {
             try {
                 Message moe = new Message("tell", null, ag.getId(), null);
-                moe.setPropCont(currentOE.clone()); //partialOE(ag)); // TODO: the clone of OE is not working!
+                // need to clone only on centralised execution, otherwise the serialization will clone
+                if (getArchInfraTier() instanceof CentralisedAgArch)
+                    moe.setPropCont(currentOE.clone()); //partialOE(ag)); // TODO: the clone of OE is not working!
+                else 
+                    moe.setPropCont(currentOE);
                 sendMsg(moe);
             } catch (Exception e) {
                 logger.log(Level.SEVERE, "Error sending update to " + ag, e);

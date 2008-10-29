@@ -45,15 +45,21 @@
 +play(Me,explorer,G)
    : .my_name(Me) &
      not scheme_group(_,G)
-  <- jmoise.create_scheme(explore_sch, [G]).
+  <- .print("Creating explore scheme");
+     jmoise.create_scheme(explore_sch, [G]).
      
-// If I stop playing explorer, destroy the explore groups I've created
+// If I stop playing explorer, destroy the explore scheme/group I've created
 -play(Me,explorer,_)
    : .my_name(Me)
-  <- for( group(exploration_grp,G)[owner(Me)] ) {
+  <- for( scheme(explore_sch,S)[owner(Me)] ) {
+	    .print("ooo Removing scheme ",S);
+	    jmoise.remove_scheme(S);
+		.wait(1000)
+	 };
+	 for( group(exploration_grp,G)[owner(Me)] ) {
 	    .print("ooo Removing group ",G," since I am not in the group anymore");
 	    jmoise.remove_group(G);
-		.wait(4000)
+		.wait(1000)
 	 }.
 
 	 

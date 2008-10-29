@@ -35,12 +35,17 @@
 // If I stop playing herder, destroy the herding groups I've created
 -play(Me,herder,_)
    : .my_name(Me)
-  <- for( group(herding_grp,G)[owner(Me)] ) {
+  <- for( scheme(herd_sch,S)[owner(Me)] ) {
+	    .print("ooo Removing scheme ",S);
+	    jmoise.remove_scheme(S);
+		.wait(1000)
+	 };
+	 for( group(herding_grp,G)[owner(Me)] ) {
 	    -group_leader(G,Me);
         .broadcast(untell, group_leader(G,Me));
         .print("ooo removing the group ",G);
 	    jmoise.remove_group(G);
-		.wait(4000)
+		.wait(1000)
 	 }.
 	 
 // If I stop playing herdboy (because the group was destroied by the herder),

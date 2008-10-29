@@ -16,6 +16,7 @@
         <properties>
             <property id="check-players-in-remove-group"   value="false" />
             <property id="check-sub-group-in-remove-group" value="false" />
+            <property id="check-missions-in-remove-role"   value="false" />
         </properties>
 
         <role-definitions>
@@ -70,8 +71,9 @@
     <functional-specification>
         <properties>
             <property id="check-players-in-remove-responsible-group"   value="false" />
+            <property id="check-players-in-remove-scheme"              value="false" />
             <property id="only-owner-can-remove-scheme"                value="false" />
-            <!--property id="check-goals-in-remove-mission"               value="false" /-->
+            <property id="check-goals-in-remove-mission"               value="false" />
         </properties>
     
         <scheme id="explore_sch" >

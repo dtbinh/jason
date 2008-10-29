@@ -1,5 +1,7 @@
 package jia;
 
+import static jason.asSyntax.ASSyntax.createNumber;
+import static jason.asSyntax.ASSyntax.createStructure;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
@@ -8,7 +10,6 @@ import jason.asSyntax.ListTermImpl;
 import jason.asSyntax.NumberTerm;
 import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.ObjectTerm;
-import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 import jason.environment.grid.Location;
 
@@ -101,9 +102,7 @@ public class herd_position extends DefaultInternalAction {
             		ListTerm r = new ListTermImpl();
             		ListTerm tail = r;
             		for (Location l: locs) {
-            			Structure p = new Structure("pos",2);
-            			p.addTerms(new NumberTermImpl(l.x), new NumberTermImpl(l.y));
-            			tail = tail.append(p);
+            			tail = tail.append(createStructure("pos", createNumber(l.x), createNumber(l.y)));
             		}
             		return un.unifies(args[2], r);
             	} else {
