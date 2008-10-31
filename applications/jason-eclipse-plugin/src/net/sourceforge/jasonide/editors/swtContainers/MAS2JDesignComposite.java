@@ -248,10 +248,10 @@ public class MAS2JDesignComposite extends Composite {
 								ClassParameters envClass = project2.getEnvClass();
 								if (envClass != null) {
 									if (!tEnvironmentHost.getText().equals("")) {
-										envClass.host = "\"" + tEnvironmentHost.getText() + "\"";
+										envClass.setHost("\"" + tEnvironmentHost.getText() + "\"");
 									}
 									else {
-										envClass.host = null;
+										envClass.setHost(null);
 									}
 								}
 								
@@ -405,10 +405,10 @@ public class MAS2JDesignComposite extends Composite {
 								ClassParameters controlClass = project2.getControlClass();
 								if (controlClass != null) {
 									if (!tExeControlHost.getText().equals("")) {
-										controlClass.host = "\"" + tExeControlHost.getText() + "\"";
+										controlClass.setHost("\"" + tExeControlHost.getText() + "\"");
 									}
 									else {
-										controlClass.host = null;
+										controlClass.setHost(null);
 									}
 								}
 								
@@ -924,11 +924,11 @@ public class MAS2JDesignComposite extends Composite {
 	}
 	
 	public void setEnv(ClassParameters clazz) {
-		if (clazz != null && (!clazz.className.equals(jason.environment.Environment.class.getName()))) {
+		if (clazz != null && (!clazz.getClassName().equals(jason.environment.Environment.class.getName()))) {
 			tEnvironment.setText(clazz.toString());
 			
-			if (clazz.host != null) {
-				tEnvironmentHost.setText(clazz.host.replace("\"", ""));
+			if (clazz.getHost() != null) {
+				tEnvironmentHost.setText(clazz.getHost().replace("\"", ""));
 			}
 			else {
 				tEnvironmentHost.setText("");
@@ -944,8 +944,8 @@ public class MAS2JDesignComposite extends Composite {
 		if (clazz != null) {
 			tExeControl.setText(clazz.toString());
 			
-			if (clazz.host != null) {
-				tExeControlHost.setText(clazz.host.replace("\"", ""));
+			if (clazz.getHost() != null) {
+				tExeControlHost.setText(clazz.getHost().replace("\"", ""));
 			}
 			else {
 				tExeControlHost.setText("");

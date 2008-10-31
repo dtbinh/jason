@@ -1,6 +1,7 @@
 package net.sourceforge.jasonide.editors;
 
 import jason.JasonException;
+import jason.asSemantics.Agent;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -52,7 +53,9 @@ public class ASLEditor extends ColoringEditor {
 			String asfileName = iproject.getLocation().toString() + getFilePathWithoutProjectName(ifile);
 			jason.asSyntax.parser.as2j parser = new jason.asSyntax.parser.as2j(new FileReader(new File(asfileName)));
 			if (parser != null) {
-				parser.agent(null);
+			    Agent ag = new Agent();
+			    ag.setASLSrc(asfileName);
+				parser.agent(ag);
 			}
 			
 		} catch (FileNotFoundException e) {
@@ -62,8 +65,8 @@ public class ASLEditor extends ColoringEditor {
 			showError(msg, e);
 		} catch (jason.asSyntax.parser.ParseException e) {
 			String msg = e.getMessage();
-			
-			int lineError = PluginMarkerUtils.getLineNumberFromMsg(msg);
+
+			int lineError = e.currentToken.beginLine; //PluginMarkerUtils.getLineNumberFromMsg(msg);
 			PluginMarkerUtils.createMarker(ifile, e.getMessage().replace("\r", "").replace("\n", ""), 
 						 lineError,
 						 PluginMarkerUtils.getCharStart(document.get(), lineError, msg),

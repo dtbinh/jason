@@ -178,7 +178,7 @@ public class MAS2JEditor extends MultiPageEditorPart implements IResourceChangeL
 		} catch (ParseException e) {
 			try {
 				String msg = e.getMessage();
-				int lineError = PluginMarkerUtils.getLineNumberFromMsg(msg);
+				int lineError = e.currentToken.beginLine; //PluginMarkerUtils.getLineNumberFromMsg(msg);
 				PluginMarkerUtils.createMarker(ifile, e.getMessage().replace("\r", "").replace("\n", ""), 
 							 lineError,
 							 PluginMarkerUtils.getCharStart(document.get(), lineError, msg),

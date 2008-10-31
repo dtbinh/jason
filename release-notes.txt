@@ -29,6 +29,8 @@ New features
   see demo/failure for an example
   see code of JasonException and TS for more information
 
+. the version of JADE is upgraded to 3.6
+
 New internal actions
 . .term2string: transform term into strings and vice-versa.
 
