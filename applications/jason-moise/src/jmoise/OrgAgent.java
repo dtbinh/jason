@@ -10,16 +10,16 @@ import jason.architecture.AgArch;
 import jason.asSemantics.Agent;
 import jason.asSemantics.Circumstance;
 import jason.asSemantics.Event;
+import jason.asSemantics.IntendedMeans;
 import jason.asSemantics.Intention;
 import jason.asSemantics.Message;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.ASSyntax;
 import jason.asSyntax.Atom;
-import jason.asSyntax.InternalActionLiteral;
+import jason.asSyntax.ListTerm;
+import jason.asSyntax.ListTermImpl;
 import jason.asSyntax.Literal;
 import jason.asSyntax.LiteralImpl;
-import jason.asSyntax.PlanBody;
-import jason.asSyntax.PlanBodyImpl;
 import jason.asSyntax.Pred;
 import jason.asSyntax.PredicateIndicator;
 import jason.asSyntax.Structure;
@@ -27,7 +27,6 @@ import jason.asSyntax.Term;
 import jason.asSyntax.Trigger;
 import jason.asSyntax.UnnamedVar;
 import jason.asSyntax.VarTerm;
-import jason.asSyntax.PlanBody.BodyType;
 import jason.asSyntax.Trigger.TEOperator;
 import jason.asSyntax.Trigger.TEType;
 import jason.asSyntax.parser.ParseException;
@@ -317,23 +316,32 @@ public class OrgAgent extends AgArch {
        
     private void resumeIntention(Intention pi, String content, Circumstance C) {
         pi.setSuspended(false);
-        C.addIntention(pi); // add it back in I
-        Structure body = (Structure)pi.peek().removeCurrentStep(); // remove the internal action
         
-        if (content.startsWith("error")) {
-            // fail the IA
-            PlanBody pbody = pi.peek().getPlan().getBody();
-            Literal fail = new InternalActionLiteral(".fail");
-            String msg = content.substring(7,content.length()-2);
-            fail.addTerm(createStructure("error_msg", createString(msg)));
-            fail.addTerm(createStructure("code", createString(body.toString())));
-            if (body.getSrcInfo() != null) {
-                fail.addTerm(createStructure("code_src", createString(body.getSrcInfo().getSrcFile())));
-                fail.addTerm(createStructure("code_line", createNumber(body.getSrcInfo().getBeginSrcLine())));
+        if (content.startsWith("error")) { // fail the IA
+            IntendedMeans im = pi.peek();            
+            Event failEvent = getTS().findEventForFailure(pi, im.getTrigger());
+            if (failEvent != null) {
+                Structure body = (Structure)im.getCurrentStep().getBodyTerm(); // get the internal action 
+
+                ListTerm failAnnots = new ListTermImpl(); // create a list of error annotations
+                String msg = content.substring(7,content.length()-2);
+                failAnnots.add(createStructure("error", new Atom("org_error")));
+                failAnnots.add(createStructure("error_msg", createString(msg)));
+                failAnnots.add(createStructure("code", createString(body.toString())));
+                if (body.getSrcInfo() != null) {
+                    failAnnots.add(createStructure("code_src", createString(body.getSrcInfo().getSrcFile())));
+                    failAnnots.add(createStructure("code_line", createNumber(body.getSrcInfo().getBeginSrcLine())));
+                }
+                failEvent.getTrigger().getLiteral().addAnnots(failAnnots);
+                C.addEvent(failEvent);
+                if (logger.isLoggable(Level.FINE)) logger.fine("Generating goal deletion " + failEvent.getTrigger() + " from goal: " + im.getTrigger());
+            } else {
+                logger.warning("No fail event was generated for " + im.getTrigger());
             }
-            pbody.add(0, new PlanBodyImpl(BodyType.internalAction, fail));
-            //getTS().getLogger().warning("Error in organisational action '"+body+"': "+content);
         } else {
+            C.addIntention(pi); // add the intention back in I
+            Structure body = (Structure)pi.peek().removeCurrentStep(); // remove the internal action
+            
             // try to unify the return value
             //System.out.println("answer is "+content+" or "+DefaultTerm.parse(content)+" with body "+body);
             // if the last arg of body is a free var

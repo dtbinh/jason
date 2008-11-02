@@ -31,6 +31,15 @@ New features
 
 . the version of JADE is upgraded to 3.6
 
+. new base class for internal actions: ConcurrentInternalAction. This
+  class can be used in place of DefaultInternalAction to create an IA
+  that suspend the intention while it is being executed. For example:
+  a plan may ask something to an user and wait the answer. If
+  DefaultInternalAction is used for that, all the agent thread is
+  blocked until the answer. With ConcurrentInternalAction, only the
+  intention using the IA is suspended. See demos/gui/gui1 and the API
+  doc of the new class.
+
 New internal actions
 . .term2string: transform term into strings and vice-versa.
 
