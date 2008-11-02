@@ -11,6 +11,7 @@ public class list_bels extends DefaultInternalAction {
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
         OrgAgentGUI arch = (OrgAgentGUI)ts.getUserAgArch();
         arch.listBels();
+        arch.listGoals();
         return true;
     }
 }

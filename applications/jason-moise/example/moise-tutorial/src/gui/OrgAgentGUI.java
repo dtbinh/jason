@@ -45,8 +45,9 @@ public class OrgAgentGUI extends OrgAgent {
         frame.setVisible(false);
     }
     
-    JTextArea bels  = new JTextArea(20,50);
-    JTextField args = new JTextField(30);
+    JTextArea bels   = new JTextArea(18,40);
+    JTextArea goals  = new JTextArea(4,40);
+    JTextField args  = new JTextField(30);
     JFrame frame;
     
     String[][] actions = { { "create_group",   "gr_name(g1),wpgroup" },
@@ -67,6 +68,13 @@ public class OrgAgentGUI extends OrgAgent {
         // top
         JScrollPane pbb = new JScrollPane(bels);
         pbb.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Belief Base", TitledBorder.LEFT, TitledBorder.TOP));
+        JScrollPane pgoals = new JScrollPane(goals);
+        pgoals.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Organisational Goals", TitledBorder.LEFT, TitledBorder.TOP));
+        
+        JPanel pcenter = new JPanel(new BorderLayout());
+        pcenter.add(BorderLayout.CENTER, pbb);
+        pcenter.add(BorderLayout.SOUTH, pgoals);
+        
         listBels();
         
         // south
@@ -112,6 +120,7 @@ public class OrgAgentGUI extends OrgAgent {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                         listBels();
+                        listGoals();
                     }
                 });
             }
@@ -128,7 +137,7 @@ public class OrgAgentGUI extends OrgAgent {
         
         frame = new JFrame(":: "+getAgName()+" interface ::");
         frame.getContentPane().setLayout(new BorderLayout());
-        frame.getContentPane().add(BorderLayout.CENTER, pbb);
+        frame.getContentPane().add(BorderLayout.CENTER, pcenter);
         frame.getContentPane().add(BorderLayout.SOUTH, control);
         
         frame.pack();
@@ -155,18 +164,20 @@ public class OrgAgentGUI extends OrgAgent {
     }
     
     public void listBels() {
-        bels.setText("--- beliefs ---\n");
+        bels.setText("");
         for (Literal b: getTS().getAg().getBB()) {
             bels.append(b+"\n");
         }
+    }
+    
+    public void listGoals() {
         if (getOE() != null) {
-            bels.append("\n--- goals --- \n");
+            goals.setText("");
             for (GoalInstance gi : getMyOEAgent().getPossibleGoals()) {
-                bels.append(gi+"\n");
+                goals.append(gi+"\n");
             }
         }
     }
-    
     
     
 }

@@ -39,7 +39,7 @@
    <- jmoise.commit_mission(Mission,Sch).
 
 // when the root goal of the scheme is achieved, 
-// remove my missions
+// remove my missions and the scheme
 +goal_state(Sch, _[root], achieved) 
    <- jmoise.remove_mission(Sch);
       .my_name(Me);
@@ -56,3 +56,4 @@
 
 +error(M)[source(orgManager)] 
    <- .print("Error in organisational action: ",M); -error(M)[source(orgManager)].
+   

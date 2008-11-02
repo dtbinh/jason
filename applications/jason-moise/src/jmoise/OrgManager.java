@@ -67,22 +67,25 @@ public class OrgManager extends AgArch {
         
         // starts GUI        
         if ("yes".equals(getTS().getSettings().getUserParameter("gui"))) {
-            try {
-                simOE = new SimOE(currentOE, false);
-                simOE.setName("OrgManager");
-                simOE.frame.addWindowListener(new java.awt.event.WindowAdapter() {
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        if (simOE != null) {
-                            simOE.disposeWindow();
-                        }
-                        simOE = null;
+            new Thread() {
+                public void run() {
+                    try {
+                        simOE = new SimOE(currentOE, false);
+                        simOE.setName("OrgManager");
+                        simOE.frame.addWindowListener(new java.awt.event.WindowAdapter() {
+                            public void windowClosing(java.awt.event.WindowEvent e) {
+                                if (simOE != null) {
+                                    simOE.disposeWindow();
+                                }
+                                simOE = null;
+                            }
+                        });
+                        simOE.frame.centerScreen();
+                    } catch (Exception e) {
+                        logger.log(Level.SEVERE, "Error creating OrgManager GUI!", e);
                     }
-                });
-                simOE.frame.centerScreen();
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, "Error creating OrgManager GUI!", e);
-            }
-
+                }
+            }.start();
         }
         
     }
