@@ -40,6 +40,9 @@ New features
   intention using the IA is suspended. See demos/gui/gui1 and the API
   doc of the new class.
 
+. API doc uses UMLGraph to show relations between classes
+
+
 New internal actions
 . .term2string: transform term into strings and vice-versa.
 

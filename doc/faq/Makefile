@@ -18,4 +18,4 @@ clean:
 	find . -name *~ -exec rm {} \; || true
 
 publish:
-	scp html/*.html jomifred@ssh.sf.net:/home/groups/j/ja/jason/htdocs/faq
+	scp html/*.html jomifred,jason@web.sf.net:/home/groups/j/ja/jason/htdocs/faq
