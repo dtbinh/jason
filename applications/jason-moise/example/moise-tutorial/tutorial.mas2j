@@ -4,8 +4,8 @@ MAS write_paper {
        orgManager [osfile="../writePaper/wp-os.xml",gui=yes]
                   agentArchClass jmoise.OrgManager;
 
-       marcos      agentArchClass gui.OrgAgentGUI;
-       lucio       agentArchClass gui.OrgAgentGUI;
+       marcos     agentArchClass gui.OrgAgentGUI;
+       lucio      agentArchClass gui.OrgAgentGUI;
 
    classpath: "../../lib/moise.jar";"../../lib/jmoise.jar";
 }

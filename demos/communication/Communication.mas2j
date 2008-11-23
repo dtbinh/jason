@@ -13,6 +13,6 @@ MAS communication {
 
 	agents:
 		bob;
-		maria;
+		maria [verbose=1]; // set verbose=2 to see more details
 }
 
