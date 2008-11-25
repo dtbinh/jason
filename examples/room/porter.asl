@@ -2,6 +2,6 @@
   : ~locked(door)
   <- lock.
   
-+!unlocked(door)[source(claustrophobe)]
++!~locked(door)[source(claustrophobe)]
   : locked(door)
   <- unlock.
