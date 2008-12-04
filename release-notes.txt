@@ -6,12 +6,13 @@ New features
 . customised belief bases can be organised in a chain so
   that several functionalities can be composed. For more
   information
-  see/run the demo/chain-bb
+  see the demo/chain-bb
   see API doc of ChainBB and ChainBBAdapter
 
 . annotations in failure events. All failure events are now
   annotated with:
-     error(<atom: error id>): values used by Jason are
+     error(<atom: error id>): the identification of the type of error, 
+	    values used by Jason are
         no_applicable: no applicable plan
         no_relevant: no relevant plan
         no_option: no option selected
@@ -27,6 +28,7 @@ New features
      code_src(<string>): the file where the command is
      code_line(<int>): the line in the file
   see demo/failure for an example
+  see FAQ for more details
   see code of JasonException and TS for more information
 
 . the version of JADE is upgraded to 3.6
@@ -64,6 +66,7 @@ API changes
   see API doc for more details.
   see discussion about the Literal class in the
   jason-developers list.
+
 
 -------------
 version 1.1.2

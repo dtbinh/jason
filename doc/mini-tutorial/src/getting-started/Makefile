@@ -9,4 +9,4 @@ all:
 	zip -r ../../getting-started/VacuumCleaning-1.zip VacuumCleaning-1/*.asl VacuumCleaning-1/*.mas2j VacuumCleaning-1/*.java
 
 publish:
-	scp ../../getting-started/* jomifred@ssh.sf.net:/home/groups/j/ja/jason/htdocs/mini-tutorial/getting-started
+	scp ../../getting-started/* jomifred,jason@web.sf.net:/home/groups/j/ja/jason/htdocs/mini-tutorial/getting-started

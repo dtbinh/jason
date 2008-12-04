@@ -21,7 +21,7 @@ public class VCWorld extends Environment {
     private int vcx = 0; // the vacuum cleaner location
     private int vcy = 0;
 
-	private boolean running = true;
+    private boolean running = true;
 	
     private HouseGUI gui = new HouseGUI();
 
@@ -31,8 +31,8 @@ public class VCWorld extends Environment {
         createPercept();
         gui.paint();
 		
-		// create a thread to add dirty
-		new Thread() {
+        // create a thread to add dirty
+        new Thread() {
 			public void run() {
 				try {
 					while (running) {
@@ -46,8 +46,7 @@ public class VCWorld extends Environment {
 					}
 				} catch (Exception e) {} 
 			}
-		}.start();
-		
+        }.start();	
     }
         
     Random r = new Random();
@@ -57,12 +56,6 @@ public class VCWorld extends Environment {
         // remove previous perception
         clearPercepts();       
         
-        // add dirty first, it has priority
-        if (dirty[vcx][vcy]) {
-            addPercept(Literal.parseLiteral("dirty"));
-        } else {
-            addPercept(Literal.parseLiteral("clean"));
-        }
         if (vcx == 0 && vcy == 0) {
             addPercept(Literal.parseLiteral("pos(1)"));
         } else if (vcx == 1 && vcy == 0) {
@@ -72,14 +65,26 @@ public class VCWorld extends Environment {
         } else if (vcx == 1 && vcy == 1) {
             addPercept(Literal.parseLiteral("pos(4)"));
         }
+
+        if (dirty[vcx][vcy]) {
+            addPercept(Literal.parseLiteral("dirty"));
+        } else {
+            addPercept(Literal.parseLiteral("clean"));
+        }
     }
 
     @Override
     public boolean executeAction(String ag, Structure action) {
+        
+        try { Thread.sleep(500);}  catch (Exception e) {} //show down the execution
+        
         // Change the world model based on action
         if (action.getFunctor().equals("suck")) {
             if (dirty[vcx][vcy]) {
                 dirty[vcx][vcy] = false;
+            } else {
+                logger.info("suck in a clean location!");
+                Toolkit.getDefaultToolkit().beep();
             }
         } else if (action.getFunctor().equals("left")) {
             if (vcx > 0) {
@@ -105,26 +110,25 @@ public class VCWorld extends Environment {
         
         createPercept(); // update agents perception for the new world state      
         gui.paint();
-        try { Thread.sleep(500);}  catch (Exception e) {}
         return true;
     }
     
     @Override
     public void stop() {
-		running = false;
-		super.stop();
-		gui.setVisible(false);
-	}
+        running = false;
+        super.stop();
+        gui.setVisible(false);
+    }
     
     
     /* a simple GUI */ 
-	class HouseGUI extends JFrame {
+    class HouseGUI extends JFrame {
         JLabel[][] labels;
         
         HouseGUI() {
-			super("Domestic Robot");
+            super("Domestic Robot");
             labels = new JLabel[dirty.length][dirty.length];
-			getContentPane().setLayout(new GridLayout(labels.length, labels.length));
+            getContentPane().setLayout(new GridLayout(labels.length, labels.length));
             for (int j = 0; j < labels.length; j++) {
                 for (int i = 0; i < labels.length; i++) {
                     labels[i][j] = new JLabel();
@@ -133,14 +137,14 @@ public class VCWorld extends Environment {
                     labels[i][j].setBorder(new EtchedBorder());
                     getContentPane().add(labels[i][j]);
                 }
-			}
-			pack();
-			setVisible(true);
-			paint();
-		}
+            }
+            pack();
+            setVisible(true);
+            paint();
+        }
 		
-		void paint() {
-			for (int i = 0; i < labels.length; i++) {
+        void paint() {
+            for (int i = 0; i < labels.length; i++) {
                 for (int j = 0; j < labels.length; j++) {
                     String l = "<html><center>";
                     if (vcx == i && vcy == j) {
@@ -152,9 +156,8 @@ public class VCWorld extends Environment {
                     l += "</center></html>";
                     labels[i][j].setText(l);
                 }
-			}
-		}
-	}
-    
+            }
+        }
+    }    
 }
 

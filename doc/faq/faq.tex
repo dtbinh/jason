@@ -812,6 +812,86 @@ alternative plans for the original goal considering all possible
 situations in which the agent can find itself when attempting to
 achieve the goal.
 
+\subsection{Which information is available to failure handling plans ?}
+
+When a plan fails, the plan that handles the corresponding event (in the form
+\texttt{-!g}) may use failure information to provide a suitable solution. This
+information is provided by two means:
+\begin{description}
+\item[Internal actions:] the internal action \texttt{.current\_intention(I)}
+  unifies in \texttt{I} the stack of the current intention. By inspecting this
+  stack, the context of the failure can be discovered.
+
+  It follows an example of \texttt{I} (provided by the execution of the
+  example available in \texttt{demos/failure}):
+\begin{verbatim}
+intention(1,
+  [
+   im("l__6[source(self)]",[".current_intention(I)", .....]),
+   im("l__5[source(self)]",[".fail"]),
+   im("l__4[source(self)]",["!g5(X)[source(self)]",".print(endg4)"]),
+   im("l__3[source(self)]",["!g4(X)[source(self)]",".print(endg3)"]),
+   im("l__2[source(self)]",["!g3(X)[source(self)]",".print(endg2)"]),
+   im("l__1[source(self)]",["!g2(X)[source(self)]",".print(endg1)"]),
+   im("l__0[source(self)]",["!g1(X)[source(self)]",".print("End, X=",X)"])
+  ]
+)
+\end{verbatim}
+
+  You find more information in the documentation of the \htlink{current\_intention}{http://jason.sourceforge.net/api/classjason_1_1stdlib_1_1current__intention.html}.
+
+
+\item[Annotations:] every failure event is annotated with at least the
+  following information:
+  \begin{itemize}
+  \item \texttt{error(<atom: error id>)}: the identification of the type of
+    failure, values used by \Jason are
+    \begin{itemize}
+    \item \texttt{no\_applicable}: failure caused by no applicable plan
+    \item \texttt{no\_relevant}: failure caused by no relevant plan
+    \item \texttt{no\_option}: failure caused by no option being selected by
+      selectOption funtion
+    \item \texttt{constraint\_failed}: failure caused by a constraint in the
+      plan that is not satisfied
+    \item \texttt{ia\_failed}: failure caused by an error in an internal
+      action (it throws an exception or returned false)
+    \item \texttt{action\_failed}: the failure is caused by a failure in the
+      execution of an action in the environment
+    \item \texttt{ask\_failed}: the failure is caused by the lack of response
+      to an ask message
+    \item \texttt{wrong\_arguments}: failure caused by wrong number of type of
+      arguments given to an internal action
+    \item \texttt{unknown}: other causes.
+    \end{itemize}
+
+  \item \texttt{error\_msg(<string>)}: the human readable message of the error
+  \item \texttt{code(<literal>)}: the plan's body operator that failed
+  \item \texttt{code\_src(<string>)}: the file's name where the plan that
+    fails is defined
+  \item \texttt{code\_line(<int>)}: the line in the file
+  \end{itemize}
+
+  An example of failure event and its annotations:
+\begin{verbatim}
+-!g[error(ia_failed), 
+    error_msg("internal action .my_name failed"), 
+    code(".my_name(bob)"), 
+    code_src("/tmp/x.asl"), 
+    code_line(18)]
+\end{verbatim}
+  
+  Note that the plan that handle this event is not obliged to use these
+  annotations, for example:
+\begin{verbatim}
+-!g[error(ia_failed)]       <- ... plan to handle error of type \ia_failed' ....
+-!g[error(no_applicable)]   <- ... plan to handle error of type 'no_applicable'
+-!g[code_src("/tmp/x.asl")] <- ... plan to handle error in plans of file x.asl
+\end{verbatim}
+
+  The internal actions defined by the user can add new annotations to indicate
+  particular types of errors (see the API documentation of \htlink{JasonException}{http://jason.sourceforge.net/api/classjason_1_1JasonException.html} for
+  more information about that).
+\end{description}
 
 
 \section{Developing Jason}
