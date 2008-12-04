@@ -35,7 +35,7 @@ used with \textbf{S}ACI for multi-agent distribution \textbf{o}ver the
 are available) and the acronyms was quite `forced', we decided the use Jason
 as a proper name for the interpreter.
 
-We are also somehow inspired by the \jason as a hero in Greek mythology. Click
+The name is also somehow inspired by \jason in Greek mythology. Click
 \begin{rawhtml}
   <a
   href="http://www.perseus.tufts.edu/cgi-bin/ptext?doc=Perseus%3Atext%3A1999.04.0004%3Ahead%3D%234815">here</a>
@@ -116,8 +116,8 @@ environment?}
 Most of the internal actions (IAs) are developed from an agent
 perspective, since they are conceived to be called by agents. Thus the
 \code{execute} method needs an agent's
-\code{TransitionSystem} (TS) to be executed (e.g. \code{.myName} make
-sense only when called by an agent).
+\code{TransitionSystem} (TS) to be executed (e.g. \code{.myName} only makes
+sense when called by an agent).
 
 %However, some internal actions can be executed without a reference for
 %a TS. For example, the IA \code{.killAgent} can
@@ -133,10 +133,10 @@ sense only when called by an agent).
 
 \subsection{How to discover the name of the agents in the environment initialisation?}
 
-Once the environment is created before the agents, the set of agents
+As the environment is created before the agents, the set of agents
 is empty when the environment is created and thus the method
 \texttt{getEnvironmentInfraTier().getRuntimeServices().getAgentsNames()}
-can not be used. However, if the set of agents is defined only by the
+cannot be used. However, if the set of agents is defined only by the
 .mas2j project file (i.e., no agent is dynamically created), the name
 of the agents can be obtained from that file.
 
@@ -185,8 +185,8 @@ public void init(String[] args) {
 
 \subsection{How to delay the MAS execution?}
 
-If you have an environment class, the easiest way is simply add a
-sleep in the \code{executeAction} method. For example:
+If you have an environment class, the easiest way is simply adding a
+thread `sleep' in the \code{executeAction} method. For example:
 \begin{verbatim}
     ...
     public boolean executeAction(String agent, Term action) {
@@ -198,8 +198,9 @@ sleep in the \code{executeAction} method. For example:
     }
 \end{verbatim}
 
-In case the agents do not act or there is no environment class, you
-should write a controller class (see \ref{sec:controlclass}). 
+In case the agents do not act in the environment or there is no
+environment class, you should write a controller class (see
+\ref{sec:controlclass}).
 
 For instance, the controller class could be:
 \begin{verbatim}
@@ -224,7 +225,7 @@ MAS test {
 }
 \end{verbatim}
 
-\subsection{Is it possible to add/remove an agent into a running MAS?}
+\subsection{Is it possible to add/remove an agent to/from a running MAS?}
 
 The internal action \code{.create_agent} can be used to dynamically
 add a new agent into the running MAS. For example, when the plan:
@@ -239,8 +240,8 @@ AgentSpeak code available at file "myAgent.asl".
 
 Analogously, the internal action \code{.killAgent(<agent name>)}
 removes the agent identified by \code{<agent name>} from the current
-MAS. The createAgDemo project that comes with Jason distribution files
-has examples of using these features.
+MAS. The createAgDemo project that comes with the Jason distribution
+files has examples of using these features.
 
 New agents can also be created in the user Java code, for example:
 
@@ -263,7 +264,7 @@ public class myEnv extends Environment {
 The RuntimeServices interface, used in the code above, provides useful
 services transparently from the underlying infrastructure
 (Centralised, Saci, ...). The interface's methods include agent
-creation, agent killing, and stop the system (see the API
+creation, agent killing, and halting the system (see the API
 documentation for more information).
 
 Note that if you're using the \saci infrastructure, new
@@ -278,13 +279,13 @@ enter the MAS using \saci features for open MAS.
 to output messages into the console (the default console is called
 MASConsole). To change the log level or device, select the menu
 ``Plugins -> Jason -> Edit Log properties''. The default configuration
-file has comments that helps you to customise your log. For instance,
+file has comments that helps you customise your log. For instance,
 to output messages both into an XML file and in the console, you only
 need to set the log handler as in the following line:
 \begin{verbatim}
 handlers = java.util.logging.FileHandler, java.util.logging.ConsoleHandler
 \end{verbatim}
-To get only console output (without MASConsole GUI):
+To get only console output (without the MASConsole GUI):
 \begin{verbatim}
 handlers = java.util.logging.ConsoleHandler
 \end{verbatim}
@@ -296,7 +297,7 @@ There are three ways to set the classpath of a project:
 \item Create a lib directory in the project and include the jar files
   there. The ant script created by \jason to run the project
   (bin/build.xml) includes lib/*.jar in the classpath. This approach
-  is used in the examples/gold-miners.
+  is used in examples/gold-miners.
 
 \item In case you do not want to copy files into the project, the
   \texttt{classpath} entry in the .mas2j file can be used:
@@ -309,7 +310,7 @@ MAS masid {
 }
 \end{verbatim}
   Several items can be added as strings separated by ";". This
-  approach is used in the examples/sniffer.
+  approach is used in examples/sniffer.
 
 \item If a more customised startup is required for your system, create
   a file named bin/c-build.xml with the template below:
@@ -330,7 +331,7 @@ MAS masid {
 </project>
 \end{verbatim}
   If a c-build.xml file exists, it is used to run your application
-  instead of build.xml.
+  instead of build.xml that is automatically created by Jason.
 \end{enumerate}
 
 \subsection{Which execution modes are available?}
@@ -343,7 +344,7 @@ MAS masid {
   
 \item \textbf{Synchronous}: all agents perform one reasoning cycle at every
   "global execution step".  When an agent finished its reasoning cycle, it
-  informs \jason's controller and waits for a "carry on" signal.  The \jason
+  informs the Jason controller and waits for a "carry on" signal.  The Jason
   controller waits until all agents have finished their reasoning cycles and
   then sends the "carry on" signal to them.
 
@@ -361,7 +362,7 @@ MAS test {
 \end{verbatim}
 
 The \code{jason.control.ExecutionControl} class implements exactly the "Jason
-controller" described above.
+controller" for the synchronous execution mode described above.
 
 
 \item \textbf{Debug}: this execution mode is similar to the synchronous mode,
@@ -369,7 +370,7 @@ controller" described above.
   ``Step'' button before sending the ``carry on'' signal to the agents.
   
   To use this execution mode you can just press the ``debug'' button rather
-  than the ``run'' button of the GUI, or you can to set up a debug controller
+  than the ``run'' button of the IDE, or you can set up a debug controller
   class in the .mas2j configuration, for example:
 \begin{verbatim}
 MAS test {
@@ -382,11 +383,11 @@ MAS test {
 }
 \end{verbatim}
   
-  The \code{jason.control.ExecutionControlGUI} class implements the "Jason
-  controller" with a GUI for debugging. This graphical tool is called
-  "\jason's Mind Inspector", as it allows users to observe all changes in
-  agents' mental attitudes after a reasoning cycle. This also applies to
-  distributed agents (using \saci).
+  The \code{jason.control.ExecutionControlGUI} class implements the
+  "Jason controller" with a GUI for debugging. This graphical tool is
+  called "\jason's Mind Inspector", as it allows users to observe all
+  changes in agents' mental attitudes after a (number of) reasoning
+  cycle(s). This also applies to distributed agents (using \saci).
 
 \end{itemize}
 
@@ -431,14 +432,15 @@ inherited from \code{ExecutionControl}.
 An infrastructure provides the following services for the MAS:
 \begin{itemize}
 \item communication (e.g., the \saci infrastructure implements
-  communication based on
-  KQML whilst \jade implements it using FIPA-ACL),
-\item control of the agent life cycle (creation, running, destruction).
+  communication based on KQML whilst \jade implements it using
+  FIPA-ACL),
+\item control of the agent life cycle (creation, running,
+  destruction).
 \end{itemize}
 
 \subsection{Which infrastructures are available?}
 
-The current version of \jason has the following infrastructures:
+The current distribution of \jason has the following infrastructures:
 \begin{description}
 \item[Centralised:] this infrastructure runs all agents in the
   same host. It provides fast startup and high performance for systems
@@ -478,14 +480,14 @@ The current version of \jason has the following infrastructures:
     \end{tabular}
   \end{center}
 
-  You find more information about this infrastructure in the
-  \htlink{the Jason-JADE mini-tutorial}{http://jason.sourceforge.net/mini-tutorial/jason-jade/index.html}.
+  You can find more information about this infrastructure in the
+  \htlink{Jason-JADE mini-tutorial}{http://jason.sourceforge.net/mini-tutorial/jason-jade/index.html}.
 \end{itemize}
 
 \subsection{How to select an infrastructure?}
 
 In the \texttt{.mas2j} project file, use the `\emph{infrastructure}'
-entry to select one infrastructure, for example to use Centralised:
+entry to select an infrastructure, for example to use Centralised:
 \begin{verbatim}
 MAS auction {
     infrastructure: Centralised
@@ -542,9 +544,9 @@ container is running at x.com):
 
 The \jade agent wrapper should be used to start a \jason agent using
 \texttt{jade.Boot}, rather than doing it from the \jason IDE. For
-example, to start a \jason agent called `bob' based on the
-AgentSpeak source of the file \texttt{auctioneer.asl}, run the
-following command in a shell:
+example, to start a \jason agent called `bob' based on the AgentSpeak
+source code in file \texttt{auctioneer.asl}, execute the following
+command in a shell:
 \begin{verbatim}
 java jade.Boot bob:jason.infra.jade.JadeAgArch(auctionner.asl)
 \end{verbatim}
@@ -561,15 +563,15 @@ java jade.Boot \
 
 \subsection{Is it possible to use only the \jason BDI engine?}
 
-If you want to use only the \jason AgentSpeak interpreter and reasoning
-features, you can implement your own agent class where the \jason available
-infrastructures are not used.  This class must function as an "overall agent
-architecture" for the AgentSpeak interpreter, i.e., it has to send
-percepts to the interpreter and get the agent actions (which result from
-the AgentSpeak "reasoning").
+If you want to use only the \jason interpreter for a variant of
+AgentSpeak, you can implement your own agent class where the \jason
+available infrastructures are not used.  This class must function as
+an "overall agent architecture" for the AgentSpeak interpreter, i.e.,
+it has to send percepts to the interpreter and get the agent actions
+(which result from the AgentSpeak "reasoning cycles").
 
-Suppose you need a simple agent that interprets and reasons according to the
-following AgentSpeak source:
+Suppose you need a simple agent that interprets and reasons according
+to the following AgentSpeak source:
 \begin{verbatim}
 +x(N) : N < 3  <- do(0).
 
@@ -591,8 +593,8 @@ public class SimpleJasonAgent extends AgArch {
 
     public SimpleJasonAgent() {
          // set up the Jason agent and the 
-         // TransitionSystem (the BDI Engine where the AS 
-         // Semantics is implemented).
+         // TransitionSystem (the BDI Engine where the AgentSpeak 
+         // Semantics is implemented)
 
          Agent ag = new Agent();
          setTS(ag.initAg(this, 
@@ -619,11 +621,11 @@ public class SimpleJasonAgent extends AgArch {
         return l;
     }
 
-    // this method get the agent actions
+    // this method gets the agent actions
     public void act(ActionExec action, List<ActionExec> feedback) {
         getTS().getLogger().info("Agent " + getAgName() + 
                              " is doing: " + action.getActionTerm());
-        // set that the execution was ok
+        // return confirming the action execution was OK
         action.setResult(true);
         feedback.add(action);
     }
@@ -654,12 +656,13 @@ Thanks to Mehdi Dastani for these questions.
   "-!p" and "-?p" are generated?}
 
 A test goal "?p" in the body of a plan first checks the belief base,
-and if it fails, it still tries to generate an internal event as that
-might have been a more sophisticated query for which the programmer
-created a whole plan with "+?p" as triggering event, then that could
-be executed. Events "-!p" and "-?p" are only generated if an executing
-plan for "+!g" and "+?g" (respectively) fail. Here's what the chapter
-and the manual says about this:
+and if it fails, it still tries to generate an internal event
+"-?p". This is because the test goal might have been meant to be a
+more sophisticated query for which the programmer created a whole plan
+with "+?p" as triggering event, then that plan could be executed to
+satisfy the test goal. Events "-!p" and "-?p" are only generated if an
+executing plan for "+!g" and "+?g" (respectively) fail. Here's what
+the manual says about this:
 
 \begin{quote}
   Events for handling plan failure are already available in Jason,
@@ -690,41 +693,48 @@ and the manual says about this:
 \subsection{Does "+p" (or "-p") in a plan body cause two effects,
   i.e. updating the belief base and generating the events "+p" (or "-p")?}
 
-Yes, it causes both effects. Note, importantly, that one of the interpreter
-configuration options allow the user to choose whether the event (\textbf{if}
-it is by chance relevant to any plans the agent has) will be treated as
-internal (pushed on top of the intention) or external (a new focus of
-attention is created).
+Yes, it causes both effects. Note, importantly, that one of the
+interpreter configuration options allow the user to choose whether the
+event (\textbf{if} it is by chance relevant to any plans the agent
+has) will be treated as internal (pushed on top of that same
+intention) or external (a new intention -- i.e., a new "focus of
+attention" -- is created).
 
 \subsection{Does "?p" in a plan body cause two effects, i.e. testing p
 from the belief base and generating the events "+?p"? Is "-?p"
-  generated when a test goal "?p" is failed? When does the test goal
-  "?p" fails?}
+  generated when a test goal "?p" fails? When does the test goal
+  "?p" fail?}
 
-When "?p" is executed, first the interpreter tries a simple query to the
-belief base. If that doesn't succeed, before failing the intention, first an
-internal event for "+?g" is generated, if that has no applicable plans, then
-the plan fails (fails "normally", i.e., for the "no applicable plans"
-reason) --- there could be still a "-?g" plan to be tried; if there's none,
-the intention is discarded and a message printed to the console to let the
+When "?p" is executed, first the interpreter tries a simple query to
+the belief base. If that doesn't succeed, before failing the
+intention, first an internal event for "+?g" is generated, if there
+are no applicable plans for such event, then the plan fails (fails
+"normally", i.e., for the "no applicable plans" reason) --- there
+could be still a "-?g" plan to be tried; if there's none, the
+intention is discarded and a message printed to the console to let the
 user know.
 
 \subsection{It is claimed that open-world assumption is available. What
 does this mean? Do we have a three-valued logic?}
 
-No, we don't use three-valued logic. It means there is "strong negation", the
-operator is "\url{~}". When assuming open world, the user models the
-environment with a set of propositions known to be explicitly true and a set
-of propositions known to be explicitly false of the environment at a certain
-moment in time (the latter are literals preceeded by the \url{~} operator).
-Of course, there is still default negation (as usual logic programming
-languages), so you can say, in the context of a plan, "not p(t) \& not
-\url{~}p(t)" to check if the agent is uncertain about "p(t)". Note that it's
-completely up to the user to prevent paraconsistency (or to use it, if s/he
-wants). You could add internal beliefs (or have beliefs from perception of the
-environment) that p(t) is true and that ~p(t) is also true: \jason won't do
-consistency checks for you! Note that strong negation can also appear in the
-triggering events, plan body, anywhere a literal can appear.
+No, we don't use three-valued logic, strictly speaking. There is a
+"strong negation" operator "\url{~}". When assuming open world, the
+user models the environment with a set of propositions known to be
+explicitly true and a set of propositions known to be explicitly false
+of the environment at a certain moment in time (the latter are
+literals preceeded by the \url{~} operator).  Of course, there is
+still default negation (as usual in logic programming languages), so
+you can say, in the context of a plan, "not p(t) \& not \url{~}p(t)"
+to check if the agent is uncertain about "p(t)". Note that it's
+completely up to the user to prevent paraconsistency (or to use it, if
+they so wish). You could add internal beliefs (or have beliefs from
+perception of the environment) that p(t) is true and that ~p(t) is
+also true: \jason won't do consistency checks for you! But you can
+easily implement such consistency check, or indeed have more elaborate
+belief revisions algorithms by overriding the belief update and belief
+revision methods in Jason (the belief revision method by default does
+nothing). Finally, note that strong negation can also appear in the
+triggering events, plan body, and anywhere a literal can appear.
 
 
 \subsection{What's the difference between ! and !!?}
@@ -739,14 +749,16 @@ will be done first (executing a bit of the intention with g1 or the
 old intention with g2) will depend on the choices that the intention
 selection function makes. 
 
-You may have noticed !! is used a lot at the end of recursive
-plans as in the following code:
+You may have noticed !! is often used at the end of recursive plans
+(when the recursive call does not have free variables to be
+instantiated) as in the following code:
 \begin{verbatim}
 +!g : end_recursion_context.
 +!g : true <- action1; !!g.
 \end{verbatim}
 In this case, the !! is used to avoid Jason creating long stacks of
-plans. 
+(empty) plans, so the operator just allows Jason to process the
+recursion more efficiently.
 
 
 \subsection{Why is \jason's plan failure mechanism different from
@@ -763,15 +775,15 @@ another plan is chosen from that set of plans initially recorded as
 alternative plans for handling that event. This has the great
 advantage that the platform does not have to check for applicable
 plans again, and has as disadvantage the fact that possibly the
-agent's beliefs have changed and so plan considered applicable at the
+agent's beliefs have changed and so plans considered applicable at the
 time the first plan was selected, are actually no longer applicable
-(yet they will be attempted, which increases the chance of the chosen
+(yet they will be attempted, which increases the chances of the chosen
 alternative plan failing as well).
 
 In \jason, we opted for a different approach. When a plan with a
 triggering event "\texttt{+!g}" fails, we generate an event
-"\texttt{-!g}" and if the programmer provided a plan for that event
-that is currently applicable, that plan is pushed on top of the
+"\texttt{-!g}" and if the programmer provided a plan for that event,
+and that plan is currently applicable, that plan is pushed on top of the
 intention where the failed plan is. In the general case, the
 programmer will have included in that "\texttt{-!g}" plan another
 attempt to achieve "\texttt{g}". When this happens, all relevant plans
@@ -792,15 +804,17 @@ applicable plan selection function checking the failed plans in the
 stack of plans forming that intention (note that the failed plans are
 still there and will only be removed, without executing further, when
 the respective plan for "\texttt{-!g}" finishes) to decide which ones
-not to use anymore (currently this might be tricky for most users to
-do, although support for this is planned).
+not to use anymore. Off course the latter requires considerable Java
+programming). For the first alternative, there is work on ``plan
+patterns'' and pre-processing directives which take care of automating
+this for the programmer.
 
 On the other hand, there is an extra advantage of the use of the
 \jason plan failure handling mechanism. Pure "backtracking" as used in
 logic programming might not always make sense in an agent program.
 Recall that besides "sub-goals", plan bodies have \emph{actions}.
 These actions, by definition, change something that is outside the
-agent itself (the environment), so they cannot automatically be
+agent itself (i.e., the environment), so they cannot automatically be
 "undone" by the interpreter in the process of backtracking. It is
 therefore possible that none of the plans originally written (with a
 particular set of initial situations in mind) to achieve the goal will
@@ -814,13 +828,14 @@ achieve the goal.
 
 \subsection{Which information is available to failure handling plans ?}
 
-When a plan fails, the plan that handles the corresponding event (in the form
-\texttt{-!g}) may use failure information to provide a suitable solution. This
-information is provided by two means:
+When a plan fails, the plan that handles the corresponding event (that
+has the form of \texttt{-!g}) may use failure information to provide a
+suitable solution. This information is provided by two means:
 \begin{description}
-\item[Internal actions:] the internal action \texttt{.current\_intention(I)}
-  unifies in \texttt{I} the stack of the current intention. By inspecting this
-  stack, the context of the failure can be discovered.
+\item[Internal actions:] the internal action
+  \texttt{.current\_intention(I)} unifies \texttt{I} with a
+  representation of the stack of the current intention. By inspecting
+  this stack, the context of the failure can be discovered.
 
   It follows an example of \texttt{I} (provided by the execution of the
   example available in \texttt{demos/failure}):
@@ -838,37 +853,40 @@ intention(1,
 )
 \end{verbatim}
 
-  You find more information in the documentation of the \htlink{current\_intention}{http://jason.sourceforge.net/api/classjason_1_1stdlib_1_1current__intention.html}.
+  You can find more information in the documentation of the
+  \htlink{current\_intention}{http://jason.sourceforge.net/api/classjason_1_1stdlib_1_1current__intention.html}
+  pre-defined internal action.
 
 
 \item[Annotations:] every failure event is annotated with at least the
   following information:
   \begin{itemize}
   \item \texttt{error(<atom: error id>)}: the identification of the type of
-    failure, values used by \Jason are
+    failure; values used by \Jason are:
     \begin{itemize}
-    \item \texttt{no\_applicable}: failure caused by no applicable plan
-    \item \texttt{no\_relevant}: failure caused by no relevant plan
+    \item \texttt{no\_applicable}: failure caused by no applicable plan;
+    \item \texttt{no\_relevant}: failure caused by no relevant plan;
     \item \texttt{no\_option}: failure caused by no option being selected by
-      selectOption funtion
+      the selectOption function;
     \item \texttt{constraint\_failed}: failure caused by a constraint in the
-      plan that is not satisfied
+      plan that was not satisfied;
     \item \texttt{ia\_failed}: failure caused by an error in an internal
-      action (it throws an exception or returned false)
-    \item \texttt{action\_failed}: the failure is caused by a failure in the
-      execution of an action in the environment
+      action (it throws an exception or returned false);
+    \item \texttt{action\_failed}: the failure was caused by a failure
+      in the execution of an action in the environment (i.e., the
+      action execution returned "false");
     \item \texttt{ask\_failed}: the failure is caused by the lack of response
-      to an ask message
-    \item \texttt{wrong\_arguments}: failure caused by wrong number of type of
-      arguments given to an internal action
-    \item \texttt{unknown}: other causes.
+      to an ask message (with deadline);
+    \item \texttt{wrong\_arguments}: failure caused by wrong number or
+      type of arguments given to an internal action;
+    \item \texttt{unknown}: other causes;
     \end{itemize}
 
   \item \texttt{error\_msg(<string>)}: the human readable message of the error
-  \item \texttt{code(<literal>)}: the plan's body operator that failed
-  \item \texttt{code\_src(<string>)}: the file's name where the plan that
-    fails is defined
-  \item \texttt{code\_line(<int>)}: the line in the file
+  \item \texttt{code(<literal>)}: the plan body literal that failed;
+  \item \texttt{code\_src(<string>)}: the file name with the source
+    code where the plan that failed is defined;
+  \item \texttt{code\_line(<int>)}: the line number within that file.
   \end{itemize}
 
   An example of failure event and its annotations:
@@ -880,17 +898,19 @@ intention(1,
     code_line(18)]
 \end{verbatim}
   
-  Note that the plan that handle this event is not obliged to use these
-  annotations, for example:
+  Note that the plan that handles this event is not obliged to use any
+  these annotations, or it could make use of a subset of them, for
+  example:
 \begin{verbatim}
 -!g[error(ia_failed)]       <- ... plan to handle error of type \ia_failed' ....
 -!g[error(no_applicable)]   <- ... plan to handle error of type 'no_applicable'
 -!g[code_src("/tmp/x.asl")] <- ... plan to handle error in plans of file x.asl
 \end{verbatim}
 
-  The internal actions defined by the user can add new annotations to indicate
-  particular types of errors (see the API documentation of \htlink{JasonException}{http://jason.sourceforge.net/api/classjason_1_1JasonException.html} for
-  more information about that).
+  The internal actions defined by the user can add new annotations to
+  indicate particular types of errors (see the API documentation of
+  \htlink{JasonException}{http://jason.sourceforge.net/api/classjason_1_1JasonException.html}
+  for more information about that).
 \end{description}
 
 
@@ -900,13 +920,13 @@ intention(1,
 
 The SVN repository maintains the latest version of the \jason's
 sources, so you will eventually need to build \jason from the SVN. To
-do this the following softwares are required:
+do this the following software is required:
 \begin{itemize}
-\item a \htlink{SVN}{http://sourceforge.net/docs/B01} client program and
+\item an \htlink{SVN}{http://sourceforge.net/docs/B01} client program and
 \item \htlink{Ant}{http://ant.apache.org/} version >= 1.6.2.
 \end{itemize}
 
-The steps to build are:
+The steps to build Jason are:
 \begin{enumerate}
 \item download the sources from SVN:
 \begin{verbatim}
@@ -932,7 +952,17 @@ More information is available at
 
 \end{enumerate}
 
+\subsection{Do I have to use \jason with jEdit?}
+
+No, Jason is also available as a plugin to Eclipse, developed mostly
+by Germano Fronze; click
+\htlink{here}{http://jasonplugin.wikidot.com/} for more information,
+including installation instructions.
+
 \subsection{How to create an Eclipse project for \jason?}
+
+This might be useful if you are planning to contribute code for Jason
+itself.
 
 \begin{enumerate}
 \item Select new Java Project wizard in Eclipse.
@@ -940,7 +970,7 @@ More information is available at
   \Jason is installed. [Next]
 \item Set \texttt{"src"} directory for the sources.
 \item Set \texttt{"bin/classes"} for "Default output folder".
-\item Add all jars in \texttt{"lib"} for "Libraries". [Finish]
+\item Add all jars in \texttt{"lib"} as "Libraries". [Finish]
 \end{enumerate}
 
 
