@@ -11,9 +11,9 @@ desired_mission(writePaperSch,mColaborator).
 desired_mission(writePaperSch,mBib).
 
 
+
 // include common plans for MOISE+ agents
 { include("moise-common.asl") }
-
 
 /* Organisational Goals' plans */
 
@@ -29,3 +29,17 @@ desired_mission(writePaperSch,mBib).
    :  play(S, writer, _) & refs(R)
    <- .print("adding ref ",NewRef, " to ", R);
       -refs(R); +refs([NewRef|R]).
+      
++play(Me,R,_)
+   : .my_name(Me)
+  <- jmoise.group_specification(wpgroup,S);
+     S = group_specification(_,Roles,_,_);
+     .member(role(R,Min,Max,Compat,Links),Roles);
+     .print("I am starting playing ",R);
+     .print(" -- cardinality of my role (Min,Max): (",Min,",",Max,")");
+     .print(" -- roles compatible with mine: ", Compat);
+     .print(" -- links of my role: ",Links);
+     .print(" -- all specification of the group is ",S).
+     
+
+      
