@@ -1,9 +1,9 @@
 // Environment code for project game-of-life.mas2j
 
+import jason.asSyntax.ASSyntax;
 import jason.asSyntax.Atom;
 import jason.asSyntax.Literal;
 import jason.asSyntax.NumberTerm;
-import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Structure;
 import jason.environment.SteppedEnvironment;
 import jason.environment.grid.Location;
@@ -97,8 +97,7 @@ public class FoodEnvironment extends SteppedEnvironment {
     @Override
 	protected void stepStarted(int step) {
     	//logger.info("start step "+step);
-    	lstep = new Literal("step");
-        lstep.addTerm(new NumberTermImpl(step+1));
+    	lstep = ASSyntax.createLiteral("step", ASSyntax.createNumber(step+1));
     }
     
     long sum = 0;
@@ -173,14 +172,14 @@ public class FoodEnvironment extends SteppedEnvironment {
         clearPercepts(agName);
 
         Location l = model.getAgPos(ag);
-        Literal lpos = new Literal("pos");
-        lpos.addTerm(new NumberTermImpl(ag));
-        lpos.addTerm(new NumberTermImpl(l.x));
-        lpos.addTerm(new NumberTermImpl(l.y));
+        Literal lpos = ASSyntax.createLiteral("pos",
+                ASSyntax.createNumber(ag),
+                ASSyntax.createNumber(l.x),
+                ASSyntax.createNumber(l.y));
         addPercept(agName, lpos);
 
-        Literal lstrength = new Literal("strength");
-        lstrength.addTerm(new NumberTermImpl(model.getAgStrength(ag)));
+        Literal lstrength = ASSyntax.createLiteral("strength", 
+                ASSyntax.createNumber(model.getAgStrength(ag)));
         addPercept(agName, lstrength);        
         
         testAg(agName, l.x - 1, l.y);
@@ -213,11 +212,11 @@ public class FoodEnvironment extends SteppedEnvironment {
     
     void testFood(String agName, int ag, Atom where, int x, int y) {
     	if (model.hasObject(FoodModel.FOOD, x, y)) {
-    		Literal f = new Literal("food");
-    		f.addTerm(new NumberTermImpl(x));
-    		f.addTerm(new NumberTermImpl(y));
-    		f.addTerm(where);
-			f.addTerm(new NumberTermImpl(model.getFoodOwner(x, y)));
+    		Literal f = ASSyntax.createLiteral("food",
+    		                ASSyntax.createNumber(x),
+    		                ASSyntax.createNumber(y),
+    		                where,
+    		                ASSyntax.createNumber(model.getFoodOwner(x, y)));
 			addPercept(agName, f);
     	}
     }
@@ -227,11 +226,11 @@ public class FoodEnvironment extends SteppedEnvironment {
     void testAg(String agName, int x, int y) {
     	int other = model.getAgAtPos(x, y);
     	if (other >= 0) {
-    		Literal f = new Literal("agent"); // seeing
-    		f.addTerm(new NumberTermImpl(other));
-    		f.addTerm(new NumberTermImpl(x));
-    		f.addTerm(new NumberTermImpl(y));
-    		f.addTerm(new NumberTermImpl(model.getAgStrength(other)));    		
+    		Literal f = ASSyntax.createLiteral("agent", // seeing
+    		                ASSyntax.createNumber(other),
+    		                ASSyntax.createNumber(x),
+    		                ASSyntax.createNumber(y),
+    		                ASSyntax.createNumber(model.getAgStrength(other)));    		
     		
     		if (isEating(agName)) {
     		    f.addTerm(aEating);
