@@ -6,35 +6,40 @@ import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.ASSyntax;
 import jason.asSyntax.StringTerm;
+import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 import moise.os.ss.Group;
 
 
 /**
-
+ 
+ <p><b><code>jmoise.group_specification( GrSpecId [, Roles [, Sub-groups [, Properties ]]] )</code></b>: 
  Obtains a representation (as a term) of a group specification.
  
+ Roles is a list with all roles of the group. Each role is a structure like 
+ <code>role(RoleId,MinPlayers,MaxPlayers,CompatibleRoles,Links)</code>
+
  Example:
  
  <pre>
- +play(Me,R,_)
-   : .my_name(Me)
-  <- jmoise.group_specification(wpgroup,S);
-     S = group_specification(GrId,Roles,SubGroups,Properties);
-     .member(role(R,Min,Max,Compat,Links),Roles);
-     .print("I am starting playing ",R);
+ +play(Me,R,GrInst)                                      // when I adopted a new role ...
+   : .my_name(Me) & group(GrSpec,GrInst)
+  <- jmoise.group_specification(GrSpec,Roles,SubGroups); // the group's properties are not obtained
+     .member(role(R,Min,Max,Compat,Links),Roles);        // find details of my role
+     .print("I am starting playing ",R," in ",GrInst);
      .print(" -- cardinality of my role (Min,Max): (",Min,",",Max,")");
      .print(" -- roles compatible with mine: ", Compat);
      .print(" -- links of my role: ",Links);
-     .print(" -- all specification of the group is ",S).
+     .print(" -- all roles of the group are ",Roles);
+     .print(" -- sub-groups are ",SubGroups).
  </pre>
  
- @author hubner
+ @author Jomi Hubner
 */
 public class group_specification extends DefaultInternalAction  {
 
-	@Override public int getMaxArgs() { return 2; }
-	@Override public int getMinArgs() { return 2; }
+	@Override public int getMaxArgs() { return 4; }
+	@Override public int getMinArgs() { return 1; }
 	
 	@Override protected void checkArguments(Term[] args) throws JasonException {
         super.checkArguments(args);
@@ -56,6 +61,15 @@ public class group_specification extends DefaultInternalAction  {
         Group g = oag.getOE().getOS().getSS().getRootGrSpec().findSubGroup(grId);
         if (g == null)
             throw new JasonException("the group with id '"+grId+"' does not exists in the OS.");
-        return un.unifies(args[1], ASSyntax.parseTerm(g.getAsProlog()));
+        
+        Structure gstructure = ASSyntax.parseStructure(g.getAsProlog());
+        
+        int i = 1;
+        while (i < args.length && i < gstructure.getArity()) {
+            if (! un.unifies(args[i], gstructure.getTerm(i)))
+                return false;
+            i++;
+        }
+        return true;
     }	
 }

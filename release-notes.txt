@@ -63,6 +63,8 @@ API changes
       new Literal(...)
   have to be written as
       ASSyntax.createLiteral(....)
+  the class ASSyntax is the preferred factory for the creation
+  of all kind of terms.
   see API doc for more details.
   see discussion about the Literal class in the
   jason-developers list.

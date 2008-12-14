@@ -30,16 +30,14 @@ desired_mission(writePaperSch,mBib).
    <- .print("adding ref ",NewRef, " to ", R);
       -refs(R); +refs([NewRef|R]).
       
-+play(Me,R,_)
-   : .my_name(Me)
-  <- jmoise.group_specification(wpgroup,S);
-     S = group_specification(_,Roles,_,_);
++play(Me,R,GrInst)
+   : .my_name(Me) & group(GrSpec,GrInst)
+  <- jmoise.group_specification(GrSpec,Roles);
      .member(role(R,Min,Max,Compat,Links),Roles);
      .print("I am starting playing ",R);
      .print(" -- cardinality of my role (Min,Max): (",Min,",",Max,")");
      .print(" -- roles compatible with mine: ", Compat);
-     .print(" -- links of my role: ",Links);
-     .print(" -- all specification of the group is ",S).
+     .print(" -- all roles of the group are ",Roles).
      
 
       

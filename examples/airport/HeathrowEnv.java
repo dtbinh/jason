@@ -3,16 +3,13 @@ import jason.asSyntax.Literal;
 import jason.asSyntax.Structure;
 import jason.environment.Environment;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class HeathrowEnv extends Environment {
    
 	Literal[] initialLocations = { Literal.parseLiteral("location(t1,g1)"), 
                                    Literal.parseLiteral("location(t1,g2)"), 
                                    Literal.parseLiteral("location(t1,g3)")};
                                    
-	Map agsLocation = new HashMap();
+	//Map agsLocation = new HashMap();
 	
     @Override
     public void init(String[] args) {

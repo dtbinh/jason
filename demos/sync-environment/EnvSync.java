@@ -1,5 +1,6 @@
 // Environment code for project act-sync.mas2j
 
+import jason.asSyntax.ASSyntax;
 import jason.asSyntax.Literal;
 import jason.asSyntax.LiteralImpl;
 import jason.asSyntax.NumberTermImpl;
@@ -25,8 +26,7 @@ public class EnvSync extends SteppedEnvironment {
     @Override
     public boolean executeAction(String agName, Structure action) {
     	actionCount++;
-    	Literal p = new LiteralImpl("executed_actions");
-    	p.addTerm(new NumberTermImpl(actionCount));
+    	Literal p = ASSyntax.createLiteral("executed_actions", ASSyntax.createNumber(actionCount));
     	clearPercepts();
     	addPercept(p);
         return true;

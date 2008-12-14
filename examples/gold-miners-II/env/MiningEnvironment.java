@@ -1,9 +1,8 @@
 package env;
 
+import jason.asSyntax.ASSyntax;
 import jason.asSyntax.Atom;
 import jason.asSyntax.Literal;
-import jason.asSyntax.LiteralImpl;
-import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 import jason.environment.SteppedEnvironment;
@@ -179,8 +178,8 @@ public class MiningEnvironment extends SteppedEnvironment {
     		logger.warning("Error creating world "+e);
     	}
     }
-    public static Atom aCAP      = new LiteralImpl("container_has_space");
 
+    public static Literal aCAP   = ASSyntax.createLiteral("container_has_space");
     public static Atom aOBSTACLE = new Atom("obstacle");
     public static Atom aGOLD     = new Atom("gold");
     public static Atom aENEMY    = new Atom("enemy");
@@ -202,12 +201,13 @@ public class MiningEnvironment extends SteppedEnvironment {
         clearPercepts(agName);
         // its location
         Location l = model.getAgPos(ag);
-        Literal p = new LiteralImpl("pos");
-        p.addTerms(new NumberTermImpl(l.x), new NumberTermImpl(l.y), new NumberTermImpl(getStep()));
+        Literal p = ASSyntax.createLiteral("pos", 
+                        ASSyntax.createNumber(l.x), 
+                        ASSyntax.createNumber(l.y), 
+                        ASSyntax.createNumber(getStep()));
         addPercept(agName, p);
         
-        Literal cg = new LiteralImpl("carrying_gold");
-        cg.addTerm(new NumberTermImpl(model.getGoldsWithAg(ag)));
+        Literal cg = ASSyntax.createLiteral("carrying_gold", ASSyntax.createNumber(model.getGoldsWithAg(ag)));
         addPercept(agName, cg);
         
         if (model.mayCarryMoreGold(ag)) {
@@ -255,14 +255,12 @@ public class MiningEnvironment extends SteppedEnvironment {
     }
     
     public static Literal createCellPerception(int x, int y, Atom obj) {
-    	Literal l = new LiteralImpl("cell");
-    	l.addTerms(new NumberTermImpl(x),
-    	           new NumberTermImpl(y),
-    	           obj); 
-    	return l;
+    	return ASSyntax.createLiteral("cell",
+    	        ASSyntax.createNumber(x),
+    	        ASSyntax.createNumber(y),
+    	        obj); 
     }
 
-    
 
     Integer nextWorld;
     

@@ -2,7 +2,6 @@ package mining;
 
 // Environment code for project jasonTeamSimLocal.mas2j
 
-import jason.asSyntax.DefaultTerm;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
@@ -25,16 +24,15 @@ public class MiningPlanet extends jason.environment.Environment {
     boolean running  = true;
     boolean hasGUI   = true;
     
-    public static final int SIM_TIME = 60;                                                                         // in
-                                                                                                                    // seconds
+    public static final int SIM_TIME = 60;  // in seconds
 
-    Term                    up       = DefaultTerm.parse("do(up)");
-    Term                    down     = DefaultTerm.parse("do(down)");
-    Term                    right    = DefaultTerm.parse("do(right)");
-    Term                    left     = DefaultTerm.parse("do(left)");
-    Term                    skip     = DefaultTerm.parse("do(skip)");
-    Term                    pick     = DefaultTerm.parse("do(pick)");
-    Term                    drop     = DefaultTerm.parse("do(drop)");
+    Term                    up       = Literal.parseLiteral("do(up)");
+    Term                    down     = Literal.parseLiteral("do(down)");
+    Term                    right    = Literal.parseLiteral("do(right)");
+    Term                    left     = Literal.parseLiteral("do(left)");
+    Term                    skip     = Literal.parseLiteral("do(skip)");
+    Term                    pick     = Literal.parseLiteral("do(pick)");
+    Term                    drop     = Literal.parseLiteral("do(drop)");
 
     public enum Move {
         UP, DOWN, RIGHT, LEFT

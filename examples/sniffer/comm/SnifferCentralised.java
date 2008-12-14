@@ -4,10 +4,9 @@ import jason.JasonException;
 import jason.RevisionFailedException;
 import jason.architecture.AgArch;
 import jason.asSemantics.Message;
+import jason.asSyntax.ASSyntax;
 import jason.asSyntax.Atom;
 import jason.asSyntax.Literal;
-import jason.asSyntax.LiteralImpl;
-import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.StringTermImpl;
 import jason.asSyntax.Structure;
 import jason.infra.centralised.CentralisedAgArch;
@@ -40,19 +39,16 @@ public class SnifferCentralised extends AgArch implements MsgListener {
 	
 		// add a belief in the agent mind 
 		// format: msgSent(time(YY,MM,DD,HH,MM,SS),id,irt,ilf,sender,receiver,content)
-		Literal e = new LiteralImpl("msg_sent");
 
         Calendar now = new GregorianCalendar();
-		Structure p = new Structure("time");
-		p.addTerms(
-				new NumberTermImpl(now.get(Calendar.YEAR)),
-				new NumberTermImpl(now.get(Calendar.MONTH)),
-				new NumberTermImpl(now.get(Calendar.DAY_OF_MONTH)),
-				new NumberTermImpl(now.get(Calendar.HOUR)),
-				new NumberTermImpl(now.get(Calendar.MINUTE)),
-				new NumberTermImpl(now.get(Calendar.SECOND)));
-		e.addTerm(p);
-	
+		Structure p = ASSyntax.createStructure("time",
+				ASSyntax.createNumber(now.get(Calendar.YEAR)),
+				ASSyntax.createNumber(now.get(Calendar.MONTH)),
+				ASSyntax.createNumber(now.get(Calendar.DAY_OF_MONTH)),
+				ASSyntax.createNumber(now.get(Calendar.HOUR)),
+				ASSyntax.createNumber(now.get(Calendar.MINUTE)),
+				ASSyntax.createNumber(now.get(Calendar.SECOND)));
+        Literal e = ASSyntax.createLiteral("msg_sent", p);
 	
 		e.addTerm(new StringTermImpl(m.getMsgId()));
 		if (m.getInReplyTo() == null) {
