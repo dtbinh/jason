@@ -19,7 +19,7 @@ public interface JasonInternalInfras {
 	public static final String SACI = "Saci";
 	
 	/**
-	 * Infrastructure Jade based.
+	 * Infrastructure JADE based.
 	 */
-	public static final String JADE = "Jade";	
+	public static final String JADE = "JADE";	
 }

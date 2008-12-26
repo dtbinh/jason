@@ -4523,4 +4523,3 @@ Stand up            Sit down
  *  ||----||      |-----||     |----||  *
     ^^    ^^      ^     ^^     ^    ^^
 Fight, fight, fight!
-

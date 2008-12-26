@@ -12,21 +12,22 @@ New features
 . annotations in failure events. All failure events are now
   annotated with:
      error(<atom: error id>): the identification of the type of error, 
-	    values used by Jason are
-        no_applicable: no applicable plan
-        no_relevant: no relevant plan
-        no_option: no option selected
-        constraint_failed: constraint failed
-        ia_failed: internal action returned false
-        action_failed: action failed in the environment
-        ask_failed: answer for an ask message failed
-        wrong_arguments: throw by internal actions
-        unknown
+     values used by Jason are:
+          no_applicable: no applicable plan
+          no_relevant: no relevant plan
+          no_option: no option selected
+          constraint_failed: constraint (i.e., a logic expression in
+              the plan body) failed
+          ia_failed: internal action returned false
+          action_failed: environment action failed
+          ask_failed: answer to an ask message failed (due to timeout)
+          wrong_arguments: wrong arguments (type and/or number) passed
+              to an internal action
 
-     error_msg(<string>): the human readable message of the error
-     code(<literal>): the command that failed
-     code_src(<string>): the file where the command is
-     code_line(<int>): the line in the file
+     error_msg(<string>): the human readable message for the error
+     code(<literal>): the part of the plan body where the failure occurred
+     code_src(<string>): the file where the failure was
+     code_line(<int>): the line in that file
   see demo/failure for an example
   see FAQ for more details
   see code of JasonException and TS for more information
@@ -35,39 +36,36 @@ New features
 
 . new base class for internal actions: ConcurrentInternalAction. This
   class can be used in place of DefaultInternalAction to create an IA
-  that suspend the intention while it is being executed. For example:
-  a plan may ask something to an user and wait the answer. If
-  DefaultInternalAction is used for that, all the agent thread is
-  blocked until the answer. With ConcurrentInternalAction, only the
-  intention using the IA is suspended. See demos/gui/gui1 and the API
-  doc of the new class.
+  that suspends the intention while it is being executed. For example,
+  if DefaultInternalAction is used for an action that requires user
+  input, the agent's thread is blocked until an answer is given by the
+  user. With ConcurrentInternalAction, only the intention using the IA
+  is suspended. See demos/gui/gui1 and the API doc of this new class.
 
 . API doc uses UMLGraph to show relations between classes
 
 
 New internal actions
-. .term2string: transform term into strings and vice-versa.
+.  .term2string: transforms a term into a string and vice-versa.
 
 
 New functions
-. .math.sum: sums a list of numbers
-. .math.average: returns the average of a list of numbers
+.  .math.sum: sums a list of numbers
+.  .math.average: returns the average of a list of numbers
 
 
 API changes
-. the most significant change is in the Literal class, that
-  is abstract now. To create a new literal, the previous
-  method
+. the most significant change is in the Literal class, which
+  is now abstract. To create a new literal, the previous method
       Literal.parseLiteral(....)
   still works, but 
       new Literal(...)
-  have to be written as
+  has to be written as
       ASSyntax.createLiteral(....)
-  the class ASSyntax is the preferred factory for the creation
-  of all kind of terms.
-  see API doc for more details.
-  see discussion about the Literal class in the
-  jason-developers list.
+  the ASSyntax factory is the preferred approach for the creation of all
+  types of terms.
+  see API doc for further details.
+  see discussion about the Literal class in the jason-developers list.
 
 
 -------------
