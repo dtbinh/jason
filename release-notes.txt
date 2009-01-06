@@ -1,15 +1,16 @@
--------------
+---------------------------
 version 1.2.0
--------------
+the 5th Anniversary Release
+---------------------------
 
 New features
-. customised belief bases can be organised in a chain so
+- customised belief bases can be organised in a chain so
   that several functionalities can be composed. For more
   information
   see the demo/chain-bb
   see API doc of ChainBB and ChainBBAdapter
 
-. annotations in failure events. All failure events are now
+- annotations in failure events. All failure events are now
   annotated with:
      error(<atom: error id>): the identification of the type of error, 
      values used by Jason are:
@@ -32,9 +33,9 @@ New features
   see FAQ for more details
   see code of JasonException and TS for more information
 
-. the version of JADE is upgraded to 3.6
+- the version of JADE is upgraded to 3.6
 
-. new base class for internal actions: ConcurrentInternalAction. This
+- new base class for internal actions: ConcurrentInternalAction. This
   class can be used in place of DefaultInternalAction to create an IA
   that suspends the intention while it is being executed. For example,
   if DefaultInternalAction is used for an action that requires user
@@ -42,20 +43,25 @@ New features
   user. With ConcurrentInternalAction, only the intention using the IA
   is suspended. See demos/gui/gui1 and the API doc of this new class.
 
-. API doc uses UMLGraph to show relations between classes
+- API doc uses UMLGraph to show relations between classes
+
+
+New demo
+- java-object-terms: shows how variables may be unified to
+  Java objects
 
 
 New internal actions
-.  .term2string: transforms a term into a string and vice-versa.
+-  .term2string: transforms a term into a string and vice-versa
 
 
 New functions
-.  .math.sum: sums a list of numbers
-.  .math.average: returns the average of a list of numbers
+-  .math.sum: sums a list of numbers
+-  .math.average: returns the average of a list of numbers
 
 
 API changes
-. the most significant change is in the Literal class, which
+- the most significant change is in the Literal class, which
   is now abstract. To create a new literal, the previous method
       Literal.parseLiteral(....)
   still works, but 
