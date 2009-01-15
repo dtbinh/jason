@@ -579,7 +579,7 @@ to the following AgentSpeak source:
 \end{verbatim}
 
 The following class implements the required architecture (the complete
-code is available with the examples in the \jason distribution).  This
+code is available in the `demos' directory in the \jason distribution).  This
 code simply adds \code{x(10)} into the agent's belief base through
 perception and get the output action, in this case \code{do(50)}.
 
@@ -597,10 +597,8 @@ public class SimpleJasonAgent extends AgArch {
          // Semantics is implemented)
 
          Agent ag = new Agent();
-         setTS(ag.initAg(this, 
-                         new DefaultBeliefBase(), 
-                         "demo.asl", // source code
-                         new Settings()));
+         new TransitionSystem(ag, new Circumstance(), new Settings(), this);
+         ag.initAg("demo.asl"); // demo.asl is the file containing the code of the agent
     }
     
     public String getAgName() {
@@ -608,7 +606,7 @@ public class SimpleJasonAgent extends AgArch {
     }
 
     public void run() {
-        while (true) {
+        while (isRunning()) {
           // calls the Jason engine to perform one reasoning cycle
           getTS().reasoningCycle();
         }
@@ -628,6 +626,27 @@ public class SimpleJasonAgent extends AgArch {
         // return confirming the action execution was OK
         action.setResult(true);
         feedback.add(action);
+    }
+
+    public boolean canSleep() {
+        return true;
+    }
+
+    public boolean isRunning() {
+        return true;
+    }
+
+    public void sleep() {
+    	try {   Thread.sleep(1000); } catch (InterruptedException e) {}
+    }
+    
+    public void sendMsg(jason.asSemantics.Message m) throws Exception {
+    }
+
+    public void broadcast(jason.asSemantics.Message m) throws Exception {
+    }
+
+    public void checkMail() {
     }
 }
 \end{verbatim}

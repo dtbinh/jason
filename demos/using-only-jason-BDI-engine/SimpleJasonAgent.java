@@ -87,8 +87,8 @@ public class SimpleJasonAgent extends AgArch {
     @Override
     public void sleep() {
     	try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {}
+	    Thread.sleep(1000);
+        } catch (InterruptedException e) {}
     }
     
     // Not used methods
