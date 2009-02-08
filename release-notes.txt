@@ -1,4 +1,13 @@
 ---------------------------
+version 1.2.1
+---------------------------
+
+Bugs fixed
+- arithmetic expressions are considered as Literal, causing 
+   failures in unification
+
+
+---------------------------
 version 1.2
 the 5th Anniversary Release
 
