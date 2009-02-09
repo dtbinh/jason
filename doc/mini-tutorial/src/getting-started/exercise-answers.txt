@@ -1,0 +1,104 @@
+There are several solutions for the vacuum cleaner. Here we present and
+comment some of them. We start from a very reactive solution and finish
+by a goal-oriented version.
+
+
+
+1. First solution
+
+----------------------------------------
++dirty <- suck.
+
++pos(1) <- right.
++pos(2) <- down.
++pos(3) <- up.
++pos(4) <- left.
+----------------------------------------
+
+* comments
+- reactive agent
+- selection of plans do not use context (beliefs), 
+  but only events
+
+* problems
+- may leave dirty behind, you will get messages like
+    [VCWorld] suck in a clean location!
+- reason: the selection of the intention to move ("+pos(...)" plans) are
+  selected before the plan to clean the location
+
+
+2. Second solution
+
+----------------------------------------
++pos(1) : clean <- right.
++pos(2) : clean <- down.
++pos(3) : clean <- up.
++pos(4) : clean <- left.
+
++pos(1) : dirty <- suck; right.
++pos(2) : dirty <- suck; down.
++pos(3) : dirty <- suck; up.
++pos(4) : dirty <- suck; left.
+----------------------------------------
+
+* comments
+- reactive agent
+- selection of plans based on context (perceptual beliefs)
+- solve the problem of first solution
+
+* problems
+- the moving strategy is code in two sets of plans, so to change
+  the strategy we need to recode twice.
+
+
+3. Third solution
+
+----------------------------------------
++pos(_) : clean <- !move.
++pos(_) : dirty <- suck; !move.
+
++!move : pos(1) <- right.
++!move : pos(2) <- down.
++!move : pos(3) <- up.
++!move : pos(4) <- left.
+----------------------------------------
+
+* comments
+- the moving strategy is re-factored in a goal (the goal !move)
+- this agent is still a reactive one (it reacts to the perception of its
+  location), but the reaction creates a new goal (to move)
+- the change the moving strategy we only need to change the
+  way the goal "move" is achieved
+
+* problem
+- suppose that the actions may fail, in this case, to perform 'up', for
+  example, may leave the agent in the same place, so no new location is
+  perceived and the agent will stop moving.
+  (it is an hypothetical case since the environment was not code to 
+  simulate action failures)
+
+
+4. Fourth solution
+
+----------------------------------------
+!clean. // initial goal
+
++!clean : clean <- !move; !!clean.
++!clean : dirty <- suck; !move; !!clean.
+-!clean <- !!clean.
+
++!move : pos(1) <- right.
++!move : pos(2) <- down.
++!move : pos(3) <- up.
++!move : pos(4) <- left.
+----------------------------------------
+
+* comments
+- this agent is not reactive anymore, it has a persistent goal (!clean).
+- this goal is implemented by a kind of 'loop', all plans to achieve 
+  'clean' finish by adding 'clean' as a new goal. 
+- if something fails to achieve 'clean', the failure handling plan 
+  (-!clean) reintroduces the goal again.
+- !! is used instead of ! to avoid big stacks of sub-goals, see
+  http://jason.sourceforge.net/faq/faq.html#SECTION00075000000000000000
+- this agent is thus more 'robust' against action failures

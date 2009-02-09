@@ -8,8 +8,8 @@
     <property environment="env"/>
 
     <property name="version"         value="1"/>
-    <property name="release"         value="1.2"/>
-    <property name="moiseDir"        value="${env.HOME}/Moise/svn-moise" />
+    <property name="release"         value="2"/>
+    <property name="moiseDir"        value="${env.HOME}/svn-moise" />
     <property name="distDir"         value="${env.HOME}/tmp/jmoise-${version}.${release}" />
     <property name="distFile"        value="${env.HOME}/jason-moise-${version}.${release}" />
     <property name="doc-src-dir"     value="${env.HOME}/programming/Moise-doc" />
@@ -90,6 +90,7 @@
             <fileset dir="${basedir}" includes="doc/api/**/*" />
             <fileset dir="${basedir}" includes="lib/**/*" />
             <fileset dir="${basedir}" includes="example/writePaper/**/*" />
+            <fileset dir="${basedir}" includes="example/moise-tutorial/**/*" />
           	<fileset dir="${basedir}" includes="example/auction/**/*" excludes="**/nbproject/**,**/profile-build.xml"/>
             <fileset dir="${basedir}" includes="src/**/*" />
           </copy>
