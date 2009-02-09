@@ -21,12 +21,12 @@ public class VCWorld extends Environment {
     private int vcx = 0; // the vacuum cleaner location
     private int vcy = 0;
 
-	/** general delegations */
+    /** general delegations */
     private HouseGUI gui = new HouseGUI();
     private Logger logger = Logger.getLogger("env."+VCWorld.class.getName());
     private Random r = new Random();
 
-	/** constant terms used for perception */
+    /** constant terms used for perception */
     private static final Literal lPos1  = ASSyntax.createLiteral("pos", ASSyntax.createNumber(1));
     private static final Literal lPos2  = ASSyntax.createLiteral("pos", ASSyntax.createNumber(2));
     private static final Literal lPos3  = ASSyntax.createLiteral("pos", ASSyntax.createNumber(3));
@@ -40,19 +40,19 @@ public class VCWorld extends Environment {
 		
         // create a thread to add dirty
         new Thread() {
-			public void run() {
-				try {
-					while (isRunning()) {
-						// add ramdom dirty
-						if (r.nextInt(100) < 20) { 
-							dirty[r.nextInt(2)][r.nextInt(2)] = true;
-							gui.paint();
-							createPercept();
-						}
-						Thread.sleep(1000);
-					}
-				} catch (Exception e) {} 
-			}
+            public void run() {
+                try {
+                    while (isRunning()) {
+                        // add ramdom dirty
+                        if (r.nextInt(100) < 20) { 
+                            dirty[r.nextInt(2)][r.nextInt(2)] = true;
+                            gui.paint();
+                            createPercept();
+                        }
+                        Thread.sleep(1000);
+                    }
+                } catch (Exception e) {} 
+            }
         }.start();	
     }
         

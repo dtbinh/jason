@@ -391,6 +391,32 @@ MAS test {
 
 \end{itemize}
 
+\subsection{How to run my application without JasonIDE}
+
+The \Jason IDE (jEdit plugin) creates an Ant script (in the bin sub-directory
+of your application directory) and then simply runs this script to start your
+\Jason application. You can thus run it in a command prompt as follows:
+\begin{verbatim}
+   cd <the directory of you application>/bin
+   ant
+\end{verbatim}
+
+You can also run it as a normal Java application:
+\begin{verbatim}
+   cd <the directory of you application>
+   export CLASSPATH=<your jars, jason.jar,...>
+   java jason.infra.centralised.RunCentralisedMAS <yourproject.mas2j file>
+\end{verbatim}
+You find more details about the environment (e.g. classpath) on the generated
+bin/build.xml file of your application.
+
+A third way to run your application is to create a jar file for it. There is
+an option for that in the menu Plugins-Jason, or
+\begin{verbatim}
+   cd <the directory of you application>
+   ant -f bin/build.xml jar
+   java -jar <your application>.jar
+\end{verbatim}
 
 
 \subsection{How can I control agents' execution?}\label{sec:controlclass}

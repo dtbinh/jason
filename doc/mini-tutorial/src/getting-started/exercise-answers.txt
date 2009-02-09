@@ -1,6 +1,6 @@
-There are several solutions for the vacuum cleaner. Here we present and
-comment some of them. We start from a very reactive solution and finish
-by a goal-oriented version.
+There are several solutions for the code of the vacuum cleaner
+agent. Here we present and comment on some of them. We start from a very
+reactive solution and finish with a more goal-oriented version.
 
 
 
@@ -16,25 +16,29 @@ by a goal-oriented version.
 ----------------------------------------
 
 * comments
-- reactive agent
-- selection of plans do not use context (beliefs), 
-  but only events
+- this is a reactive agent, which is easy to implement with Jason,
+  but note that the language is meant for cognitive agents
+- as a consequence, all plans have an empty context (normally used
+  to check the situation currently believed by the agent)
 
 * problems
-- may leave dirty behind, you will get messages like
+- the robot may leave dirt behind, and you will get messages like
     [VCWorld] suck in a clean location!
-- reason: the selection of the intention to move ("+pos(...)" plans) are
-  selected before the plan to clean the location
+- reason: the events related to location ("+pos(...)") are
+  selected before the "dirty" event, so the suck action is performed
+  after the move action in a possibly clean location
 
 
 2. Second solution
 
 ----------------------------------------
+// plans for clean location
 +pos(1) : clean <- right.
 +pos(2) : clean <- down.
 +pos(3) : clean <- up.
 +pos(4) : clean <- left.
 
+// plans for dirty location
 +pos(1) : dirty <- suck; right.
 +pos(2) : dirty <- suck; down.
 +pos(3) : dirty <- suck; up.
@@ -42,13 +46,14 @@ by a goal-oriented version.
 ----------------------------------------
 
 * comments
-- reactive agent
-- selection of plans based on context (perceptual beliefs)
-- solve the problem of first solution
+- again a rather reactive agent
+- the selection of plans is based on context (perceptual beliefs
+  in this case)
+- it solves the problems of the previous solution
 
 * problems
-- the moving strategy is code in two sets of plans, so to change
-  the strategy we need to recode twice.
+- the moving strategy is coded in two sets of plans, so to change
+  the strategy we need change all plans
 
 
 3. Third solution
@@ -57,6 +62,7 @@ by a goal-oriented version.
 +pos(_) : clean <- !move.
 +pos(_) : dirty <- suck; !move.
 
+// plans to move
 +!move : pos(1) <- right.
 +!move : pos(2) <- down.
 +!move : pos(3) <- up.
@@ -64,18 +70,21 @@ by a goal-oriented version.
 ----------------------------------------
 
 * comments
-- the moving strategy is re-factored in a goal (the goal !move)
-- this agent is still a reactive one (it reacts to the perception of its
-  location), but the reaction creates a new goal (to move)
-- the change the moving strategy we only need to change the
-  way the goal "move" is achieved
+- the moving strategy is re-factored to use a (perform) goal
+  (the goal '!move')
+- this agent reacts to the perception of its location, but the
+  reaction creates a new goal (to move)
+- to change the moving strategy we only need to change the
+  way the goal "move" is achieved (the plans for triggering
+  event '+!move')
 
 * problem
-- suppose that the actions may fail, in this case, to perform 'up', for
-  example, may leave the agent in the same place, so no new location is
-  perceived and the agent will stop moving.
-  (it is an hypothetical case since the environment was not code to 
-  simulate action failures)
+- suppose that actions may fail, in this case, after performing 'up',
+  for example, the agent may remain in the same place and then no new
+  location is perceived: the agent will stop moving
+  (this is only conceptually a problem since the environment was not
+  coded to simulate action failures, i.e., the environment model is
+  deterministic).
 
 
 4. Fourth solution
@@ -94,11 +103,53 @@ by a goal-oriented version.
 ----------------------------------------
 
 * comments
-- this agent is not reactive anymore, it has a persistent goal (!clean).
-- this goal is implemented by a kind of 'loop', all plans to achieve 
-  'clean' finish by adding 'clean' as a new goal. 
-- if something fails to achieve 'clean', the failure handling plan 
-  (-!clean) reintroduces the goal again.
-- !! is used instead of ! to avoid big stacks of sub-goals, see
-  http://jason.sourceforge.net/faq/faq.html#SECTION00075000000000000000
+- this agent is not reactive at all; it has no behaviour which is
+  triggered by an external event, that is, a perception of change
+  in the environment (note however that BDI agents typically have
+  both goal-directed and reactive behaviour)
+- instead, the agent has a *maintenance goal* (the '!clean' goal) and
+  is blindly committed towards it (if it ever fails, the goal is just
+  adopted again -- see below)
+- this goal is implemented by a form of infinite loop using recursive
+  plans: all plans to achieve 'clean' finish by adding 'clean' itself
+  as a new goal
+- if anything fails in an attempt to achieve the goal 'clean', the
+  contingency plan (-!clean) reintroduces the goal again at all
+  circumstances (note the empty plan context); this is what causes the
+  "blind commitment" behaviour mentioned above
 - this agent is thus more 'robust' against action failures
+- '!!' is used in the recursions for efficiency, see
+  http://jason.sourceforge.net/faq/faq.html#SECTION00075000000000000000
+
+- the use of goals also allows us to easily code plans that handle
+  other goals. For instance, suppose we want to code the robot in a way
+  that after 2 seconds of cleaning, it makes a break of 1 second. This
+  behaviour can be easily code as follows:
+
+
+----------------------------------------
+!clean. // initial goal to clean
+!pause. // initial goal to break
+
++!clean : clean <- !move; !!clean.
++!clean : dirty <- suck; !move; !!clean.
+-!clean         <- !!clean.
+
++!move : pos(1) <- right.
++!move : pos(2) <- down.
++!move : pos(3) <- up.
++!move : pos(4) <- left.
+
++!pause
+  <- .wait(2000);     // suspend this intention (the pause) for 2 seconds
+     .suspend(clean); // suspend the clean intention
+     .print("I'm having a break, alright.");
+     .wait(1000);     // suspend this intention again for 1 second
+     .print(cleaning);
+     .resume(clean);  // resume the clean intention
+     !!pause.
+----------------------------------------
+
+Just to see how flexible it is to program with goals, you might want
+to try and implement the break strategy for the first (purely reactive)
+solution.
