@@ -13,8 +13,8 @@ public class HouseModel extends GridWorldModel {
     
     boolean fridgeOpen   = false; // whether the fridge is open
     boolean carryingBeer = false; // whether the robot is carrying beer
-    int sipCount       = 0; // how many sip the owner did
-    int availableBeers = 2; // how many beers are available
+    int sipCount        = 0; // how many sip the owner did
+    int availableBeers  = 2; // how many beers are available
 
     Location lFridge = new Location(0,0);
     Location lOwner  = new Location(GSize-1,GSize-1);
@@ -47,7 +47,7 @@ public class HouseModel extends GridWorldModel {
             return true;
         } else {
             return false;
-        }                
+        }
     }  
 
     boolean moveTowards(Location dest) {
@@ -57,10 +57,10 @@ public class HouseModel extends GridWorldModel {
         if (r1.y < dest.y)        r1.y++;
         else if (r1.y > dest.y)   r1.y--;
         setAgPos(0, r1); // move the robot in the grid
-		
-		// repaint the fridge and owner locations
-		view.update(lFridge.x,lFridge.y);
-		view.update(lOwner.x,lOwner.y);
+        
+        // repaint the fridge and owner locations
+        view.update(lFridge.x,lFridge.y);
+        view.update(lOwner.x,lOwner.y);
         return true;
     }
     
@@ -68,7 +68,7 @@ public class HouseModel extends GridWorldModel {
         if (fridgeOpen && availableBeers > 0 && !carryingBeer) {
             availableBeers--;
             carryingBeer = true;
-			view.update(lFridge.x,lFridge.y);
+            view.update(lFridge.x,lFridge.y);
             return true;
         } else {
             return false;
@@ -77,7 +77,7 @@ public class HouseModel extends GridWorldModel {
     
     boolean addBeer(int n) {
         availableBeers += n;
-		view.update(lFridge.x,lFridge.y);
+        view.update(lFridge.x,lFridge.y);
         return true;
     }
     
@@ -85,7 +85,7 @@ public class HouseModel extends GridWorldModel {
         if (carryingBeer) {
             sipCount = 10;
             carryingBeer = false;
-			view.update(lOwner.x,lOwner.y);
+            view.update(lOwner.x,lOwner.y);
             return true;
         } else {
             return false;
@@ -95,7 +95,7 @@ public class HouseModel extends GridWorldModel {
     boolean sipBeer() {
         if (sipCount > 0) {
             sipCount--;
-			view.update(lOwner.x,lOwner.y);
+            view.update(lOwner.x,lOwner.y);
             return true;
         } else {
             return false;
