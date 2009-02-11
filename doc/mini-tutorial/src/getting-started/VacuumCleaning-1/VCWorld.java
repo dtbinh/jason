@@ -61,6 +61,12 @@ public class VCWorld extends Environment {
         // remove previous perception
         clearPercepts();       
         
+        if (dirty[vcx][vcy]) {
+            addPercept(lDirty);
+        } else {
+            addPercept(lClean);
+        }
+
         if (vcx == 0 && vcy == 0) {
             addPercept(lPos1);
         } else if (vcx == 1 && vcy == 0) {
@@ -70,18 +76,14 @@ public class VCWorld extends Environment {
         } else if (vcx == 1 && vcy == 1) {
             addPercept(lPos4);
         }
-
-        if (dirty[vcx][vcy]) {
-            addPercept(lDirty);
-        } else {
-            addPercept(lClean);
-        }
     }
 
     @Override
     public boolean executeAction(String ag, Structure action) {
         
-        try { Thread.sleep(500);}  catch (Exception e) {} //show down the execution
+        logger.info("doing "+action);
+        
+        try { Thread.sleep(500);}  catch (Exception e) {} // slow down the execution
         
         // Change the world model based on action
         if (action.getFunctor().equals("suck")) {

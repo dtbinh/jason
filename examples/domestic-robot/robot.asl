@@ -1,6 +1,6 @@
 /* Initial beliefs and rules */
 
-// initially, I believe that there are some beer in the fridge
+// initially, I believe that there is some beer in the fridge
 available(beer,fridge).
 
 // my owner should not consume more than 10 beers a day :-)
@@ -24,7 +24,7 @@ too_much(B) :-
       !at(robot,owner);
       hand_in(beer);
       ?has(owner,beer);
-      // remember that one beer is consumed
+      // remember that another beer has been consumed
       .date(YY,MM,DD); .time(HH,NN,SS);
       +consumed(YY,MM,DD,HH,NN,SS,beer).
 
@@ -50,7 +50,7 @@ too_much(B) :-
   <- move_towards(P);
      !at(robot,P).
 
-// when the supermarket finished the order, try the 'has' goal again   
+// when the supermarket makes a delivery, try the 'has' goal again   
 +delivered(beer,_Qtd,_OrderId)[source(supermarket)]
   :  true
   <- +available(beer,fridge);

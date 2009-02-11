@@ -15,7 +15,7 @@
 
       .println("Sending assynchronous ask ");
       .send(maria, askOne, vl(_)); // assync ask has no fourth argument
-	  // the answer is received as an event +vl(X)
+      // the answer is received as an event +vl(X)
 
       .println("Sending ask for something Maria does not know, but can handle by +? ");
       .send(maria, askOne, t2(_), Ans2);
@@ -37,10 +37,10 @@
       .send(maria, askOne, fullname, FN);
       .println("Full name is ",FN);
       
-	  // Send to maria a plan to achieve the goal hello
-	  .plan_label(Plan,hp); // get a plans based on a plan's label
-	  .println("Sending tell how: ",Plan);
-	  .send(maria,tellHow,Plan);
+      // Send to maria a plan to achieve the goal hello
+      .plan_label(Plan,hp); // get a plans based on a plan's label
+      .println("Sending tell how: ",Plan);
+      .send(maria,tellHow,Plan);
 	  
       .println("Asking Maria to achieve 'hello'");
       .send(maria,achieve, hello(bob));
@@ -49,8 +49,8 @@
       .println("Asking Maria to unachieve 'hello'");
       .send(maria,unachieve, hello(bob));
 	  
-	  // send untell how to maria
-	  .send(maria,untellHow,hp).
+     // send untell how to maria
+     .send(maria,untellHow,hp).
 	  
 
 +vl(X)[source(A)]
