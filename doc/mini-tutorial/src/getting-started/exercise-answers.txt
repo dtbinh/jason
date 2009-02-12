@@ -32,17 +32,17 @@ reactive solution and finish with a more goal-oriented version.
 2. Second solution
 
 ----------------------------------------
-// plans for clean location
-+pos(1) : clean <- right.
-+pos(2) : clean <- down.
-+pos(3) : clean <- up.
-+pos(4) : clean <- left.
-
 // plans for dirty location
 +pos(1) : dirty <- suck; right.
 +pos(2) : dirty <- suck; down.
 +pos(3) : dirty <- suck; up.
 +pos(4) : dirty <- suck; left.
+
+// plans for clean location
++pos(1) : clean <- right.
++pos(2) : clean <- down.
++pos(3) : clean <- up.
++pos(4) : clean <- left.
 ----------------------------------------
 
 * comments
@@ -54,13 +54,31 @@ reactive solution and finish with a more goal-oriented version.
 * problems
 - the moving strategy is coded in two sets of plans, so to change
   the strategy we need change all plans
+- if you leave the agent running for a long time, it eventually stop.
+  the reason is that sometimes the robot does not perceive neither 
+  dirty nor clean and thus no plan are selected. The following
+  code solves that:
+
+----------------------------------------
+// plans for a dirty location
++pos(1) : dirty <- suck; right.
++pos(2) : dirty <- suck; down.
++pos(3) : dirty <- suck; up.
++pos(4) : dirty <- suck; left.
+
+// plans for other circumstances
++pos(1) : true <- right.
++pos(2) : true <- down.
++pos(3) : true <- up.
++pos(4) : true <- left.
+----------------------------------------
 
 
 3. Third solution
 
 ----------------------------------------
-+pos(_) : clean <- !move.
 +pos(_) : dirty <- suck; !move.
++pos(_) : true  <- !move.
 
 // plans to move
 +!move : pos(1) <- right.

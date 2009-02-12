@@ -43,9 +43,11 @@ public class VCWorld extends Environment {
             public void run() {
                 try {
                     while (isRunning()) {
-                        // add ramdom dirty
+                        // add random dirty
                         if (r.nextInt(100) < 20) { 
-                            dirty[r.nextInt(2)][r.nextInt(2)] = true;
+                            synchronized (dirty) {
+                                dirty[r.nextInt(2)][r.nextInt(2)] = true;
+                            }
                             gui.paint();
                             createPercept();
                         }
@@ -61,12 +63,6 @@ public class VCWorld extends Environment {
         // remove previous perception
         clearPercepts();       
         
-        if (dirty[vcx][vcy]) {
-            addPercept(lDirty);
-        } else {
-            addPercept(lClean);
-        }
-
         if (vcx == 0 && vcy == 0) {
             addPercept(lPos1);
         } else if (vcx == 1 && vcy == 0) {
@@ -75,6 +71,12 @@ public class VCWorld extends Environment {
             addPercept(lPos3);
         } else if (vcx == 1 && vcy == 1) {
             addPercept(lPos4);
+        }
+
+        if (dirty[vcx][vcy]) {
+            addPercept(lDirty);
+        } else {
+            addPercept(lClean);
         }
     }
 
@@ -88,7 +90,9 @@ public class VCWorld extends Environment {
         // Change the world model based on action
         if (action.getFunctor().equals("suck")) {
             if (dirty[vcx][vcy]) {
-                dirty[vcx][vcy] = false;
+                synchronized (dirty) {
+                    dirty[vcx][vcy] = false;
+                }
             } else {
                 logger.info("suck in a clean location!");
                 Toolkit.getDefaultToolkit().beep();
@@ -150,17 +154,19 @@ public class VCWorld extends Environment {
         }
 		
         void paint() {
-            for (int i = 0; i < labels.length; i++) {
-                for (int j = 0; j < labels.length; j++) {
-                    String l = "<html><center>";
-                    if (vcx == i && vcy == j) {
-                        l += "<font color=\"red\" size=16><b>Robot</b><br></font>";
+            synchronized (dirty) {
+                for (int i = 0; i < labels.length; i++) {
+                    for (int j = 0; j < labels.length; j++) {
+                        String l = "<html><center>";
+                        if (vcx == i && vcy == j) {
+                            l += "<font color=\"red\" size=16><b>Robot</b><br></font>";
+                        }
+                        if (dirty[i][j]) {
+                            l += "<font color=\"blue\" size=12>*kaka*</font>";
+                        }
+                        l += "</center></html>";
+                        labels[i][j].setText(l);
                     }
-                    if (dirty[i][j]) {
-                        l += "<font color=\"blue\" size=12>*kaka*</font>";
-                    }
-                    l += "</center></html>";
-                    labels[i][j].setText(l);
                 }
             }
         }
