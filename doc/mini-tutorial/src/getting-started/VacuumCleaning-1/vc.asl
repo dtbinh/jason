@@ -1,7 +1,7 @@
 
 /*
 
-Very simple vaccum cleaner agent in a world that has only four locations.
+Very simple vacuum cleaner agent in a world that has only four locations.
 
 Perceptions:
 . dirty: the current location has dirty
@@ -15,5 +15,3 @@ Actions:
 */
 
 // TODO: the code of the agent
-
-
