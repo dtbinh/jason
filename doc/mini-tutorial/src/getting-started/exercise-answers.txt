@@ -112,7 +112,7 @@ reactive solution and finish with a more goal-oriented version.
 
 +!clean : clean <- !move; !!clean.
 +!clean : dirty <- suck; !move; !!clean.
--!clean <- !!clean.
+-!clean         <- !!clean.
 
 +!move : pos(1) <- right.
 +!move : pos(2) <- down.

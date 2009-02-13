@@ -21,10 +21,12 @@ public class VCWorld extends Environment {
     private int vcx = 0; // the vacuum cleaner location
     private int vcy = 0;
 
+    private Object modelLock = new Object(); 
+
     /** general delegations */
     private HouseGUI gui = new HouseGUI();
-    private Logger logger = Logger.getLogger("env."+VCWorld.class.getName());
-    private Random r = new Random();
+    private Logger   logger = Logger.getLogger("env."+VCWorld.class.getName());
+    private Random   r = new Random();
 
     /** constant terms used for perception */
     private static final Literal lPos1  = ASSyntax.createLiteral("pos", ASSyntax.createNumber(1));
@@ -36,7 +38,6 @@ public class VCWorld extends Environment {
 
     public VCWorld() {
         createPercept();
-        gui.paint();
 		
         // create a thread to add dirty
         new Thread() {
@@ -45,9 +46,7 @@ public class VCWorld extends Environment {
                     while (isRunning()) {
                         // add random dirty
                         if (r.nextInt(100) < 20) { 
-                            synchronized (dirty) {
-                                dirty[r.nextInt(2)][r.nextInt(2)] = true;
-                            }
+                            dirty[r.nextInt(2)][r.nextInt(2)] = true;
                             gui.paint();
                             createPercept();
                         }
@@ -82,42 +81,40 @@ public class VCWorld extends Environment {
 
     @Override
     public boolean executeAction(String ag, Structure action) {
-        
         logger.info("doing "+action);
         
         try { Thread.sleep(500);}  catch (Exception e) {} // slow down the execution
         
-        // Change the world model based on action
-        if (action.getFunctor().equals("suck")) {
-            if (dirty[vcx][vcy]) {
-                synchronized (dirty) {
+        synchronized (modelLock) {
+            // Change the world model based on action
+            if (action.getFunctor().equals("suck")) {
+                if (dirty[vcx][vcy]) {
                     dirty[vcx][vcy] = false;
+                } else {
+                    logger.info("suck in a clean location!");
+                    Toolkit.getDefaultToolkit().beep();
+                }
+            } else if (action.getFunctor().equals("left")) {
+                if (vcx > 0) {
+                    vcx--;
+                }
+            } else if (action.getFunctor().equals("right")) {
+                if (vcx < 1) {
+                    vcx++;
+                }
+            } else if (action.getFunctor().equals("up")) {
+                if (vcy > 0) {
+                    vcy--;
+                }
+            } else if (action.getFunctor().equals("down")) {
+                if (vcy < 1) {
+                    vcy++;
                 }
             } else {
-                logger.info("suck in a clean location!");
-                Toolkit.getDefaultToolkit().beep();
+                logger.info("The action "+action+" is not implemented!");
+                return false;
             }
-        } else if (action.getFunctor().equals("left")) {
-            if (vcx > 0) {
-                vcx--;
-            }
-        } else if (action.getFunctor().equals("right")) {
-            if (vcx < 1) {
-                vcx++;
-            }
-        } else if (action.getFunctor().equals("up")) {
-            if (vcy > 0) {
-                vcy--;
-            }
-        } else if (action.getFunctor().equals("down")) {
-            if (vcy < 1) {
-                vcy++;
-            }
-        } else {
-            logger.info("The action "+action+" is not implemented!");
-            return false;
         }
-        //logger.info("Agent at "+vcx+","+vcy);
         
         createPercept(); // update agents perception for the new world state      
         gui.paint();
@@ -154,15 +151,15 @@ public class VCWorld extends Environment {
         }
 		
         void paint() {
-            synchronized (dirty) {
+            synchronized (modelLock) { // do not allow changes in the robot location while painting
                 for (int i = 0; i < labels.length; i++) {
                     for (int j = 0; j < labels.length; j++) {
                         String l = "<html><center>";
                         if (vcx == i && vcy == j) {
-                            l += "<font color=\"red\" size=16><b>Robot</b><br></font>";
+                            l += "<font color=\"red\" size=7><b>Robot</b><br></font>";
                         }
                         if (dirty[i][j]) {
-                            l += "<font color=\"blue\" size=12>*kaka*</font>";
+                            l += "<font color=\"blue\" size=6>*kaka*</font>";
                         }
                         l += "</center></html>";
                         labels[i][j].setText(l);
