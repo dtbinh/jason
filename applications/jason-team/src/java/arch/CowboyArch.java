@@ -298,7 +298,6 @@ public class CowboyArch extends IdentifyCrashed {
     	}
     }
     
-	@SuppressWarnings("unchecked")
 	@Override
 	public void checkMail() {
 		super.checkMail();

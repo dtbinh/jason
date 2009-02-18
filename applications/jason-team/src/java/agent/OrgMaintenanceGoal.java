@@ -1,6 +1,7 @@
 package agent;
 
 import jason.asSemantics.Agent;
+import jason.asSyntax.ASSyntax;
 import jason.asSyntax.InternalActionLiteral;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Plan;
@@ -51,7 +52,7 @@ public class OrgMaintenanceGoal implements Directive {
             String sp = "-!"+goal+" <- .current_intention(I); " +
                               ".print(\"ooo Failure in organisational goal "+goal+"\", I); "+
                               endofplan + ".";
-            Plan p = Plan.parse(sp);
+            Plan p = ASSyntax.parsePlan(sp);
 
             newAg.getPL().add(p);
             return newAg;

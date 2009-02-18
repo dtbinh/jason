@@ -1,4 +1,3 @@
-
 /* Initial goals */
 
 !start.

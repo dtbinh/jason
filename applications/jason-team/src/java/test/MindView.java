@@ -159,7 +159,6 @@ public class MindView  {
         }
 	}
 
-	@SuppressWarnings("unchecked")
     private void setupSlider() {
         int first = -1;
 	    int size = 0;
