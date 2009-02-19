@@ -56,7 +56,7 @@ too_much(B) :-
   <- +available(beer,fridge);
      !has(owner,beer). 
    
-// when the fridge is openned, the beer stock is perceived
+// when the fridge is opened, the beer stock is perceived
 // and thus the available belief is updated
 +stock(beer,0) 
    :  available(beer,fridge)

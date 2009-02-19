@@ -32,18 +32,18 @@ t(x).
 
 /* Initial goals */
 
-!show_predef_funtion.
-!show_userdef_funtion.
+!show_predef_function.
+!show_userdef_function.
 
 /* Plans */
 
-+!show_predef_funtion  
++!show_predef_function  
    <- X = math.max(4, math.abs(-10)); 
       .print("Max=",X);
 	  .print("Max=",math.max(4, math.abs(-10)));
 	  .print("Number of b/1 beliefs=", .count(b(_))).
 
-+!show_userdef_funtion
++!show_userdef_function
    <- .print("Sin of 90   =", myf.sin(90));
       .print("1+2         =", myf.sum(1,2));
       .print("limit       =", myf.limit);
