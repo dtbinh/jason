@@ -11,4 +11,4 @@
 
 
 // the event !stop is created by the GUI
-+!stop(X) <- .drop_desire(run(X)).
++!stop(X) <- .drop_desire(run(X)); .print("stop ",X).
