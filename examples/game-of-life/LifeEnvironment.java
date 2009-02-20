@@ -31,11 +31,11 @@ public class LifeEnvironment extends jason.environment.SteppedEnvironment {
     		return true;
         
     	int ag = getAgIdBasedOnName(agName);
-        if (actId.equals("die")) {
+        if (actId.equals("die"))
             model.dead(ag);
-        } else if (actId.equals("live")) {
+        else if (actId.equals("live"))
             model.alive(ag);
-        }
+        
         //updateNeighbors(ag);
         return true;
     }
@@ -66,7 +66,7 @@ public class LifeEnvironment extends jason.environment.SteppedEnvironment {
         }
     }
 
-    void updateNeighbors(int ag) {
+    void updateNeighbors(int ag) {        
         Location l = model.getAgPos(ag);
         updateAgPercept(model.getAgId(l.x - 1, l.y - 1));
         updateAgPercept(model.getAgId(l.x - 1, l.y));
@@ -90,12 +90,6 @@ public class LifeEnvironment extends jason.environment.SteppedEnvironment {
         
         // its location
         Location l = model.getAgPos(ag);
-        /*
-        Literal lpos = new Literal("pos");
-        lpos.addTerm(new NumberTermImpl(l.x));
-        lpos.addTerm(new NumberTermImpl(l.y));
-        addPercept(agName, lpos);
-        */
 
         // how many alive neighbours
         int alive = 0;

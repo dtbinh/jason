@@ -17,6 +17,10 @@ Bugs fixed
   failures in unification
 - variable unified with atom cannot be added in BB, as in 
   X = p; +X; 
+- The third argument of .create_agent (list of options) can
+  not be used.
+- Some concurrent execution of .wait and .drop_desire/intention
+  does not work (the intention isn't dropped)
 
 
 ---------------------------
