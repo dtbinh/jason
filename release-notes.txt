@@ -6,6 +6,10 @@ Changes in communication
 - for messages sent to itself, the sender is 'self' now, 
   and not the agent's name as in previous releases
 
+New internal actions
+- .puts: used for printing messages to the console (based on Ruby
+  similar method). Developed by Felipe Meneguzzi.
+
 Changes in internal actions
 - .relevant_plans has a third argument that gets the labels
   of the plans
