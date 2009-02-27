@@ -2,6 +2,10 @@
 version 1.2.1
 ---------------------------
 
+Changes in the GUI
+- When closing the window of MAS Console, the application is also
+  stopped.
+
 Changes in communication
 - for messages sent to itself, the sender is 'self' now, 
   and not the agent's name as in previous releases
@@ -173,7 +177,7 @@ Bugs fixed:
   when annotations are used
 . print worked like println
 . problem in =.. with atoms
-. problem in unification whe unbound vars were used as arguments
+. problem in unification when unbound vars were used as arguments
   for rules (as identified by Stephen Cranefield)
 
 -------------

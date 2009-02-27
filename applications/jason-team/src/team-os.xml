@@ -56,10 +56,10 @@
             </sub-groups>
 
             <formation-constraints>
-                <compatibility from="explorer" to="herder" type="compatibility"
+                <compatibility from="explorer" to="herder" 
                                scope="intra-group" extends-sub-groups="true" 
                                bi-dir="true"/>
-                <compatibility from="scouter" to="herder" type="herdboy"
+                <compatibility from="scouter" to="herder" 
                                scope="intra-group" extends-sub-groups="true" 
                                bi-dir="true"/>
             </formation-constraints>

@@ -8,6 +8,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
     BugListReturnUnification.class,
     BugVarsAsArg.class,
+    BugVarsAsGoal.class, 
     BugVarsInInitBels.class,
     TestAddLogExprInBB.class,
     TestGoalSource.class,
