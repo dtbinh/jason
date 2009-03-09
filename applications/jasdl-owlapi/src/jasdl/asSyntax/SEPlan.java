@@ -26,8 +26,8 @@ import jason.asSemantics.Unifier;
 import jason.asSyntax.Literal;
 import jason.asSyntax.LiteralImpl;
 import jason.asSyntax.Plan;
-import jason.asSyntax.PlanBody;
 import jason.asSyntax.Structure;
+import jason.asSyntax.Term;
 import jason.asSyntax.Trigger;
 
 /**
@@ -98,7 +98,7 @@ public class SEPlan extends Plan{
 	}
 
 	@Override
-	public Object clone() {
+	public Term clone() {
 		return new SEPlan(agent, (Plan) super.clone());
 	}
 
