@@ -49,8 +49,8 @@
       .println("Asking Maria to unachieve 'hello'");
       .send(maria,unachieve, hello(bob));
 	  
-     // send untell how to maria
-     .send(maria,untellHow,hp).
+      // send untell how to maria
+      .send(maria,untellHow,hp).
 	  
 
 +vl(X)[source(A)]
