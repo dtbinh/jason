@@ -20,10 +20,9 @@ all_proposals_received(CNPId)
       .findall(Name,introduction(participant,Name),LP);
       .print("Sending CFP to ",LP);
       .send(LP,tell,cfp(Id,Task));
-      .concat("+!contract(",Id,")",Event);
       // the deadline of the CNP is now + 4 seconds, so
       // the event +!contract(Id) is generated at that time
-      .at("now +4 seconds", Event).
+      .at("now +4 seconds", { +!contract(Id) }).
 
 
 // receive proposal 
