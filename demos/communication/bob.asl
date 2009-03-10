@@ -37,6 +37,16 @@
       .send(maria, askOne, fullname, FN);
       .println("Full name is ",FN);
       
+      // Ask maria plans to goto
+      .send(maria, askHow, {+!goto(_,_)[source(_)]});
+      .wait(500); // wait answer
+      .print("Received plans:");
+      .list_plans( {+!goto(_,_)[source(_)]} );
+      .print;
+      // another implementation (that do not include the received plans automaticaly in the PL)
+      .send(maria, askHow, {+!goto(_,_)[source(_)]}, ListOfPlans);
+      .print("Received plans by askHow: ", ListOfPlans);
+      
       // Send to maria a plan to achieve the goal hello
       .plan_label(Plan,hp); // get a plans based on a plan's label
       .println("Sending tell how: ",Plan);
