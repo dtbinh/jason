@@ -126,8 +126,8 @@
          }
        }
      };
-     .wait("+pos(_,_,_)"); // wait an extra step before try to release agents again
-     .wait("+pos(_,_,_)").
+     .wait({+pos(_,_,_)}); // wait an extra step before try to release agents again
+     .wait({+pos(_,_,_)}).
 +!release_boys[scheme(Sch),mission(Mission),group(Gr)].
 
 { end }
@@ -212,8 +212,8 @@ calc_distances([pos(Fx,Fy)|TP], [d(D,pos(Fx,Fy))|TD], pos(AgX,AgY))
    : not cow(_,_,_)
   <- .print("ooo I see no cow anymore");
      // wait two cycles to decide to change the formation (due to fault perception we may not see the cows)
-	 .wait("+pos(_,_,_)");
-	 .wait("+pos(_,_,_)");
+	 .wait({+pos(_,_,_)});
+	 .wait({+pos(_,_,_)});
 	 if (not cow(_,_,_)) {
 	    .findall(P, play(P,herdboy,Gr), ListBoys);
         !!create_exploration_gr;

@@ -27,7 +27,7 @@ random_pos(X,Y) :-
 +!move
    : not target(_,_)
   <- .print("waiting my target....");
-     .wait("+target(_,_)");
+     .wait({+target(_,_)});
      !move.
 
 +!move 

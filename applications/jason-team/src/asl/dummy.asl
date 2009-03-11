@@ -57,7 +57,7 @@ random_pos(X,Y) :-
 +!decide_target
    : not pos(_,_,_)
   <- .print("waiting my location....");
-     .wait("+pos(_,_,_)");
+     .wait({+pos(_,_,_)});
      !decide_target.
 
 +!decide_target                  
@@ -88,13 +88,13 @@ random_pos(X,Y) :-
 +!move
     : not pos(_,_,_)
   <- .print("waiting my location....");
-     .wait("+pos(_,_,_)");
+     .wait({+pos(_,_,_)});
      !move.
 
 +!move
    : not target(_,_)
   <- .print("waiting my target....");
-     .wait("+target(_,_)");
+     .wait({+target(_,_)});
      !move.
 
 +!move 

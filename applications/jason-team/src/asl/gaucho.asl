@@ -31,10 +31,10 @@ cow_perception_ratio(4).
 
 /* -- plans -- */
 
-+?pos(X, Y, S)       <- .wait("+pos(X,Y,S)").
++?pos(X, Y, S)       <- .wait({+pos(X,Y,S)}).
 //+?group_area(Id,G,A) <- .wait("+group_area(Id,G,A)").
-+?gsize(W,H)         <- .wait("+gsize(W,H)").
-+?group(team,G)      <- .wait("+group(team,G)", 500, _); ?group(team,G).
++?gsize(W,H)         <- .wait({+gsize(W,H)}).
++?group(team,G)      <- .wait({+group(team,G)}, 500, _); ?group(team,G).
 +?ally_pos(Name,X,Y) : .my_name(Name) <- ?pos(X,Y,_).
 
 +corral(UpperLeftX,UpperLeftY,DownRightX,DownRightY)
@@ -54,7 +54,7 @@ cow_perception_ratio(4).
   <- .print("*** restart -- odd ***");
      ?random_pos(X,Y);
      +target(X,Y);
-     .wait("+at_target",1000,_);
+     .wait({+at_target},1000,_);
      !create_exploration_gr.
 +!restart
   <- .print("*** restart -- even ***"); 

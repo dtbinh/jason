@@ -95,7 +95,7 @@
      // wait others pos
      while( .count(ally_pos(_,_,_), N) & N < 5 ) {
         .print("ooo waiting others pos ");
-        .wait("+ally_pos(_,_,_)", 500, _)
+        .wait({+ally_pos(_,_,_)}, 500, _)
      };
      
      // find distance to even agents
@@ -107,7 +107,7 @@
 +!find_scouter([ag_d(_,AgName)|_],GId)
   <- .print("ooo Ask ",AgName," to play scouter");
      .send(AgName, achieve, play_role(scouter,GId));
-     .wait("+play(AgName,scouter,GId)",2000).  
+     .wait({+play(AgName,scouter,GId)},2000).  
 -!find_scouter([_|LSOdd],GId) // in case the wait fails, try next agent
   <- .print("ooo find_scouter failure, try another agent.");
      !find_scouter(LSOdd,GId).  
@@ -127,8 +127,7 @@
      -+target(TargetX, TargetY).
 	 
 	 /* added by the pattern
-	 .wait("+at_target").
-     //.wait("+pos(_,_,_)"); // wait next cycle
+	 .wait({+at_target}).
      !!goto_near_unvisited[scheme(Sch),mission(Mission)]
 	 */
 	 
@@ -138,7 +137,7 @@
 -!goto_near_unvisited[scheme(Sch),mission(Mission)]
   <- .current_intention(I);
      .print("ooo Failure to goto_near_unvisited ",I);
-     .wait("+pos(_,_,_)"); // wait next cycle
+     .wait({+pos(_,_,_)}); // wait next cycle
      !!goto_near_unvisited[scheme(Sch),mission(Mission)].
 */  
 

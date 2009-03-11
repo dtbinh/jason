@@ -2,6 +2,34 @@
 version 1.2.1
 ---------------------------
 
+New features
+- Plans and Triggers can be used as terms when enclosed by { and }
+  
+  It is used in the following internal actions
+  .relevant_plans
+      e.g.       .relevant_plans({ +!g(_) }, ListOfPlans)
+      instead of .relevant_plans( "+!g(_)" , ListOfPlans)
+  .add_plan
+  .at
+  .wait
+  
+  It is also used in send tellHow
+  .send(bob, tellHow, { +te : c <- a1 }).
+  
+  The advantage is that unification works
+       e.g. .at("now +1 m", {+stop(ID)})
+  and syntax errors are detected at compilation time
+  
+  More complex meta-programming is also possible:
+  .... !myadd( { .print(a); .print(b) } ) .... 
+       // pass the body of the plan as parameter to !myadd
+       
+  +!myadd(Action) <- .add_plan( {+!g : c & b <- Action} ).
+      // add a plan with a fixed event/context and body as the parameter
+      
+  The old style (with strings) continues to work.
+  
+  
 Changes in the GUI
 - When closing the window of MAS Console, the application is also
   stopped.
