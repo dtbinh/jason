@@ -954,7 +954,7 @@ intention(1,
 
   The internal actions defined by the user can add new annotations to
   indicate particular types of errors (see the API documentation of
-  \htlink{JasonException}{http://jason.sourceforge.net/api/classjason_1_1JasonException.html}
+  \htlink{JasonException}{http://jason.sourceforge.net/api/jason/JasonException.html}
   for more information about that).
 \end{description}
 
@@ -1003,6 +1003,16 @@ No, Jason is also available as a plugin to Eclipse, developed mostly
 by Germano Fronze; click
 \htlink{here}{http://jasonplugin.wikidot.com/} for more information,
 including installation instructions.
+
+A command line option is also available. To compile a project:
+\begin{verbatim}
+<jason installation path>/bin/mas2j.sh <your project.mas2j>
+\end{verbatim}
+an Ant script is created in the \texttt{bin} directory. To run:
+\begin{verbatim}
+ant -f bin/build.xml
+\end{verbatim}
+
 
 \subsection{How to create an Eclipse project for \jason?}
 
