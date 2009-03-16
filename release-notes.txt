@@ -5,7 +5,7 @@ version 1.2.1
 New features
 - Plans and Triggers can be used as terms when enclosed by { and }
   
-  It is used in the following internal actions
+  This feature is used in the following internal actions
   .relevant_plans
       e.g.       .relevant_plans({ +!g(_) }, ListOfPlans)
       instead of .relevant_plans( "+!g(_)" , ListOfPlans)
@@ -13,26 +13,28 @@ New features
   .at
   .wait
   
-  It is also used in send tellHow
+  It may be used in send tellHow
   .send(bob, tellHow, { +te : c <- a1 }).
   
-  The advantage is that unification works
+  The advantages are that unification works
        e.g. .at("now +1 m", {+stop(ID)})
   and syntax errors are detected at compilation time
+
+  The old style (with strings) continues to work.
   
   More complex meta-programming is also possible:
   .... !myadd( { .print(a); .print(b) } ) .... 
        // pass the body of the plan as parameter to !myadd
        
   +!myadd(Action) <- .add_plan( {+!g : c & b <- Action} ).
-      // add a plan with a fixed event/context and body as the parameter
-      
-  The old style (with strings) continues to work.
+      // add a plan with a fixed event/context and body 
+      // given as a parameter  
   
-  
+
 Changes in the GUI
 - When closing the window of MAS Console, the application is also
   stopped.
+
 
 Changes in communication
 - for messages sent to itself, the sender is 'self' now, 
@@ -43,11 +45,12 @@ New internal actions
 - .puts: used for printing messages to the console (based on Ruby
   similar method). Developed by Felipe Meneguzzi.
 - .all_names: get the name of all agentes in the system.
+- .list_plans: print out the plans of agent's plan library
 
 Changes in internal actions
 - .relevant_plans has a third argument that gets the labels
   of the plans
-- .create_agent accepts strings for the name of the agents
+- .create_agent and .kill_agent accept strings for the agents' name
 
 
 Bugs fixed
