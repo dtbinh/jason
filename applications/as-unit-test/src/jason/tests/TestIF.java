@@ -42,7 +42,7 @@ public class TestIF {
         ag.assertPrint("no", 5);
         ag.assertAct("a2", 5);
     }
-
+    
     @Test
     public void testUnifiyInThenElse() {
         ag.addGoal("test3");

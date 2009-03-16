@@ -16,7 +16,7 @@ all_bids_received(N) :- .count(place_bid(N,_),3).
 +place_bid(N,V)[source(S)] 
    :  auction(N) & winner(N,CurWin,CurVl) & V > CurVl
    <- -winner(N,CurWin,CurVl); 
-      +winner(N,S,V);
+      +winner(N,S,V); .print("New winner is ",S, " with value ",V);
       !check_end(N).
 
 @pb2[atomic]
