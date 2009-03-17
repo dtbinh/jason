@@ -12,10 +12,10 @@
      .print("current intention is: ",I);
 	 I = intention(Id,IntendedMeans);
 	 .println;
-	 .println("*  Intention ",Id, " IM stack:");
+	 .println("*  Intention #",Id, ", IM stack:");
 	 !print_im(IntendedMeans).
 
 +!print_im([]).
-+!print_im([im(_Planlabel,Body)|R])
++!print_im([im(_PlanLabel,Body)|R])
   <- .println("*        ",Body);
      !print_im(R).
