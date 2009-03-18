@@ -887,13 +887,13 @@ suitable solution. This information is provided by two means:
 \begin{verbatim}
 intention(1,
   [
-   im(l__6[source(self)],{ .current_intention(I); ..... }),
-   im(l__5[source(self)],{ .fail"]),
-   im(l__4[source(self)],{ !g5(X)[source(self)]; .print(endg4) }),
-   im(l__3[source(self)],{ !g4(X)[source(self)]; .print(endg3) }),
-   im(l__2[source(self)],{ !g3(X)[source(self)]; .print(endg2) }),
-   im(l__1[source(self)],{ !g2(X)[source(self)]; .print(endg1) }),
-   im(l__0[source(self)],{ !g1(X)[source(self)]; .print("End, X=",X) })
+   im(l__6[source(self)], { .current_intention(I); ... },  [map(I,...),...]),
+   im(l__5[source(self)], { .fail },                       []),
+   im(l__4[source(self)], { !g5(X); .print(endg4) },       [map(X,failure)]),
+   im(l__3[source(self)], { !g4(X); .print(endg3) },       [map(X,failure)]),
+   im(l__2[source(self)], { !g3(X); .print(endg2) },       [map(X,failure)]),
+   im(l__1[source(self)], { !g2(X); .print(endg1) },       [map(X,failure)]),
+   im(l__0[source(self)], { !g1(X); .print("End, X=",X) }, [map(X,failure)])
   ]
 )
 \end{verbatim}

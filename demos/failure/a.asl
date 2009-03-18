@@ -16,6 +16,6 @@
 	 !print_im(IntendedMeans).
 
 +!print_im([]).
-+!print_im([im(_PlanLabel,Body)|R])
-  <- .println("*        ",Body);
++!print_im([im(PlanLabel,Body,Unif)|R])
+  <- .println("*        ",Body,"      * unifier: ",Unif);
      !print_im(R).

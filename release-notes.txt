@@ -15,6 +15,11 @@ New features
   
   It may be used in send tellHow
   .send(bob, tellHow, { +te : c <- a1 }).
+
+  It is also used by internal actions that 'return' plans, like
+  . plan_label
+  . relevant_plans
+  . current_intention
   
   The advantages are that unification works
        e.g. .at("now +1 m", {+stop(ID)})
@@ -30,7 +35,10 @@ New features
       // add a plan with a fixed event/context and body 
       // given as a parameter  
   
-
+- The performance is improved (+- 15%) by not cloning all the
+  plan in the creation of intended means
+  
+  
 Changes in the GUI
 - When closing the window of MAS Console, the application is also
   stopped.
