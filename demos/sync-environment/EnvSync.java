@@ -2,16 +2,14 @@
 
 import jason.asSyntax.ASSyntax;
 import jason.asSyntax.Literal;
-import jason.asSyntax.LiteralImpl;
-import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Structure;
-import jason.environment.SteppedEnvironment;
+import jason.environment.TimeSteppedEnvironment;
 
 import java.util.logging.Logger;
 
 import screen.Counters;
 
-public class EnvSync extends SteppedEnvironment {
+public class EnvSync extends TimeSteppedEnvironment {
 
 	private Logger logger = Logger.getLogger(EnvSync.class.getName());
 	

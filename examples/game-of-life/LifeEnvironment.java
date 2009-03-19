@@ -7,7 +7,7 @@ import jason.environment.grid.Location;
 
 import java.util.logging.Logger;
 
-public class LifeEnvironment extends jason.environment.SteppedEnvironment {
+public class LifeEnvironment extends jason.environment.TimeSteppedEnvironment {
 
     private Logger logger = Logger.getLogger("game-of-life.mas2j."+LifeEnvironment.class.getName());
 

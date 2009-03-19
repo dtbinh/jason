@@ -2,7 +2,8 @@
 
 Jason Project 
 
-This project exemplifies the use of SteppedEnvironment. This environment has
+This project exemplifies the use of the class TimeSteppedEnvironment. The
+environment implemented by this class has
 steps where each agent can perform only one action. When all agents have 
 asked for the execution of an action, the actions are really executed, the
 perception updated and the next step starts. 

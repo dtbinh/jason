@@ -5,7 +5,7 @@ import jason.asSyntax.Atom;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
-import jason.environment.SteppedEnvironment;
+import jason.environment.TimeSteppedEnvironment;
 import jason.environment.grid.Location;
 
 import java.util.Random;
@@ -20,7 +20,7 @@ import javax.swing.JOptionPane;
  * 
  * @author Jomi
  */
-public class MiningEnvironment extends SteppedEnvironment {
+public class MiningEnvironment extends TimeSteppedEnvironment {
 
     private Logger          logger   = Logger.getLogger("jasonTeamSimLocal.mas2j." + MiningEnvironment.class.getName());
 
