@@ -40,7 +40,7 @@ public abstract class MoiseBaseIA extends DefaultInternalAction  {
         if (suspendIntention()) {
             Intention i = ts.getC().getSelectedIntention();
             i.setSuspended(true);
-            ts.getC().getPendingIntentions().put("om/"+m.getMsgId(), i);
+            ts.getC().addPendingIntention("om/"+m.getMsgId(), i);
         }
         return true;
     }

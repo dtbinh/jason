@@ -238,10 +238,10 @@ add a new agent into the running MAS. For example, when the plan:
 is executed, it will create a new agent called "bob" based on the
 AgentSpeak code available at file "myAgent.asl".
 
-Analogously, the internal action \code{.killAgent(<agent name>)}
+Analogously, the internal action \code{.kill_agent(<agent name>)}
 removes the agent identified by \code{<agent name>} from the current
-MAS. The createAgDemo project that comes with the Jason distribution
-files has examples of using these features.
+MAS. The \texttt{demos/create-agent} project that comes with the Jason
+distribution files has examples of using these features.
 
 New agents can also be created in the user Java code, for example:
 
@@ -261,11 +261,13 @@ public class myEnv extends Environment {
   }
 }
 \end{verbatim}
-The RuntimeServices interface, used in the code above, provides useful
-services transparently from the underlying infrastructure
-(Centralised, Saci, ...). The interface's methods include agent
-creation, agent killing, and halting the system (see the API
-documentation for more information).
+The
+\htlink{RuntimeServices}{http://jason.sourceforge.net/api/jason/runtime/RuntimeServicesInfraTier.html}
+interface, used in the code above, provides useful services
+transparently from the underlying infrastructure (Centralised, Saci,
+...). The interface's methods include agent creation, agent killing,
+and halting the system (see the API documentation for more
+information).
 
 Note that if you're using the \saci infrastructure, new
 agents (possibly not \jason agents, see \ref{sec:whysaci}) can

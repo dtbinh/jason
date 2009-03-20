@@ -143,7 +143,7 @@ public class OrgAgent extends AgArch {
                         // test if it is the result of some org action    
                         if (m.getInReplyTo() != null) {
                             // find the intention
-                            Intention pi = C.getPendingIntentions().remove("om/"+m.getInReplyTo());
+                            Intention pi = C.removePendingIntention("om/"+m.getInReplyTo());
                             if (pi != null) {
                                 resumeIntention(pi, content, C);
                             }
