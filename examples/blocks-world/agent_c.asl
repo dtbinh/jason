@@ -1,4 +1,4 @@
-// An agent for the Block World
+// An agent for the Blocks World
 // Tries each stack of the goal world concurrently
 
 /* Initial beliefs and rules */
@@ -20,7 +20,7 @@ tower([X,Y|T]) :- on(X,Y) & tower([Y|T]).
 +!tower([X,Y|T]) <- !tower([Y|T]); !on(X,Y).
 
 +!on(X,Y) : on(X,Y).
-@po[atomic]
+@po[atomic] // don't allow concurrency within each "on(X,Y)" subgoal
 +!on(X,Y) <- !clear(X); !clear(Y); move(X,Y).
 
 +!clear(X) : clear(X).

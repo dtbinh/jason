@@ -1,4 +1,4 @@
-// An agent for the Block World
+// An agent for the Blocks World
 // It tries first to build the stacks that are closer to completion
 
 /* Initial beliefs and rules */

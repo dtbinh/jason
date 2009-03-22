@@ -1,4 +1,5 @@
-// An agent for the Block World
+// An agent for the Blocks World
+// This version uses plan patterns for declarative goals
 
 /* Initial beliefs and rules */
 clear(table).

@@ -1,4 +1,4 @@
-// An agent for the Block World
+// An agent for the Blocks World
 
 /* Initial beliefs and rules */
 clear(table).
@@ -8,6 +8,7 @@ tower([X,Y|T]) :- on(X,Y) & tower([Y|T]).
 
 /* Initial goals */
 // The final state to be achieved
+// (note that this only makes sense in applications such as the Blocks World)
 !state([[a,e,b],[f,d,c],[g]]).
 
 /* Plans */
