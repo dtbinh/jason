@@ -54,11 +54,19 @@ New internal actions
   similar method). Developed by Felipe Meneguzzi.
 - .all_names: get the name of all agentes in the system.
 - .list_plans: print out the plans of agent's plan library
+- .prefix, .suffix and .sublist: see comments in the API doc, as
+  their implementation is currently generates slightly different results
+  from their usual implementation in logic programming.
+
 
 Changes in internal actions
 - .relevant_plans has a third argument that gets the labels
   of the plans
 - .create_agent and .kill_agent accept strings for the agents' name
+
+
+New example
+- Blocks World
 
 
 Bugs fixed
