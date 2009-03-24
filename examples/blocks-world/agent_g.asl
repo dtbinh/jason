@@ -9,7 +9,7 @@ tower([X,Y|T]) :- on(X,Y) & tower([Y|T]).
 
 allowed(X,Y) :- clear(X) & clear(Y) & not on(X,Y).
 
-// an ad-hoc implementation of the GOAL a_goal construct for this problem
+// an ad-hoc implementation of the GOAL "a_goal" construct for this problem
 a_goal(S,G) :- .member(S1,S) & .suffix(G,S1).
 
 /* Initial goals */
