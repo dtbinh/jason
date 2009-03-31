@@ -12,7 +12,6 @@ public class LifeEnvironment extends jason.environment.TimeSteppedEnvironment {
     private Logger logger = Logger.getLogger("game-of-life.mas2j."+LifeEnvironment.class.getName());
 
     private LifeModel model;
-    private Literal lstep; // current step
     
     /** Called before the MAS execution with the args informed in .mas2j */
     @Override
@@ -43,7 +42,6 @@ public class LifeEnvironment extends jason.environment.TimeSteppedEnvironment {
     @Override
 	protected void stepStarted(int step) {
     	//logger.info("start step "+step);
-    	lstep = ASSyntax.createLiteral("step", ASSyntax.createNumber(step+1));
     }
     
     private long sum = 0;
@@ -105,6 +103,6 @@ public class LifeEnvironment extends jason.environment.TimeSteppedEnvironment {
         Literal lAlive = ASSyntax.createLiteral("alive_neighbors", ASSyntax.createNumber(alive));
         addPercept(agName, lAlive);
         
-		addPercept(agName, lstep);
+		addPercept(agName, ASSyntax.createLiteral("step", ASSyntax.createNumber(getStep())));
     }
 }
