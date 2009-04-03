@@ -40,7 +40,7 @@ public class LifeEnvironment extends jason.environment.TimeSteppedEnvironment {
     }
 
     @Override
-	protected void stepStarted(int step) {
+    protected void stepStarted(int step) {
     	//logger.info("start step "+step);
     }
     
@@ -101,8 +101,7 @@ public class LifeEnvironment extends jason.environment.TimeSteppedEnvironment {
         if (model.isAlive(l.x + 1, l.y))     alive++;
         if (model.isAlive(l.x + 1, l.y + 1)) alive++;
         Literal lAlive = ASSyntax.createLiteral("alive_neighbors", ASSyntax.createNumber(alive));
-        addPercept(agName, lAlive);
-        
-		addPercept(agName, ASSyntax.createLiteral("step", ASSyntax.createNumber(getStep())));
+        addPercept(agName, lAlive);        
+        addPercept(agName, ASSyntax.createLiteral("step", ASSyntax.createNumber(getStep())));
     }
 }
