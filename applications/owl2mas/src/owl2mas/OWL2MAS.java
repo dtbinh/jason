@@ -178,8 +178,8 @@ public class OWL2MAS extends OWL2MASLoader{
 				
 				// at
 				try{
-					agentParams.host = 
-						"\""+pellet.getRelatedValue(agent, factory.getOWLDataProperty(URI.create(MAS_NS+"at"))).getLiteral()+"\"";
+					agentParams.setHost( 
+						"\""+pellet.getRelatedValue(agent, factory.getOWLDataProperty(URI.create(MAS_NS+"at"))).getLiteral()+"\"");
 				}catch(NullPointerException e){
 					// do nothing, optional
 				}
