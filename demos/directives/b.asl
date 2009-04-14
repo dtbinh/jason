@@ -1,5 +1,5 @@
 !start.
-+!start : true <- myp.list_plans; !d(1); !d(2).
++!start : true <- .list_plans; !d(1); !d(2).
 
 { begin ld }
 +!d(X) <- act(X).
