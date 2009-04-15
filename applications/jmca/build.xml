@@ -36,6 +36,8 @@
 	<target name="clean">
 		<delete dir="${build.dir}"/>
 		<delete file="${jar.file}"/>
+		<ant dir="./applications/elbpp" inheritAll="false" target="clean" />
+		<ant dir="./applications/alpha" inheritAll="false" target="clean" />
 	</target>
 
 	<target name="apidoc" depends="compile" >

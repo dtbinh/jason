@@ -90,14 +90,16 @@ public class JmcaAgent extends jason.asSemantics.Agent {
 	 * Instantiates selection and mediation strategies for this JmcaAgent, then calls Jason's default initAg method
 	 */
 	@SuppressWarnings("unchecked")
-	public TransitionSystem initAg(AgArch arch, BeliefBase bb, java.lang.String asSrc, Settings stts) throws JasonException{
+	@Override
+	public void initAg(String asSrc) throws JasonException{
 		aspectSelectionStrategyMap = new HashMap<Class, List<SelectionStrategy>>();
 		aspectMediationStrategyMap = new HashMap<Class, MediationStrategy>();
+		TransitionSystem ts = getTS();
 		for(Class aspect : JMCAParams.aspects){
-			aspectSelectionStrategyMap.put(aspect, getSelectionStrategyClasses(this, arch, bb, asSrc, stts, aspect));
-			aspectMediationStrategyMap.put(aspect, getMediationStrategyClass(stts, aspect));
+			aspectSelectionStrategyMap.put(aspect, getSelectionStrategyClasses(this, ts.getUserAgArch(), getBB(), asSrc, ts.getSettings(), aspect));
+			aspectMediationStrategyMap.put(aspect, getMediationStrategyClass(ts.getSettings(), aspect));
 		}
-		return super.initAg(arch, bb, asSrc, stts);		
+		super.initAg(asSrc);
 	}
 	
 
