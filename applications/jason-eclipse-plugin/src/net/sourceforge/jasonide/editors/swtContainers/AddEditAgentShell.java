@@ -177,10 +177,10 @@ public class AddEditAgentShell {
 								}
 								
 								if (!tHost.getText().equals("")) {
-									ag.host = "\"" + tHost.getText() + "\"";
+									ag.setHost(tHost.getText());
 								}
 								else {
-									ag.host = null;
+									ag.setHost(null);
 								}
 								
 								project2.addAgent(ag);
@@ -248,10 +248,10 @@ public class AddEditAgentShell {
 										}
 										
 										if (!tHost.getText().equals("")) {
-											xAgent.host = "\"" + tHost.getText() + "\"";
+											xAgent.setHost(tHost.getText());
 										}
 										else {
-											xAgent.host = null;
+											xAgent.setHost(null);
 										}
 										break;
 									}
@@ -476,8 +476,8 @@ public class AddEditAgentShell {
 						tBBClass.setText(agentInfo.bbClass.toString());
 					}
 					
-					if (agentInfo.host != null) {
-						tHost.setText(agentInfo.host.replace("\"", ""));
+					if (agentInfo.getHost() != null) {
+						tHost.setText(agentInfo.getHost().replace("\"", ""));
 					}
 					
 					// write the new mas2j project file in text editor.

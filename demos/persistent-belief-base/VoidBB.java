@@ -2,6 +2,7 @@ import jason.asSemantics.Agent;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.Literal;
 import jason.asSyntax.PredicateIndicator;
+import jason.bb.BeliefBase;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -77,7 +78,7 @@ public class VoidBB implements jason.bb.BeliefBase {
         return null;
     }
     
-    public Object clone()  {
+    public BeliefBase clone()  {
     	return new VoidBB();
     }
 }

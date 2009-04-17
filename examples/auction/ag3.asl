@@ -17,6 +17,7 @@ threshold(3).
    <- !alliance(A);
       !bid_normally(S,N).
 
+@palliance
 +auction(N)[source(S)] 
    :  alliance(_,A)
    <- ?default_bid_value(B);
