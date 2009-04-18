@@ -5,6 +5,7 @@ import java.util.List;
 
 import jason.architecture.*;
 import jason.asSemantics.ActionExec;
+import jason.asSyntax.ASSyntax;
 import jason.asSyntax.Literal;
 
 import javax.swing.*;
@@ -24,7 +25,8 @@ public class AuctioneerGUI extends AgArch {
         auction.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 auctionId++;
-                getTS().getC().addAchvGoal(Literal.parseLiteral("start_auction("+auctionId+")"), null);
+                Literal goal = ASSyntax.createLiteral("start_auction", ASSyntax.createNumber(auctionId));
+                getTS().getC().addAchvGoal(goal, null);
                 auction.setEnabled(false);
             }
         });
