@@ -1,15 +1,14 @@
 package net.sourceforge.jasonide.wizards;
 
+import jason.jeditplugin.Config;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Scanner;
 
 import net.sourceforge.jasonide.Activator;
-import net.sourceforge.jasonide.core.JasonPluginConstants;
-import net.sourceforge.jasonide.core.PluginTemplates;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -164,33 +163,21 @@ public class NewInternalActionWizard extends Wizard implements INewWizard {
 
 	private InputStream openContentStream(String containerName, String packageName, String fileName) throws CoreException {
 		try {
-			String jasonHome = JasonPluginConstants.JASON_HOME;
-			String iaTempl = jasonHome + 
-			                  File.separator + 
-			                  PluginTemplates.TEMPLATE_DIR +
-			                  File.separator + 
-			                  PluginTemplates.INTERNAL_ACTION;
-			
-			StringBuffer buffer = new StringBuffer();
-			Scanner s = new Scanner(new File(iaTempl));
-			while (s.hasNextLine()) {
-				buffer.append(s.nextLine().concat("\r\n"));
-			}
-			
-			String agentFileContents = buffer.toString();
+			String iaCode = Config.get().getTemplate("ia");
 			
 			String iaName = fileName;
 			String projectName = containerName.split("/")[1];
 			
-			agentFileContents = agentFileContents.replace("<IA_NAME>", iaName);
-			agentFileContents = agentFileContents.replace("<PROJECT_NAME>", projectName);
+			iaCode = iaCode.replace("<IA_NAME>", iaName);
+			iaCode = iaCode.replace("<PROJECT_NAME>", projectName);
 			
 			if (packageName != null) {
-				agentFileContents = agentFileContents.replace("<PCK>", packageName);
+				iaCode = iaCode.replace("<PCK>", packageName);
 			}
 			
-			return new ByteArrayInputStream(agentFileContents.getBytes());
-		} catch (IOException e) {
+			return new ByteArrayInputStream(iaCode.getBytes());
+		} catch (Exception e) {
+		    e.printStackTrace();
 			throwCoreException(e.getMessage());
 			return null;
 		}

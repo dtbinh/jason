@@ -1,21 +1,18 @@
 package net.sourceforge.jasonide.wizards;
 
+import jason.jeditplugin.Config;
 import jason.mas2j.AgentParameters;
 import jason.mas2j.MAS2JProject;
 import jason.mas2j.parser.ParseException;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Scanner;
 
 import net.sourceforge.jasonide.Activator;
-import net.sourceforge.jasonide.core.JasonPluginConstants;
 import net.sourceforge.jasonide.core.JasonPluginException;
 import net.sourceforge.jasonide.core.MAS2JHandler;
-import net.sourceforge.jasonide.core.PluginTemplates;
 import net.sourceforge.jasonide.editors.MAS2JEditor;
 
 import org.eclipse.core.resources.IContainer;
@@ -206,21 +203,8 @@ public class NewAgentWizard extends Wizard implements INewWizard {
 	 */
 	private InputStream openContentStream(String containerName, String fileName) {
 		try {
-			String jasonHome = JasonPluginConstants.JASON_HOME;
-			String envTempl = jasonHome + 
-			                  File.separator + 
-			                  PluginTemplates.TEMPLATE_DIR +
-			                  File.separator + 
-			                  PluginTemplates.AGENT;
-			
-			StringBuffer buffer = new StringBuffer();
-			Scanner s = new Scanner(new File(envTempl));
-			while (s.hasNextLine()) {
-				buffer.append(s.nextLine().concat("\r\n"));
-			}
-			
-			String agentFileContents = buffer.toString();
-			
+			String agentFileContents = Config.get().getTemplate("agent.asl");
+
 			fileName = fileName.replace(".", ">");
 			String agentName = fileName.split(">")[0];
 			String projectName = containerName.split("/")[1];
@@ -229,7 +213,8 @@ public class NewAgentWizard extends Wizard implements INewWizard {
 			agentFileContents = agentFileContents.replace("<PROJECT_NAME>", projectName);
 			
 			return new ByteArrayInputStream(agentFileContents.getBytes());
-		} catch (IOException e) {
+		} catch (Exception e) {
+		    e.printStackTrace();
 			MessageDialog.openError(getShell(), "Error", e.getMessage());
 			return null;
 		}

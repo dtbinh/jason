@@ -1,5 +1,6 @@
 package net.sourceforge.jasonide.wizards;
 
+import jason.jeditplugin.Config;
 import jason.mas2j.ClassParameters;
 import jason.mas2j.MAS2JProject;
 import jason.mas2j.parser.ParseException;
@@ -9,13 +10,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Scanner;
 
 import net.sourceforge.jasonide.Activator;
-import net.sourceforge.jasonide.core.JasonPluginConstants;
 import net.sourceforge.jasonide.core.JasonPluginException;
 import net.sourceforge.jasonide.core.MAS2JHandler;
-import net.sourceforge.jasonide.core.PluginTemplates;
 import net.sourceforge.jasonide.editors.MAS2JEditor;
 
 import org.eclipse.core.resources.IContainer;
@@ -223,20 +221,7 @@ public class NewEnvironmentWizard extends Wizard implements INewWizard {
 
 	private InputStream openContentStream(String containerName, String packageName, String fileName) {
 		try {
-			String jasonHome = JasonPluginConstants.JASON_HOME;
-			String iaTempl = jasonHome + 
-			                  File.separator + 
-			                  PluginTemplates.TEMPLATE_DIR +
-			                  File.separator + 
-			                  PluginTemplates.ENVIRONMENT;
-			
-			StringBuffer buffer = new StringBuffer();
-			Scanner s = new Scanner(new File(iaTempl));
-			while (s.hasNextLine()) {
-				buffer.append(s.nextLine().concat("\r\n"));
-			}
-			
-			String environmentContents = buffer.toString();
+			String environmentContents = Config.get().getTemplate("environment"); //buffer.toString();
 			
 			String iaName = fileName;
 			String projectName = containerName.split("/")[1];
@@ -249,7 +234,8 @@ public class NewEnvironmentWizard extends Wizard implements INewWizard {
 			}
 			
 			return new ByteArrayInputStream(environmentContents.getBytes());
-		} catch (IOException e) {
+		} catch (Exception e) {
+		    e.printStackTrace();
 			MessageDialog.openError(getShell(), "Error", e.getMessage());
 			return null;
 		}

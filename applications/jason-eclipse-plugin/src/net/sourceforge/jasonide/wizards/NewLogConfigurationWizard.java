@@ -1,14 +1,13 @@
 package net.sourceforge.jasonide.wizards;
 
+import jason.jeditplugin.Config;
+
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Scanner;
 
 import net.sourceforge.jasonide.Activator;
-import net.sourceforge.jasonide.core.JasonPluginConstants;
 import net.sourceforge.jasonide.core.PluginTemplates;
 
 import org.eclipse.core.resources.IContainer;
@@ -139,23 +138,9 @@ public class NewLogConfigurationWizard extends Wizard implements INewWizard {
 	 */
 	private InputStream openContentStream(String containerName) {
 		try {
-			String jasonHome = JasonPluginConstants.JASON_HOME;
-			String iaTempl = jasonHome + 
-			                  File.separator + 
-			                  PluginTemplates.TEMPLATE_DIR +
-			                  File.separator + 
-			                  PluginTemplates.LOGGING_CONFIGURATION;
-			
-			StringBuffer buffer = new StringBuffer();
-			Scanner s = new Scanner(new File(iaTempl));
-			while (s.hasNextLine()) {
-				buffer.append(s.nextLine().concat("\r\n"));
-			}
-			
-			String logginConfigContents = buffer.toString();
-			
+			String logginConfigContents = Config.get().getTemplate(PluginTemplates.LOGGING_CONFIGURATION); //buffer.toString();
 			return new ByteArrayInputStream(logginConfigContents.getBytes());
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}

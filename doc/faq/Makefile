@@ -4,7 +4,7 @@ html: $(TARGET).tex Makefile
 	latex2html  -split 0 -style faq.css \
               -white -image_type=gif -transparent \
               -dir html -mkdir -ascii_mode \
-              -show_section_numbers -noinfo -html_version 3.2,math -no_math \
+              -address "" -show_section_numbers -noinfo -html_version 3.2,math -no_math \
               -math -no_navigation $(TARGET).tex
 	cp faq.css html
 	cp html/faq.html ..

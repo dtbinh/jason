@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Formatter;
 import java.util.Hashtable;
-import java.util.Scanner;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
@@ -181,20 +180,7 @@ public class ProjectCreation {
 			File f = new File(actualPackage + File.separator + className + ".java");
 			f.createNewFile();
 		
-			String jasonHome = JasonPluginConstants.JASON_HOME;
-			String envTempl = jasonHome + 
-			                  File.separator + 
-			                  PluginTemplates.TEMPLATE_DIR +
-			                  File.separator + 
-			                  PluginTemplates.ENVIRONMENT;
-			
-			StringBuffer buffer = new StringBuffer();
-			Scanner s = new Scanner(new File(envTempl));
-			while (s.hasNextLine()) {
-				buffer.append(s.nextLine().concat("\r\n"));
-			}
-			
-			String templateContent = buffer.toString();
+			String templateContent = Config.get().getTemplate("environment");
 			
 			// contains package(s)
 			if (packages.length() != 0) {
@@ -209,6 +195,7 @@ public class ProjectCreation {
 			fw.flush();
 			fw.close();
 		} catch (IOException e) {
+            e.printStackTrace();
 			MessageDialog.openError(getShell(), "Error", e.getMessage());
 		}
 	}
@@ -221,21 +208,7 @@ public class ProjectCreation {
 		try {
 			File f = new File(projectRootDir + File.separator + JasonPluginConstants.AGENT_DEFAULT_REPOS + File.separator + "sample.asl");
 			f.createNewFile();
-		
-			String jasonHome = JasonPluginConstants.JASON_HOME;
-			String envTempl = jasonHome + 
-			                  File.separator + 
-			                  PluginTemplates.TEMPLATE_DIR +
-			                  File.separator + 
-			                  PluginTemplates.AGENT;
-			
-			StringBuffer buffer = new StringBuffer();
-			Scanner s = new Scanner(new File(envTempl));
-			while (s.hasNextLine()) {
-				buffer.append(s.nextLine().concat("\r\n"));
-			}
-			
-			String templateContent = buffer.toString();
+			String templateContent = Config.get().getTemplate("agent.asl");
 			
 			templateContent = templateContent.replace("<AG_NAME>", "sample");
 			templateContent = templateContent.replace("<PROJECT_NAME>", projectName);
@@ -245,6 +218,7 @@ public class ProjectCreation {
 			fw.flush();
 			fw.close();
 		} catch (IOException e) {
+            e.printStackTrace();
 			MessageDialog.openError(getShell(), "Error", e.getMessage());
 		}
 	}

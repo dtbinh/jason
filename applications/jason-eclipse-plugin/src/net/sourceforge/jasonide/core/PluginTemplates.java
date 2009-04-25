@@ -1,24 +1,24 @@
 package net.sourceforge.jasonide.core;
 
-import java.io.File;
+
 
 /**
- * Plugin Templates and constants to access the Jason templates in your instalation directory.
+ * Plugin Templates and constants to access the Jason templates in your installation directory.
  * @author Germano
  */
 public class PluginTemplates {
 
-	public static final String TEMPLATE_DIR = "src" + File.separator + "templates";
+    //public static final String TEMPLATE_DIR = "src" + File.separator + "templates";
 	
-	public static final String ENVIRONMENT = "environment";
+	//public static final String ENVIRONMENT = "environment";
 	
-	public static final String INTERNAL_ACTION = "ia";
+	//public static final String INTERNAL_ACTION = "ia";
 	
-	public static final String AGENT = "agent.asl";
+	//public static final String AGENT = "agent.asl";
 	
 	public static final String MAS2J = "project.mas2j";
 	
-	public static final String BUILD = "build-template.xml";
+	//public static final String BUILD = "build-template.xml";
 	
 	public static final String LOGGING_CONFIGURATION = "logging.properties";
 	
