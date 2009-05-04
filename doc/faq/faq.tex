@@ -630,7 +630,7 @@ public class SimpleJasonAgent extends AgArch {
     }
     
     public String getAgName() {
-        return "Bob";
+        return "bob";
     }
 
     public void run() {
@@ -688,7 +688,7 @@ java  SimpleJasonAgent
 
 The output will be 
 \begin{verbatim}
-[Bob] Agent Bob is doing: do(50)
+[bob] Agent bob is doing: do(50)
 \end{verbatim}
 
 Of course, the AgentSpeak code in this example cannot use communicative
@@ -704,7 +704,7 @@ Thanks to Mehdi Dastani for these questions.
 
 A test goal "?p" in the body of a plan first checks the belief base,
 and if it fails, it still tries to generate an internal event
-"-?p". This is because the test goal might have been meant to be a
+"+?p". This is because the test goal might have been meant to be a
 more sophisticated query for which the programmer created a whole plan
 with "+?p" as triggering event, then that plan could be executed to
 satisfy the test goal. Events "-!p" and "-?p" are only generated if an

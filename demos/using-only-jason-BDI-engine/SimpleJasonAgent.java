@@ -53,7 +53,7 @@ public class SimpleJasonAgent extends AgArch {
     }
 
     public String getAgName() {
-        return "Bob";
+        return "bob";
     }
 
     // this method just add some perception for the agent
