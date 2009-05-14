@@ -5,7 +5,8 @@ version 1.4
 New demo
 - use of controllers to write a customised mind inspector
 
-
+Bugs fixed
+- foreach whe no solution exists causes failure
 
 ---------------------------
 version 1.3
