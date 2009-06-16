@@ -537,7 +537,7 @@ public class OrgAgent extends AgArch {
 
     // goal states
     private static final Atom aWaiting    = new Atom("waiting");
-    private static final Atom aPossible   = new Atom("possible");
+    private static final Atom aReady      = new Atom("ready");
     private static final Atom aImpossible = new Atom("impossible");
     private static final Atom aAchieved   = new Atom("achieved");
 
@@ -549,9 +549,9 @@ public class OrgAgent extends AgArch {
         }
 
         Atom gState = aWaiting;
-        if (gi.isPossible()) {
-            gState = aPossible;
-        } else if (gi.isAchieved()) {
+        if (gi.isReady()) {
+            gState = aReady;
+        } else if (gi.isSatisfied()) {
             gState = aAchieved;
         } else if (gi.isImpossible()) {
             gState = aImpossible;

@@ -5,8 +5,11 @@ version 1.4
 New demo
 - use of controllers to write a customised mind inspector
 
+Internal actions
+- .random has an optional second parameter to setup backtrack
+
 Bugs fixed
-- foreach whe no solution exists causes failure
+- foreach when no solution exists causes failure
 
 ---------------------------
 version 1.3

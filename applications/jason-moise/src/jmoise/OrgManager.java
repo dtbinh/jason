@@ -489,7 +489,7 @@ public class OrgManager extends AgArch {
             }
 
             if (state.equals("satisfied")) {
-                gi.setSatisfied(sender);
+                gi.setAchieved(sender);
             } else if (state.equals("impossible")) {
                 gi.setImpossible(sender);
             }
