@@ -10,6 +10,7 @@ Internal actions
 
 Bugs fixed
 - foreach when no solution exists causes failure
+- perception of atoms cause failure with SACI
 
 ---------------------------
 version 1.3
