@@ -586,7 +586,7 @@ public class OrgManager extends AgArch {
                 Message moe = new Message("tell", null, ag.getId(), null);
                 // need to clone only on centralised execution, otherwise the serialization will clone
                 if (getArchInfraTier() instanceof CentralisedAgArch)
-                    moe.setPropCont(currentOE.clone()); //partialOE(ag)); // TODO: the clone of OE is not working!
+                    moe.setPropCont(currentOE.clone()); //partialOE(ag)); // TODO: the clone of OE is not working, using serialisation/de-serialisation!
                 else 
                     moe.setPropCont(currentOE);
                 sendMsg(moe);

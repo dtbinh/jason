@@ -152,8 +152,9 @@ public class OrgAgent extends AgArch {
                 }
             } // while
             
-            if (shouldUpdate)
+            if (shouldUpdate) {
                 updateBB(3);
+            }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error!", e);
         }

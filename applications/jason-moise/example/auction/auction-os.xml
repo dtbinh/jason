@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <organisational-specification 
     id="auction"
-    os-version="0.4"
+    os-version="0.7"
   
     xmlns='http://moise.sourceforge.net/os'
     xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
@@ -54,14 +54,14 @@
  </scheme>
 </functional-specification>
 
-<deontic-specification>
-<deontic-relation type="permission" 
+<normative-specification>
+<norm id="n1"     type="permission" 
                   role="auctioneer" 
                   mission="mAuctioneer" />
-<deontic-relation type="permission" 
+<norm id="n2"     type="permission" 
                   role="participant" 
                   mission="mParticipant" />
-</deontic-specification>
+</normative-specification>
 
 </organisational-specification>
 

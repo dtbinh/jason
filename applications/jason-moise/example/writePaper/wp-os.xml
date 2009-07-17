@@ -89,10 +89,10 @@
         </scheme>
     </functional-specification>
 
-    <deontic-specification>
-        <deontic-relation type="obligation" role="writer" mission="mBib" />
-        <deontic-relation type="obligation" role="writer" mission="mColaborator" />
-        <deontic-relation type="permission" role="editor" mission="mManager" />
-    </deontic-specification>
+    <normative-specification>
+        <norm id="n1" type="obligation" role="writer" mission="mBib" />
+        <norm id="n2" type="obligation" role="writer" mission="mColaborator" />
+        <norm id="n3" type="permission" role="editor" mission="mManager" />
+    </normative-specification>
 </organisational-specification>
 
