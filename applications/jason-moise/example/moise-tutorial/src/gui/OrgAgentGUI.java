@@ -151,7 +151,7 @@ public class OrgAgentGUI extends OrgAgent {
     protected void executeAction(String actionText) {
         bels.setText("Doing: "+ actionText);
         try {
-            Term ia = ASSyntax.parsePlanBody(actionText);
+            Term ia = ASSyntax.parseTerm(actionText);
             Literal action = ASSyntax.createLiteral("do", ia);
             getTS().getC().addAchvGoal(action, Intention.EmptyInt);
             getArchInfraTier().wake();
