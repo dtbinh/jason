@@ -134,7 +134,8 @@ public class OrgAgent extends AgArch {
                 if (m.getSender().equals(getOrgManagerName())) {
                     i.remove();
                     if (m.getPropCont() instanceof OE) {
-                        currentOE = (OE) m.getPropCont();
+                        currentOE = (OE)m.getPropCont();
+                        currentOE.rebuildHash();
                         shouldUpdate = true;
                     } else {                    
                         // the content is a normal predicate
@@ -165,7 +166,7 @@ public class OrgAgent extends AgArch {
     /** update the bel base according to the current OE  */
     void updateBB(int n) throws RevisionFailedException, ParseException {
         if (n == 0) {
-            logger.log(Level.SEVERE, "**** too much concurrent modification", new Exception());
+            getTS().getLogger().log(Level.SEVERE, "**** too much concurrent modification", new Exception());
             return;
         }
         try {
@@ -282,36 +283,34 @@ public class OrgAgent extends AgArch {
     
     private List<Literal> orgBUF(List<Literal> toAdd, PredicateIndicator bel) throws RevisionFailedException {
         List<Literal> toDel = new ArrayList<Literal>();
-        try {            
-            Agent ag = getTS().getAg();
-            
-            // remove old bels
-            Iterator<Literal> i = ag.getBB().getCandidateBeliefs(bel);
-            if (i != null) {
-                while (i.hasNext()) {
-                    Literal l = i.next();
-                    
-                    boolean isInOE = false;
-                    Iterator<Literal> ip = toAdd.iterator();
-                    while (ip.hasNext()) {
-                        Literal p = ip.next();
-                        if (p.equalsAsStructure(l)) {
-                            isInOE = true;
-                            ip.remove();
-                            break;
-                        }
-                    }
-                    if (!isInOE) {
-                        toDel.add(l);
+        Agent ag = getTS().getAg();
+        
+        // remove old bels
+        Iterator<Literal> i = ag.getBB().getCandidateBeliefs(bel);
+        if (i != null) {
+            while (i.hasNext()) {
+                Literal l = i.next();
+                
+                boolean isInOE = false;
+                Iterator<Literal> ip = toAdd.iterator();
+                while (ip.hasNext()) {
+                    Literal p = ip.next();
+                    if (p.equalsAsStructure(l)) {
+                        isInOE = true;
+                        ip.remove();
+                        break;
                     }
                 }
+                if (!isInOE) {
+                    toDel.add(l);
+                }
             }
-            for (Literal l: toDel)
-                ag.delBel(l);      
-            
-            for (Literal l: toAdd)
-                ag.addBel(l);
-        } catch (ConcurrentModificationException e) {}   
+        }
+        for (Literal l: toDel) 
+            ag.delBel(l);      
+        
+        for (Literal l: toAdd)
+            ag.addBel(l);
         return toDel;
     }
        
@@ -347,7 +346,7 @@ public class OrgAgent extends AgArch {
             //System.out.println("answer is "+content+" or "+DefaultTerm.parse(content)+" with body "+body);
             // if the last arg of body is a free var
             Term lastTerm = body.getTerm(body.getArity()-1); 
-            if (!lastTerm.isGround()) {
+            if (lastTerm != null && !lastTerm.isGround()) {
                 try {
                     pi.peek().getUnif().unifies(lastTerm, ASSyntax.parseTerm(content));
                 } catch (ParseException e) {
@@ -413,13 +412,11 @@ public class OrgAgent extends AgArch {
                 l.addAnnot(giID);
                 
                 // add annot with mission id
-                Structure mission = new Structure("mission", 1);
                 for (MissionPlayer mp: getMyOEAgent().getMissions()) {
                     if (mp.getMission().getGoals().contains(gi.getSpec())) {
-                        mission.addTerm(new Atom(mp.getMission().getId()));                        
+                        l.addAnnot(createStructure("mission", new Atom(mp.getMission().getId())));
                     }
                 }
-                l.addAnnot(mission);
                 
                 // add annot with type of goal
                 Structure type = new Structure("type", 1);
@@ -434,13 +431,8 @@ public class OrgAgent extends AgArch {
                 for (GroupInstance g: gi.getScheme().getResponsibleGroups()) {
                 	for (RolePlayer rp: g.getPlayers()) {
                 		if (rp.getPlayer().equals(me)) {
-                			Structure role = new Structure("role");
-                			role.addTerm(new Atom(rp.getRole().getId()));
-                			l.addAnnot(role);
-
-                			Structure group = new Structure("group");
-                			group.addTerm(new Atom(rp.getGroup().getId()));
-                			l.addAnnot(group);
+                			l.addAnnot(createStructure("role", new Atom(rp.getRole().getId())));
+                			l.addAnnot(createStructure("group",new Atom(rp.getGroup().getId())));
                 		}
                 	}
                 }
