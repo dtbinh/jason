@@ -45,8 +45,8 @@ public class TestAgent extends Agent {
             TransitionSystem ts = new TransitionSystem(this, new Circumstance(), new Settings(), arch.getUserAgArch());
             setTS(ts);
             arch.getUserAgArch().setTS(ts);
-            initAg(null);
-        } catch (JasonException e) {
+            initAg(); 
+        } catch (Exception e) {
             logger.log(Level.SEVERE, "Error creating TestArch", e);
         }
     }
@@ -212,10 +212,15 @@ public class TestAgent extends Agent {
                     return arch.getCycle() < maxCycles && !c.test(arch);
                 }
             };
-            getArch().start(mc);
-            synchronized (mc) { mc.wait(); }
+            synchronized (mc) {
+                getArch().start(mc);
+                mc.wait();
+            }
             return c.test(getArch());
-        } catch (InterruptedException e) {}
+        } catch (InterruptedException e) {
+            System.out.println("Interrupted!");
+            e.printStackTrace();
+        }
         return false;
     }
     

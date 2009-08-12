@@ -29,12 +29,12 @@ public class TestExampleEnvironment {
         ag.getArch().setEnv(new BRFTestEnv());
     }
     
-    @Test
+    @Test(timeout=2000)
     public void testPerception1() {
         ag.addGoal("start");           // add a new goal for the agent
         ag.assertBel("info[source(second_source), source(percept)]",10); // the agent should believe in info with two sources
     }
-    @Test
+    @Test(timeout=2000)
     public void testPerception2() {
         ag.addGoal("start");           // add a new goal for the agent
         ag.assertBel("info[source(second_source)]",10); // the agent should believe in info with one sources

@@ -31,19 +31,19 @@ public class BugVarsAsArg {
     }
     
         
-    @Test 
+    @Test(timeout=2000)
     public void testRule1() {
         ag.addGoal("test1");
         ag.assertPrint("45", 5); 
     }
 
-    @Test
+    @Test(timeout=2000)
     public void testRule2() {
         ag.addGoal("test2");
         ag.assertPrint("[1,2]", 5); 
     }
 
-    @Test
+    @Test(timeout=2000)
     public void testRule3() {
         ag.addGoal("test3");
         ag.assertPrint("[f,i,a]", 10); 

@@ -28,7 +28,7 @@ public class TestIF {
         );
     }
     
-    @Test
+    @Test(timeout=2000)
     public void test1() {
         ag.addGoal("test1");
         ag.assertPrint("3", 5);
@@ -36,14 +36,14 @@ public class TestIF {
         ag.assertAct("a2", 5);
     }
 
-    @Test
+    @Test(timeout=2000)
     public void test2() {
         ag.addGoal("test2");
         ag.assertPrint("no", 5);
         ag.assertAct("a2", 5);
     }
     
-    @Test
+    @Test(timeout=2000)
     public void testUnifiyInThenElse() {
         ag.addGoal("test3");
         ag.assertPrint("30 10", 5);

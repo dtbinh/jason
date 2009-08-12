@@ -52,11 +52,11 @@ public class TestArch extends CentralisedAgArch implements Runnable {
     
     
     public void run() {
-        while (condition.test(this)) {
-            cycle++;
-            getUserAgArch().getTS().reasoningCycle();
-        }
         synchronized (condition) {
+            while (condition.test(this)) {
+                cycle++;
+                getUserAgArch().getTS().reasoningCycle();
+            }
             condition.notifyAll();
         }
     }

@@ -35,7 +35,7 @@ public class TestIAdelete {
         );
     }
     
-    @Test
+    @Test(timeout=2000)
     public void testDelete() {
         ag.addGoal("test1");
         ag.assertPrint("[d(2,3),d(1,4),d(4,1),d(5,10)]", 5);
@@ -43,7 +43,7 @@ public class TestIAdelete {
         ag.assertPrint("[pos(3),pos(1),pos(10)]", 3);
     }
 
-    @Test
+    @Test(timeout=2000)
     public void testAlloc() {
         ag.addGoal("test2");
         ag.assertPrint("1 to 1", 10);

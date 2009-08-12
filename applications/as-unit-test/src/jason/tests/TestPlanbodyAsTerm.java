@@ -35,7 +35,7 @@ public class TestPlanbodyAsTerm {
         );
     }
     
-    @Test
+    @Test(timeout=2000)
     public void testProgram1a() {
         ag.addGoal("start");
         ag.assertBel("g({a(1);b;c})", 5);
@@ -44,7 +44,7 @@ public class TestPlanbodyAsTerm {
         ag.assertAct("c", 4);
     }
     
-    @Test
+    @Test(timeout=2000)
     public void testProgram1b() {
         ag.addGoal("test4");
         ag.assertAct("a(1)", 4);
@@ -52,33 +52,33 @@ public class TestPlanbodyAsTerm {
         ag.assertAct("c", 4);
     }
 
-    @Test
+    @Test(timeout=2000)
     public void testProgram2() {
         ag.addGoal("test2");
         ag.assertPrint("1", 5);
     }
 
-    @Test
+    @Test(timeout=2000)
     public void testProgram3() {
         ag.addGoal("test3");
         ag.assertPrint("1", 5);
     }
 
-    @Test
+    @Test(timeout=2000)
     public void test5() {
         ag.addGoal("test5");
         ag.assertPrint("body_var_ungroundstringcode:1: Variable 'C' must be ground.",10);
         ag.assertPrint("ok", 10);
     }
 
-    @Test
+    @Test(timeout=2000)
     public void test6() {
         ag.addGoal("test6");
         ag.assertAct("a", 5);
         ag.assertPrint("end", 5);
     }
 
-    @Test
+    @Test(timeout=2000)
     public void test7() {
         ag.addGoal("test7(100)");
         ag.assertPrint("a100", 5);

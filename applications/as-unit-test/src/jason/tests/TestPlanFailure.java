@@ -30,7 +30,7 @@ public class TestPlanFailure {
         );
     }
     
-    @Test
+    @Test(timeout=2000)
     public void testFailurePlan() {
         ag.addGoal("test");      
         ag.assertAct("inig4", 10);
@@ -40,7 +40,7 @@ public class TestPlanFailure {
         ag.assertAct("end(failure)", 5);
     }
 
-    @Test
+    @Test(timeout=2000)
     public void testNoRelPlan() {
         ag.addGoal("norel");      
         ag.assertAct("infailj", 10);

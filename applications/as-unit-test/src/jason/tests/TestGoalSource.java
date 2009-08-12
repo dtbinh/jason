@@ -21,7 +21,7 @@ public class TestGoalSource {
         );
     }
     
-    @Test
+    @Test(timeout=2000)
     public void testGoalSrouce() {
         ag.addGoal("begin");      
         ag.assertPrint("self", 5);

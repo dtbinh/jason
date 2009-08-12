@@ -7,7 +7,7 @@ import org.junit.Test;
 
 public class TestIA {
 
-    @Test
+    @Test(timeout=2000)
     public void testAddPlan() {
         TestAgent ag = new TestAgent();
         

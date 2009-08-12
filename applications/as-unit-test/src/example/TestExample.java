@@ -22,7 +22,7 @@ public class TestExample {
         );
     }
     
-    @Test
+    @Test(timeout=2000)
     public void testInitialBels() {
         ag.assertBel("b(20)",0);       // agent must believe "b(20)" without any reasoning
         ag.assertBel("not b",0); 
@@ -30,19 +30,19 @@ public class TestExample {
         ag.assertBel("b(10) & b(20) & not b(60)",0);
     }
     
-    @Test
+    @Test(timeout=2000)
     public void testAction() {
         ag.addGoal("begin");           // add a new goal for the agent
         ag.assertEvt("+!begin", 0);    // the agent have an event like '+!begin' in the set of events now
         ag.assertAct("action(22)", 4); // the agent have to perform 'action(22)' in 4 reasoning cycles
     }
 
-    @Test
+    @Test(timeout=2000)
     public void testIdle1() {
         ag.assertIdle(0);              // the agent should be initially in idle
     }
     
-    @Test
+    @Test(timeout=2000)
     public void testIdle2() {
         ag.addGoal("begin");           // add a new goal for the agent
         ag.addGoal("begin"); 

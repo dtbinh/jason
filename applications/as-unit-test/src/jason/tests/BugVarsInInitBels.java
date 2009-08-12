@@ -25,7 +25,7 @@ public class BugVarsInInitBels {
         );
     }
     
-    @Test
+    @Test(timeout=2000)
     public void testRule() {
         ag.assertAct("act(right_value)", 10); 
     }

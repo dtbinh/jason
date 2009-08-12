@@ -22,6 +22,8 @@ public class TestLoop {
                 
                 "+!test2 <- L=4; while( .count(b(_)) < L) { ?b(X); +b(X+1) }; jason.asunit.print(end). "+
                 
+                "+!test2p <- L=4; while( .count(b(_),LL) & LL < (L+3)) { ?b(X); +b(X+1) }; jason.asunit.print(end). "+
+
                 "+!test3 <- L=4; for( p(N,a) & N < L) { jason.asunit.print(N) }; jason.asunit.print(end). "+
 
                 "+!test4 <- for( .member(N, [1,3,4]), { jason.asunit.print(N) }); jason.asunit.print(end). " +
@@ -30,33 +32,41 @@ public class TestLoop {
         );
     }
     
-    @Test
+    @Test(timeout=2000) 
     public void testWhile1() {
         ag.addGoal("test1");
         ag.assertBel("b(4)", 20);
     }
+    
+    @Test(timeout=2000)
+    public void testWhile2p() {
+        ag.addGoal("test2p");
+        ag.assertBel("b(6)", 30);
+        ag.assertPrint("end", 30);
+    }
 
-    @Test
+    @Test(timeout=2000)
     public void testWhile2() {
         ag.addGoal("test2");
         ag.assertBel("b(4)", 30);
+        ag.assertPrint("end", 30);
     }
-
-    @Test
+    
+    @Test(timeout=2000)
     public void testFor1() {
         ag.addGoal("test3");
         ag.assertPrint("2", 10);
         ag.assertPrint("end", 10);
     }
 
-    @Test
+    @Test(timeout=2000)
     public void testFor2() {
         ag.addGoal("test4");
         ag.assertPrint("4", 10);
         ag.assertPrint("end", 10);
     }
 
-    @Test
+    @Test(timeout=2000)
     public void testFor3() {
         ag.addGoal("test5");
         ag.assertPrint("1", 4);

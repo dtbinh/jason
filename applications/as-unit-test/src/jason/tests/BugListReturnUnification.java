@@ -30,7 +30,7 @@ public class BugListReturnUnification {
         );
     }
     
-    @Test
+    @Test(timeout=2000)
     public void testList() {
         ag.addGoal("test1");
         ag.assertPrint("[a,a]", 10);
@@ -38,7 +38,7 @@ public class BugListReturnUnification {
         ag.assertPrint("[a,a,a,a]", 10);
     }
 
-    @Test
+    @Test(timeout=2000)
     public void testAnnots() {
         ag.addGoal("test3");
         ag.assertPrint("12", 10);

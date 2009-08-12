@@ -54,7 +54,7 @@ public class TestKQML {
         
     }
     
-    @Test
+    @Test(timeout=2000)
     public void testSend() {
         bob.addGoal("simple_send");
         bob.assertIdle(5);                         // bob sent the messages
@@ -63,7 +63,7 @@ public class TestKQML {
         maria.assertBel("loves(maria,bob)[source(bob)[source(maria),source(mog)]]", 5); 
     }
 
-    @Test
+    @Test(timeout=2000)
     public void testAsk() {
         bob.addGoal("send_ask1");
         bob.addGoal("send_ask2");
@@ -76,7 +76,7 @@ public class TestKQML {
         bob.assertPrint("t2(11)", 5); // answer for ask2
     }
 
-    @Test
+    @Test(timeout=2000)
     public void testAsk3() {
         bob.addGoal("send_ask3");
         bob.assertIdle(10);   // let bob to send the messages
@@ -89,7 +89,7 @@ public class TestKQML {
         bob.assertPrint("Maria dos Santos", 5); // answer for ask3
     }
 
-    @Test
+    @Test(timeout=2000)
     public void testAskAll() {
         bob.addGoal("simple_send");
         bob.addGoal("send_askAll1");
@@ -103,7 +103,7 @@ public class TestKQML {
         bob.assertPrint("[]", 5); 
     }
 
-    @Test
+    @Test(timeout=2000)
     public void testTellHow() {
         bob.addGoal("send_tellHow");
         bob.assertIdle(10); 

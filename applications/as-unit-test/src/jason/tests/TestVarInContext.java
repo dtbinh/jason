@@ -31,7 +31,7 @@ public class TestVarInContext {
         );
     }
     
-    @Test
+    @Test(timeout=2000)
     public void testContext() {
         ag.addGoal("test1");
         ag.assertPrint("b2", 5);

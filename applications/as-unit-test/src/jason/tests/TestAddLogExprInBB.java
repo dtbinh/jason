@@ -38,7 +38,7 @@ public class TestAddLogExprInBB {
         );
     }
     
-    @Test
+    @Test(timeout=2000)
     public void testRule() {
         ag.assertBel("b(10, (vl(X) & not X > 10))", 5);
         ag.assertPrint("a1", 5);
@@ -52,7 +52,7 @@ public class TestAddLogExprInBB {
         ag.assertPrint("a2", 5);
     }
 
-    @Test
+    @Test(timeout=2000)
     public void testRule2() {
         ag.addGoal("t4");
         ag.assertAct("act(5)", 10);

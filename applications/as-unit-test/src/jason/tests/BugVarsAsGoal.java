@@ -23,7 +23,7 @@ public class BugVarsAsGoal {
         );
     }
        
-    @Test 
+    @Test(timeout=2000)
     public void testGoal() {
         ag.addGoal("g");
         ag.assertPrint("self", 10);
