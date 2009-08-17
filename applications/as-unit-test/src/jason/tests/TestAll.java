@@ -7,6 +7,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
     BugListReturnUnification.class,
+    BugSucceedGoal.class,
     BugVarsAsArg.class,
     BugVarsAsGoal.class, 
     BugVarsInInitBels.class,
