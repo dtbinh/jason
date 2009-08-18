@@ -527,11 +527,13 @@ public class OrgManager extends AgArch {
                 return;
             }
 
+            /*
             if (!gi.getCommittedAgents().contains(sender)) {
-                sendReply(sender, mId, "error(\"You are not committed to the goal " + goalId + ", so you can not change its state.\")");
+                sendReply(sender, mId, "error(\"You are not committed to the goal " + goalId + ", so you can not change its arguments.\")");
                 return;
             }
-
+            */
+            
             gi.setArgumentValue(arg, value);
 
             updateMembersOE(sch.getPlayers()); 
