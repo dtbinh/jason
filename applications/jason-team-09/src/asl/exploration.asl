@@ -156,6 +156,7 @@
      !!goto_near_unvisited[scheme(Sch),mission(Mission)].
 */  
 
+/* -- change to herding -- */
 
 { begin maintenance_goal("+pos(_,_,_)") }
 

@@ -95,7 +95,7 @@ public class Search {
         return searchAlg.busca(root);
     }
     
-    public List<Nodo> normalPath(Nodo n) {
+    public static List<Nodo> normalPath(Nodo n) {
         List<Nodo> r = new LinkedList<Nodo>();
         while (n != null) {
             r.add(0,n);
@@ -104,11 +104,11 @@ public class Search {
         return r;
     }
     
-    public Location getNodeLocation(Nodo n) {
+    public static Location getNodeLocation(Nodo n) {
         return ((GridState)n.getEstado()).pos;
     }
     
-    public WorldModel.Move firstAction(Nodo solution) {
+    public static WorldModel.Move firstAction(Nodo solution) {
 	    Nodo root = solution;
 	    Estado prev1 = null;
 	    Estado prev2 = null;

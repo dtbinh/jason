@@ -215,7 +215,7 @@ calc_distances([pos(Fx,Fy)|TP], [d(D,pos(Fx,Fy))|TD], pos(AgX,AgY))
 */
 
 
-/***** Open Corral *****/
+/* -- Open Corral -- */
 
 { begin maintenance_goal("+pos(_,_,_)") }
 
@@ -246,7 +246,11 @@ calc_distances([pos(Fx,Fy)|TP], [d(D,pos(Fx,Fy))|TD], pos(AgX,AgY))
      -+target(X,Y);
      .wait({ +pos(X,Y,_) } );
      jmoise.set_goal_state(Sch,goto_switch,satisfied).
-     
+     	
+     	
+     	
+/* -- Change to exploring -- */
+     	
 { begin maintenance_goal("+pos(_,_,_)") }
 
 +!change_to_exploring[scheme(Sch),mission(Mission),group(Gr)]

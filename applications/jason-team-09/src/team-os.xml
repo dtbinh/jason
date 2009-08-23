@@ -90,6 +90,7 @@
 				   </plan>
 				</goal>
                 <goal id="goto_near_unvisited" ds="go to the near unvisited location inside the area of the group" type="maintenance"/>
+                <goal id="pass_fence"          ds="verify if necessary to create the pass_fence_scheme" type="maintenance"/>
                 <goal id="share_seen_cows"     ds="share seen cows with other agents in the scheme" type="maintenance"/>
                 <goal id="follow_leader"       ds="follow the leader of the scheme/group" type="maintenance"/>
               </plan>
@@ -152,6 +153,40 @@
             </mission>
         </scheme>
 
+        <scheme id="pass_fence" >
+            <goal id="pass_fence" >
+              <plan operator="parallel">
+                <goal id="manage" >
+                   <plan operator="sequence" >
+	                 <goal id="goto_switch1" >
+	                    <argument id="X" />
+	                    <argument id="Y" />
+	                 </goal>
+	                 <goal id="wait_others_pass" />
+	                 <goal id="pass" />
+	               </plan>
+                </goal>
+                <goal id="goto_switch2" >
+                    <argument id="X" />
+                    <argument id="Y" />
+                </goal>
+                <goal id="pass" />
+              </plan>
+            </goal>
+            
+            <mission id="porter1" min="1">
+                <goal id="goto_switch1" />
+                <goal id="wait_others_pass" />
+                <goal id="pass" />
+            </mission>
+            <mission id="porter2" min="1">
+                <goal id="goto_switch2" />
+            </mission>
+            <mission id="member" min="1">
+                <goal id="pass" />
+            </mission>
+        </scheme>
+
     </functional-specification>
 
     <normative-specification>
@@ -160,6 +195,11 @@
         <norm id="n3"  type="obligation" role="herder"   mission="herd" />
         <norm id="n4"  type="obligation" role="herdboy"  mission="help_herder" />
         <norm id="n5"  type="obligation" role="gatekeeper1"  mission="porter1" />
+        <norm id="n6"  type="obligation" role="gatekeeper2"  mission="porter2" />
+        <norm id="n7"  type="obligation" role="explorer"     mission="member" />
+        <norm id="n8"  type="obligation" role="scouter"      mission="member" />
+        <norm id="n9"  type="obligation" role="herder"       mission="member" />
+        <norm id="n10" type="obligation" role="herdboy"      mission="member" />
     </normative-specification>
 </organisational-specification>
 

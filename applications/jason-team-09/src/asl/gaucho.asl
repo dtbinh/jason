@@ -227,7 +227,7 @@
 -commitment(Me, porter1, Sch)
    : .my_name(Me)
   <- .print("yyyy add restart because my porter mission finished");
-     .drop_desire(_[scheme(Sch),mission(Mission)]);
+     .drop_desire(_[scheme(Sch),mission(porter1)]);
      !restart.
 
 // when I am not committed to a mission anymore, remove all goals based on that mission
@@ -256,5 +256,6 @@
 { include("goto.asl") }         // include plans for moving around
 { include("exploration.asl") }  // include plans for exploration
 { include("herding.asl") }      // include plans for herding
+{ include("pass_fence.asl") }      // include plans for pass_fence scheme
 // { include("moise-common.asl") } // include common plans for MOISE+ agents
 

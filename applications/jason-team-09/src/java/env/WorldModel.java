@@ -241,5 +241,12 @@ public class WorldModel extends GridWorldModel {
         }
         return null;
     }
+    
+    public static int stringToObject(String o) {
+        if (o.equals("CLOSED_FENCE")) return CLOSED_FENCE;
+        else if (o.equals("OPEN_FENCE")) return OPEN_FENCE;
+        // TODO: implement others
+        return -1;
+    }
 
 }
