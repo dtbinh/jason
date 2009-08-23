@@ -223,6 +223,13 @@
      jmoise.remove_mission(Mission,Sch).
 */
 
+// if I lost my mission in scheme open-corral, find another thing to do
+-commitment(Me, porter1, Sch)
+   : .my_name(Me)
+  <- .print("yyyy add restart because my porter mission finished");
+     .drop_desire(_[scheme(Sch),mission(Mission)]);
+     !restart.
+
 // when I am not committed to a mission anymore, remove all goals based on that mission
 -commitment(Me,Mission,Sch)
    : .my_name(Me)

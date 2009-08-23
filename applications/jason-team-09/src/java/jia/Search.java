@@ -20,7 +20,7 @@ import env.WorldModel;
 
 public class Search {
 
-    public static final  int DIST_FOR_AG_OBSTACLE = 2;
+    public static final  int DIST_FOR_AG_OBSTACLE = 2; // the distance when an agent is considered as obstacle
     
     final LocalWorldModel model;
     final Location        from, to;
@@ -29,6 +29,7 @@ public class Search {
     final boolean         considerCowsAsObstacles;
     final boolean         considerRepulsionForCows;
     final boolean         considerEnemyCorralRepulsion;
+    final boolean         considerFenceAsObstacle;
     int maxDistFromCluster;
     
     WorldModel.Move[]     actionsOrder;    
@@ -54,6 +55,7 @@ public class Search {
     		      boolean considerCowsAsObstacles, 
     		      boolean considerRepulsionForCows,
     		      boolean considerEnemyCorralRepulsion,
+    		      boolean considerFenceAsObstacle,
     		      AgArch agArch) {
     	
     	this.model = m;
@@ -64,6 +66,7 @@ public class Search {
         this.considerCowsAsObstacles   = considerCowsAsObstacles;
         this.considerRepulsionForCows  = considerRepulsionForCows;
         this.considerEnemyCorralRepulsion = considerEnemyCorralRepulsion;
+        this.considerFenceAsObstacle      = considerFenceAsObstacle;
     	this.agArch = agArch;
     	if (actions != null)
     		this.actionsOrder = actions;
@@ -81,7 +84,7 @@ public class Search {
 
     /** used normally to discover the distance from 'from' to 'to' (or if there is path to) */
     Search(LocalWorldModel m, Location from, Location to, AgArch agArch) {
-    	this(m,from,to,null,false, false, false, false, false, agArch);
+    	this(m,from,to,null,false, false, false, false, false, false, agArch);
     }
     
     public Nodo search() throws Exception { 
@@ -195,6 +198,10 @@ final class GridState implements Estado, Heuristica {
         if (ia.considerEnemyCorralRepulsion)
         	c +=  ia.model.getEnemyCorralRep(pos.x, pos.y);
 
+        // add cost of fences
+        if (ia.model.hasFence(pos.x, pos.y))
+            c += 3;
+        
     	return c;
     }
 
@@ -242,6 +249,8 @@ final class GridState implements Estado, Heuristica {
         if (ia.considerAgentsAsObstacles && ia.model.hasObject(WorldModel.AGENT,newl) && ia.from.maxBorder(newl) <= Search.DIST_FOR_AG_OBSTACLE) 
             return;
         if (ia.considerCowsAsObstacles   && ia.model.hasObject(WorldModel.COW,newl)   && ia.from.maxBorder(newl) <= Search.DIST_FOR_AG_OBSTACLE) 
+            return;
+        if (ia.considerFenceAsObstacle   && ia.model.hasFence(newl.x, newl.y)) 
             return;
 
         s.add(new GridState(newl,op,ia));

@@ -166,12 +166,33 @@ public class TestBasicHerding {
         assertEquals(0, model.getObsRep(5, 44));
     }
 
-    @Test @Ignore
+    @Test
     public void testAStar1() throws Exception {
         scenario1();
-        Search s = new Search(model, cowboy.getLocation(model), new Location(8,37), null, true, true, true, false, false, null);
+        Search s = new Search(model, cowboy.getLocation(model), new Location(8,37), null, true, true, true, false, false, false, null);
         Nodo path = s.search();
-        assertEquals(15, s.normalPath(path).size());
+        assertEquals(13, s.normalPath(path).size());
+    }
+
+    @Test
+    public void testAStar2() throws Exception {
+        scenario1();
+        model.add(WorldModel.CLOSED_FENCE, 0,40);
+        model.add(WorldModel.CLOSED_FENCE, 1,40);
+        model.add(WorldModel.CLOSED_FENCE, 2,40);
+        model.add(WorldModel.CLOSED_FENCE, 3,40);
+        model.add(WorldModel.CLOSED_FENCE, 4,40);
+        Search s = new Search(model, cowboy.getLocation(model), new Location(8,37), null, true, true, true, false, false, true, null);
+        Nodo path = s.search();
+        System.out.println(s.normalPath(path));
+        assertEquals(11, s.normalPath(path).size());
+
+        // because of fence cost, also choose the same path of fence as obstacle
+        s = new Search(model, cowboy.getLocation(model), new Location(8,37), null, true, true, true, false, false, false, null);
+        path = s.search();
+        System.out.println(s.normalPath(path));
+        assertEquals(11, s.normalPath(path).size());
+    
     }
 
     @Test
@@ -180,7 +201,7 @@ public class TestBasicHerding {
         model.add(WorldModel.ENEMYCORRAL, 10, 7);
         model.add(WorldModel.ENEMYCORRAL, 11, 7);
         model.add(WorldModel.ENEMYCORRAL, 12, 7);
-        Search s = new Search(model,new Location(12,12), new Location(10,1), null, true, false, true, false, true, null);
+        Search s = new Search(model,new Location(12,12), new Location(10,1), null, true, false, true, false, true, false, null);
         Nodo path = s.search();
         //System.out.println(s.normalPath(path));
         assertTrue(s.normalPath(path).size() > 10);

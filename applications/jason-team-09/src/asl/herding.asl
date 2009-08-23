@@ -247,13 +247,6 @@ calc_distances([pos(Fx,Fy)|TP], [d(D,pos(Fx,Fy))|TD], pos(AgX,AgY))
      .wait({ +pos(X,Y,_) } );
      jmoise.set_goal_state(Sch,goto_switch,satisfied).
      
-
-// if I lost my mission in scheme open-corral, find another thing to do
--commitment(Me, porter1, _)
-   : .my_name(Me)
-  <- .print("yyyy add restart because my porter mission finished");
-     !restart.
-
 { begin maintenance_goal("+pos(_,_,_)") }
 
 +!change_to_exploring[scheme(Sch),mission(Mission),group(Gr)]

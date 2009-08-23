@@ -106,7 +106,7 @@
      
      // wait others pos
      while( .count(ally_pos(_,_,_), N) & N < (TS-1) ) {
-        .print("ooo waiting others' location, I received ",N);
+        .print("ooo waiting others' location, I received ",N," locations until now");
         .wait({+ally_pos(_,_,_)}, 500, _)
      };
      

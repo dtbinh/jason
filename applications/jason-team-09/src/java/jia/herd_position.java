@@ -166,7 +166,7 @@ public class herd_position extends DefaultInternalAction {
         //Vec max = Vec.max(cows);
         
         // run A* to see the cluster target in n steps
-        Search s = new Search(model, mean.getLocation(model), model.getCorral().center(), null, false, false, false, true, true, null);
+        Search s = new Search(model, mean.getLocation(model), model.getCorral().center(), null, false, false, false, false, false, false, null);
         s.setMaxDistFromCluster(stepsFromCenter+Search.DIST_FOR_AG_OBSTACLE);
         List<Nodo> np = s.normalPath(s.search());
         int n = Math.min(stepsFromCenter, np.size());

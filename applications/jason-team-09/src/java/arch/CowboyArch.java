@@ -401,7 +401,7 @@ public class CowboyArch extends OrgAgent { //IdentifyCrashed {
             	    
             	    // remove this obstacle after 10 seconds
             	    schedule.schedule(new Runnable() {
-                        @Override public void run() {
+                        public void run() {
                             if (ephemeralLocs.contains(newLoc)) { // the location is still ephemeral (not perceived)
                                 logger.info("uuuuuuu removing ephemeral location "+newLoc);
                                 model.remove(WorldModel.OBSTACLE, newLoc);
