@@ -27,5 +27,6 @@ public class BugSucceedGoal {
     public void test1() {
         ag.addGoal("g");
         ag.assertPrint("a3", 30); 
+        ag.assertPrint("end", 30); 
     }
 }
