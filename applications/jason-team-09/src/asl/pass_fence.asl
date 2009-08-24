@@ -79,6 +79,11 @@ is_vertical(FX,FY)   :- fence(FX,FY+1,_) | fence(FX,FY-1,_).
 { end }	 
 
 +!goto_switch(X,Y,Sch,Goal)
+   : pos(X,Y,_) 
+  <- .print("fff I am at  switch ",X,",",Y," -- ",Goal);
+     jmoise.set_goal_state(Sch,Goal,satisfied).
++!goto_switch(X,Y,Sch,Goal)
+   : not pos(X,Y,_) 
   <- .print("yyyy going to switch ",X,",",Y," -- ",Goal);
      -+target(X,Y);
      .wait({ +pos(X,Y,_) } );
@@ -95,13 +100,17 @@ is_vertical(FX,FY)   :- fence(FX,FY+1,_) | fence(FX,FY-1,_).
 +!wait_gatekeeper2[scheme(Sch),mission(Mission), group(Gr), role(Role)]
    : play(GP2,gatekeeper2,Gr) &
      goal_state(Sch, goto_switch2(S2X,S2Y), _) &
-     ally_pos(GP2,S2X, S2Y) 
+     ally_pos(GP2,S2X, S2Y)
   <- .print("fff gatekeeper2 passed"); 
      jmoise.set_goal_state(Sch,wait_gatekeeper2,satisfied).
      
 +!wait_gatekeeper2[scheme(Sch),mission(Mission),group(Gr),role(Role)]
-  <- .wait( { +pos(_,_,_) } );
-     !!wait_gatekeeper2[scheme(Sch),mission(Mission),group(Gr),role(Role)].
+   : play(GP2,gatekeeper2,Gr) &
+     goal_state(Sch, goto_switch2(S2X,S2Y), _) 
+  <- //.wait( { +pos(_,_,_) } );
+     //!!wait_gatekeeper2[scheme(Sch),mission(Mission),group(Gr),role(Role)].
+     .wait( { +ally_pos(GP2,S2X, S2Y) } );
+     jmoise.set_goal_state(Sch,wait_gatekeeper2,satisfied).
 
 
 +!last_pass[scheme(Sch), group(Gr)]
@@ -116,10 +125,9 @@ is_vertical(FX,FY)   :- fence(FX,FY+1,_) | fence(FX,FY-1,_).
   <- .print("fff error ",E," ",M," line ",L).
   
 +!wait_others_pass[scheme(Sch),mission(Mission), group(Gr), role(Role)]
-   : .print("fff wait team to pass ") &
-     //.my_name(Me) & .findall(P, play(P,_,Gr) & P \== Me, Others) &
+   : //.my_name(Me) & .findall(P, play(P,_,Gr) & P \== Me, Others) &
      play(GP1, gatekeeper1, Gr) &
-     .print("fff I should wait agents ",GP1) &
+     .print("fff I should wait ",GP1) &
      all_passed([GP1])
   <- .print("fff all passed");
      jmoise.set_goal_state(Sch,wait_others_pass,satisfied);
@@ -131,6 +139,8 @@ is_vertical(FX,FY)   :- fence(FX,FY+1,_) | fence(FX,FY-1,_).
      // and restart team mates
      if (NextSch == explore_sch) {
         .print("fff asking ",Players," to create exploration group");
+    	.send(Players, achieve, quit_all_missions_roles);
+    	.wait(200); // wait them to quit
     	.send(Players, achieve, create_exploration_gr)
      }{
         .print("fff not implemented yet")
@@ -139,5 +149,5 @@ is_vertical(FX,FY)   :- fence(FX,FY+1,_) | fence(FX,FY-1,_).
   	 jmoise.remove_scheme(Sch). // must be the last thing (since the deletion of the scheme cause the drop of this goal)
      
 +!wait_others_pass[scheme(Sch),mission(Mission),group(Gr),role(Role)]
-  <- .wait( { +pos(_,_,_) } );
+  <- .wait( { +ally_pos(_,_,_) } ); // any change in ag loc, check
      !!wait_others_pass[scheme(Sch),mission(Mission),group(Gr),role(Role)].

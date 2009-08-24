@@ -333,7 +333,7 @@ public class LocalWorldModel extends WorldModel {
 	    		}
 	    		
     			Location l = new Location(x+dx,y+dy);
-	    		if (isFree(l) && !l.equals(agloc) && l.isInArea(tl, br)) {
+	    		if (isFree(l) && !l.equals(agloc) && l.isInArea(tl, br) && !hasFence(l.x, l.y)) {
 	    			if (visited[l.x][l.y] < minVisited) { // a place better then minVisited! go there
 	    				return l;
 	    			} if (visited[l.x][l.y] == minVisited) { // a place in the minVisited level

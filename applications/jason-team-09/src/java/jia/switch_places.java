@@ -1,16 +1,14 @@
 package jia;
 
+import static jason.asSyntax.ASSyntax.createNumber;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.NumberTerm;
-import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Term;
 import jason.environment.grid.Location;
 
 import java.util.logging.Level;
-
-import busca.Nodo;
 
 import arch.CowboyArch;
 import arch.LocalWorldModel;
@@ -37,12 +35,34 @@ public class switch_places extends DefaultInternalAction {
             
             int lx = (int)((NumberTerm)args[0]).solve();
             int ly = (int)((NumberTerm)args[1]).solve();
-            Location switchPlace = new Location(lx, ly);
             Location agPlace = model.getAgPos(arch.getMyId());
+            Location place1 = null, place2 = null;
             
+            if (model.isHorizontalFence(lx, ly)) {
+                place1 = new Location(lx,ly+1);
+                place2 = new Location(lx,ly-1);
+            } else {
+                place1 = new Location(lx+1,ly);
+                place2 = new Location(lx-1,ly);
+            }
+            if (place1.maxBorder(agPlace) > place2.maxBorder(agPlace)) {
+                // near is place2 (swap)
+                Location bak = place2;
+                place2 = place1;
+                place1 = bak;
+            }
+            return 
+                un.unifies(args[2], createNumber(place1.x)) && 
+                un.unifies(args[3], createNumber(place1.y)) &&
+                un.unifies(args[4], createNumber(place2.x)) && 
+                un.unifies(args[5], createNumber(place2.y));
+            
+            /* old version 
+            Location switchPlace = new Location(lx, ly);
             Location[] freeSwitch = new Location[2];
             int[] dist = {-1 , -1};
             
+             
             Location[] d = {new Location(0,1), new Location(0,-1), new Location(1,0), new Location(-1,0) };
             
             for(int k =0; k < 4; ++k) {
@@ -77,6 +97,7 @@ public class switch_places extends DefaultInternalAction {
             		un.unifies(args[3], new NumberTermImpl(freeSwitch[0].y)) &&
             		un.unifies(args[4], new NumberTermImpl(freeSwitch[1].x)) && 
             	    un.unifies(args[5], new NumberTermImpl(freeSwitch[1].y));
+            	    */
         } catch (Throwable e) {
             ts.getLogger().log(Level.SEVERE, "switch_places error: "+e, e);    		
         }

@@ -144,7 +144,7 @@
      
 
 	 
-{ begin maintenance_goal("+at_target") }
+{ begin maintenance_goal("+pos(_,_,_)") } // old is +at_target
 
 +!goto_near_unvisited[scheme(Sch),mission(Mission)]
   <- .print("ooo I should find the nearest unvisited location and go there!");
@@ -155,7 +155,8 @@
      ?pos(MeX, MeY, _);              // get my location
      jia.near_least_visited(MeX, MeY, Area, TargetX, TargetY);
      .print("ooo The nearest unvisited location is ",TargetX,",",TargetY);
-     -+target(TargetX, TargetY).
+     -+target(TargetX, TargetY);
+     .wait({+pos(_,_,_)}); .wait({+pos(_,_,_)}); .wait({+pos(_,_,_)}); .wait({+pos(_,_,_)}); .wait({+pos(_,_,_)}). // wait 5 cycles to revise target
 	 
 	 /* added by the pattern
 	 .wait({+at_target}).
