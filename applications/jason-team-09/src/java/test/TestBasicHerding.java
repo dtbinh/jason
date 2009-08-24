@@ -12,6 +12,7 @@ import jia.Search;
 import jia.Vec;
 import jia.cluster;
 import jia.herd_position;
+import jia.other_side_fence;
 import jia.scouter_pos;
 import jia.herd_position.Formation;
 
@@ -83,6 +84,19 @@ public class TestBasicHerding {
                 new Vec(20,4));
     }
 
+    public void scenario4() { // with fence
+        addFenceToModel(
+                new Vec(18,0),
+                new Vec(18,1),
+                new Vec(18,2),
+                new Vec(18,3),
+                new Vec(18,4),
+                new Vec(18,5),
+                new Vec(18,6));
+                //new Vec(0,1));
+        model.add(WorldModel.SWITCH, 18, 42);
+    }
+
     @Test
     public void bigCluster() throws Exception {
         // big cluster
@@ -103,6 +117,12 @@ public class TestBasicHerding {
         }
     }
     
+    private void addFenceToModel(Vec... fences) {
+        for (int i=0; i<fences.length; i++) {
+            Location l = fences[i].getLocation(model);
+            model.add(WorldModel.CLOSED_FENCE, l.x, l.y);
+        }
+    }
     
     @Test
     public void testVec() {
@@ -114,6 +134,27 @@ public class TestBasicHerding {
         assertEquals(new Vec(3,2), new Vec(6,7).sub(cowboy)); //new Vec(model, cowboy.getLocation(model), cow.add(cowboy).getLocation(model)));
         Vec v = new Vec(3,2);
         assertEquals(v, v.newAngle(v.angle()));
+    }
+    
+    @Test
+    public void testOtherSideFence() throws Exception {
+        scenario4();
+        Vec start = new Vec(model, 15, 45);
+        Vec fence = new Vec(model, 18, 45);
+        Vec target = new other_side_fence().computesOtherSide(model, start, fence);
+        
+        assertEquals(new Location(21,45), target.getLocation(model));
+
+        start = new Vec(model, 10, 42);
+        fence = new Vec(model, 18, 45);
+        target = new other_side_fence().computesOtherSide(model, start, fence);
+        
+        assertEquals(new Location(26,48), target.getLocation(model));
+    
+        start = new Vec(model, 17, 44);
+        fence = new Vec(model, 18, 45);
+        target = new other_side_fence().computesOtherSide(model, start, fence);
+        assertEquals(new Location(19,46), target.getLocation(model));
     }
     
     @Test 
@@ -171,7 +212,7 @@ public class TestBasicHerding {
         scenario1();
         Search s = new Search(model, cowboy.getLocation(model), new Location(8,37), null, true, true, true, false, false, false, null);
         Nodo path = s.search();
-        assertEquals(13, s.normalPath(path).size());
+        assertEquals(13, Search.normalPath(path).size());
     }
 
     @Test
@@ -184,14 +225,12 @@ public class TestBasicHerding {
         model.add(WorldModel.CLOSED_FENCE, 4,40);
         Search s = new Search(model, cowboy.getLocation(model), new Location(8,37), null, true, true, true, false, false, true, null);
         Nodo path = s.search();
-        System.out.println(s.normalPath(path));
-        assertEquals(11, s.normalPath(path).size());
+        assertEquals(11, Search.normalPath(path).size());
 
         // because of fence cost, also choose the same path of fence as obstacle
         s = new Search(model, cowboy.getLocation(model), new Location(8,37), null, true, true, true, false, false, false, null);
         path = s.search();
-        System.out.println(s.normalPath(path));
-        assertEquals(11, s.normalPath(path).size());
+        assertEquals(11, Search.normalPath(path).size());
     
     }
 
@@ -204,7 +243,7 @@ public class TestBasicHerding {
         Search s = new Search(model,new Location(12,12), new Location(10,1), null, true, false, true, false, true, false, null);
         Nodo path = s.search();
         //System.out.println(s.normalPath(path));
-        assertTrue(s.normalPath(path).size() > 10);
+        assertTrue(Search.normalPath(path).size() > 10);
     }
 
     @Test

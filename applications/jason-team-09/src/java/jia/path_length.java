@@ -14,6 +14,15 @@ import arch.CowboyArch;
 import arch.LocalWorldModel;
 import busca.Nodo;
 
+/** 
+ * Computes the distance between location based on A*
+ * 
+ * Use: jia.path_length(+Sx, +Sy, +Tx, +Ty, -D [, fences] )
+ * where S is the starting point and T the targed. D is the distance.
+ * if the last argument is "fences", fences are considered as obstacles
+ * 
+ * @author jomi
+ */
 public class path_length extends DefaultInternalAction {
     
     @Override
@@ -26,6 +35,8 @@ public class path_length extends DefaultInternalAction {
             int itox = (int)((NumberTerm)terms[2]).solve();
             int itoy = (int)((NumberTerm)terms[3]).solve();
             
+            boolean fencesAsObs = terms.length > 4  && terms[4].toString().equals("fences");
+            
             if (model.inGrid(itox,itoy)) {
             	
                 // destination should be a free place
@@ -35,13 +46,17 @@ public class path_length extends DefaultInternalAction {
                 Location from = new Location(iagx, iagy);
                 Location to   = new Location(itox, itoy);
                 
-                Nodo solution = new Search(model, from, to, ts.getUserAgArch()).search();
+                Nodo solution = null;
+                if (fencesAsObs)
+                    solution = new Search(model, from, to, null, false, false, false, false, true, false, ts.getUserAgArch()).search();
+                else
+                    solution = new Search(model, from, to, ts.getUserAgArch()).search();
                 if (solution != null) {
                     int length = solution.getProfundidade();
                     //ts.getLogger().info("path length from "+from+" to "+to+" = "+length+" path="+solution.montaCaminho());
                     return un.unifies(terms[4], new NumberTermImpl(length));
-                } else {
-                    ts.getLogger().info("No route from "+from+" to "+to+"!"+"\n"+model);
+                } else if (!fencesAsObs) {
+                    ts.getLogger().info("No route from "+from+" to "+to+"!");
                 }
             }
         } catch (Throwable e) {

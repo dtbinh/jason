@@ -11,16 +11,16 @@ import env.WorldModel;
 
 
 /**
-  * Return the position of the switch.
+  * Return the position of the switch for a fence.
+  * 
+  * Use: jia.fence_switch(+Fx,+Fy,-Sx,-Sy)
+  * where: F is a fence place and S is the correspongind switch
   * 
   * @author Gustavo
   */
 
 public class fence_switch extends DefaultInternalAction {
 
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	@Override
@@ -49,15 +49,10 @@ public class fence_switch extends DefaultInternalAction {
         		if(ind) break;
         	}
         	if(ind){
-        		ts.getAg().getLogger().info("ooo Found switch at ("+posx+","+posy+")");
+        		ts.getAg().getLogger().info("fff Found switch at ("+posx+","+posy+")");
         		return un.unifies(args[2], ASSyntax.createNumber(posx)) 
         			&& un.unifies(args[3], ASSyntax.createNumber(posy));
         	}
-
-        	
-		
-		
-
         }catch (Throwable e){
         	ts.getLogger().log(Level.SEVERE, "fence_switch: (can't find the switch) "+e, e);
         }

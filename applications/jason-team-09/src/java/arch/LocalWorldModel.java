@@ -100,6 +100,11 @@ public class LocalWorldModel extends WorldModel {
     public boolean hasFence(int x, int y) {
         return hasObject(OPEN_FENCE, x,y) || hasObject(CLOSED_FENCE, x,y);
     }
+    
+    public boolean isHorizontalFence(int x, int y) {
+        return hasFence(x+1, y) || hasFence(x-1, y);
+    }
+    
     @Override
     public void remove(int value, int x, int y) {
     	super.remove(value, x, y);

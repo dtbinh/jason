@@ -34,7 +34,6 @@ public class has_object_in_path extends direction {
                 return false;
             }
             List<Nodo> path = Search.normalPath(solution);
-            ts.getLogger().info("fff path "+path);
             for (Nodo n: path) {
                 Location l = Search.getNodeLocation(n);
                 if (model.hasObject(object, l)) {

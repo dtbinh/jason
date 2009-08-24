@@ -60,18 +60,18 @@
      jmoise.create_scheme(explore_sch, [G]).
      
 // If I stop playing explorer, destroy the explore scheme/group I've created
--play(Me,explorer,_)
+-play(Me,explorer,G)
    : .my_name(Me)
   <- for( scheme(explore_sch,S)[owner(Me)] ) {
 	    .print("ooo Removing scheme ",S);
 	    jmoise.remove_scheme(S);
 		.wait(1000)
-	 };
-	 for( group(exploration_grp,G)[owner(Me)] ) {
-	    .print("ooo Removing group ",G," since I am not in the group anymore");
-	    jmoise.remove_group(G);
-		.wait(1000)
 	 }.
+	 //for( group(exploration_grp,G)[owner(Me)] & not scheme_group(_,G)) {
+	 //   .print("ooo Removing group ",G," since I am not in the group anymore");
+	 //   jmoise.remove_group(G);
+     //.wait(1000)
+	 //}.
 
 	 
 /*+group(exploration_grp,_)                // compute the area of the groups
@@ -86,6 +86,18 @@
 	 
 /* -- plans for the goals of role explorer -- */
 
+{ begin maintenance_goal("+pos(_,_,_)") }
+
++!find_scouter[scheme(Sch),group(G)]
+   : play(Ag,scouter,G)
+  <- // if I can not reach my scouter anymore
+     if (ally_pos(Ag,X,Y) & pos(MyX, MyY, _) & not jia.path_length(MyX, MyY, X, Y, _, fences) ) {
+        .print("fff asking agent ",Ag," to quite its scouter role because I can not reach it anymore");
+     	.send(Ag,achieve,quit_all_missions_roles);
+     	.wait(1000);
+     	.send(Ag,achieve,restart)
+     }.
+
 +!find_scouter[scheme(Sch),group(G)]
   <- .print("ooo Recruiting scouters for my explorer group ",G);
   
@@ -93,13 +105,18 @@
      //?group_area(AreaId,G,A);
      //.print("ooo Scouters candidates =", LSOdd," in area ",group_area(AreaId,G,A));
 	 
-     !find_scouter([], G);
-	 jmoise.set_goal_state(Sch, find_scouter, satisfied).
--!find_scouter[scheme(Sch),group(G)]
-  <- .wait(1000); !find_scouter[scheme(Sch),group(G)].
-  
-+!find_scouter(_,G) // if someone plays scouter in my group, it is ok.
-   : play(_,scouter,G).
+     !find_scouter([], G). //;
+	 //jmoise.set_goal_state(Sch, find_scouter, satisfied).
+
+{ end }
+	 
+//-!find_scouter[scheme(Sch),group(G)]
+//  <- .wait(1000); !find_scouter[scheme(Sch),group(G)].
+
+
+//+!find_scouter(_,G) // if someone plays scouter in my group, it is ok.
+//   : play(_,scouter,G).
+
 +!find_scouter([],G)
   <- ?pos(MyX,MyY,_); // wait my pos
      ?team_size(TS);
@@ -112,12 +129,11 @@
      
      // find distance to even agents
      .findall(ag_d(D,AgName),
-              ally_pos(AgName,X,Y) & agent_id(AgName,Id) & Id mod 2 == 0 & jia.path_length(MyX, MyY, X, Y, D),
+              ally_pos(AgName,X,Y) & agent_id(AgName,Id) & Id mod 2 == 0 & jia.path_length(MyX, MyY, X, Y, D, fences),
               LOdd);
      .sort(LOdd, LSOdd);
 	 !find_scouter(LSOdd,G).
-+!find_scouter([],GId)
-  <- .print("ooo No more agents to ask to play scouter!").	 
+	 
 +!find_scouter([ag_d(_,AgName)|_],GId)
   <- .print("ooo Ask ",AgName," to play scouter");
      .send(AgName, achieve, play_role(scouter,GId));

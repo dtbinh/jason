@@ -75,6 +75,8 @@
 +!try_adopt(_Role,[])
   <- .print("ooo no more groups to try a role!").
 +!try_adopt(Role,[G|_])
+   : group(_,G)[owner(O)] & ally_pos(O,OX,OY) & pos(MyX,MyY,_) & jia.path_length(MyX, MyY, OX, OY, _, fences) &
+     scheme_group(Sch,G) & not scheme(pass_fence,Sch) // do not enter in grousp passing fences
   <- .print("ooo try role ",Role, " in ",G);
      jmoise.adopt_role(Role,G).
 -!try_adopt(Role,[_|RG])
@@ -223,11 +225,11 @@
      jmoise.remove_mission(Mission,Sch).
 */
 
-// if I lost my mission in scheme open-corral, find another thing to do
+// if I lost my mission in scheme open-corral/pass_fence, find another thing to do
 -commitment(Me, porter1, Sch)
-   : .my_name(Me)
-  <- .print("yyyy add restart because my porter mission finished");
-     .drop_desire(_[scheme(Sch),mission(porter1)]);
+   : scheme(pass_fence,Sch) | schme(open_corral,Sch) 
+  <- .print("yyyy add restart because my ",Mission," mission finished");
+     .drop_desire(_[scheme(Sch),mission(Mission)]);
      !restart.
 
 // when I am not committed to a mission anymore, remove all goals based on that mission

@@ -45,6 +45,8 @@
                     <roles>
                         <role id="explorer" min="1" max="1"/>
                         <role id="scouter"  min="0" max="1"/>
+                        <role id="gatekeeper1" min="0" max="1"/>
+                        <role id="gatekeeper2" min="0" max="1"/>
                     </roles>
                 </group-specification>
 
@@ -83,12 +85,14 @@
         <scheme id="explore_sch" >
             <goal id="find_cows" >
               <plan operator="parallel">
-			    <goal id="init_scheme">
+			    <!-- goal id="init_scheme">
 				   <plan operator="sequence">
 				     <goal id="find_scouter"        ds="find a scouter to help in the exploration" />
                      <goal id="change_to_herding"   ds="verify if necessary to create the herding group" type="maintenance"/>
 				   </plan>
-				</goal>
+				</goal-->
+                <goal id="find_scouter"        ds="find a scouter to help in the exploration" type="maintenance" />
+                <goal id="change_to_herding"   ds="verify if necessary to create the herding group" type="maintenance"/>
                 <goal id="goto_near_unvisited" ds="go to the near unvisited location inside the area of the group" type="maintenance"/>
                 <goal id="pass_fence"          ds="verify if necessary to create the pass_fence_scheme" type="maintenance"/>
                 <goal id="share_seen_cows"     ds="share seen cows with other agents in the scheme" type="maintenance"/>
@@ -101,6 +105,7 @@
                 <goal id="goto_near_unvisited" />
                 <!--goal id="share_seen_cows" /-->
                 <goal id="change_to_herding" />
+                <goal id="pass_fence" />
             </mission>
             <mission id="scout" min="0" max="1">
                 <goal id="follow_leader" />
@@ -155,6 +160,10 @@
 
         <scheme id="pass_fence" >
             <goal id="pass_fence" >
+              <argument id="X" />
+              <argument id="Y" />
+              <argument id="NextScheme" />
+              <argument id="Direction" />
               <plan operator="parallel">
                 <goal id="manage" >
                    <plan operator="sequence" >
@@ -163,28 +172,24 @@
 	                    <argument id="Y" />
 	                 </goal>
 	                 <goal id="wait_others_pass" />
-	                 <goal id="pass" />
+	                 <goal id="last_pass" />
 	               </plan>
                 </goal>
                 <goal id="goto_switch2" >
                     <argument id="X" />
                     <argument id="Y" />
                 </goal>
-                <goal id="pass" />
               </plan>
             </goal>
             
             <mission id="porter1" min="1">
                 <goal id="goto_switch1" />
                 <goal id="wait_others_pass" />
-                <goal id="pass" />
+                <goal id="last_pass" />
             </mission>
             <mission id="porter2" min="1">
                 <goal id="goto_switch2" />
-            </mission>
-            <mission id="member" min="1">
-                <goal id="pass" />
-            </mission>
+            </mission>            
         </scheme>
 
     </functional-specification>
@@ -196,10 +201,6 @@
         <norm id="n4"  type="obligation" role="herdboy"  mission="help_herder" />
         <norm id="n5"  type="obligation" role="gatekeeper1"  mission="porter1" />
         <norm id="n6"  type="obligation" role="gatekeeper2"  mission="porter2" />
-        <norm id="n7"  type="obligation" role="explorer"     mission="member" />
-        <norm id="n8"  type="obligation" role="scouter"      mission="member" />
-        <norm id="n9"  type="obligation" role="herder"       mission="member" />
-        <norm id="n10" type="obligation" role="herdboy"      mission="member" />
     </normative-specification>
 </organisational-specification>
 

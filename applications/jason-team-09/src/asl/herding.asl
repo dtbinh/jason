@@ -229,9 +229,9 @@ calc_distances([pos(Fx,Fy)|TP], [d(D,pos(Fx,Fy))|TD], pos(AgX,AgY))
      .print("yyyy candidates for porter1 in group ",Gr, " are ",Cand) & Cand \== []
   <- .print("ooo yyyy I should start an open corral scheme for group ",Gr);
      jmoise.create_scheme(open_corral, [Gr], SchId);
-     // TODO: use switch place
-     jmoise.set_goal_arg(SchId,goto_switch,"X",X+1);
-     jmoise.set_goal_arg(SchId,goto_switch,"Y",Y);
+     jia.switch_places(X,Y,PX,PY,_,_);
+     jmoise.set_goal_arg(SchId,goto_switch,"X",PX);
+     jmoise.set_goal_arg(SchId,goto_switch,"Y",PY);
      !find_closest(Cand,pos(X,Y),HA);
      .print("yyyy near is ",HA);
      .send(HA, achieve, change_role(gatekeeper1, Gr)).

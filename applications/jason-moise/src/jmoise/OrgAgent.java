@@ -568,7 +568,7 @@ public class OrgAgent extends AgArch {
             }
         }
 
-        gil = (Literal)gil.clone();
+        gil = gil.copy();
         gil.setTerm(2, gState);
         
         if (getTS().getAg().addBel(gil))

@@ -16,9 +16,11 @@ import arch.CowboyArch;
 import arch.LocalWorldModel;
 
 /**
- * 
  * Given the switch, determines the two places where an agent should stand in order to open the fence
  * 
+ * Use: jia.switch_places(+Sx, +Sy, -L1x, -L1y, -L2x, -L2y)
+ * where: S is a switch, L1 is the place that open the switch near to the agent and L2 the other place
+ *  
  * @author ricardo.hahn
  *
  */
@@ -47,11 +49,11 @@ public class switch_places extends DefaultInternalAction {
             	Location candidate = new Location(switchPlace.x-d[k].x,switchPlace.y-d[k].y);
             	if(model.inGrid(candidate) && model.isFreeOfObstacle(candidate) && !model.hasFence(candidate.x, candidate.y)) {
 
-            		Nodo solution = new Search(model, agPlace, candidate, ts.getUserAgArch()).search();
+            		Nodo solution = new Search(model, agPlace, candidate, null,false, false, false, false, true, false, ts.getUserAgArch()).search();
 
             		if(solution != null) {
             			int length = solution.getProfundidade();
-                		ts.getLogger().info("oooo candidate "+candidate.x+" "+candidate.y+" length "+length);
+                		ts.getLogger().info("fff candidate "+candidate.x+" "+candidate.y+" length "+length);
             			if(dist[1]<0 || length<dist[1])
             			{
             				dist[1]=length;
@@ -70,15 +72,15 @@ public class switch_places extends DefaultInternalAction {
             	
             }
             if(dist[1]>=0)
-            	return un.unifies(args[2], new NumberTermImpl(freeSwitch[0].x)) && 
+            	return 
+            	    un.unifies(args[2], new NumberTermImpl(freeSwitch[0].x)) && 
             		un.unifies(args[3], new NumberTermImpl(freeSwitch[0].y)) &&
             		un.unifies(args[4], new NumberTermImpl(freeSwitch[1].x)) && 
             	    un.unifies(args[5], new NumberTermImpl(freeSwitch[1].y));
-            } catch (Throwable e) {
+        } catch (Throwable e) {
             ts.getLogger().log(Level.SEVERE, "switch_places error: "+e, e);    		
         }
         return false;
     }
-
 }
 
