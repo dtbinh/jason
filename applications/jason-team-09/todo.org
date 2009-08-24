@@ -1,0 +1,53 @@
+* 2009 team
+- [ ] duplicate cows in BB
+
+- [ ] usar .length do Jason (qdo arrumado)
+- [ ] melhor criteria para criar pass_fence/open_corral
+- [ ] salvar fence no arq de backup
+- [ ] procurar switch se nao foi visto ainda (ideia, considerar fence obstaculo de tentar passar)
+- [ ] impedir ags de entrar no curral
+- [ ] backup de distancias entre lugares
+    - usado em varios lugares, especialmente cluster
+    - qdo tem um obstaculo, reseta
+    - fazer um rotina de verificacao de erros na backup
+      pra achar bugs (no comeco verificar 100% no final 10%)
+- [ ] evitar que dois grupos compitam para abrir cerca
+   (se ja tem um scheme com mesmo switch e direcao, se junta ao grupo como member)
+
+- [X] computes 5 areas
+- [X] find scouter: need to be someone free of fence
+- [X] path with fences has higher cost
+- [ ] a decent plan for !release_boys
+
+- [X] identify bug in GUI (why cows disappears?)
+- [X] strategy to open/close fences
+- [X] 'hide' cows in corral for our agents
+- [X] include perception of fence/switch
+
+** use current version of moise+
+** use current version of jmoise+
+** update of architecture to the new simulator
+** implement open fence
+** communication link is intra-group
+** leaders group
+** merging scheme
+* 2008 team
+** team formations (moise+ representation of the team)
+** Structure (we have something from the proposal)
+** Functioning (we have noting, but I not sure we need...)
+** computation of ideal locations of an agent to maintain a formation (can we use maintainance goal pattern?)
+** herding strategy
+** exploration strategy
+** protocols
+** faster simulator
+** DONE new scenarios
+** DONE Vectors (operations)
+   CLOSED: [2008-04-20 Sun 22:23]
+** DONE develop a team of dummies to play against
+   CLOSED: [2008-04-20 Sun 22:23]
+** what is a dummy strategy?
+** DONE A* (update previous to new directions)
+   CLOSED: [2008-03-16 Sun 15:29]
+** DONE integration with new simulator
+   CLOSED: [2008-03-16 Sun 15:28]
+   add perceptions to the agents

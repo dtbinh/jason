@@ -14,8 +14,7 @@ all_passed([Ag|Others]) :-
    //jia.path_length(AX,AY,SX,SY,_,fences) &
    goal_state(_,pass_fence(FX,FY,_,Direction),_) &
    ( is_horizontal(FX,FY)  & .print("fff ",FX,FY," is horizontal") & AY * Direction > (FY * Direction) | 
-     is_vertical(FX,FY)    & .print("fff ",FX,FY," is vertical")   & AX * Direction > (FX * Direction) |
-     .print("fff it is impossible that the fence is neither horizontal nor vertical") & false) &
+     is_vertical(FX,FY)    & .print("fff ",FX,FY," is vertical")   & AX * Direction > (FX * Direction)) &
    .print("fff ",Ag," passed, it is at ",AX,",",AY," shoud reach place ",FX,",",FY) &
    all_passed(Others).
 
