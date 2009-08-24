@@ -392,6 +392,12 @@ public class LocalWorldModel extends WorldModel {
                         for (Location l: getAllObj(WorldModel.OBSTACLE)) {
                             sout.append("obstacle("+l.x+","+l.y+")\n");
                         }
+                        for (Location l: getAllObj(WorldModel.OPEN_FENCE)) {
+                            sout.append("fence("+l.x+","+l.y+")\n");
+                        }
+                        for (Location l: getAllObj(WorldModel.CLOSED_FENCE)) {
+                            sout.append("fence("+l.x+","+l.y+")\n");
+                        }
                         
                         // now put in a file
                         BufferedWriter out = new BufferedWriter(new FileWriter(getObstaclesFileName(arch)));
@@ -416,16 +422,21 @@ public class LocalWorldModel extends WorldModel {
                 String lin = in.readLine();
                 while (lin != null) {
                     Literal obs = ASSyntax.parseLiteral(lin);
+                    Location l = new Location((int)((NumberTerm)obs.getTerm(0)).solve(), (int)((NumberTerm)obs.getTerm(1)).solve());
                     if (obs.getFunctor().equals("obstacle")) {
-                        Location l = new Location((int)((NumberTerm)obs.getTerm(0)).solve(), (int)((NumberTerm)obs.getTerm(1)).solve());
                         add(WorldModel.OBSTACLE, l);
+                        included.add(l);
+                    } else if (obs.getFunctor().equals("fence")) {
+                        add(WorldModel.CLOSED_FENCE, l);
                         included.add(l);
                     }
                     lin = in.readLine();
                 }
             } catch (ArrayIndexOutOfBoundsException e) { // a location out of world means wrong input file, remove all included obstacles
-                for (Location l: included)
+                for (Location l: included) {
                     remove(WorldModel.OBSTACLE, l);
+                    remove(WorldModel.CLOSED_FENCE, l);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }            

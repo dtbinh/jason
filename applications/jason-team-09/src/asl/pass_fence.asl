@@ -15,7 +15,7 @@ all_passed([Ag|Others]) :-
    goal_state(_,pass_fence(FX,FY,_,Direction),_) &
    ( is_horizontal(FX,FY)  & .print("fff ",FX,FY," is horizontal") & AY * Direction > (FY * Direction) | 
      is_vertical(FX,FY)    & .print("fff ",FX,FY," is vertical")   & AX * Direction > (FX * Direction)) &
-   .print("fff ",Ag," passed, it is at ",AX,",",AY," shoud reach place ",FX,",",FY) &
+   .print("fff ",Ag," passed, it is at ",AX,",",AY," should pass fence ",FX,",",FY,", direction is ",Direction) &
    all_passed(Others).
 
 is_horizontal(FX,FY) :- fence(FX+1,FY,_) | fence(FX-1,FY,_).
@@ -28,10 +28,11 @@ is_vertical(FX,FY)   :- fence(FX,FY+1,_) | fence(FX,FY-1,_).
      jia.fence_switch(FX, FY, SX, SY)
   <- jmoise.create_scheme(pass_fence, SchId);
      .print("fff Created pass fence scheme ", SchId); 
-     jia.switch_places(SX,SY,P1X,P1Y,P2X,P2Y);
-     .print("fff places for switch ",SX,",",SY," are ",P1X,",",P1Y," and ",P2X,",",P2Y);
+
+     // set ID of fence based on switch
      jmoise.set_goal_arg(SchId,pass_fence,"X",SX); 
      jmoise.set_goal_arg(SchId,pass_fence,"Y",SY);
+     
      ?scheme(SchType,Sch);
      jmoise.set_goal_arg(SchId,pass_fence,"NextScheme",SchType);
      ?pos(MyX,MyY,_);
@@ -70,55 +71,72 @@ is_vertical(FX,FY)   :- fence(FX,FY+1,_) | fence(FX,FY-1,_).
 +!pass_fence[scheme(Sch),mission(Mission), group(Gr), role(Role)]
    : need_cross_fence(FX, FY) &
      not jia.fence_switch(FX, FY, _, _)
-  <- .print("fff I need to discover where the switch is ");
+  <- .print("fff I need to discover where the switch is **** not well implemented yet ****");
      -+target(FX, FY).
      
 +!pass_fence[scheme(Sch),mission(Mission),group(Gr),role(Role)].
 	 
 { end }	 
 
-+!goto_switch1(X,Y)[scheme(Sch)]
-  <- .print("fff going to switch1 ",X,",",Y);
++!goto_switch(X,Y,Sch,Goal)
+  <- .print("yyyy going to switch ",X,",",Y," -- ",Goal);
      -+target(X,Y);
      .wait({ +pos(X,Y,_) } );
-     .print("fff reached switch1");
-     jmoise.set_goal_state(Sch,goto_switch1,satisfied).
+     .print("fff reached switch ",X,",",Y," -- ",Goal);
+     jmoise.set_goal_state(Sch,Goal,satisfied).
+     	
+
++!goto_switch1(X,Y)[scheme(Sch)]
+  <- !goto_switch(X,Y,Sch,goto_switch1).
 
 +!goto_switch2(X,Y)[scheme(Sch)]
-  <- .print("fff going to switch2 ",X,",",Y);
-     -+target(X,Y);
-     .wait({ +pos(X,Y,_) } );
-     .print("fff reached switch2");
-     jmoise.set_goal_state(Sch,goto_switch2,satisfied).
+  <- !goto_switch(X,Y,Sch,goto_switch2).
+
++!wait_gatekeeper2[scheme(Sch),mission(Mission), group(Gr), role(Role)]
+   : play(GP2,gatekeeper2,Gr) &
+     goal_state(Sch, goto_switch2(S2X,S2Y), _) &
+     ally_pos(GP2,S2X, S2Y) 
+  <- .print("fff gatekeeper2 passed"); 
+     jmoise.set_goal_state(Sch,wait_gatekeeper2,satisfied).
+     
++!wait_gatekeeper2[scheme(Sch),mission(Mission),group(Gr),role(Role)]
+  <- .wait( { +pos(_,_,_) } );
+     !!wait_gatekeeper2[scheme(Sch),mission(Mission),group(Gr),role(Role)].
+
 
 +!last_pass[scheme(Sch), group(Gr)]
-  <- ?goal_state(Sch,pass_fence(FX,FY,NextSch,_),_);
+  <- ?goal_state(Sch,pass_fence(FX,FY,_NextSch,_),_);
      .print("fff I should pass the fence ",FX,",",FY);
      jia.other_side_fence(FX,FY,TX,TY);
      .print("fff the new target is ",TX,",",TY);
      -+target(TX,TY);
-     .wait({ +pos(TX,TY,_) } );
-     // if I am the poter1 (the last to pass), I need to finish it all
-     .findall(P, play(P,_,Gr), Players);
-     .print("fff removing the scheme ",Sch," since all agentes has passed");
-  	 jmoise.remove_scheme(Sch);
-     // and restart team mates
-     if (NextSch == explore_sch) {
-    	.send(Players, achieve, create_exploration_gr)
-     }{
-        .print("fff not implemented yet")
-     }.
-
+     .wait({ +pos(TX,TY,_) } ).
+     
 -!last_pass[error(E), error_msg(M),code_line(L)] 
   <- .print("fff error ",E," ",M," line ",L).
   
 +!wait_others_pass[scheme(Sch),mission(Mission), group(Gr), role(Role)]
    : .print("fff wait team to pass ") &
-     .my_name(Me) & .findall(P, play(P,_,Gr) & P \== Me, Others) &
-     .print("fff I should wait agents ",Others) &
-     all_passed(Others)
+     //.my_name(Me) & .findall(P, play(P,_,Gr) & P \== Me, Others) &
+     play(GP1, gatekeeper1, Gr) &
+     .print("fff I should wait agents ",GP1) &
+     all_passed([GP1])
   <- .print("fff all passed");
-     jmoise.set_goal_state(Sch,wait_others_pass,satisfied).
+     jmoise.set_goal_state(Sch,wait_others_pass,satisfied);
+     
+     ?goal_state(Sch,pass_fence(_FX,_FY,NextSch,_),_);
+     
+     // if I am the poter1 (the last to pass), I need to finish it all
+     .findall(P, play(P,_,Gr), Players);
+     // and restart team mates
+     if (NextSch == explore_sch) {
+        .print("fff asking ",Players," to create exploration group");
+    	.send(Players, achieve, create_exploration_gr)
+     }{
+        .print("fff not implemented yet")
+     };
+     .print("fff removing the scheme ",Sch," since all agentes has passed");
+  	 jmoise.remove_scheme(Sch). // must be the last thing (since the deletion of the scheme cause the drop of this goal)
      
 +!wait_others_pass[scheme(Sch),mission(Mission),group(Gr),role(Role)]
   <- .wait( { +pos(_,_,_) } );

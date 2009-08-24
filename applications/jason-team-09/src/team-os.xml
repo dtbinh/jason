@@ -165,30 +165,36 @@
               <argument id="NextScheme" />
               <argument id="Direction" />
               <plan operator="parallel">
-                <goal id="manage" >
+                <goal id="forKeeper1" >
                    <plan operator="sequence" >
 	                 <goal id="goto_switch1" >
 	                    <argument id="X" />
 	                    <argument id="Y" />
 	                 </goal>
-	                 <goal id="wait_others_pass" />
+	                 <goal id="wait_gatekeeper2" />
 	                 <goal id="last_pass" />
 	               </plan>
                 </goal>
-                <goal id="goto_switch2" >
-                    <argument id="X" />
-                    <argument id="Y" />
+                <goal id="forKeeper2" >
+                   <plan operator="sequence" >
+                     <goal id="goto_switch2" >
+                        <argument id="X" />
+                        <argument id="Y" />
+                     </goal>
+                     <goal id="wait_others_pass" />
+                   </plan>
                 </goal>
               </plan>
             </goal>
             
             <mission id="porter1" min="1">
                 <goal id="goto_switch1" />
-                <goal id="wait_others_pass" />
+                <goal id="wait_gatekeeper2" />
                 <goal id="last_pass" />
             </mission>
             <mission id="porter2" min="1">
                 <goal id="goto_switch2" />
+                <goal id="wait_others_pass" />
             </mission>            
         </scheme>
 

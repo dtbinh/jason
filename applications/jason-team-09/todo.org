@@ -2,7 +2,7 @@
 - [ ] duplicate cows in BB
 
 - [ ] usar .length do Jason (qdo arrumado)
-- [ ] melhor criteria para criar pass_fence/open_corral
+- [ ] melhor criteria para criar pass_fence/open_corral (nao ser 'estar a 15 passos)
 - [ ] salvar fence no arq de backup
 - [ ] procurar switch se nao foi visto ainda (ideia, considerar fence obstaculo de tentar passar)
 - [ ] impedir ags de entrar no curral
@@ -13,12 +13,16 @@
       pra achar bugs (no comeco verificar 100% no final 10%)
 - [ ] evitar que dois grupos compitam para abrir cerca
    (se ja tem um scheme com mesmo switch e direcao, se junta ao grupo como member)
+   (ter duas listas, quem quer estar do lado A e quem do lado B, terminar so qdo todos os
+    ags estao do lado que queriam)
+    -> entra como member, pass, depois de passar, larga o scheme e vai fazer outra coisa
+    -> o teste de fim, exige nao ter mais member
+- [ ] a decent plan for !release_boys
+
 
 - [X] computes 5 areas
 - [X] find scouter: need to be someone free of fence
 - [X] path with fences has higher cost
-- [ ] a decent plan for !release_boys
-
 - [X] identify bug in GUI (why cows disappears?)
 - [X] strategy to open/close fences
 - [X] 'hide' cows in corral for our agents

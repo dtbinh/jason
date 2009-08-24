@@ -242,11 +242,7 @@ calc_distances([pos(Fx,Fy)|TP], [d(D,pos(Fx,Fy))|TD], pos(AgX,AgY))
 
 
 +!goto_switch(X,Y)[scheme(Sch)]
-  <- .print("yyyy going to switch ",X,",",Y);
-     -+target(X,Y);
-     .wait({ +pos(X,Y,_) } );
-     jmoise.set_goal_state(Sch,goto_switch,satisfied).
-     	
+  <- !goto_switch(X,Y,Sch,goto_switch). // the basic implementation of goto switch (pass_fence.asl)
      	
      	
 /* -- Change to exploring -- */
