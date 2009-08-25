@@ -181,7 +181,9 @@
                         <argument id="X" />
                         <argument id="Y" />
                      </goal>
-                     <goal id="wait_others_pass" />
+                     <goal id="wait_others_pass" >
+                        <argument id="Others" value="[]"/>
+                     </goal>
                    </plan>
                 </goal>
               </plan>

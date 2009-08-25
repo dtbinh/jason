@@ -200,7 +200,7 @@ final class GridState implements Estado, Heuristica {
 
         // add cost of fences
         if (ia.model.hasFence(pos.x, pos.y))
-            c += 3;
+            c += 5;
         
     	return c;
     }
@@ -246,8 +246,12 @@ final class GridState implements Estado, Heuristica {
             return;
         if (ia.considerCorralAsObstacles && ia.model.hasObject(WorldModel.CORRAL, newl)) 
             return;
-        if (ia.considerAgentsAsObstacles && ia.model.hasObject(WorldModel.AGENT,newl) && ia.from.maxBorder(newl) <= Search.DIST_FOR_AG_OBSTACLE) 
-            return;
+        if (ia.considerAgentsAsObstacles) {
+            if (ia.model.hasObject(WorldModel.AGENT,newl) && ia.from.maxBorder(newl) <= Search.DIST_FOR_AG_OBSTACLE) 
+                return;
+            if (ia.model.hasObject(WorldModel.ENEMY,newl) && ia.from.maxBorder(newl) <= 1) 
+                return;
+        }
         if (ia.considerCowsAsObstacles   && ia.model.hasObject(WorldModel.COW,newl)   && ia.from.maxBorder(newl) <= Search.DIST_FOR_AG_OBSTACLE) 
             return;
         if (ia.considerFenceAsObstacle   && ia.model.hasFence(newl.x, newl.y)) 

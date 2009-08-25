@@ -3,7 +3,6 @@ package arch;
 import static jason.asSyntax.ASSyntax.createLiteral;
 import static jason.asSyntax.ASSyntax.createNumber;
 import static jason.asSyntax.ASSyntax.createStructure;
-import jason.asSyntax.Atom;
 import jason.asSyntax.Literal;
 import jason.environment.grid.Location;
 
@@ -162,6 +161,8 @@ public class ACProxy extends ACAgent implements Runnable {
 
 			arq.initKnownCows();
 
+			List<Location> switches = new ArrayList<Location>(); // switch should be perceived later
+			
 			//int enemyId = 1;
 			
 			// add in perception what is around
@@ -205,6 +206,7 @@ public class ACProxy extends ACAgent implements Runnable {
                             //logger.info("iiii fence "+cellx+" "+celly+"  - "+absx+" "+absy+" - "+agx+" "+agy);
                             boolean open = type.getAttribute("open").equals("true");
                             arq.fencePerceived(absx, absy, open);
+                            /*
                             Atom state;
                             if (open) 
                                 state = CowboyArch.aOPEN;
@@ -212,8 +214,9 @@ public class ACProxy extends ACAgent implements Runnable {
                                 state = CowboyArch.aCLOSED;                            
                             Literal lf = createLiteral(CowboyArch.aFENCE.toString(), createNumber(absx), createNumber(absy), state);
                             percepts.add(lf);
+                            */
                         } else if (type.getNodeName().equals("switch")) {
-                            arq.switchPerceived(absx, absy);                            
+                            switches.add(new Location(absx, absy));
                         //} else if (type.getNodeName().equals("empty")) {
                         //    percepts.add(CowboyArch.createCellPerception(cellx, celly, CowboyArch.aEMPTY));
 						}
@@ -228,6 +231,11 @@ public class ACProxy extends ACAgent implements Runnable {
                 Literal lc = createLiteral("cow", createNumber(id), createNumber(l.x), createNumber(l.y));
                 lc.addAnnot(createStructure("step", createNumber(step)));
                 percepts.add(lc);
+			}
+			
+			// put switches
+			for (Location l: switches) {
+                arq.switchPerceived(l.x, l.y);
 			}
 	
             //if (logger.isLoggable(Level.FINE)) 

@@ -549,14 +549,18 @@ public class OrgAgent extends AgArch {
         } else if (gi.isImpossible()) {
             gState = aImpossible;
         }
-
+        
         // create the literal to be added
         VarTerm S = new VarTerm("S");
         Literal gil = createLiteral("goal_state", new Atom(gi.getScheme().getId()), gap, S);
         gil.addAnnot(managerSource);
 
+
         Unifier u = new Unifier();
-        Literal gilInBB = getTS().getAg().findBel(gil, u);
+        Literal gapforfind = gap.copy();
+        gapforfind.makeTermsAnnon();
+        Literal gilforfind = createLiteral("goal_state", new Atom(gi.getScheme().getId()), gapforfind, S);;
+        Literal gilInBB = getTS().getAg().findBel(gilforfind, u);
         if (gilInBB != null) {
             // the agent believes in the goal, remove if different
         	// so that an event is produced

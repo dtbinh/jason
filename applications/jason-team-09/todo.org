@@ -2,6 +2,7 @@
 - [ ] duplicate cows in BB
 
 - [ ] usar .length do Jason (qdo arrumado)
+- [ ] ver bug Jason Porter2=XXX no pass_fence.asl
 - [ ] melhor criteria para criar pass_fence/open_corral (nao ser 'estar a 15 passos)
 - [X] salvar fence no arq de backup
 - [ ] procurar switch se nao foi visto ainda (ideia, considerar fence obstaculo de tentar passar)
@@ -18,9 +19,11 @@
     -> entra como member, pass, depois de passar, larga o scheme e vai fazer outra coisa
     -> o teste de fim, exige nao ter mais member
 - [ ] a decent plan for !release_boys
-
+- [ ] exploration groups with any size (max 4), to accommodate agents that can
+  not find a partner in the same area (due to the fences)
 
 - [X] computes 5 areas
+- [X] jmoise: goals que mudam os arqumentos se duplicam na BB
 - [X] find scouter: need to be someone free of fence
 - [X] path with fences has higher cost
 - [X] identify bug in GUI (why cows disappears?)

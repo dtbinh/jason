@@ -389,15 +389,20 @@ public class LocalWorldModel extends WorldModel {
                         
                         // store obstacles
                         StringBuilder sout = new StringBuilder(); // in a string firstly
-                        for (Location l: getAllObj(WorldModel.OBSTACLE)) {
-                            sout.append("obstacle("+l.x+","+l.y+")\n");
-                        }
-                        for (Location l: getAllObj(WorldModel.OPEN_FENCE)) {
-                            sout.append("fence("+l.x+","+l.y+")\n");
-                        }
-                        for (Location l: getAllObj(WorldModel.CLOSED_FENCE)) {
-                            sout.append("fence("+l.x+","+l.y+")\n");
-                        }
+                        for (int i = 0; i < getWidth(); i++)
+                            for (int j = 0; j < getHeight(); j++) {
+                                if (hasObject(WorldModel.OBSTACLE, i, j) && !arch.isEphemeralObstacle(new Location(i,j))) 
+                                    sout.append("obstacle("+i+","+j+")\n");
+                                if (hasFence(i, j)) 
+                                    sout.append("fence("+i+","+j+")\n");
+                            }
+                        
+                        // store SWITCH after fences! 
+                        for (int i = 0; i < getWidth(); i++)
+                            for (int j = 0; j < getHeight(); j++) {
+                                if (hasObject(WorldModel.SWITCH, i, j)) 
+                                    sout.append("switch("+i+","+j+")\n");
+                            }
                         
                         // now put in a file
                         BufferedWriter out = new BufferedWriter(new FileWriter(getObstaclesFileName(arch)));
@@ -429,6 +434,9 @@ public class LocalWorldModel extends WorldModel {
                     } else if (obs.getFunctor().equals("fence")) {
                         add(WorldModel.CLOSED_FENCE, l);
                         included.add(l);
+                    } else if (obs.getFunctor().equals("switch")) {
+                        add(WorldModel.SWITCH, l);
+                        included.add(l);
                     }
                     lin = in.readLine();
                 }
@@ -436,6 +444,7 @@ public class LocalWorldModel extends WorldModel {
                 for (Location l: included) {
                     remove(WorldModel.OBSTACLE, l);
                     remove(WorldModel.CLOSED_FENCE, l);
+                    remove(WorldModel.SWITCH, l);
                 }
             } catch (Exception e) {
                 e.printStackTrace();

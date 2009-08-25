@@ -240,7 +240,7 @@ public class CowboyArch extends OrgAgent { //IdentifyCrashed {
             try { broadcast(m); } catch (Exception e) { e.printStackTrace(); }
 		} else {
 		    Location l = new Location(x, y);
-		    if (ephemeralLocs.remove(l))
+		    if (ephemeralObstacle.remove(l))
 	           logger.info("uuuuu ephemeral location "+l+" perceived! so, it is no more ephemeral.");
 		}
 	}
@@ -302,7 +302,7 @@ public class CowboyArch extends OrgAgent { //IdentifyCrashed {
 	private static final int lastRecordCapacity = 10; 
     Queue<Location> lastLocations = new LinkedBlockingQueue<Location>(lastRecordCapacity); // last locations of the agent
     Queue<Move>     lastActions   = new LinkedBlockingQueue<Move>(lastRecordCapacity); // last actions
-    Set<Location>   ephemeralLocs = new HashSet<Location>();
+    Set<Location>   ephemeralObstacle = new HashSet<Location>();
     ScheduledExecutorService schedule = new ScheduledThreadPoolExecutor(30);
     
     private static <T> void myAddQueue(Queue<T> q, T e) {
@@ -329,6 +329,9 @@ public class CowboyArch extends OrgAgent { //IdentifyCrashed {
         return true;
     }
 
+    public boolean isEphemeralObstacle(Location l) {
+        return ephemeralObstacle.contains(l);
+    }
     
     Location oldLoc;
     /** the location in previous cycle */
@@ -397,12 +400,12 @@ public class CowboyArch extends OrgAgent { //IdentifyCrashed {
             	    logger.info("uuuuuuuu last actions and locations do not change!!!! setting "+newLoc+" as ephemeral obstacle");
             	    model.add(WorldModel.OBSTACLE, newLoc);
             	    //if (acView != null) acView.addObject(WorldModel.OBSTACLE, x, y);
-            	    ephemeralLocs.add(newLoc);
+            	    ephemeralObstacle.add(newLoc);
             	    
             	    // remove this obstacle after 10 seconds
             	    schedule.schedule(new Runnable() {
                         public void run() {
-                            if (ephemeralLocs.contains(newLoc)) { // the location is still ephemeral (not perceived)
+                            if (ephemeralObstacle.contains(newLoc)) { // the location is still ephemeral (not perceived)
                                 logger.info("uuuuuuu removing ephemeral location "+newLoc);
                                 model.remove(WorldModel.OBSTACLE, newLoc);
                             }
