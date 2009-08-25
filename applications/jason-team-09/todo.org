@@ -3,7 +3,7 @@
 
 - [ ] usar .length do Jason (qdo arrumado)
 - [ ] melhor criteria para criar pass_fence/open_corral (nao ser 'estar a 15 passos)
-- [ ] salvar fence no arq de backup
+- [X] salvar fence no arq de backup
 - [ ] procurar switch se nao foi visto ainda (ideia, considerar fence obstaculo de tentar passar)
 - [ ] impedir ags de entrar no curral
 - [ ] backup de distancias entre lugares

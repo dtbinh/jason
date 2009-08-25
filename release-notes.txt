@@ -13,6 +13,7 @@ Bugs fixed
 - perception of atoms cause failure with SACI
 - initialisation of TimeSteppedEnvironment (bug: waits for a first action to start)
 - .succeed_goal does not work when applied to 'itself' (the intention succeed itself)
+- !Var does no work correctly
 
 ---------------------------
 version 1.3
