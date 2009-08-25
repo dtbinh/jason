@@ -216,7 +216,16 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
 +!wait_others_pass(Others)[scheme(Sch),mission(Mission),group(Gr),role(Role)]
   <- .wait( { +ally_pos(_,_,_) }, 2000, _); // any change in ag loc, check
      !!wait_others_pass(Others)[scheme(Sch),mission(Mission),group(Gr),role(Role)].
+  
++!restart_fence_case
+   : .my_name(Me) & scheme(pass_fence,Sch) & commitment(Me,_,Sch)
+  <- .print("fff restart pass fence");
+     .findall(P, commitment(P,_,Sch), Players);
+     jmoise.remove_scheme(Sch);
+     // and restart team mates
+  	.send(Players, achieve, create_exploration_gr).
      
+       
 /*
 +!clean_others([Ag|T])
    : ally_pos(Ag,X,Y) & jia.fence(X,Y) // it is in a fence, so it will pass

@@ -226,11 +226,12 @@
 */
 
 // if I lost my mission in scheme open-corral/pass_fence, find another thing to do
--commitment(Me, porter1, Sch)
+/*-commitment(Me, porter1, Sch)
    : scheme(pass_fence,Sch) | schme(open_corral,Sch) 
   <- .print("yyyy add restart because my ",Mission," mission finished");
      .drop_desire(_[scheme(Sch),mission(Mission)]);
      !restart.
+*/
 
 // when I am not committed to a mission anymore, remove all goals based on that mission
 -commitment(Me,Mission,Sch)
