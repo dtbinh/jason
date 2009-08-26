@@ -18,10 +18,12 @@ all_passed([Ag|Others]) :-
    .print("fff ",Ag," passed, it is at ",AX,",",AY," should pass fence ",FX,",",FY,", direction is ",Direction) &
    all_passed(Others).
 
+/*
 no_cowboy_in_fence :-
    goal_state(_,pass_fence(FX,FY,_,_),_) &   
    not (ally_pos(Ag1,FX,AY) & jia.fence(FX,AY) & .print("fff ",Ag1," is in the fence!")) &
    not (ally_pos(Ag2,AX,FY) & jia.fence(AX,FY) & .print("fff ",Ag2," is in the fence!")). 
+*/
 
 is_horizontal(FX,FY) :- jia.fence(FX+1,FY) | jia.fence(FX-1,FY).
 is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
@@ -30,8 +32,8 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
 
 +!pass_fence[scheme(Sch),mission(Mission), group(Gr), role(Role)]
    : need_cross_fence(FX, FY) &
-     jia.fence_switch(FX, FY, SX, SY)
-  <- .findall(PFSch, scheme(pass_fence,PFSch), PFSchs);
+     jia.fence_switch(FX, FY, SX, SY) & .my_name(Me) 
+  <- .findall(PFSch, scheme(pass_fence,PFSch)[owner(Oag)] & Oag \== Me , PFSchs);
 	 !find_pass_fence_scheme(PFSchs, SX, SY, OtherSch, Porter2);
 	 .print("fff pass_fence porter2 ",OtherSch," from candidates ",PFSchs);
 	 if (OtherSch == no_scheme) {
@@ -129,9 +131,9 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
    : goal_state(_,wait_others_pass(Others),_) & N > 0
   <- .findall(Ag, .member(Ag,Others) & ally_pos(Ag,X,Y) & jia.fence(X,Y), InFence);
      .difference(Others, InFence, NewO);
+     .wait( { +pos(_,_,_) }, 2000, _); // remove only in the next step, when they moved from the fence
 	 .print("fff removing ",InFence," from others ",Others," remain ",NewO);
      jmoise.set_goal_arg(Sch,wait_others_pass,"Others",NewO);
-     .wait( { +pos(_,_,_) }, 2000, _);
      !!clean_others(Sch,N-1).
 +!clean_others(Sch,0)
   <- .print("fff removing all waiters");
@@ -192,8 +194,7 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
 	 goal_state(_,wait_others_pass(Others),_) & // should not use the parameter of the event, since it changes
      .print("fff I should wait ",GP1," and ",Others) &
      Others == [] &
-     all_passed([GP1]) &
-     no_cowboy_in_fence
+     all_passed([GP1]) // & no_cowboy_in_fence
   <- .print("fff all passed");
      jmoise.set_goal_state(Sch,wait_others_pass,satisfied);
      
@@ -219,10 +220,11 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
   
 +!restart_fence_case
    : .my_name(Me) & scheme(pass_fence,Sch) & commitment(Me,_,Sch)
-  <- .print("fff restart pass fence, removing the scheme!");
+  <- .print("fff restart pass fence, removing the scheme and roles!");
      .findall(P, commitment(P,_,Sch), Players);
      jmoise.remove_scheme(Sch);
      // and restart team mates
+  	.send(Players, achieve, quit_all_missions_roles);
   	.send(Players, achieve, create_exploration_gr).
      
 +!restart_fence_case

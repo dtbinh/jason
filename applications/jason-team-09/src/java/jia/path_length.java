@@ -35,7 +35,6 @@ public class path_length extends DefaultInternalAction {
             int itox = (int)((NumberTerm)terms[2]).solve();
             int itoy = (int)((NumberTerm)terms[3]).solve();
             
-            boolean fencesAsObs = terms.length > 4  && terms[4].toString().equals("fences");
             
             if (model.inGrid(itox,itoy)) {
             	
@@ -46,11 +45,8 @@ public class path_length extends DefaultInternalAction {
                 Location from = new Location(iagx, iagy);
                 Location to   = new Location(itox, itoy);
                 
-                Nodo solution = null;
-                if (fencesAsObs)
-                    solution = new Search(model, from, to, null, false, false, false, false, true, false, ts.getUserAgArch()).search();
-                else
-                    solution = new Search(model, from, to, ts.getUserAgArch()).search();
+                boolean fencesAsObs = terms.length > 5  && terms[5].toString().equals("fences");
+                Nodo solution = new Search(model, from, to, null, false, false, false, false, false, fencesAsObs, ts.getUserAgArch()).search();
                 if (solution != null) {
                     int length = solution.getProfundidade();
                     //ts.getLogger().info("path length from "+from+" to "+to+" = "+length+" path="+solution.montaCaminho());
