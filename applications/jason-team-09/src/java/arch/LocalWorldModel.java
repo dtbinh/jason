@@ -40,7 +40,7 @@ public class LocalWorldModel extends WorldModel {
     boolean         isKnownCowsUptodate = false;
     
     int[][]         cowsrep; // cows repulsion 
-    int[][]         agsrep;  // agents repulsion
+    //int[][]         agsrep;  // agents repulsion
     int[][]         obsrep;  // obstacle repulsion
     int[][]         enemycorralrep; // repulsion from enemy corral
     
@@ -59,12 +59,12 @@ public class LocalWorldModel extends WorldModel {
 
         cowsrep         = new int[getWidth()][getHeight()];
         
-        agsrep          = new int[getWidth()][getHeight()];
+        //agsrep          = new int[getWidth()][getHeight()];
         obsrep          = new int[getWidth()][getHeight()];
         enemycorralrep  = new int[getWidth()][getHeight()];
         for (int i = 0; i < getWidth(); i++)
             for (int j = 0; j < getHeight(); j++) {
-            	agsrep[i][j] = 0;
+            	//agsrep[i][j] = 0;
             	obsrep[i][j] = 0;
             	enemycorralrep[i][j] = 0;
             }
@@ -75,7 +75,7 @@ public class LocalWorldModel extends WorldModel {
     public void add(int value, int x, int y) {
     	//if (value == WorldModel.AGENT || value == WorldModel.ENEMY) {
         switch (value) {
-        case ENEMY:        increp(agsrep, x, y, 2, 2); break;
+        //case ENEMY:        increp(agsrep, x, y, 2, 2); break;
         case OBSTACLE:     increp(obsrep, x, y, 1, 1); break;
         case ENEMYCORRAL:  increp(enemycorralrep, x, y, 1, 2); 
                            add(OBSTACLE, x, y);
@@ -105,6 +105,7 @@ public class LocalWorldModel extends WorldModel {
         return hasFence(x+1, y) || hasFence(x-1, y);
     }
     
+    /*
     @Override
     public void remove(int value, int x, int y) {
     	super.remove(value, x, y);
@@ -113,7 +114,8 @@ public class LocalWorldModel extends WorldModel {
             increp(agsrep, x, y, 2, -2);
     	}
     }
-
+    */
+    
     // cows methods
     
     public void clearKnownCows() {
@@ -169,9 +171,11 @@ public class LocalWorldModel extends WorldModel {
     public int getCowsRep(int x, int y) {
     	return cowsrep[x][y];
     }
+    /*
     public int getAgsRep(int x, int y) {
     	return agsrep[x][y];
     }
+    */
     public int getObsRep(int x, int y) {
     	return obsrep[x][y];
     }

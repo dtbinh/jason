@@ -44,7 +44,7 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
    : need_cross_fence(FX, FY) &
      not jia.fence_switch(FX, FY, _, _)
   <- .print("fff I need to discover where the switch is **** not well implemented yet ****");
-     -+target(FX, FY).
+  	 !fence_as_obstacle(10).
      
 +!pass_fence[scheme(Sch),mission(Mission),group(Gr),role(Role)].
 	 
@@ -59,7 +59,7 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
      if (Ans == false) {
         //.print("fff try others ",Others);
         !find_pass_fence_scheme(Others,SX,SY,YYYY,XXXX);
-        PassSch     = YYYY;
+        PassSch = YYYY;
         Porter2 = XXXX //; .print("fff return form ",Porter2) // TODO: fix this bug in Jason
      }{
         .print("fff asking porter ");
@@ -219,12 +219,15 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
   
 +!restart_fence_case
    : .my_name(Me) & scheme(pass_fence,Sch) & commitment(Me,_,Sch)
-  <- .print("fff restart pass fence");
+  <- .print("fff restart pass fence, removing the scheme!");
      .findall(P, commitment(P,_,Sch), Players);
      jmoise.remove_scheme(Sch);
      // and restart team mates
   	.send(Players, achieve, create_exploration_gr).
      
++!restart_fence_case
+  <- .print("fff restart pass fence, setting fence as obstacle for moving.");
+     !fence_as_obstacle(5).
        
 /*
 +!clean_others([Ag|T])

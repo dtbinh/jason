@@ -65,6 +65,8 @@ public class direction extends DefaultInternalAction {
         int itox = (int)((NumberTerm)terms[2]).solve();
         int itoy = (int)((NumberTerm)terms[3]).solve();
 
+        boolean fencesAsObs = terms.length > 5  && terms[5].toString().equals("fences");
+
         if (model.inGrid(itox,itoy)) {
             // destination should be a free place
             while (!model.isFreeOfObstacle(itox,itoy) && itox > 0) itox--;
@@ -80,7 +82,7 @@ public class direction extends DefaultInternalAction {
             actionsOrder[i2] = actionsOrder[i1];
             actionsOrder[i1] = temp;
             
-            Search astar    = new Search(model, from, to, actionsOrder, true, false, true, false, false, false, arch);
+            Search astar    = new Search(model, from, to, actionsOrder, true, false, true, false, false, fencesAsObs, arch);
             solution = astar.search();
 
             if (solution == null) {

@@ -36,6 +36,6 @@ public class other_side_fence extends DefaultInternalAction {
     }
     
     public Vec computesOtherSide(LocalWorldModel model, Vec start, Vec fence) {
-        return fence.sub(start).product(4).add(start);
+        return fence.sub(start).product(6).add(start);
     }
 }

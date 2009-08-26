@@ -152,7 +152,7 @@ public class ACProxy extends ACAgent implements Runnable {
             int score = Integer.parseInt(perception.getAttribute("score"));
 
             // update model
-			arq.locationPerceived(agx, agy);
+			arq.locationPerceived(agx, agy); // also calls clearAgView
             arq.setScore(score);
 
             // add location in perception
@@ -191,7 +191,6 @@ public class ACProxy extends ACAgent implements Runnable {
 							}
                             
                         } else if (type.getNodeName().equals("cow")) {
-                            // TODO: ignore cows inside our corral
                             // ignore cows in the border, they complicate all :-)
                             if (absx < arq.getModel().getWidth()-1 && absx != 0 && absy != 00 && absy < arq.getModel().getHeight()-1) {
                                 int cowId = Integer.parseInt(type.getAttribute("ID"));

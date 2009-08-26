@@ -1,6 +1,7 @@
 
 /* -- plans for movimentation  -- */
 
+fence_obstacle(no).
 
 /* -- useful rules */ 
 
@@ -47,7 +48,8 @@ random_pos(X,Y) :-
 +!move 
     : pos(X,Y,_) & 
       target(BX,BY) & 
-      jia.direction(X, Y, BX, BY, D) // jia.direction finds one action D (using A*) towards the target
+      fence_obstacle(FO) &
+      jia.direction(X, Y, BX, BY, D, FO) // jia.direction finds one action D (using A*) towards the target
    <- do(D);  // this action will "block" the intention until it is sent to the simulator (in the end of the cycle)
       !!move. // continue moving
   
@@ -56,3 +58,13 @@ random_pos(X,Y) :-
    <- .current_intention(I); .println("failure in moving; intention was: ",I);
       !move.
 
+// set fence as obstacle for some cycles
++!fence_as_obstacle(N) : N <= 0
+   <- -+fence_obstacle(no).
++!fence_as_obstacle(N) : N > 0
+   <- -+fence_obstacle(fences);
+      .wait( { +pos(_,_,_) } );
+      !!fence_as_obstacle(N-1). 
+-!fence_as_obstacle(_) 
+   <- -+fence_obstacle(no).
+   

@@ -273,7 +273,6 @@ public class CowboyArch extends OrgAgent { //IdentifyCrashed {
     }
     
     public void switchPerceived(int x, int y) throws RevisionFailedException {
-        model.add(WorldModel.SWITCH, x, y); // always add in the model due to the problem of setting the near obstacle
         if (!model.hasObject(WorldModel.SWITCH, x, y)) {
             getTS().getAg().addBel(createLiteral("switch", createNumber(x), createNumber(y)));
 
@@ -281,6 +280,7 @@ public class CowboyArch extends OrgAgent { //IdentifyCrashed {
             Message m = new Message("tell", null, null, createCellPerception(x, y, aSWITCH));
             try { broadcast(m); } catch (Exception e) { e.printStackTrace(); }
         }
+        model.add(WorldModel.SWITCH, x, y); // always add in the model due to the problem of setting the near obstacle
     }
     
 	public void lineOfSightPerceived(int line) throws RevisionFailedException {
@@ -382,34 +382,7 @@ public class CowboyArch extends OrgAgent { //IdentifyCrashed {
 		}
 		
 		myAddQueue(lastLocations, new Location(x, y));
-		
-        if (allEquals(lastLocations)) {
-        	addRestart();
-        	if (allEquals(lastActions) && lastActions.iterator().next() != Move.skip) {
-                final Location newLoc = WorldModel.getNewLocationForAction(getLastLocation(), lastActions.peek());
-                if (newLoc != null && !model.hasObject(WorldModel.OBSTACLE, newLoc)) {
-                    if (model.hasFence(newLoc.x, newLoc.y)) {
-                        logger.info("uuu adding restart for "+getAgName()+", case of fence, last actions "+lastActions);
-                        getTS().getC().addAchvGoal(new LiteralImpl("restart_fence_case"), Intention.EmptyInt);
-                    } else {
-                	    logger.info("uuu last actions and locations do not change!!!! setting "+newLoc+" as ephemeral obstacle");
-                	    model.add(WorldModel.OBSTACLE, newLoc);
-                	    //if (acView != null) acView.addObject(WorldModel.OBSTACLE, x, y);
-                	    ephemeralObstacle.add(newLoc);
-                	    
-                	    // remove this obstacle after 10 seconds
-                	    schedule.schedule(new Runnable() {
-                            public void run() {
-                                if (ephemeralObstacle.contains(newLoc)) { // the location is still ephemeral (not perceived)
-                                    logger.info("uuuuuuu removing ephemeral location "+newLoc);
-                                    model.remove(WorldModel.OBSTACLE, newLoc);
-                                }
-                            }
-                        }, 10, TimeUnit.SECONDS);
-                    }
-                }
-        	}
-        }
+		checkRestart();
 	}
 	
 	/** returns true if the agent do not move in the last 5 location perception */
@@ -433,16 +406,44 @@ public class CowboyArch extends OrgAgent { //IdentifyCrashed {
 	}
 	*/
 	
-	protected void addRestart() {
-    	try {
-        	logger.info("** Arch adding restart for "+getAgName()+", last locations are "+lastLocations);
-    	    //getTS().getC().create(); // it is terrible for pending intentions of cowboys!
-        	getTS().getC().addAchvGoal(new LiteralImpl("restart"), Intention.EmptyInt);
-        	//lo2 = new Location(-1,-1); // to not restart again in the next cycle
-        	lastLocations.clear();
-    	} catch (Exception e) {
-        	logger.info("Error in restart!"+ e);
-    	}
+	protected void checkRestart() {
+        if (allEquals(lastLocations)) {
+            
+            try {
+                logger.info("** Arch adding restart for "+getAgName()+", last locations are "+lastLocations);
+                //getTS().getC().create(); // it is terrible for pending intentions of cowboys!
+                getTS().getC().addAchvGoal(new LiteralImpl("restart"), Intention.EmptyInt);
+                //lo2 = new Location(-1,-1); // to not restart again in the next cycle
+                lastLocations.clear();
+            } catch (Exception e) {
+                logger.info("Error in restart!"+ e);
+            }
+
+            if (allEquals(lastActions) && lastActions.iterator().next() != Move.skip) {
+                final Location newLoc = WorldModel.getNewLocationForAction(getLastLocation(), lastActions.peek());
+                if (newLoc != null && !model.hasObject(WorldModel.OBSTACLE, newLoc)) {
+                    if (model.hasFence(newLoc.x, newLoc.y)) {
+                        logger.info("uuu adding restart for "+getAgName()+", case of fence, last actions "+lastActions);
+                        getTS().getC().addAchvGoal(new LiteralImpl("restart_fence_case"), Intention.EmptyInt);
+                    } else {
+                        logger.info("uuu last actions and locations do not change!!!! setting "+newLoc+" as ephemeral obstacle");
+                        model.add(WorldModel.OBSTACLE, newLoc);
+                        //if (acView != null) acView.addObject(WorldModel.OBSTACLE, x, y);
+                        ephemeralObstacle.add(newLoc);
+                        
+                        // remove this obstacle after 10 seconds
+                        schedule.schedule(new Runnable() {
+                            public void run() {
+                                if (ephemeralObstacle.contains(newLoc)) { // the location is still ephemeral (not perceived)
+                                    logger.info("uuuuuuu removing ephemeral location "+newLoc);
+                                    model.remove(WorldModel.OBSTACLE, newLoc);
+                                }
+                            }
+                        }, 10, TimeUnit.SECONDS);
+                    }
+                }
+            }
+        }	    
 	}
 	
     public static Literal createCellPerception(int x, int y, Term obj) {
