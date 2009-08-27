@@ -2,7 +2,7 @@
 <!-- launch-sync-type = timer or key -->
 <conf backuppath="backup" launch-sync-type="key" reportpath="." time-to-launch="10000" tournamentmode="0" tournamentname="GridSimulation">
 <simulation-server backlog="10" port="12300"/>
-<visualization flashport="1099" flashserver="vz104.in.tu-clausthal.de" flashservice="WebServer-SPSInterface"/>
+<visualization flashport="1099" flashserver="" flashservice="WebServer-SPSInterface"/>
 <match>
 
 <simulation configurationclass="GridSimulationConfigurationHandCrafted" file-simulationlog="./log" id="jason5" rmiobserver="" rmixmlobserver="GridSimulationRMIXMLDocumentObserver" rmixmlobsserverhost="localhost" rmixmlobsserverport="1097" simulationclass="GridSimulation" visualisationobserver="GridSimulationVisualizationObserver" xmlobserver="" xmlobserverpath="." xmlstatisticsobserver="">
