@@ -77,7 +77,7 @@ public class direction extends DefaultInternalAction {
             
             // randomly change the place of two actions in actionsOrder
             int i1 = random.nextInt(WorldModel.nbActions);
-            int i2 = random.nextInt(WorldModel.nbActions);
+            int i2 = 0; // more radical change, the selected action will be the first, previously: random.nextInt(WorldModel.nbActions);
             WorldModel.Move temp = actionsOrder[i2];
             actionsOrder[i2] = actionsOrder[i1];
             actionsOrder[i1] = temp;
@@ -85,7 +85,7 @@ public class direction extends DefaultInternalAction {
             Search astar    = new Search(model, from, to, actionsOrder, true, false, true, false, false, fencesAsObs, arch);
             solution = astar.search();
 
-            if (solution == null) {
+            if (solution == null & !fenceAsObs) {
                 // Test impossible path
                 Search s = new Search(model, from, to, arch); // search without agent/cows as obstacles
                 int fixtimes = 0;
