@@ -85,7 +85,7 @@ public class direction extends DefaultInternalAction {
             Search astar    = new Search(model, from, to, actionsOrder, true, false, true, false, false, fencesAsObs, arch);
             solution = astar.search();
 
-            if (solution == null & !fenceAsObs) {
+            if (solution == null && !fencesAsObs) {
                 // Test impossible path
                 Search s = new Search(model, from, to, arch); // search without agent/cows as obstacles
                 int fixtimes = 0;

@@ -22,7 +22,7 @@ MAS roman_farmers {
         gaucho gaucho.asl
               [teamid="gaucho", verbose=1,
                //host="agentcontest1.in.tu-clausthal.de", port=12300, username="team7agent#nid", password="VH12CT78"]
-               host="localhost", port=12300, username="b#nid", password="1"] 
+               host="promas1", port=12300, username="b#nid", password="1"] 
               agentArchClass arch.ACArchitecture
 		      agentClass     agent.SelectEvent 
 		      beliefBaseClass agent.UniqueBelsBB("gsize(_,_)","steps(_)","ally_pos(key,_,_)","corral(_,_,_,_)",
@@ -33,7 +33,7 @@ MAS roman_farmers {
         gaucho10 gaucho.asl
               [teamid="gaucho", verbose=1, gui=no, write_status=yes,
                //host="agentcontest1.in.tu-clausthal.de", port=12300, username="team7agent#nid", password="VH12CT78"]
-               host="localhost", port=12300, username="b#nid", password="1"] 
+               host="promas1", port=12300, username="b#nid", password="1"] 
               agentArchClass arch.ACArchitecture
 		      agentClass     agent.SelectEvent 
 		      beliefBaseClass agent.UniqueBelsBB("gsize(_,_)","steps(_)","ally_pos(key,_,_)","corral(_,_,_,_)",
