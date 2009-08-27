@@ -45,7 +45,9 @@ public class switch_places extends DefaultInternalAction {
                 place1 = new Location(lx+1,ly);
                 place2 = new Location(lx-1,ly);
             }
-            if (place1.maxBorder(agPlace) > place2.maxBorder(agPlace)) {
+            int distPlace1 = model.pathLength(agPlace,place1,false, arch);
+            int distPlace2 = model.pathLength(agPlace,place2,false, arch);
+            if (distPlace1 > distPlace2) { //place1.maxBorder(agPlace) > place2.maxBorder(agPlace)) {
                 // near is place2 (swap)
                 Location bak = place2;
                 place2 = place1;

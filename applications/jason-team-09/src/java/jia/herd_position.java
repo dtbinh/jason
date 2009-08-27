@@ -184,7 +184,7 @@ public class herd_position extends DefaultInternalAction {
         List<Location> r = new ArrayList<Location>();
         for (Vec position: formation.getDistances()) { // 2, -2, 6, -6, ....
         	//System.out.println(".......  "+position+" + "+agsTarget+" = " + agTarget);
-        	Location l = findFirstFreeLocTowardsTarget(agsTarget, position, mean, model);
+        	Location l = findFirstFreeLocTowardsTarget(agsTarget, position, mean, false, model);
         	//System.out.println(" =       "+position+" result  "+l);
         	if (l == null) {
                 l = model.nearFree(agsTarget.add(mean).getLocation(model), r);              
@@ -201,7 +201,7 @@ public class herd_position extends DefaultInternalAction {
         return r;
     }
     
-    public static Location findFirstFreeLocTowardsTarget(Vec start, Vec direction, Vec ref, LocalWorldModel model) {
+    public static Location findFirstFreeLocTowardsTarget(Vec start, Vec direction, Vec ref, boolean fenceAsObs, LocalWorldModel model) {
         Vec startandref = start.add(ref);
         Vec t = start.turn90CW();
         t = t.newAngle(t.angle()+direction.angle());
@@ -216,6 +216,8 @@ public class herd_position extends DefaultInternalAction {
     		//System.out.println(" test "+s+" = "+l+" -- ");
         	if ( (!model.inGrid(l) || model.hasObject(WorldModel.OBSTACLE, l)  || model.hasObject(WorldModel.CORRAL, l)) && lastloc != null)
         		return lastloc;
+            if ( fenceAsObs && model.hasFence(l.x, l.y) && lastloc != null)
+                return lastloc;
     		lastloc = l;
     	}
     	

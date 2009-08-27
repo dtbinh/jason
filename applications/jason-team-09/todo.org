@@ -1,28 +1,32 @@
 * 2009 team
+- [ ] pass-fence for herding
+- [ ] arrumar scouter location, tem que ser na mesma area (cons. fence) que o leader
+- [ ] all-passed, considerar que estao do lado do GP2
+- [ ] hasFence usa binario CLOSE+OPEN
+- [ ] usar path_lenght para saber o place mais prox
+- [ ] impedir ags de entrar no curral
 - [ ] duplicate cows in BB
-
-- [ ] usar .length do Jason (qdo arrumado)
 - [ ] ver bug Jason Porter2=XXX no pass_fence.asl
 - [ ] melhor criteria para criar pass_fence/open_corral (nao ser 'estar a 15 passos)
-- [X] salvar fence no arq de backup
-- [ ] procurar switch se nao foi visto ainda (ideia, considerar fence obstaculo de tentar passar)
-- [ ] impedir ags de entrar no curral
 - [ ] backup de distancias entre lugares
     - usado em varios lugares, especialmente cluster
     - qdo tem um obstaculo, reseta
     - fazer um rotina de verificacao de erros na backup
       pra achar bugs (no comeco verificar 100% no final 10%)
-- [ ] evitar que dois grupos compitam para abrir cerca
+- [ ] a decent plan for !release_boys
+- [ ] exploration groups with any size (max 4), to accommodate agents that can
+  not find a partner in the same area (due to the fences)
+- [ ] usar .length do Jason (qdo arrumado)
+
+- [X] evitar que dois grupos compitam para abrir cerca
    (se ja tem um scheme com mesmo switch e direcao, se junta ao grupo como member)
    (ter duas listas, quem quer estar do lado A e quem do lado B, terminar so qdo todos os
     ags estao do lado que queriam)
     -> entra como member, pass, depois de passar, larga o scheme e vai fazer outra coisa
     -> o teste de fim, exige nao ter mais member
-- [ ] a decent plan for !release_boys
-- [ ] exploration groups with any size (max 4), to accommodate agents that can
-  not find a partner in the same area (due to the fences)
-
 - [X] computes 5 areas
+- [X] procurar switch se nao foi visto ainda (ideia, considerar fence obstaculo de tentar passar)
+- [X] salvar fence no arq de backup
 - [X] jmoise: goals que mudam os arqumentos se duplicam na BB
 - [X] find scouter: need to be someone free of fence
 - [X] path with fences has higher cost

@@ -13,10 +13,18 @@ all_passed([Ag|Others]) :-
    ally_pos(Ag,AX,AY) &
    //jia.path_length(AX,AY,SX,SY,_,fences) &
    goal_state(_,pass_fence(FX,FY,_,Direction),_) &
-   ( is_horizontal(FX,FY)  & .print("fff ",FX,FY," is horizontal") & AY * Direction > (FY * Direction) | 
-     is_vertical(FX,FY)    & .print("fff ",FX,FY," is vertical")   & AX * Direction > (FX * Direction)) &
+   pos(MeX,MeY,_) &
+   same_side(FX,FY,MeX,MeY,AX,AY) &
+   //( is_horizontal(FX,FY)  & .print("fff ",FX,FY," is horizontal") & AY * Direction > (FY * Direction) | 
+   //  is_vertical(FX,FY)    & .print("fff ",FX,FY," is vertical")   & AX * Direction > (FX * Direction)) &
    .print("fff ",Ag," passed, it is at ",AX,",",AY," should pass fence ",FX,",",FY,", direction is ",Direction) &
    all_passed(Others).
+
+// checks wheher A and O are in the same side of fence F
+same_side(FX,FY,AX,_,OX,_) :- is_vertical(FX,FY)     & AX > FX & OX > FX.
+same_side(FX,FY,AX,_,OX,_) :- is_vertical(FX,FY)     & AX < FX & OX < FX.
+same_side(FX,FY,_,AY,_,OY) :- is_horizontal(FX,FY)   & AY > FY & OY > FY.
+same_side(FX,FY,_,AY,_,OY) :- is_horizontal(FX,FY)   & AY < FY & OY < FY.
 
 /*
 no_cowboy_in_fence :-

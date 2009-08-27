@@ -19,6 +19,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import busca.Nodo;
+
+import jia.Search;
 import jia.Vec;
 import env.WorldModel;
 
@@ -270,6 +273,15 @@ public class LocalWorldModel extends WorldModel {
     	if (x+1 < getWidth() && y > 0)             visited[x+1][y-1]++;
     	if (x+1 < getWidth() && y+1 < getHeight()) visited[x+1][y+1]++;
     	*/
+    }
+    
+    public int pathLength(Location start, Location target, boolean fenceAsObstacle, CowboyArch arch) throws Exception {
+        Nodo solution = new Search(this, start, target, null, false, false, false, false, false, fenceAsObstacle, arch).search();
+        if (solution == null) {
+            return -1;
+        } else {
+            return solution.getProfundidade();
+        }
     }
     
     /** returns the near location of x,y that was least visited */
