@@ -1,5 +1,7 @@
 package arch;
 
+import static jason.asSyntax.ASSyntax.createLiteral;
+import static jason.asSyntax.ASSyntax.createNumber;
 import jason.asSyntax.ASSyntax;
 import jason.asSyntax.Literal;
 import jason.asSyntax.NumberTerm;
@@ -452,6 +454,7 @@ public class LocalWorldModel extends WorldModel {
                         included.add(l);
                     } else if (obs.getFunctor().equals("switch")) {
                         add(WorldModel.SWITCH, l);
+                        arch.getTS().getAg().addBel(createLiteral("switch", createNumber(l.x), createNumber(l.y)));
                         included.add(l);
                     }
                     lin = in.readLine();

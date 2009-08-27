@@ -135,6 +135,9 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
      .print("fff stopping current scheme ",CurSch);
      jmoise.remove_scheme(CurSch). // should be the last thing, since this goal will be dropped due to the end of the scheme
 
++!create_pass_fence_scheme(CurSch, Gr, SX, SY, FX, FY)
+  <- .print("fff ** I cannot create a pass fence scheme since I do not have enough partners!"). //;  !quit_all_missions_roles.
+
 +!join_pass_fence_scheme(PassSch,Porter2)
   <- .print("fff join scheme ",PassSch," where porter is ",Porter2);
      ?my_group_players(Mates,_);
@@ -236,9 +239,23 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
   	 jmoise.remove_scheme(Sch). // must be the last thing (since the deletion of the scheme cause the drop of this goal)
      
 +!wait_others_pass(Others)[scheme(Sch),mission(Mission),group(Gr),role(Role)]
-  <- .wait( { +ally_pos(_,_,_) }, 2000, _); // any change in ag loc, check
+  <- !check_conflict_pass_fence(Sch);
+     .wait( { +ally_pos(_,_,_) }, 2000, _); // any change in ag loc, check
      !!wait_others_pass(Others)[scheme(Sch),mission(Mission),group(Gr),role(Role)].
-  
+
++!check_conflict_pass_fence(Sch)
+      // in case we have two schemes for the same fence, abort one
+  <- .my_name(Me);
+     ?goal_state(Sch,pass_fence(SX,SY,_,_),_);
+     .findall(PFSch, scheme(pass_fence_sch,PFSch)[owner(OS)] & PFSch \== Sch & OS < Me, PFSchs);
+	 !find_pass_fence_scheme(PFSchs, SX, SY, OtherSch, _);
+	 if (OtherSch \== no_scheme) {
+	     .print("fff ** conflict, two pass fence schemes for the same fence, aborting ",Sch);
+	     jmoise.remove_scheme(Sch)
+	 }.
++!check_conflict_pass_fence(_).
+-!check_conflict_pass_fence(_).
+
 +!restart_fence_case
    : .my_name(Me) & scheme(pass_fence_sch,Sch) & commitment(Me,_,Sch)
   <- .print("fff restart pass fence, removing the scheme and roles!");
