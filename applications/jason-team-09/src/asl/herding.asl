@@ -221,19 +221,19 @@ calc_distances([pos(Fx,Fy)|TP], [d(D,pos(Fx,Fy))|TD], pos(AgX,AgY))
 
 +!start_open_corral[scheme(Sch),mission(Mission),group(Gr)]
    : switch(X,Y) & jia.is_corral_switch(X,Y) & // get the switch of our corral
-     .print("yyyy init") & 
+     .print("yyy init test open corral") & 
      not (scheme(open_corral,SchId) & scheme_group(SchId, _) ) & // there is no scheme to open
      pos(MeX, MeY, _) &  jia.path_length(MeX,MeY,X,Y,Dist) & 
-     .print("yyyy my distance from switch is ",Dist) & Dist < 15 & // if I am near
+     .print("yyy my distance from corral switch is ",Dist) & Dist < 15 & // if I am near
      .findall(Boy, play(Boy, herdboy,Gr), Cand) &
-     .print("yyyy candidates for porter1 in group ",Gr, " are ",Cand) & Cand \== []
-  <- .print("ooo yyyy I should start an open corral scheme for group ",Gr);
+     .print("yyy candidates for porter1 in group ",Gr, " are ",Cand) & Cand \== []
+  <- .print("ooo yyy I should start an open corral scheme for group ",Gr);
      jmoise.create_scheme(open_corral, [Gr], SchId);
      jia.switch_places(X,Y,PX,PY,_,_);
      jmoise.set_goal_arg(SchId,goto_switch,"X",PX);
      jmoise.set_goal_arg(SchId,goto_switch,"Y",PY);
      !find_closest(Cand,pos(X,Y),HA);
-     .print("yyyy near is ",HA);
+     .print("yyy near corral is ",HA);
      .send(HA, achieve, change_role(gatekeeper1, Gr)).
 
 +!start_open_corral[scheme(Sch),mission(Mission),group(Gr)].
@@ -241,8 +241,8 @@ calc_distances([pos(Fx,Fy)|TP], [d(D,pos(Fx,Fy))|TD], pos(AgX,AgY))
 { end }
 
 
-+!goto_switch(X,Y)[scheme(Sch)]
-  <- !goto_switch(X,Y,Sch,goto_switch). // the basic implementation of goto switch (pass_fence.asl)
+//+!goto_switch(X,Y)[scheme(Sch)]
+//  <- !goto_switch(X,Y,Sch,goto_switch). // the basic implementation of goto switch (pass_fence.asl)
      	
      	
 /* -- Change to exploring -- */

@@ -92,33 +92,17 @@
    : play(Ag,scouter,G)
   <- // if I can not reach my scouter anymore
      if (ally_pos(Ag,X,Y) & pos(MyX, MyY, _) & not jia.path_length(MyX, MyY, X, Y, _, fences) ) {
-        .print("fff asking agent ",Ag," to quite its scouter role because I can not reach it anymore");
+        .print("fff asking agent ",Ag," to quite its scouter role because I cannot reach it anymore");
      	.send(Ag,achieve,quit_all_missions_roles);
      	.wait(1000);
      	.send(Ag,achieve,restart)
      }.
 
 +!find_scouter[scheme(Sch),group(G)]
+   : not play(_,scouter,G)
   <- .print("ooo Recruiting scouters for my explorer group ",G);
   
-     // test if I received the area of my group
-     //?group_area(AreaId,G,A);
-     //.print("ooo Scouters candidates =", LSOdd," in area ",group_area(AreaId,G,A));
-	 
-     !find_scouter([], G). //;
-	 //jmoise.set_goal_state(Sch, find_scouter, satisfied).
-
-{ end }
-	 
-//-!find_scouter[scheme(Sch),group(G)]
-//  <- .wait(1000); !find_scouter[scheme(Sch),group(G)].
-
-
-//+!find_scouter(_,G) // if someone plays scouter in my group, it is ok.
-//   : play(_,scouter,G).
-
-+!find_scouter([],G)
-  <- ?pos(MyX,MyY,_); // wait my pos
+     ?pos(MyX,MyY,_); // wait my pos
      ?team_size(TS);
      
      // wait others pos
@@ -133,15 +117,21 @@
               LOdd);
      .sort(LOdd, LSOdd);
 	 !find_scouter(LSOdd,G).
-	 
+	 //jmoise.set_goal_state(Sch, find_scouter, satisfied).
+
++!find_scouter[scheme(Sch),group(G)].
+  
+{ end }
+
++!find_scouter([],G)
+  <- .print("ooo no scourter for me!").
 +!find_scouter([ag_d(_,AgName)|_],GId)
   <- .print("ooo Ask ",AgName," to play scouter");
      .send(AgName, achieve, play_role(scouter,GId));
-     .wait({+play(AgName,scouter,GId)},2000).  
+     .wait({+play(AgName,scouter,GId)},3000).  
 -!find_scouter([_|LSOdd],GId) // in case the wait fails, try next agent
   <- .print("ooo find_scouter failure, try another agent from ",LSOdd);
      !find_scouter(LSOdd,GId).  
-     
 
 	 
 { begin maintenance_goal("+pos(_,_,_)") } // old is +at_target

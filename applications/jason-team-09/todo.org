@@ -3,8 +3,9 @@
 - [ ] arrumar scouter location, tem que ser na mesma area (cons. fence) que o leader
 - [ ] all-passed, considerar que estao do lado do GP2
 - [ ] hasFence usa binario CLOSE+OPEN
-- [ ] usar path_lenght para saber o place mais prox
+- [X] usar path_lenght para saber o place mais prox
 - [ ] impedir ags de entrar no curral
+
 - [ ] duplicate cows in BB
 - [ ] ver bug Jason Porter2=XXX no pass_fence.asl
 - [ ] melhor criteria para criar pass_fence/open_corral (nao ser 'estar a 15 passos)

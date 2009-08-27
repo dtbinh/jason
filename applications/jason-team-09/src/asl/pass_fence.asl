@@ -3,10 +3,22 @@
 */
 
 need_cross_fence(FX,FY) :- 
-    target(TX,TY) & pos(MX, MY, _) & 
+    target(TX,TY) & 
+    not jia.corral(TX,TY) & 
+    pos(MX, MY, _) & 
     jia.has_object_in_path(MX, MY, TX, TY, closed_fence, FX, FY, Dist) &
     //.print("fff I have a fence in my path at ",Dist," steps") &
     Dist < 10.
+
+porter_candidates(CurSch, Gr, Cand) :-  // candidates in the case of exploring
+   scheme(explore_sch,CurSch) & 
+   .findall(P, play(P,_,Gr), Cand) & 
+   .length(Cand,N) & N > 1.             // at least 2 players to start the scheme
+porter_candidates(CurSch, Gr, Cand) :-  // candidates in the case of herding
+   scheme(herd_sch,CurSch)[owner(O)] & 
+   .findall(P, play(P,_,Gr) & P \== O, Cand) & // do not consider owner of the group, the leader 
+   .length(Cand,N) & N > 1.             // at least 3 players to start the scheme
+
 
 all_passed([]) :- true.
 all_passed([Ag|Others]) :-
@@ -38,10 +50,10 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
 
 { begin maintenance_goal("+pos(_,_,_)") }
 
-+!pass_fence[scheme(Sch),mission(Mission), group(Gr), role(Role)]
++!start_pass_fence[scheme(Sch),mission(Mission), group(Gr), role(Role)]
    : need_cross_fence(FX, FY) &
      jia.fence_switch(FX, FY, SX, SY) & .my_name(Me) 
-  <- .findall(PFSch, scheme(pass_fence,PFSch)[owner(Oag)] & Oag \== Me , PFSchs);
+  <- .findall(PFSch, scheme(pass_fence_sch,PFSch)[owner(Oag)] & Oag \== Me , PFSchs);
 	 !find_pass_fence_scheme(PFSchs, SX, SY, OtherSch, Porter2);
 	 .print("fff pass_fence porter2 ",OtherSch," from candidates ",PFSchs);
 	 if (OtherSch == no_scheme) {
@@ -50,13 +62,13 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
 	    !join_pass_fence_scheme(OtherSch,Porter2)
 	 }.  
 
-+!pass_fence[scheme(Sch),mission(Mission), group(Gr), role(Role)]
++!start_pass_fence[scheme(Sch),mission(Mission), group(Gr), role(Role)]
    : need_cross_fence(FX, FY) &
      not jia.fence_switch(FX, FY, _, _)
-  <- .print("fff I need to discover where the switch is **** not well implemented yet ****");
-  	 !fence_as_obstacle(10).
+  <- .print("fff I need to discover where the switch is");
+  	 !fence_as_obstacle(15).
      
-+!pass_fence[scheme(Sch),mission(Mission),group(Gr),role(Role)].
++!start_pass_fence[scheme(Sch),mission(Mission),group(Gr),role(Role)].
 	 
 { end }	 
 
@@ -78,7 +90,7 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
      }.
   
 +!create_pass_fence_scheme(CurSch, Gr, SX, SY, FX, FY)
-   : .findall(P, play(P,_,Gr), Cand1) & .length(Cand1,N) & N > 1 // at least 2 players to start the scheme
+   : porter_candidates(CurSch, Gr, Cand1)
   <- 
      jia.switch_places(SX,SY,P1X,P1Y,P2X,P2Y);
      .print("fff places for switch ",SX,",",SY," are ",P1X,",",P1Y," and ",P2X,",",P2Y);
@@ -88,7 +100,7 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
      !find_closest(Cand2,pos(P2X, P2Y),HA2);
      .print("fff near 1 is ",HA1, " near 2 is ",HA2);
      
-     jmoise.create_scheme(pass_fence, SchId);
+     jmoise.create_scheme(pass_fence_sch, SchId);
      .print("fff Created pass fence scheme ", SchId); 
 
      // set ID of fence based on switch
@@ -185,7 +197,7 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
      jmoise.set_goal_state(Sch,wait_gatekeeper2,satisfied).
 
 
-+!last_pass[scheme(Sch), group(Gr)]
++!cross_fence[scheme(Sch), group(Gr)]
   <- ?goal_state(Sch,pass_fence(FX,FY,_NextSch,_),_);
      .print("fff I should pass the fence ",FX,",",FY);
      jia.other_side_fence(FX,FY,TX,TY);
@@ -193,31 +205,32 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
      -+target(TX,TY);
      .wait({ +pos(TX,TY,_) } ).
      
--!last_pass[error(E), error_msg(M),code_line(L)] 
-  <- .print("fff error ",E," ",M," line ",L).
   
 +!wait_others_pass(_)[scheme(Sch),mission(Mission), group(Gr), role(Role)]
-   : //.my_name(Me) & .findall(P, play(P,_,Gr) & P \== Me, Others) &
-     play(GP1, gatekeeper1, Gr) &
+   : .my_name(Me) & .findall(P, play(P,_,Gr) & P \== Me, Mates) & // I need to wait all other members of my group, but me
 	 goal_state(_,wait_others_pass(Others),_) & // should not use the parameter of the event, since it changes
-     .print("fff I should wait ",GP1," and ",Others) &
+     .print("fff I should wait ",Mates," and ",Others) &
      Others == [] &
-     all_passed([GP1]) // & no_cowboy_in_fence
+     all_passed(Mates) // & no_cowboy_in_fence
   <- .print("fff all passed");
      jmoise.set_goal_state(Sch,wait_others_pass,satisfied);
      
-     ?goal_state(Sch,pass_fence(_FX,_FY,NextSch,_),_);
+     ?goal_state(Sch,pass_fence(_,_,NextSch,_),_);
+     ?play(GP1, gatekeeper1, Gr);
      
      // if I am the poter1 (the last to pass), I need to finish it all
-     .findall(P, play(P,_,Gr), Players);
      // and restart team mates
      if (NextSch == explore_sch) {
+        //.findall(P, play(P,_,Gr), Players);
+        Players = [Me,GP1];
         .print("fff asking ",Players," to create exploration group");
     	.send(Players, achieve, quit_all_missions_roles);
     	.wait(200); // wait them to quit
     	.send(Players, achieve, create_exploration_gr)
      }{
-        .print("fff not implemented yet")
+        .print("fff asking porters ",GP1," and myself to get back their herdboy roles");
+        .send(GP1, achieve, change_role(herdboy, Gr));
+        !!change_role(herdboy, Gr)
      };
      .print("fff removing the scheme ",Sch," since all agentes has passed");
   	 jmoise.remove_scheme(Sch). // must be the last thing (since the deletion of the scheme cause the drop of this goal)
@@ -227,7 +240,7 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
      !!wait_others_pass(Others)[scheme(Sch),mission(Mission),group(Gr),role(Role)].
   
 +!restart_fence_case
-   : .my_name(Me) & scheme(pass_fence,Sch) & commitment(Me,_,Sch)
+   : .my_name(Me) & scheme(pass_fence_sch,Sch) & commitment(Me,_,Sch)
   <- .print("fff restart pass fence, removing the scheme and roles!");
      .findall(P, commitment(P,_,Sch), Players);
      jmoise.remove_scheme(Sch);

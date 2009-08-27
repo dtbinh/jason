@@ -69,14 +69,17 @@
 +!restart : .my_name(Me) & commitment(Me,Mis, _) <- .print("restart not applicable, I am committed to ",Mis).
 +!restart <- .print("restart not applicable").
   
-  
-  
-  
 +!try_adopt(_Role,[])
-  <- .print("ooo no more groups to try a role!").
+   : switch(X,Y) & not pos(X,Y,_)
+  <- .print("ooo no more groups to try a role! going to a switch, just in case it helps someone else!");
+     -+target(X,Y).
++!try_adopt(_Role,[])
+  <- .print("ooo no more groups to try a role! and I don't know where another switch is, random!");
+     ?random_pos(X,Y);
+     -+target(X,Y).
 +!try_adopt(Role,[G|_])
    : group(_,G)[owner(O)] & ally_pos(O,OX,OY) & pos(MyX,MyY,_) & jia.path_length(MyX, MyY, OX, OY, _, fences) &
-     scheme_group(Sch,G) & not scheme(pass_fence,Sch) // do not enter in grousp passing fences
+     scheme_group(Sch,G) & not scheme(pass_fence_sch,Sch) // do not enter in groups passing fences
   <- .print("ooo try role ",Role, " in ",G);
      jmoise.adopt_role(Role,G).
 -!try_adopt(Role,[_|RG])

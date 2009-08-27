@@ -94,7 +94,7 @@
                 <goal id="find_scouter"        ds="find a scouter to help in the exploration" type="maintenance" />
                 <goal id="change_to_herding"   ds="verify if necessary to create the herding group" type="maintenance"/>
                 <goal id="goto_near_unvisited" ds="go to the near unvisited location inside the area of the group" type="maintenance"/>
-                <goal id="pass_fence"          ds="verify if necessary to create the pass_fence_scheme" type="maintenance"/>
+                <goal id="start_pass_fence"    ds="verify if necessary to create the pass_fence_scheme" type="maintenance"/>
                 <goal id="share_seen_cows"     ds="share seen cows with other agents in the scheme" type="maintenance"/>
                 <goal id="follow_leader"       ds="follow the leader of the scheme/group" type="maintenance"/>
               </plan>
@@ -105,7 +105,7 @@
                 <goal id="goto_near_unvisited" />
                 <!--goal id="share_seen_cows" /-->
                 <goal id="change_to_herding" />
-                <goal id="pass_fence" />
+                <goal id="start_pass_fence" />
             </mission>
             <mission id="scout" min="0" max="1">
                 <goal id="follow_leader" />
@@ -123,6 +123,7 @@
                 <goal id="share_seen_cows"     ds="share seen cows with other agents in the scheme" type="maintenance"/>
                 <goal id="change_to_exploring" ds="verify if it is necessary to finish the herding group and create the exploring group" type="maintenance"/>
                 <goal id="start_open_corral"   ds="verify if it is necessary to start the start_open_corral scheme" type="maintenance"/>
+                <goal id="start_pass_fence"    ds="verify if necessary to create the pass_fence_scheme" type="maintenance"/>
               </plan>
             </goal>
             
@@ -134,6 +135,7 @@
                 <!--goal id="share_seen_cows" /-->
                 <goal id="change_to_exploring" />
                 <goal id="start_open_corral" />
+                <goal id="start_pass_fence" />
             </mission>
             <mission id="help_herder" >
                 <goal id="be_in_formation" />
@@ -144,38 +146,36 @@
         <scheme id="open_corral" >
             <goal id="herd_cows" >
               <plan operator="sequence">
-                <goal id="goto_switch" >
+                <goal id="goto_switch1" >
                 	<argument id="X" />
                 	<argument id="Y" />
                 </goal>
-                <goal id="wait_cows_pass" type="maintenance"/>
               </plan>
             </goal>
             
             <mission id="porter1" min="1">
-                <goal id="goto_switch" />
-                <goal id="wait_cows_pass" />
+                <goal id="goto_switch1" />
             </mission>
         </scheme>
 
-        <scheme id="pass_fence" >
+        <scheme id="pass_fence_sch" >
             <goal id="pass_fence" >
               <argument id="X" />
               <argument id="Y" />
               <argument id="NextScheme" />
               <argument id="Direction" />
               <plan operator="parallel">
-                <goal id="forKeeper1" >
+                <goal id="keep_switch1" >
                    <plan operator="sequence" >
 	                 <goal id="goto_switch1" >
 	                    <argument id="X" />
 	                    <argument id="Y" />
 	                 </goal>
 	                 <goal id="wait_gatekeeper2" />
-	                 <goal id="last_pass" />
+	                 <goal id="cross_fence" />
 	               </plan>
                 </goal>
-                <goal id="forKeeper2" >
+                <goal id="keep_switch2" >
                    <plan operator="sequence" >
                      <goal id="goto_switch2" >
                         <argument id="X" />
@@ -192,7 +192,7 @@
             <mission id="porter1" min="1">
                 <goal id="goto_switch1" />
                 <goal id="wait_gatekeeper2" />
-                <goal id="last_pass" />
+                <goal id="cross_fence" />
             </mission>
             <mission id="porter2" min="1">
                 <goal id="goto_switch2" />
