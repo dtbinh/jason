@@ -47,7 +47,7 @@
   <- .print("*** restart -- odd ***");
      ?random_pos(X,Y);
      +target(X,Y);
-     .wait({+at_target},1000,_);
+     .wait({+at_target},2000,_);
      !create_exploration_gr.
 
 +!restart
@@ -66,18 +66,19 @@
      if ( not play(Me,_,_) ) {
         .findall(GH, group(herding_grp,GH),  LGH);
         !try_adopt(herdboy,LGH)
-     }. /*;
+     };
      
 	 // if I still have no role, try to move
-     if ( not play(Me,_,_) & switch(X,Y) & not pos(X,Y,_) & pos(MyX,MyY,_) & jia.path_length(MyX, MyY, X, Y, _, fences)) {
-        .print("ooo no more groups to try a role! going to a switch ",X,",",Y,", just in case it helps someone else!");
-        -+target(X,Y)
-     }{
-        if ( not play(Me,_,_) & random_pos(X,Y) & pos(MyX,MyY,_) & jia.path_length(MyX, MyY, X, Y, _, fences)) {
-           .print("ooo no more groups to try a role! and I don't know where another switch is, random!");
+     //if ( not play(Me,_,_) & switch(X,Y) & not pos(X,Y,_) & pos(MyX,MyY,_) & jia.path_length(MyX, MyY, X, Y, _, fences)) {
+     //   .print("ooo no more groups to try a role! going to a switch ",X,",",Y,", just in case it helps someone else!");
+     //   -+target(X,Y)
+     //}{
+        if ( not play(Me,_,_) & random_pos(X,Y) ) { // try to pass fence anyway, so commented  the following: & pos(MyX,MyY,_) & jia.path_length(MyX, MyY, X, Y, _, fences)) {
+           //.print("ooo no more groups to try a role! and I don't know where another switch is, random!");
+           .print("ooo no more groups to try a role! random!");
            -+target(X,Y)
-        }
-     }.*/
+     //   }
+     }.
 
 +!restart : .my_name(Me) & commitment(Me,Mis, _) <- .print("restart not applicable, I am committed to ",Mis).
 +!restart <- .print("restart not applicable").
@@ -85,7 +86,7 @@
 +!try_adopt(_Role,[]).
 +!try_adopt(Role,[G|_])
    : group(_,G)[owner(O)] & ally_pos(O,OX,OY) & pos(MyX,MyY,_) & jia.path_length(MyX, MyY, OX, OY, _, fences) &
-     scheme_group(Sch,G) & not scheme(pass_fence_sch,Sch) // do not enter in groups passing fences
+     not (scheme_group(Sch,G) & scheme(pass_fence_sch,Sch))	 // do not enter in groups passing fences
   <- .print("ooo try role ",Role, " in ",G);
      jmoise.adopt_role(Role,G).
 -!try_adopt(Role,[_|RG])

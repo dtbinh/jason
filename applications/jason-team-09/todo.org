@@ -1,15 +1,15 @@
 * 2009 team
 - [ ] pass-fence for herding
-- [ ] arrumar scouter location, tem que ser na mesma area (cons. fence) que o leader
 - [ ] all-passed, considerar que estao do lado do GP2
-- [ ] hasFence usa binario CLOSE+OPEN
+- [X] arrumar scouter location, tem que ser na mesma area (cons. fence) que o leader
 - [X] usar path_lenght para saber o place mais prox
 - [ ] impedir ags de entrar no curral
 
 - [ ] duplicate cows in BB
+- [ ] hasFence usa binario CLOSE+OPEN
 - [ ] ver bug Jason Porter2=XXX no pass_fence.asl
 - [ ] melhor criteria para criar pass_fence/open_corral (nao ser 'estar a 15 passos)
-- [ ] backup de distancias entre lugares
+- [X] backup de distancias entre lugares
     - usado em varios lugares, especialmente cluster
     - qdo tem um obstaculo, reseta
     - fazer um rotina de verificacao de erros na backup

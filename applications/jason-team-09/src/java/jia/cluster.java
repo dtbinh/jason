@@ -21,7 +21,6 @@ import java.util.logging.Logger;
 
 import arch.CowboyArch;
 import arch.LocalWorldModel;
-import busca.Nodo;
 
 /** 
  * Computes a cluster of cows for the agent
@@ -45,7 +44,7 @@ public class cluster extends DefaultInternalAction {
             if (model == null)
             	return false;
 
-        	List<Location> locs = getCluster(model, 3, arch); //WorldModel.cowPerceptionRatio
+        	List<Location> locs = getCluster(model, 4, arch); //WorldModel.cowPerceptionRatio
         	
         	if (args.length == 1) {
                 return un.unifies(args[0], new ObjectTermImpl(locs));        	    
@@ -91,6 +90,14 @@ public class cluster extends DefaultInternalAction {
                 vs.add(v);
                 
                 // use A* to get the distance from this cow to corral
+                int dist = model.pathLength(cl, center, false, arch);
+                if (dist >= 0) {
+                    if (near == null || dist < nearDist) {
+                        near = v;
+                        nearDist = dist;
+                    }
+                }
+                /*
                 Nodo solution = new Search(model, cl, center, arch).search();
                 if (solution != null) {
                     int d = solution.getProfundidade();
@@ -99,6 +106,7 @@ public class cluster extends DefaultInternalAction {
                         nearDist = d;
                     }
                 }
+                */
             }
         }
         

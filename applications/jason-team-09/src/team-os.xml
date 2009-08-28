@@ -145,16 +145,18 @@
 
         <scheme id="open_corral" >
             <goal id="herd_cows" >
-              <plan operator="sequence">
+              <plan operator="parallel">
                 <goal id="goto_switch1" >
                 	<argument id="X" />
                 	<argument id="Y" />
                 </goal>
+                <goal id="end_open_corral" />
               </plan>
             </goal>
             
             <mission id="porter1" min="1">
                 <goal id="goto_switch1" />
+                <goal id="end_open_corral" />
             </mission>
         </scheme>
 

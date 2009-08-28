@@ -12,7 +12,6 @@ import java.util.logging.Level;
 
 import arch.CowboyArch;
 import arch.LocalWorldModel;
-import busca.Nodo;
 
 /** 
  * Computes the distance between location based on A*
@@ -46,6 +45,13 @@ public class path_length extends DefaultInternalAction {
                 Location to   = new Location(itox, itoy);
                 
                 boolean fencesAsObs = terms.length > 5  && terms[5].toString().equals("fences");
+                int dist = model.pathLength(from, to, fencesAsObs, ts.getUserAgArch());
+                if (dist >= 0) {
+                    return un.unifies(terms[4], new NumberTermImpl(dist));
+                } else if (!fencesAsObs) {
+                    ts.getLogger().info("No route from "+from+" to "+to+"!");
+                }
+                /*
                 Nodo solution = new Search(model, from, to, null, false, false, false, false, false, fencesAsObs, ts.getUserAgArch()).search();
                 if (solution != null) {
                     int length = solution.getProfundidade();
@@ -54,6 +60,7 @@ public class path_length extends DefaultInternalAction {
                 } else if (!fencesAsObs) {
                     ts.getLogger().info("No route from "+from+" to "+to+"!");
                 }
+                */
             }
         } catch (Throwable e) {
             ts.getLogger().log(Level.SEVERE, "jia.path_length error: "+e, e);

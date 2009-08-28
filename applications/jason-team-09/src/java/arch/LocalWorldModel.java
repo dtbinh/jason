@@ -2,6 +2,7 @@ package arch;
 
 import static jason.asSyntax.ASSyntax.createLiteral;
 import static jason.asSyntax.ASSyntax.createNumber;
+import jason.architecture.AgArch;
 import jason.asSyntax.ASSyntax;
 import jason.asSyntax.Literal;
 import jason.asSyntax.NumberTerm;
@@ -15,16 +16,18 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import busca.Nodo;
-
 import jia.Search;
 import jia.Vec;
+import moise.simple.oe.Pair;
+import busca.Nodo;
 import env.WorldModel;
 
 
@@ -48,6 +51,10 @@ public class LocalWorldModel extends WorldModel {
     //int[][]         agsrep;  // agents repulsion
     int[][]         obsrep;  // obstacle repulsion
     int[][]         enemycorralrep; // repulsion from enemy corral
+
+    // store distance between locations
+    Map< Pair<Location, Location>, Integer> dist = new HashMap<Pair<Location,Location>, Integer>();
+    boolean distOutdated = true;
     
     BeliefBase      bb; // agent's BB
     
@@ -73,7 +80,6 @@ public class LocalWorldModel extends WorldModel {
             	obsrep[i][j] = 0;
             	enemycorralrep[i][j] = 0;
             }
-
     }
     
     @Override
@@ -81,7 +87,9 @@ public class LocalWorldModel extends WorldModel {
     	//if (value == WorldModel.AGENT || value == WorldModel.ENEMY) {
         switch (value) {
         //case ENEMY:        increp(agsrep, x, y, 2, 2); break;
-        case OBSTACLE:     increp(obsrep, x, y, 1, 1); break;
+        case OBSTACLE:     increp(obsrep, x, y, 1, 1);
+                           distOutdated = true;
+                           break;
         case ENEMYCORRAL:  increp(enemycorralrep, x, y, 1, 2); 
                            add(OBSTACLE, x, y);
                            break;
@@ -277,12 +285,51 @@ public class LocalWorldModel extends WorldModel {
     	*/
     }
     
-    public int pathLength(Location start, Location target, boolean fenceAsObstacle, CowboyArch arch) throws Exception {
+    public int pathLength(Location start, Location target, boolean fenceAsObstacle, AgArch arch) throws Exception {
+        if (distOutdated) {
+            synchronized (dist) {
+                dist.clear();
+                distOutdated = false;
+            }
+        }
+        Pair<Location,Location> pair = new Pair<Location,Location>(start, target);
+        Integer iDistance = null;
+        if (!fenceAsObstacle) {
+            iDistance = dist.get(pair);
+            if (iDistance == null) {
+                pair = new Pair<Location,Location>(target, start);
+                iDistance = dist.get(pair);
+            }
+            if (iDistance != null) { // if the distance is in the map
+                // TEST
+                /*
+                Nodo solution = new Search(this, start, target, null, false, false, false, false, false, fenceAsObstacle, arch).search();
+                if (solution == null) {
+                    return -1;
+                } else {
+                    int distance = solution.getProfundidade();
+                    String s = "";
+                    if (iDistance.intValue() != distance) 
+                        s = "******** xxxxxx *******";
+                    arch.getTS().getLogger().info("ggg by s "+distance+" by map "+iDistance+s);
+                }
+                */
+                return iDistance;
+            }
+        }
+        
+        // case of fenceAsObs or not found in Map
         Nodo solution = new Search(this, start, target, null, false, false, false, false, false, fenceAsObstacle, arch).search();
         if (solution == null) {
             return -1;
         } else {
-            return solution.getProfundidade();
+            int distance = solution.getProfundidade();
+            if (!fenceAsObstacle) {
+                synchronized (dist) {
+                    dist.put(pair, distance);
+                }
+            }
+            return distance;
         }
     }
     

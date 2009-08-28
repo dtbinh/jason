@@ -156,7 +156,7 @@ has_enough_boys(Boys, Cows) :- Boys > 3 & cows_by_boy(K) & Cows < Boys*K.
      }{
         .print("ooo No cluster to define the formation ********!")
      }.
-	 
+
 { end }
 
 // version "near agent of each position 
@@ -230,8 +230,8 @@ calc_distances([pos(Fx,Fy)|TP], [d(D,pos(Fx,Fy))|TD], pos(AgX,AgY))
   <- .print("ooo yyy I should start an open corral scheme for group ",Gr);
      jmoise.create_scheme(open_corral, [Gr], SchId);
      jia.switch_places(X,Y,PX,PY,_,_);
-     jmoise.set_goal_arg(SchId,goto_switch,"X",PX);
-     jmoise.set_goal_arg(SchId,goto_switch,"Y",PY);
+     jmoise.set_goal_arg(SchId,goto_switch1,"X",PX);
+     jmoise.set_goal_arg(SchId,goto_switch1,"Y",PY);
      !find_closest(Cand,pos(X,Y),HA);
      .print("yyy near corral is ",HA);
      .send(HA, achieve, change_role(gatekeeper1, Gr)).
@@ -239,6 +239,26 @@ calc_distances([pos(Fx,Fy)|TP], [d(D,pos(Fx,Fy))|TD], pos(AgX,AgY))
 +!start_open_corral[scheme(Sch),mission(Mission),group(Gr)].
 
 { end }
+
+
+{ begin maintenance_goal("+pos(_,_,_)") }
+
++!end_open_corral[scheme(Sch),mission(Mission),group(Gr)]
+   : // if the leader is too far, remove the sch
+     group(_,Gr)[owner(O)] & 
+     ally_pos(O,OX,OY) &
+     pos(MeX, MeY, _) &
+     jia.path_length(MeX,MeY,OX,OY,Dist) & 
+     .print("yyy vvv my distance to leader is ",Dist) & 
+     Dist > 20 & 
+     not (ally_pos(_,AlX,AlY) & jia.corral(AlX,AlY) & .print("yyy vvv but there is an agent in the corral")) // no ally in corral
+  <- !!change_role(herdboy,Gr);
+     jmoise.remove_scheme(Sch).
+
++!end_open_corral[scheme(Sch),mission(Mission),group(Gr)].
+
+{ end }
+
 
 
 //+!goto_switch(X,Y)[scheme(Sch)]

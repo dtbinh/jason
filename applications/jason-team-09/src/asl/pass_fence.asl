@@ -2,13 +2,23 @@
    -- plans for passing a fence 
 */
 
-need_cross_fence(FX,FY) :- 
+need_cross_fence(Sch,FX,FY) :- 
+    scheme(explore_sch,Sch) & 
     target(TX,TY) & 
     not jia.corral(TX,TY) & 
     pos(MX, MY, _) & 
     jia.has_object_in_path(MX, MY, TX, TY, closed_fence, FX, FY, Dist) &
-    //.print("fff I have a fence in my path at ",Dist," steps") &
+    .print("fff I have a fence in my path at ",Dist," steps") &
     Dist < 10.
+need_cross_fence(Sch,FX,FY) :- 
+    scheme(herd_sch,Sch) & 
+    corral_center(TX,TY) & 
+    pos(MX, MY, _) & 
+    jia.has_object_in_path(MX, MY, TX, TY, closed_fence, FX, FY, Dist) &
+    jia.fence_switch(FX, FY, SX, SY) &
+    not jia.is_corral_switch(SX,SY) &
+    .print("fff I have a fence in my path to corral at ",Dist," steps") &
+    Dist < 15.
 
 porter_candidates(CurSch, Gr, Cand) :-  // candidates in the case of exploring
    scheme(explore_sch,CurSch) & 
@@ -51,9 +61,10 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
 { begin maintenance_goal("+pos(_,_,_)") }
 
 +!start_pass_fence[scheme(Sch),mission(Mission), group(Gr), role(Role)]
-   : need_cross_fence(FX, FY) &
-     jia.fence_switch(FX, FY, SX, SY) & .my_name(Me) 
-  <- .findall(PFSch, scheme(pass_fence_sch,PFSch)[owner(Oag)] & Oag \== Me , PFSchs);
+   : need_cross_fence(Sch, FX, FY) &
+     jia.fence_switch(FX, FY, SX, SY)
+  <- .my_name(Me) ;
+     .findall(PFSch, scheme(pass_fence_sch,PFSch)[owner(Oag)] & Oag \== Me , PFSchs);
 	 !find_pass_fence_scheme(PFSchs, SX, SY, OtherSch, Porter2);
 	 .print("fff pass_fence porter2 ",OtherSch," from candidates ",PFSchs);
 	 if (OtherSch == no_scheme) {
@@ -63,7 +74,7 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
 	 }.  
 
 +!start_pass_fence[scheme(Sch),mission(Mission), group(Gr), role(Role)]
-   : need_cross_fence(FX, FY) &
+   : need_cross_fence(Sch, FX, FY) &
      not jia.fence_switch(FX, FY, _, _)
   <- .print("fff I need to discover where the switch is");
   	 !fence_as_obstacle(15).
@@ -167,15 +178,19 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
 
 +!goto_switch(X,Y,Sch,Goal)
    : pos(X,Y,_) 
-  <- .print("fff I am at  switch ",X,",",Y," -- ",Goal);
+  <- .print("fff I am at switch ",X,",",Y," -- ",Goal);
+     jmoise.set_goal_state(Sch,Goal,satisfied).
++!goto_switch(X,Y,Sch,goto_switch1)   // particular case: the GP1 needs to go to S1, but GP2 is already in S2, so no need to go to S1
+   : not pos(X,Y,_) &
+     goal_state(Sch, goto_switch2, achieved)
+  <- .print("fff I do not need to go to switch ",X,",",Y," anymore -- ",Goal);
      jmoise.set_goal_state(Sch,Goal,satisfied).
 +!goto_switch(X,Y,Sch,Goal)
-   : not pos(X,Y,_) 
+   : not pos(X,Y,_)
   <- .print("yyyy going to switch ",X,",",Y," -- ",Goal);
      -+target(X,Y);
-     .wait({ +pos(X,Y,_) } );
-     .print("fff reached switch ",X,",",Y," -- ",Goal);
-     jmoise.set_goal_state(Sch,Goal,satisfied).
+     .wait({ +pos(_,_,_) } );
+     !goto_switch(X,Y,Sch,Goal).
      	
 
 +!goto_switch1(X,Y)[scheme(Sch)]

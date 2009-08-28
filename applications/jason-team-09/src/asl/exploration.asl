@@ -66,12 +66,12 @@
 	    .print("ooo Removing scheme ",S);
 	    jmoise.remove_scheme(S);
 		.wait(1000)
+	 };
+	 for( group(exploration_grp,G)[owner(Me)] & not scheme_group(_,G)) {
+	    .print("ooo Removing group ",G," since I am not in the group anymore");
+	    jmoise.remove_group(G);
+        .wait(1000)
 	 }.
-	 //for( group(exploration_grp,G)[owner(Me)] & not scheme_group(_,G)) {
-	 //   .print("ooo Removing group ",G," since I am not in the group anymore");
-	 //   jmoise.remove_group(G);
-     //.wait(1000)
-	 //}.
 
 	 
 /*+group(exploration_grp,_)                // compute the area of the groups
@@ -137,17 +137,19 @@
 { begin maintenance_goal("+pos(_,_,_)") } // old is +at_target
 
 +!goto_near_unvisited[scheme(Sch),mission(Mission)]
+   : not target(_,_)
+     | (target(X,Y) & pos(X,Y,_)) // I am there
+     | (target(X,Y) & (jia.obstacle(X,Y) | jia.fence(X,Y))) // I discovered that the target is a fence or obstacle
   <- .print("ooo I should find the nearest unvisited location and go there!");
      .my_name(Me); 
 	 ?agent_id(Me,MyId);
      ?group_area(MyId div 2, Area);  // get the area of my group
-	 
      ?pos(MeX, MeY, _);              // get my location
      jia.near_least_visited(MeX, MeY, Area, TargetX, TargetY);
      .print("ooo The nearest unvisited location is ",TargetX,",",TargetY);
-     -+target(TargetX, TargetY);
-     .wait({+pos(_,_,_)}); .wait({+pos(_,_,_)}); .wait({+pos(_,_,_)}); .wait({+pos(_,_,_)}); .wait({+pos(_,_,_)}). // wait 5 cycles to revise target
-	 
+     -+target(TargetX, TargetY).
+
++!goto_near_unvisited[scheme(Sch),mission(Mission)].
 	 /* added by the pattern
 	 .wait({+at_target}).
      !!goto_near_unvisited[scheme(Sch),mission(Mission)]
