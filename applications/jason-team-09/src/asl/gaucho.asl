@@ -198,13 +198,13 @@
 	 // if I play any other role, give it up
      while( play(Me,R,OG) ) {
         .print("ooo Removing my role ",R," in ",OG);
-        jmoise.remove_role(R,OG); .wait(200)
+        jmoise.remove_role(R,OG) //; .wait(200)
      };
      
      // give up all missions
 	 while( commitment(Me,M,Sch) ) {
         .print("ooo Removing my mission ",M," in ",Sch);
-        jmoise.remove_mission(M,Sch); .wait(200)
+        jmoise.remove_mission(M,Sch) //; .wait(200)
 	 }.
 -!quit_all_missions_roles[error_msg(M),code(C)] <- .println("*** ",C," - ",M). // no problem if it fails, it is better to continue
 
@@ -256,12 +256,11 @@
      .drop_desire(_[scheme(Sch)]).
 
 // If my group is removed, remove also the schemes	 
--group(_Spec,Gid)
+-group(_Spec,Gid)[owner(Me)]
    : .my_name(Me)
   <- while( scheme(_,SchId)[owner(Me)] & not scheme_group(SchId, _) ) {
-	    .print("ooo yyyyy Removing scheme without responsible group ",SchId);
-	    jmoise.remove_scheme(SchId);
-		.wait(1000)
+	    .print("ooo yyyyy removing scheme without responsible group ",SchId);
+	    jmoise.remove_scheme(SchId)
 	 }.
 
 

@@ -16,8 +16,8 @@ import arch.LocalWorldModel;
 /**
  * Given the switch, determines the two places where an agent should stand in order to open the fence
  * 
- * Use: jia.switch_places(+Sx, +Sy, -L1x, -L1y, -L2x, -L2y)
- * where: S is a switch, L1 is the place that open the switch near to the agent and L2 the other place
+ * Use: jia.switch_places(+Sx, +Sy, +Ax, +Ay, -L1x, -L1y, -L2x, -L2y)
+ * where: S is a switch, L1 is the place that open the switch near to the agent A and L2 the other place
  *  
  * @author ricardo.hahn
  *
@@ -35,7 +35,10 @@ public class switch_places extends DefaultInternalAction {
             
             int lx = (int)((NumberTerm)args[0]).solve();
             int ly = (int)((NumberTerm)args[1]).solve();
-            Location agPlace = model.getAgPos(arch.getMyId());
+            
+            int agx = (int)((NumberTerm)args[2]).solve();
+            int agy = (int)((NumberTerm)args[3]).solve();
+            Location agPlace = new Location(agx,agy); // model.getAgPos(arch.getMyId());
             Location place1 = null, place2 = null;
             
             if (model.isHorizontalFence(lx, ly)) {
@@ -54,10 +57,10 @@ public class switch_places extends DefaultInternalAction {
                 place1 = bak;
             }
             return 
-                un.unifies(args[2], createNumber(place1.x)) && 
-                un.unifies(args[3], createNumber(place1.y)) &&
-                un.unifies(args[4], createNumber(place2.x)) && 
-                un.unifies(args[5], createNumber(place2.y));
+                un.unifies(args[4], createNumber(place1.x)) && 
+                un.unifies(args[5], createNumber(place1.y)) &&
+                un.unifies(args[6], createNumber(place2.x)) && 
+                un.unifies(args[7], createNumber(place2.y));
             
             /* old version 
             Location switchPlace = new Location(lx, ly);

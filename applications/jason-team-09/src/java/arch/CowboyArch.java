@@ -299,7 +299,7 @@ public class CowboyArch extends OrgAgent { //IdentifyCrashed {
              lo7 = new Location(-1,-1);
     */
 	
-	private static final int lastRecordCapacity = 10; 
+	private static final int lastRecordCapacity = 7; 
     Queue<Location> lastLocations = new LinkedBlockingQueue<Location>(lastRecordCapacity); // last locations of the agent
     Queue<Move>     lastActions   = new LinkedBlockingQueue<Move>(lastRecordCapacity); // last actions
     Set<Location>   ephemeralObstacle = new HashSet<Location>();

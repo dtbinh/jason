@@ -116,15 +116,16 @@
               ally_pos(AgName,X,Y) & agent_id(AgName,Id) & Id mod 2 == 0 & jia.path_length(MyX, MyY, X, Y, D, fences),
               LOdd);
      .sort(LOdd, LSOdd);
-	 !find_scouter(LSOdd,G).
-	 //jmoise.set_goal_state(Sch, find_scouter, satisfied).
+     .print("ooo scouters candidates are ",LSOdd);
+	 !find_scouter(LSOdd,G);
+	 jmoise.set_goal_state(Sch, find_scouter, satisfied).
 
 +!find_scouter[scheme(Sch),group(G)].
   
 { end }
 
 +!find_scouter([],G)
-  <- .print("ooo no scourter for me!").
+  <- .print("ooo no scouter for me!").
 +!find_scouter([ag_d(_,AgName)|_],GId)
   <- .print("ooo Ask ",AgName," to play scouter");
      .send(AgName, achieve, play_role(scouter,GId));

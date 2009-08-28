@@ -38,16 +38,14 @@ has_enough_boys(Boys, Cows) :- Boys > 3 & cows_by_boy(K) & Cows < Boys*K.
 -play(Me,herder,_)
    : .my_name(Me)
   <- for( scheme(herd_sch,S)[owner(Me)] ) {
-	    .print("ooo Removing scheme ",S);
-	    jmoise.remove_scheme(S);
-		.wait(1000)
+	    .print("ooo removing scheme ",S);
+	    jmoise.remove_scheme(S)
 	 };
 	 for( group(herding_grp,G)[owner(Me)] ) {
 	    -group_leader(G,Me);
         .broadcast(untell, group_leader(G,Me));
         .print("ooo removing the group ",G);
-	    jmoise.remove_group(G);
-		.wait(1000)
+	    jmoise.remove_group(G)
 	 }.
 	 
 // If I stop playing herdboy (because the group was destroied by the herder),
@@ -75,7 +73,7 @@ has_enough_boys(Boys, Cows) :- Boys > 3 & cows_by_boy(K) & Cows < Boys*K.
       //.count(play(_,_,Gi), N) & N < 3 & // only merge small group
 	  current_cluster(MyC)
   <-  // for all other groups
-      for( group_leader(Gj, L) & Me < L & L \== Me & not play(L,herdboy,Gi)) { // 
+      for(group_leader(Gj, L)  & Me < L & L \== Me & not play(L,herdboy,Gi)) { // 
 	     .print("ooo Checking merging with ",Gj);
          // ask their clusters
          .send(L, askOne, current_cluster(_), current_cluster(TC));
@@ -107,34 +105,29 @@ has_enough_boys(Boys, Cows) :- Boys > 3 & cows_by_boy(K) & Cows < Boys*K.
      .send(gaucho5,achieve,create_exploration_gr);
      .send(gaucho6,achieve,restart).
      */
-// TODO: find a nice solution for this plan!     
 +!release_boys[scheme(Sch),mission(Mission),group(Gr)]
    : .count(play(_,herdboy,Gr),N) &
-     (N > 3 | (N > 1 & current_cluster(CAsList) & .length(CAsList) < 5))
-      
-  <- .print("xxx release an agent of my herding group");
-     
-     // try an odd agent first
-     if (play(gaucho5,herdboy,Gr)) { // & agent_id(AgName,Id) & Id mod 2 == 1) {
-        .send(gaucho5,achieve,restart)
-     }{
-       if (play(gaucho6,herdboy,Gr)) { // & agent_id(AgName,Id) & Id mod 2 == 0) {
-          .send(gaucho6,achieve,restart)
-       }{
-         if (play(gaucho3,herdboy,Gr)) {
-            .send(gaucho3,achieve,restart)
-         }{
-           if (play(gaucho4,herdboy,Gr)) {
-              .send(gaucho4,achieve,restart)
-           }
-         }
-       }
-     };
+     current_cluster(CAsList) &
+     has_enough_boys(N-1, .length(CAsList))
+     // (N > 3 | (N > 1 & current_cluster(CAsList) & .length(CAsList) < 5))
+  <- .print("rrr release an agent of my herding group, I have ",N," boys for a cluster of size ",.length(CAsList));
+     !release_boy([gaucho9,gaucho10,gaucho7,gaucho8,gaucho5,gaucho6,gaucho3,gaucho4],Gr);
      .wait({+pos(_,_,_)}); // wait an extra step before try to release agents again
+     .wait({+pos(_,_,_)});
      .wait({+pos(_,_,_)}).
 +!release_boys[scheme(Sch),mission(Mission),group(Gr)].
 
 { end }
+
++!release_boy([],_).
++!release_boy([A|_],Gr)
+   : play(A,herdboy,Gr)
+  <- .print("rrr releasing boy ",A);
+     .send(A,achieve,quit_all_missions_roles);
+     .wait(1000); // wait the agent to quit the roles
+     .send(A,achieve,restart).
++!release_boy([A|O],Gr)
+  <- !release_boy(O,Gr).
 
 { begin maintenance_goal("+pos(_,_,_)") }
 
@@ -142,6 +135,7 @@ has_enough_boys(Boys, Cows) :- Boys > 3 & cows_by_boy(K) & Cows < Boys*K.
   <- .print("ooo I should define the formation of my group ",Gr);
      jia.cluster(Cluster,CAsList);
      -+current_cluster(CAsList);
+     .abolish(has_boy_beyond_fence(_,_));
      if ( .length(CAsList) > 0) {
         .findall(Boy, play(Boy, herdboy,Gr), Boys); //?my_group_players(G, herder);
         .my_name(Me);      
@@ -168,6 +162,9 @@ has_enough_boys(Boys, Cows) :- Boys > 3 & cows_by_boy(K) & Cows < Boys*K.
      .print("ooo Allocating position ",pos(X,Y)," to agent ",HA);
      .send(HA,tell,target(X,Y));
 	 .delete(HA,Agents,TAg);
+	 if (boy_beyond_fence(X,Y,FX,FY)) {
+        +has_boy_beyond_fence(FX,FY)
+     };
      !alloc_all(TAg,TLoc).
 
 +!find_closest(Agents, pos(FX,FY), NearAg) // find the agent near to pos(X,Y)
@@ -221,19 +218,20 @@ calc_distances([pos(Fx,Fy)|TP], [d(D,pos(Fx,Fy))|TD], pos(AgX,AgY))
 
 +!start_open_corral[scheme(Sch),mission(Mission),group(Gr)]
    : switch(X,Y) & jia.is_corral_switch(X,Y) & // get the switch of our corral
-     .print("yyy init test open corral") & 
+     .print("yyy init test open corral for switch ",X,",",Y) & 
      not (scheme(open_corral,SchId) & scheme_group(SchId, _) ) & // there is no scheme to open
      pos(MeX, MeY, _) &  jia.path_length(MeX,MeY,X,Y,Dist) & 
      .print("yyy my distance from corral switch is ",Dist) & Dist < 15 & // if I am near
      .findall(Boy, play(Boy, herdboy,Gr), Cand) &
      .print("yyy candidates for porter1 in group ",Gr, " are ",Cand) & Cand \== []
   <- .print("ooo yyy I should start an open corral scheme for group ",Gr);
-     jmoise.create_scheme(open_corral, [Gr], SchId);
-     jia.switch_places(X,Y,PX,PY,_,_);
-     jmoise.set_goal_arg(SchId,goto_switch1,"X",PX);
-     jmoise.set_goal_arg(SchId,goto_switch1,"Y",PY);
      !find_closest(Cand,pos(X,Y),HA);
      .print("yyy near corral is ",HA);
+     jmoise.create_scheme(open_corral, [Gr], SchId);
+     ?ally_pos(HA,AX,AY);
+     jia.switch_places(X,Y,AX,AY,PX,PY,_,_);
+     jmoise.set_goal_arg(SchId,goto_switch1,"X",PX);
+     jmoise.set_goal_arg(SchId,goto_switch1,"Y",PY);
      .send(HA, achieve, change_role(gatekeeper1, Gr)).
 
 +!start_open_corral[scheme(Sch),mission(Mission),group(Gr)].
@@ -252,6 +250,16 @@ calc_distances([pos(Fx,Fy)|TP], [d(D,pos(Fx,Fy))|TD], pos(AgX,AgY))
      .print("yyy vvv my distance to leader is ",Dist) & 
      Dist > 20 & 
      not (ally_pos(_,AlX,AlY) & jia.corral(AlX,AlY) & .print("yyy vvv but there is an agent in the corral")) // no ally in corral
+  <- !!change_role(herdboy,Gr);
+     jmoise.remove_scheme(Sch).
+
++!end_open_corral[scheme(Sch),mission(Mission),group(Gr)]
+   : // if I am too far from switch
+     pos(MeX, MeY, _) &
+     goal_state(Sch,goto_switch1(SX,SY),_) & 
+     jia.path_length(MeX,MeY,SX,SY,Dist) & 
+     .print("yyy vvv my distance to switch is ",Dist) & 
+     Dist > 20
   <- !!change_role(herdboy,Gr);
      jmoise.remove_scheme(Sch).
 
