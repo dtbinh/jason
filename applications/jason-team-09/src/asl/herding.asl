@@ -5,10 +5,9 @@ has_enough_boys(Boys, Cows) :- Boys > 3 & cows_by_boy(K) & Cows < Boys*K.
 
 /* -- plans for herding groups creation -- */
 
-+!create_herding_gr
-   : not .intend(create_herding_gr)
++!create_herding_gr(BoysCand)
+   : not .intend(create_herding_gr(_))
   <- .print("ooo Creating herding group.");
-     .my_name(Me);
 	 
      // create the new  group
      ?group(team,TeamId);
@@ -16,14 +15,15 @@ has_enough_boys(Boys, Cows) :- Boys > 3 & cows_by_boy(K) & Cows < Boys*K.
 	 .print("ooo Herding group ",HG," created.");
 	 
 	 // store the list of scouter in my group
-     ?play(Me,explorer,EG);
-     .findall(Scouter,play(Scouter,scouter,EG),LScouters);
+     //.my_name(Me);
+     //?play(Me,explorer,EG);
+     //.findall(Scouter,play(Scouter,scouter,EG),LScouters);
 	 
      !change_role(herder,HG);
 
      // ask scouters to change role
-	 .print("ooo Asking ",LScouters," to adopt the herdboy role in ",HG);
-	 .send(LScouters,achieve,change_role(herdboy,HG)).
+	 .print("ooo Asking ",BoysCand," to adopt the herdboy role in ",HG);
+	 .send(BoysCand,achieve,change_role(herdboy,HG)).
 	 
 	 
 // If I start playing explorer in a group that has no scheme, create the scheme
@@ -37,7 +37,7 @@ has_enough_boys(Boys, Cows) :- Boys > 3 & cows_by_boy(K) & Cows < Boys*K.
 // If I stop playing herder, destroy the herding groups I've created
 -play(Me,herder,_)
    : .my_name(Me)
-  <- for( scheme(herd_sch,S)[owner(Me)] ) {
+  <- for( scheme(herd_sch,S)[owner(Me)] | scheme(pass_fence_sch,S)[owner(Me)]) {
 	    .print("ooo removing scheme ",S);
 	    jmoise.remove_scheme(S)
 	 };
@@ -99,12 +99,6 @@ has_enough_boys(Boys, Cows) :- Boys > 3 & cows_by_boy(K) & Cows < Boys*K.
 	 	 
 { begin maintenance_goal("+pos(_,_,_)") }
 
-/*+!release_boys[scheme(Sch),mission(Mission),group(Gr)]
-   : .count(play(_,herdboy,Gr),N) & N > 4
-  <- .print("xxx release gaucho5 from my herding group");
-     .send(gaucho5,achieve,create_exploration_gr);
-     .send(gaucho6,achieve,restart).
-     */
 +!release_boys[scheme(Sch),mission(Mission),group(Gr)]
    : .count(play(_,herdboy,Gr),N) &
      current_cluster(CAsList) &
@@ -233,7 +227,7 @@ calc_distances([pos(Fx,Fy)|TP], [d(D,pos(Fx,Fy))|TD], pos(AgX,AgY))
      jmoise.set_goal_arg(SchId,goto_switch1,"X",PX);
      jmoise.set_goal_arg(SchId,goto_switch1,"Y",PY);
      .send(HA, achieve, change_role(gatekeeper1, Gr)).
-
+     
 +!start_open_corral[scheme(Sch),mission(Mission),group(Gr)].
 
 { end }
@@ -280,15 +274,16 @@ calc_distances([pos(Fx,Fy)|TP], [d(D,pos(Fx,Fy))|TD], pos(AgX,AgY))
 +!change_to_exploring[scheme(Sch),mission(Mission),group(Gr)]
    : not cow(_,_,_)
   <- .print("ooo I see no cow anymore");
-     // wait two cycles to decide to change the formation (due to fault perception we may not see the cows)
-	 .wait({+pos(_,_,_)});
-	 .wait({+pos(_,_,_)});
-	 if (not cow(_,_,_)) {
-	    .findall(P, play(P,herdboy,Gr), ListBoys);
-        !!create_exploration_gr;
-		// ask helpers in my group to change the role (or create a exploration group if we merged)
-		.send(ListBoys, achieve, create_exploration_gr)
-	 }.
+     // wait two cycles to decide to change the formation (due to fault perception we may not see the cows) -- FIXED in Arch
+	 //.wait({+pos(_,_,_)});
+	 //.wait({+pos(_,_,_)});
+	 //if (not cow(_,_,_)) {
+	 .my_name(Me);
+     .findall(P, play(P,_,Gr) & P \== Me, ListBoys);
+     !!create_exploration_gr;
+	 // ask helpers in my group to change the role (or create a exploration group if we merged)
+	 .send(ListBoys, achieve, create_exploration_gr).
+	 //}.
 
 +!change_to_exploring[scheme(Sch),mission(Mission),group(Gr)].
 

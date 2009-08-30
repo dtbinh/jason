@@ -4,9 +4,15 @@
  * (http://www.multiagentcontest.org)
  * 
  * By 
- *   Jomi F. Hubner     (EMSE, France) 
- *   Rafael  H. Bordini (Durham, UK)
+ *   Jomi F. Hubner     (UFSC, Brazil) 
+ *   Rafael  H. Bordini (URFGS, Brazil)
  *   Gauthier Picard    (EMSE, France)
+ *   Jaime S. Sichman            (USP, Brazil)
+ *   Gustavo Pacianotto Gouveia  (USP, Brazil)
+ *   Ricardo Hahn Pereira        (USP, Brazil)
+ *   Michele Piunti              (Univ. Bologna, Italy)
+ *
+ * see proposal paper for the team in the doc directory.
  */
 
 
@@ -19,10 +25,10 @@ Steps:
      ./startSimulation2009.sh
 
    or some configuration for test
-     ./startSimulation2009.sh conf/<some conf file>.xml
+     ./startSimulation2009.sh conf/testmaps/<some conf file>.xml
 
    optionally start the GUI monitor
-     ./startCowMonitor2009/sh
+     ./startCowMonitor2009.sh
 
 2. run dummies (written in Jason)
      ant -f dummies.xml
@@ -33,7 +39,7 @@ Steps:
 
 3. run Jason team 
 
-     ant -f romanfarmers.xml
+     ant -f romanfarmers.xml (to run locally)
 
 4. start the simulation
    go to shell running startServer.sh and press ENTER

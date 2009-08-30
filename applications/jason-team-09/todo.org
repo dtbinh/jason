@@ -1,8 +1,12 @@
 * 2009 team
-- [ ] pass-fence for herding
-- [ ] impedir ags de entrar no curral
-- [ ] a decent plan for !release_boys
+- [X] cross_fence pra quem estava em scheme de herding, eh voltar a fazer herding
+      - remove_mission, commit
 
+- [X] pass-fence for herding
+- [ ] impedir ags de entrar no curral
+- [X] a decent plan for !release_boys
+
+- [ ] declaration of bels, goals for Jason, so to check/warn programmer
 
 - [ ] grupos de exploracao devem ser maiores (2 gr de 3 e um gr de 4)
       - com formacao tb.
@@ -10,7 +14,9 @@
       . o leader podia continuar indo pro target evitando loops
       . accommodate agents that can
         not find a partner in the same area (due to the fences)
-- [ ] duplicate cows in BB
+- [ ] duplicate cows in BB and better handling of cows
+      - not only perception, cows, even seen a long time ago are still 'known'
+      - only one place for a cow
 - [ ] hasFence usa binario CLOSE+OPEN
 - [ ] melhor criteria para criar pass_fence/open_corral (nao ser 'estar a 15 passos)
 

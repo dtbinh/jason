@@ -49,15 +49,26 @@
      };
      
      // adopt role explorer in the group
-     !change_role(explorer,G).
+     !change_role(explorer,G);
+     
+     // create the scheme
+     if ( not (scheme(explore_sch,S) & scheme_group(S,G)) ) {
+        .print("creating exploration scheme for group ",G);
+        -target(_,_); // revome target so that a new one is selected by near unvisited
+        jmoise.create_scheme(explore_sch, [G])  
+     }.
+     
 +!create_exploration_gr.
      
 // If I started playing explorer in a group that has no scheme, create the scheme
+/*
 +play(Me,explorer,G)
    : .my_name(Me) &
      not scheme_group(_,G)
   <- .print("Creating explore scheme for group ",G);
+     -target(_,_); // revome target so that a new one is selected by near unvisited
      jmoise.create_scheme(explore_sch, [G]).
+*/
      
 // If I stop playing explorer, destroy the explore scheme/group I've created
 -play(Me,explorer,G)
@@ -66,12 +77,12 @@
 	    .print("ooo Removing scheme ",S);
 	    jmoise.remove_scheme(S);
 		.wait(1000)
-	 };
+	 }. /* -- breaks pass-fence scheme
 	 for( group(exploration_grp,G)[owner(Me)] & not scheme_group(_,G)) {
 	    .print("ooo Removing group ",G," since I am not in the group anymore");
 	    jmoise.remove_group(G);
         .wait(1000)
-	 }.
+	 }. */
 
 	 
 /*+group(exploration_grp,_)                // compute the area of the groups
@@ -170,7 +181,7 @@
 
 { begin maintenance_goal("+pos(_,_,_)") }
 
-+!change_to_herding[scheme(Sch),mission(Mission)]
++!change_to_herding[scheme(Sch),mission(Mission),group(Gr)]
    : cow(_,_,_) & .my_name(Me)
   <- .print("ooo I see some cows, create the herding group");
      // check whether the seen cows are being herded by other group
@@ -180,12 +191,15 @@
      .intersection(MyCows, LCows, Common);
      //.print("xxx all cows in herding groups are ",LCows," mine are ",MyCows," intersection is ",Common);
      if ( Common == [] ) {
-        !!create_herding_gr
+        .findall(Scouter,play(Scouter,scouter,Gr),LScouters);
+        !!create_herding_gr(LScouters);
+        .print("ooo Removing group ",Gr," since I am starting to herd");
+	    jmoise.remove_group(Gr)
      }{
-        !check_small_herd_grp(Leaders)
+        !check_small_herd_grp(Gr,Leaders)
      }.
 
-+!change_to_herding[scheme(Sch),mission(Mission)].
++!change_to_herding[scheme(Sch),mission(Mission),group(Gr)].
 	 
 { end }	 
 
@@ -197,20 +211,23 @@
      .concat(LC,RC,Cows).
 
      
-+!check_small_herd_grp([]).
-+!check_small_herd_grp([L|Leaders])
++!check_small_herd_grp(_,[]).
++!check_small_herd_grp(Gr,[L|Leaders])
   <- //.print("TTT send askall to ",L); 
      .send(L,askAll,play(_, herdboy, _), LBoys);
      .send(L,askOne,current_cluster(_),current_cluster(LCluster));
      .print("TTT boys of ",L," are ",LBoys," his cluster size is ", .length(LCluster));
      if (not has_enough_boys( .length(LBoys), .length(LCluster))) { 
      //if (.length(LBoys) < 3 & .length(LCluster) > (.length(LBoys)+1)*5) {
-        !!create_herding_gr
+        .findall(Scouter,play(Scouter,scouter,Gr),LScouters);
+        !!create_herding_gr(LScouters);
+        .print("ooo Removing group ",Gr," since I am starting to herd");
+	    jmoise.remove_group(Gr)
         //.send(L,askOne,play(L, herder, _),play(L, herder, Gi));
         //.print("TTT entering the herding group ",Gi," of ",L);
         //!change_role(herdboy,Gi)
      }{
-        !check_small_herd_grp(Leaders)
+        !check_small_herd_grp(Gr,Leaders)
      }.
 
 /* -- plans for the goals of role scouter -- */

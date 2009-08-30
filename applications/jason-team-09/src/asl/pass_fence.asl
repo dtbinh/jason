@@ -207,59 +207,73 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
 +!goto_switch2(X,Y)[scheme(Sch)]
   <- !goto_switch(X,Y,Sch,goto_switch2).
 
+
 +!wait_gatekeeper2[scheme(Sch),mission(Mission), group(Gr), role(Role)]
-   : play(GP2,gatekeeper2,Gr) &
-     goal_state(Sch, goto_switch2(S2X,S2Y), _) &
-     ally_pos(GP2,S2X,S2Y)
-  <- .print("fff gatekeeper2 passed"); 
+   : goal_state(Sch, goto_switch2(_,_), achieved) // it is already there
+  <- .print("fff gatekeeper2 is there"); 
      jmoise.set_goal_state(Sch,wait_gatekeeper2,satisfied).
-     
+//+!wait_gatekeeper2[scheme(Sch),mission(Mission), group(Gr), role(Role)]
+//   : play(GP2,gatekeeper2,Gr) &
+//     goal_state(Sch, goto_switch2(S2X,S2Y), _) &
+//     ally_pos(GP2,S2X,S2Y)
+//  <- .print("fff gatekeeper2 passed"); 
+//     jmoise.set_goal_state(Sch,wait_gatekeeper2,satisfied).     
 +!wait_gatekeeper2[scheme(Sch),mission(Mission),group(Gr),role(Role)]
-   : play(GP2,gatekeeper2,Gr) &
-     goal_state(Sch, goto_switch2(S2X,S2Y), _) 
-  <- //.wait( { +pos(_,_,_) } );
-     //!!wait_gatekeeper2[scheme(Sch),mission(Mission),group(Gr),role(Role)].
-     .wait( { +ally_pos(GP2,S2X, S2Y) } );
-     jmoise.set_goal_state(Sch,wait_gatekeeper2,satisfied).
+  <- .wait( { +pos(_,_,_) } );
+     !!wait_gatekeeper2[scheme(Sch),mission(Mission),group(Gr),role(Role)].
 
 
 +!cross_fence[scheme(Sch), group(Gr)]
+   : group(exploration_grp,Gr)
   <- ?goal_state(Sch,pass_fence(FX,FY,_,_),_);
      .print("fff I should pass the fence ",FX,",",FY);
      jia.other_side_fence(FX,FY,TX,TY);
      .print("fff the new target is ",TX,",",TY);
      -+target(TX,TY);
      .wait({ +pos(TX,TY,_) } ).
++!cross_fence[scheme(Sch), group(Gr)]
+   : group(herding_grp,Gr)
+  <- // just go back to herdboy
+    .print("fff I should go back to herdboy");
+    jmoise.remove_role(gatekeeper1,Gr);
+    !play_role(herdboy,Gr).
+
      
 { begin maintenance_goal("+pos(_,_,_)") }
   
 +!wait_others_pass(_)[scheme(Sch),mission(Mission),group(Gr),role(Role)]
-   : .my_name(Me) & .findall(P, play(P,_,Gr) & P \== Me, Mates) & // I need to wait all other members of my group, but me
-	 goal_state(Sch,wait_others_pass(Others),_) & // should not use the parameter of the event, since it changes
-     .print("fff I should wait ",Mates," and ",Others) &
+   : goal_state(Sch,wait_others_pass(Others),ready) & // should not use the parameter of the event, since it changes
+     .my_name(Me) & .findall(P, play(P,_,Gr) & P \== Me, Mates) & // I need to wait all other members of my group, but me
+	 .print("fff I should wait ",Mates," and ",Others) &
      Others == [] &
      all_passed(Mates) // & no_cowboy_in_fence
   <- .print("fff all passed");
      jmoise.set_goal_state(Sch,wait_others_pass,satisfied);
      
-     ?goal_state(Sch,pass_fence(_,_,NextSch,_),_);
-     ?play(GP1, gatekeeper1, Gr);
-     
+     .print("fff removing the scheme ",Sch," since all agentes has passed");
+     !!remove_scheme_next_cicles(Sch);
+
      // if I am the poter1 (the last to pass), I need to finish it all
      // and restart team mates
+     ?goal_state(Sch,pass_fence(_,_,NextSch,_),_);
      if (NextSch == explore_sch) {
-        //.findall(P, play(P,_,Gr), Players);
-        .print("fff asking ",GP1," to create exploration group");
-    	.send(GP1, achieve, quit_all_missions_roles);
-    	.wait(1000); // wait them to quit
-    	.send(GP1, achieve, create_exploration_gr)
+        if (play(GP1, gatekeeper1, Gr)) {     
+           .print("fff asking ",GP1," to stop playing gatekeeper1");
+           .send(GP1, achieve, quit_all_missions_roles);
+    	   .wait(1000); // wait GP1 to quit
+    	   .send(GP1, achieve, create_exploration_gr)
+    	};
+    	// remove my own gatekeeper role (so that I can accept the ask scouter that will be send by the partner)
+    	jmoise.remove_role(Role,Gr);
+    	!!create_exploration_gr
      }{
-        .print("fff asking porters ",GP1," and myself to get back their herdboy roles");
-        .send(GP1, achieve, change_role(herdboy, Gr));
+        if (play(GP1, gatekeeper1, Gr)) {     
+           .print("fff asking porters ",GP1," and myself to get back their herdboy roles");
+           .send(GP1, achieve, change_role(herdboy, Gr))
+        };
         !!change_role(herdboy, Gr)
-     };
-     .print("fff removing the scheme ",Sch," since all agentes has passed");
-  	 jmoise.remove_scheme(Sch). // must be the last thing (since the deletion of the scheme cause the drop of this goal)
+     }.
+//  	 jmoise.remove_scheme(Sch). // must be the last thing (since the deletion of the scheme cause the drop of this goal)
      
 +!wait_others_pass(_)[scheme(Sch),mission(Mission),group(Gr),role(Role)]
   <- !check_conflict_pass_fence(Sch).
@@ -292,16 +306,3 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
 +!restart_fence_case
   <- .print("fff restart pass fence, setting fence as obstacle for moving.");
      !fence_as_obstacle(5).
-       
-/*
-+!clean_others([Ag|T])
-   : ally_pos(Ag,X,Y) & jia.fence(X,Y) // it is in a fence, so it will pass
-  <- ?goal_state(Sch,wait_others_pass(O),_);
-     .print("fff removing ",Ag," from others ",O);
-     .delete(Ag,O,NewO);
-     jmoise.set_goal_arg(Sch,wait_others_pass,"Others",NewO);
-     clean_others(T).
-+!clean_others([_|T])
-  <- clean_others(T).
-  */
-     

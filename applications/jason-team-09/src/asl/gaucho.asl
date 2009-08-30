@@ -209,6 +209,10 @@
 -!quit_all_missions_roles[error_msg(M),code(C)] <- .println("*** ",C," - ",M). // no problem if it fails, it is better to continue
 
 	 
++!remove_scheme_next_cicles(Sch)
+  <- .wait( { +pos(_,_,_) } ); .wait( { +pos(_,_,_) } );
+     jmoise.remove_scheme(Sch).
+  	 
 // finish the scheme if it has no more players
 // and it was created by me
 //+sch_players(Sch,0) 

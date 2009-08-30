@@ -80,6 +80,7 @@
             <property id="check-players-in-remove-scheme"              value="false" />
             <property id="only-owner-can-remove-scheme"                value="false" />
             <property id="check-goals-in-remove-mission"               value="false" />
+            <property id="check-formation-in-responsible-group"        value="false" />
         </properties>
     
         <scheme id="explore_sch" >
