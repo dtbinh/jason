@@ -5,8 +5,8 @@ has_enough_boys(Boys, Cows) :- Boys > 3 & cows_by_boy(K) & Cows < Boys*K.
 dist_cow_near_corral(Dist) :- 
      corral_center(CorX, CorY) &
      cow_near_corral(pos(CX,CY)) & 
-     jia.path_length(CX,CY,CorX,CorY,D) & .print("qqq b") &
-     corral_half_width(CW) & .print("qqq ",CW) &
+     jia.path_length(CX,CY,CorX,CorY,D) & 
+     corral_half_width(CW) & 
      Dist = D - CW.
 
 
