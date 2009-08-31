@@ -81,7 +81,7 @@ public class direction extends DefaultInternalAction {
             actionsOrder[i1] = temp;
             
             boolean fencesAsObs = terms.length > 5  && terms[5].toString().equals("fences");
-            Search astar    = new Search(model, from, to, actionsOrder, true, false, true, false, false, fencesAsObs, arch);
+            Search astar    = new Search(model, from, to, actionsOrder, true, true, true, false, false, fencesAsObs, arch);
             solution = astar.search();
 
             if (solution == null && !fencesAsObs) {

@@ -1,7 +1,7 @@
 * 2009 team
 
 - [ ] debug why ags are not released from herding small clusters
-- [ ] use cluster to detect intersections
+- [ ] ver se crencas pass_fence_scheme(sch_189_pass_fence_sch,75,57,gaucho2) sao removidas da BB
 
 - [X] new open curral strategy
       * if distance(cow near to corral, corral center) - (corral.length/2) <= 5
@@ -12,6 +12,7 @@
 
 - [X] cross_fence pra quem estava em scheme de herding, eh voltar a fazer herding
       - remove_mission, commit
+- [X] use cluster to detect intersections
 - [ ] remover de percepcao vacas que estao em outra area? (mas so com closed fence, nao open)
 
 - [X] pass-fence for herding

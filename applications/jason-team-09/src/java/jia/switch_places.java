@@ -10,6 +10,8 @@ import jason.environment.grid.Location;
 
 import java.util.logging.Level;
 
+import env.WorldModel;
+
 import arch.CowboyArch;
 import arch.LocalWorldModel;
 
@@ -50,7 +52,7 @@ public class switch_places extends DefaultInternalAction {
             }
             int distPlace1 = model.pathLength(agPlace,place1,false, arch);
             int distPlace2 = model.pathLength(agPlace,place2,false, arch);
-            if (distPlace1 > distPlace2) { //place1.maxBorder(agPlace) > place2.maxBorder(agPlace)) {
+            if (distPlace1 > distPlace2 | model.hasObject(WorldModel.CORRAL, place1)) {
                 // near is place2 (swap)
                 Location bak = place2;
                 place2 = place1;

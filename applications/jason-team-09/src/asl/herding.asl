@@ -5,8 +5,8 @@ has_enough_boys(Boys, Cows) :- Boys > 3 & cows_by_boy(K) & Cows < Boys*K.
 dist_cow_near_corral(Dist) :- 
      corral_center(CorX, CorY) &
      cow_near_corral(pos(CX,CY)) & 
-     jia.path_length(CX,CY,CorX,CorY,D) &
-     corral_half_width(CW) &
+     jia.path_length(CX,CY,CorX,CorY,D) & .print("qqq b") &
+     corral_half_width(CW) & .print("qqq ",CW) &
      Dist = D - CW.
 
 
@@ -304,7 +304,7 @@ calc_distances([pos(Fx,Fy)|TP], [d(D,pos(Fx,Fy))|TD], pos(AgX,AgY))
 { begin maintenance_goal("+pos(_,_,_)") }
 
 +!change_to_exploring[scheme(Sch),mission(Mission),group(Gr)]
-   : not cow(_,_,_)
+   : not cow(_,_,_)  | (current_cluster(CAsList) & .length(CAsList) <= 2)
   <- .print("ooo I see no cow anymore");
      // wait two cycles to decide to change the formation (due to fault perception we may not see the cows) -- FIXED in Arch
 	 //.wait({+pos(_,_,_)});

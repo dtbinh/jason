@@ -182,12 +182,13 @@
 { begin maintenance_goal("+pos(_,_,_)") }
 
 +!change_to_herding[scheme(Sch),mission(Mission),group(Gr)]
-   : cow(_,_,_) & .my_name(Me)
+   : cow(_,_,_) & .my_name(Me) & 
+     jia.cluster(_,MyCows) &
+     .length(MyCows) > 2
   <- .print("ooo I see some cows, create the herding group");
      // check whether the seen cows are being herded by other group
      .findall(L, group_leader(_,L) & L \== Me,Leaders);
      !ask_all_cows(Leaders,LCows);
-     jia.cluster(_,MyCows);   //.findall(cow(ID,X,Y), cow(ID,X,Y), MyCows);
      .intersection(MyCows, LCows, Common);
      .print("TTT all cows in herding groups are ",LCows," mine are ",MyCows," intersection is ",Common);
      if ( Common == [] ) {

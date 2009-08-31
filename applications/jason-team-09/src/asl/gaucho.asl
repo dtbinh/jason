@@ -29,8 +29,20 @@
 +?ally_pos(Name,X,Y) : .my_name(Name) <- ?pos(X,Y,_).
 
 +corral(UpperLeftX,UpperLeftY,DownRightX,DownRightY)
-  <- -+corral_center( (UpperLeftX + DownRightX)/2, (UpperLeftY + DownRightY)/2);
-     -+corral_half_width( math.abs(UpperLeftX - DownRightX) /2).
+  <- -+corral_center( (UpperLeftX + DownRightX)/2, (UpperLeftY + DownRightY)/2).
+  
+corral_half_width(W) :- 
+   switch(X,Y) & jia.is_corral_switch(X,Y) &
+   is_horizontal(X,Y) &
+   corral(_UpperLeftX,UpperLeftY,_DownRightX,DownRightY) &   
+   W = math.abs(UpperLeftY - DownRightY)/2.
+corral_half_width(W) :- 
+   switch(X,Y) & jia.is_corral_switch(X,Y) &
+   is_vertical(X,Y) &
+   corral(UpperLeftX,_UpperLeftY,DownRightX,_DownRightY) &
+   W = math.abs(UpperLeftX - DownRightX)/2.
+   
+//    (math.abs(UpperLeftX - DownRightX)/2 + math.abs(UpperLeftY - DownRightY)/2)/2	 ).
 
   
 +end_of_simulation(_Result)
@@ -268,6 +280,7 @@
 // if some scheme is finished, drop all intentions related to it.
 -scheme(_Spec,Sch)
   <- .print("ooo Removing all desires related to scheme ",Sch);
+     .abolish(_[scheme(Sch)]);
      .drop_desire(_[scheme(Sch)]).
 
 // If my group is removed, remove also the schemes	 

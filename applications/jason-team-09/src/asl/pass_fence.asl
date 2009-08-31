@@ -128,8 +128,8 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
      
      jmoise.create_scheme(pass_fence_sch, SchId);
      .print("fff Created pass fence scheme ", SchId); 
-     +pass_fence_scheme(SchId,SX,SY,HA2);
-     .broadcast(tell, pass_fence_scheme(SchId,SX,SY,HA2));
+     +pass_fence_scheme(SchId,SX,SY,HA2)[scheme(SchId)];
+     .broadcast(tell, pass_fence_scheme(SchId,SX,SY,HA2)[scheme(SchId)]);
      
      // set ID of fence based on switch
      jmoise.set_goal_arg(SchId,pass_fence,"X",SX); 
