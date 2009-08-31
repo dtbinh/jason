@@ -248,6 +248,12 @@ calc_distances([pos(Fx,Fy)|TP], [d(D,pos(Fx,Fy))|TD], pos(AgX,AgY))
      jmoise.remove_scheme(Sch).
 
 +!end_open_corral[scheme(Sch),mission(Mission),group(Gr)]
+   : not group(_,Gr) & 
+     .print("yyy vvv no open curral group anymore ")
+  <- !!change_role(herdboy,Gr);
+     jmoise.remove_scheme(Sch).
+
++!end_open_corral[scheme(Sch),mission(Mission),group(Gr)]
    : // if I am too far from switch
      pos(MeX, MeY, _) &
      goal_state(Sch,goto_switch1(SX,SY),_) & 
