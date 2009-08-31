@@ -166,7 +166,14 @@ public class CowboyArch extends OrgAgent { //IdentifyCrashed {
         // manage GUIs
         if (view != null)   view.dispose();
         //if (acView != null) acView.finish();
-        if (gui) view = new WorldView("Herding (view of cowboy "+(getMyId()+1)+") -- against "+opponent,model);
+        if (gui) {
+            try { // isolate problem with GUI
+                view = new WorldView("Herding (view of cowboy "+(getMyId()+1)+") -- against "+opponent,model);
+            } catch (Exception e) {
+                logger.info("error starting GUI");
+                e.printStackTrace();
+            }
+        }
         if (writeStatusThread != null)  writeStatusThread.reset();
 
         //if (massimBackDir != null && massimBackDir.length() > 0) { 
