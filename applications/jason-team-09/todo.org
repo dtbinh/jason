@@ -1,6 +1,7 @@
 * 2009 team
 - [X] cross_fence pra quem estava em scheme de herding, eh voltar a fazer herding
       - remove_mission, commit
+- [ ] remover de percepcao vacas que estao em outra area? (mas so com closed fence, nao open)
 
 - [X] pass-fence for herding
 - [ ] impedir ags de entrar no curral

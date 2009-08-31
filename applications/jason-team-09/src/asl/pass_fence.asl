@@ -32,7 +32,7 @@ porter_candidates(CurSch, Gr, Cand) :-  // candidates in the case of herding
    .findall(P, play(P,_,Gr) & P \== O, Cand) & // do not consider owner of the group, the leader 
    .length(Cand,N) & N > 1.             // at least 3 players to start the scheme
 */   
-can_play_porter(CurSch,P) :-  scheme(herd_sch,   CurSch)[owner(O)] & P \== O. 
+can_play_porter(CurSch,P) :-  scheme(herd_sch,   CurSch) & play(P,herdboy,_). // only herdboys can go to pass fence // [owner(O)] & P \== O. 
 can_play_porter(CurSch,_) :-  scheme(explore_sch,CurSch). 
    
 all_passed([]) :- true.
@@ -68,15 +68,21 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
 +!start_pass_fence[scheme(Sch),mission(Mission), group(Gr), role(Role)]
    : need_cross_fence(Sch, FX, FY) &
      jia.fence_switch(FX, FY, SX, SY)
-  <- .my_name(Me) ;
-     .findall(PFSch, scheme(pass_fence_sch,PFSch)[owner(Oag)] & Oag \== Me , PFSchs);
+  <- if (pass_fence_scheme(OtherSch,SX,SY,GK1) & scheme(pass_fence_sch,OtherSch)) { // if an active scheme for the same switch exists...
+	    !join_pass_fence_scheme(OtherSch,GK1)
+	 }{
+	    !create_pass_fence_scheme(Sch, Gr, SX, SY, FX, FY)
+	 }.  
+     /*
+     .my_name(Me);
+     .findall(PFSch, scheme(pass_fence_sch,PFSch), PFSchs); // [owner(Oag)] & Oag \== Me
 	 !find_pass_fence_scheme(PFSchs, SX, SY, OtherSch, Porter2);
 	 .print("fff pass_fence porter2 ",OtherSch," from candidates ",PFSchs);
 	 if (OtherSch == no_scheme) {
 	    !create_pass_fence_scheme(Sch, Gr, SX, SY, FX, FY)
 	 }{
 	    !join_pass_fence_scheme(OtherSch,Porter2)
-	 }.  
+	 }.*/  
 
 +!start_pass_fence[scheme(Sch),mission(Mission), group(Gr), role(Role)]
    : need_cross_fence(Sch, FX, FY) &
@@ -88,12 +94,13 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
 	 
 { end }	 
 
+/*
 +!find_pass_fence_scheme([],SX,SY,no_scheme,no_porter).
 +!find_pass_fence_scheme([Sch|Others], SX,SY, PassSch, Porter2)
    : scheme(_,Sch)[owner(Oag)]
-  <- //.print("fff asking fence switch for ",Oag);
+  <- .print("fff asking fence switch for ",Oag);
      .send(Oag, askOne, goal_state(Sch,pass_fence(SX,SY,_,_),_), Ans); 
-     //.print("fff answer is ",Ans);
+     .print("fff answer is ",Ans);
      if (Ans == false) {
         //.print("fff try others ",Others);
         !find_pass_fence_scheme(Others,SX,SY,YYYY,XXXX);
@@ -104,6 +111,7 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
         .send(Oag, askOne, play(_,gatekeeper2,_), play(Porter2,_,_));
         PassSch = Sch //; .print("fff which is ",Porter2)
      }.
+*/
   
 +!create_pass_fence_scheme(CurSch, Gr, SX, SY, FX, FY)
 //   : porter_candidates(CurSch, Gr, Cand1)
@@ -120,7 +128,9 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
      
      jmoise.create_scheme(pass_fence_sch, SchId);
      .print("fff Created pass fence scheme ", SchId); 
-
+     +pass_fence_scheme(SchId,SX,SY,HA2);
+     .broadcast(tell, pass_fence_scheme(SchId,SX,SY,HA2));
+     
      // set ID of fence based on switch
      jmoise.set_goal_arg(SchId,pass_fence,"X",SX); 
      jmoise.set_goal_arg(SchId,pass_fence,"Y",SY);
@@ -157,6 +167,9 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
 +!create_pass_fence_scheme(CurSch, Gr, SX, SY, FX, FY)
   <- .print("fff ** I cannot create a pass fence scheme since I do not have enough partners!"). //;  !quit_all_missions_roles.
 
++!join_pass_fence_scheme(PassSch,_)
+   : .my_name(Me) & scheme(_,PassSch)[owner(Me)]
+  <- .print("fff I do not need to join the scheme created by me").
 +!join_pass_fence_scheme(PassSch,Porter2)
   <- .print("fff join scheme ",PassSch," where porter is ",Porter2);
      ?my_group_players(Mates,_);
@@ -251,6 +264,10 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
      jmoise.set_goal_state(Sch,wait_others_pass,satisfied);
      
      .print("fff removing the scheme ",Sch," since all agentes has passed");
+     -pass_fence_scheme(SchId,_,_,_);
+     .broadcast(untell, pass_fence_scheme(SchId,_,_,_));
+     jmoise.set_goal_arg(SchId,pass_fence,"X",-1); // just to avoid others to think a scheme for a fence exists 
+     jmoise.set_goal_arg(SchId,pass_fence,"Y",-1);
      !!remove_scheme_next_cicles(Sch);
 
      // if I am the poter1 (the last to pass), I need to finish it all
