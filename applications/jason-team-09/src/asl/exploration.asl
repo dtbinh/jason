@@ -187,9 +187,9 @@
      // check whether the seen cows are being herded by other group
      .findall(L, group_leader(_,L) & L \== Me,Leaders);
      !ask_all_cows(Leaders,LCows);
-     .findall(cow(ID,X,Y), cow(ID,X,Y), MyCows);
+     jia.cluster(_,MyCows);   //.findall(cow(ID,X,Y), cow(ID,X,Y), MyCows);
      .intersection(MyCows, LCows, Common);
-     //.print("xxx all cows in herding groups are ",LCows," mine are ",MyCows," intersection is ",Common);
+     .print("TTT all cows in herding groups are ",LCows," mine are ",MyCows," intersection is ",Common);
      if ( Common == [] ) {
         .findall(Scouter,play(Scouter,scouter,Gr),LScouters);
         !!create_herding_gr(LScouters);
@@ -212,22 +212,26 @@
 
      
 +!check_small_herd_grp(_,[]).
-+!check_small_herd_grp(Gr,[L|Leaders])
++!check_small_herd_grp(MyGr,[L|Leaders])
   <- //.print("TTT send askall to ",L); 
      .send(L,askAll,play(_, herdboy, _), LBoys);
      .send(L,askOne,current_cluster(_),current_cluster(LCluster));
      .print("TTT boys of ",L," are ",LBoys," his cluster size is ", .length(LCluster));
      if (not has_enough_boys( .length(LBoys), .length(LCluster))) { 
      //if (.length(LBoys) < 3 & .length(LCluster) > (.length(LBoys)+1)*5) {
-        .findall(Scouter,play(Scouter,scouter,Gr),LScouters);
-        !!create_herding_gr(LScouters);
-        .print("ooo Removing group ",Gr," since I am starting to herd");
-	    jmoise.remove_group(Gr)
+        //!!create_herding_gr(LScouters);
+        .send(L,askOne,group(herding_grp,OtherGr)[owner(L)],group(herding_grp,OtherGr));
+        
+        .findall(Scouter,play(Scouter,scouter,MyGr),LScouters);
+        .send(LScouters,achieve,change_role(herdboy,OtherGr));
+        !!change_role(herdboy,OtherGr);
+        .print("TTT Removing group ",MyGr," since I am starting to herd in group ",OtherGr);
+	    jmoise.remove_group(MyGr)
         //.send(L,askOne,play(L, herder, _),play(L, herder, Gi));
         //.print("TTT entering the herding group ",Gi," of ",L);
         //!change_role(herdboy,Gi)
      }{
-        !check_small_herd_grp(Gr,Leaders)
+        !check_small_herd_grp(MyGr,Leaders)
      }.
 
 /* -- plans for the goals of role scouter -- */

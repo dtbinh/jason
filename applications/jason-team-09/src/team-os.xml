@@ -150,7 +150,9 @@
                 	<argument id="X" />
                 	<argument id="Y" />
                 </goal>
-                <goal id="end_open_corral" />
+                <goal id="end_open_corral" >
+                    <argument id="Boss"/>
+                </goal>
               </plan>
             </goal>
             

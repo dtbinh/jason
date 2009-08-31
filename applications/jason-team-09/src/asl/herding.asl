@@ -2,6 +2,13 @@
 
 has_enough_boys(Boys, Cows) :- Boys > 3 & cows_by_boy(K) & Cows < Boys*K.
 
+dist_cow_near_corral(Dist) :- 
+     corral_center(CorX, CorY) &
+     cow_near_corral(pos(CX,CY)) & 
+     jia.path_length(CX,CY,CorX,CorY,D) &
+     corral_half_width(CW) &
+     Dist = D - CW.
+
 
 /* -- plans for herding groups creation -- */
 
@@ -87,8 +94,8 @@ has_enough_boys(Boys, Cows) :- Boys > 3 & cows_by_boy(K) & Cows < Boys*K.
             //jia.path_length(TCX,TCY,CorralX,CorralY,TCD);
             //.print("ooo check merging: my distance to corral = ",MCD," other group distance = ",TCD);
             //if (MCD <= TCD) {
-               .print("ooo merging my herding group ",Gi," with ",Gj, " lead by ",L);
-               .send(L, achieve, change_role(herdboy,Gi))
+               .print("ooo merging my herding group ",Gi," with ",Gj, " lead by ",L, " common cows are ",I);
+               .send(L,achieve, change_role(herdboy,Gi))
             //}
 		 }{
 		    .print("ooo no common cows, so no merging, my cows \n",MyC,"\n",TC)
@@ -106,9 +113,7 @@ has_enough_boys(Boys, Cows) :- Boys > 3 & cows_by_boy(K) & Cows < Boys*K.
      // (N > 3 | (N > 1 & current_cluster(CAsList) & .length(CAsList) < 5))
   <- .print("rrr release an agent of my herding group, I have ",N," boys for a cluster of size ",.length(CAsList));
      !release_boy([gaucho9,gaucho10,gaucho7,gaucho8,gaucho5,gaucho6,gaucho3,gaucho4],Gr);
-     .wait({+pos(_,_,_)}); // wait an extra step before try to release agents again
-     .wait({+pos(_,_,_)});
-     .wait({+pos(_,_,_)}).
+     .wait({+pos(_,_,_)}). // wait an extra step before try to release agents again
 +!release_boys[scheme(Sch),mission(Mission),group(Gr)].
 
 { end }
@@ -127,10 +132,11 @@ has_enough_boys(Boys, Cows) :- Boys > 3 & cows_by_boy(K) & Cows < Boys*K.
 
 +!define_formation[scheme(Sch),mission(Mission), group(Gr)]
   <- .print("ooo I should define the formation of my group ",Gr);
-     jia.cluster(Cluster,CAsList);
+     jia.cluster(Cluster,CAsList,NearCow);
      -+current_cluster(CAsList);
+     -+cow_near_corral(NearCow);
      .abolish(has_boy_beyond_fence(_,_));
-     if ( .length(CAsList) > 0) {
+     if ( .length(CAsList,CAL) & CAL > 0) {
         .findall(Boy, play(Boy, herdboy,Gr), Boys); //?my_group_players(G, herder);
         .my_name(Me);      
         GrFor = [Me|Boys]; .length(GrFor,ForSize);  // TODO: fix bug to use funcion
@@ -214,27 +220,35 @@ calc_distances([pos(Fx,Fy)|TP], [d(D,pos(Fx,Fy))|TD], pos(AgX,AgY))
    : switch(X,Y) & jia.is_corral_switch(X,Y) & // get the switch of our corral
      .print("yyy init test open corral for switch ",X,",",Y) & 
      not (scheme(open_corral,SchId) & scheme_group(SchId, _) ) & // there is no scheme to open
-     pos(MeX, MeY, _) &  jia.path_length(MeX,MeY,X,Y,Dist) & 
-     .print("yyy my distance from corral switch is ",Dist) & Dist < 15 & // if I am near
+     //pos(MeX, MeY, _) & jia.path_length(MeX,MeY,X,Y,Dist) &
+     dist_cow_near_corral(Dist) &
+     .print("yyy near cow distance from corral center is ",Dist) &
+     Dist < 5 & 
      .findall(Boy, play(Boy, herdboy,Gr), Cand) &
-     .print("yyy candidates for porter1 in group ",Gr, " are ",Cand) & Cand \== []
+     .print("yyy candidates for porter1 in group ",Gr, " are ",Cand) & 
+     Cand \== []
   <- .print("ooo yyy I should start an open corral scheme for group ",Gr);
      !find_closest(Cand,pos(X,Y),HA);
      .print("yyy near corral is ",HA);
      jmoise.create_scheme(open_corral, [Gr], SchId);
      ?ally_pos(HA,AX,AY);
      jia.switch_places(X,Y,AX,AY,PX,PY,_,_);
+     .my_name(Me);
      jmoise.set_goal_arg(SchId,goto_switch1,"X",PX);
      jmoise.set_goal_arg(SchId,goto_switch1,"Y",PY);
+     jmoise.set_goal_arg(SchId,end_open_corral,"Boss", Me);
      .send(HA, achieve, change_role(gatekeeper1, Gr)).
      
 +!start_open_corral[scheme(Sch),mission(Mission),group(Gr)].
 
 { end }
 
++scheme(open_corral,_) 
+  <- .abolish(cow_near_corral(_)).
 
 { begin maintenance_goal("+pos(_,_,_)") }
 
+/*
 +!end_open_corral[scheme(Sch),mission(Mission),group(Gr)]
    : // if the leader is too far, remove the sch
      group(_,Gr)[owner(O)] & 
@@ -246,15 +260,25 @@ calc_distances([pos(Fx,Fy)|TP], [d(D,pos(Fx,Fy))|TD], pos(AgX,AgY))
      not (ally_pos(_,AlX,AlY) & jia.corral(AlX,AlY) & .print("yyy vvv but there is an agent in the corral")) // no ally in corral
   <- !!change_role(herdboy,Gr);
      jmoise.remove_scheme(Sch).
+*/
 
-+!end_open_corral[scheme(Sch),mission(Mission),group(Gr)]
++!end_open_corral(_)[scheme(Sch),mission(Mission),group(Gr)]
+   : // if the near cow is too far, remove the sch
+     dist_cow_near_corral(Dist) &
+     .print("yyy vvv distance of near cow to corral: ",Dist) & 
+     Dist > 7 //& 
+     //not (ally_pos(_,AlX,AlY) & jia.corral(AlX,AlY) & .print("yyy vvv but there is an agent in the corral")) // no ally in corral
+  <- !!change_role(herdboy,Gr);
+     jmoise.remove_scheme(Sch).
+
++!end_open_corral(_)[scheme(Sch),mission(Mission),group(Gr)]
    : not group(_,Gr) & 
      .print("yyy vvv no open curral group anymore ")
   <- !!change_role(herdboy,Gr);
      jmoise.remove_scheme(Sch).
 
-+!end_open_corral[scheme(Sch),mission(Mission),group(Gr)]
-   : // if I am too far from switch
++!end_open_corral(_)[scheme(Sch),mission(Mission),group(Gr)]
+   : // if I am too far from switch (because I discovered some obstacle)
      pos(MeX, MeY, _) &
      goal_state(Sch,goto_switch1(SX,SY),_) & 
      jia.path_length(MeX,MeY,SX,SY,Dist) & 
@@ -263,7 +287,9 @@ calc_distances([pos(Fx,Fy)|TP], [d(D,pos(Fx,Fy))|TD], pos(AgX,AgY))
   <- !!change_role(herdboy,Gr);
      jmoise.remove_scheme(Sch).
 
-+!end_open_corral[scheme(Sch),mission(Mission),group(Gr)].
++!end_open_corral(Boss)[scheme(Sch),mission(Mission),group(Gr)]
+  <- .abolish(cow_near_corral(_));
+     .send(Boss, askOne, cow_near_corral(_) ).
 
 { end }
 

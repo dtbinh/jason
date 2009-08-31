@@ -8,6 +8,7 @@ import jason.asSemantics.Unifier;
 import jason.asSyntax.ListTerm;
 import jason.asSyntax.ListTermImpl;
 import jason.asSyntax.ObjectTermImpl;
+import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 import jason.environment.grid.Location;
 
@@ -29,7 +30,7 @@ import arch.LocalWorldModel;
  */
 public class cluster extends DefaultInternalAction {
     
-    public static final int COWS_BY_BOY    = 5;
+    public static final int COWS_BY_BOY    = 6;
 	public static final int MAXCLUSTERSIZE = (7*COWS_BY_BOY)-2; // a size where 7 agents is enough
 	
 	static Logger logger = null;
@@ -49,11 +50,17 @@ public class cluster extends DefaultInternalAction {
         	if (args.length == 1) {
                 return un.unifies(args[0], new ObjectTermImpl(locs));        	    
         	} else {
+        	    Structure nearCow = null;
         		ListTerm r = new ListTermImpl();
         		ListTerm tail = r;
         		for (Location l: locs) {
-        			tail = tail.append(createStructure("pos", createNumber(l.x), createNumber(l.y)));
+        		    Structure pos = createStructure("pos", createNumber(l.x), createNumber(l.y));
+        			tail = tail.append(pos);
+        			if (nearCow == null) // the first location is of the near cow
+        			    nearCow = pos;
         		}
+        		if (args.length > 2 && nearCow != null)
+        		    un.unifies(args[2], nearCow);
                 return un.unifies(args[0], new ObjectTermImpl(locs)) && 
                        un.unifies(args[1], r);               
         	}

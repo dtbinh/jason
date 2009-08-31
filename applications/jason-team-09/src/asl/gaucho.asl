@@ -29,7 +29,8 @@
 +?ally_pos(Name,X,Y) : .my_name(Name) <- ?pos(X,Y,_).
 
 +corral(UpperLeftX,UpperLeftY,DownRightX,DownRightY)
-  <- -+corral_center( (UpperLeftX + DownRightX)/2, (UpperLeftY + DownRightY)/2).
+  <- -+corral_center( (UpperLeftX + DownRightX)/2, (UpperLeftY + DownRightY)/2);
+     -+corral_half_width( math.abs(UpperLeftX - DownRightX) /2).
 
   
 +end_of_simulation(_Result)
@@ -85,10 +86,20 @@
   
 +!try_adopt(_Role,[]).
 +!try_adopt(Role,[G|_])
-   : group(_,G)[owner(O)] & ally_pos(O,OX,OY) & pos(MyX,MyY,_) & jia.path_length(MyX, MyY, OX, OY, _, fences) &
+   : group(exploration_grp,G)[owner(O)] & ally_pos(O,OX,OY) & pos(MyX,MyY,_) & jia.path_length(MyX, MyY, OX, OY, _, fences) &
      not (scheme_group(Sch,G) & scheme(pass_fence_sch,Sch))	 // do not enter in groups passing fences
   <- .print("ooo try role ",Role, " in ",G);
      jmoise.adopt_role(Role,G).
++!try_adopt(Role,[G|_])
+   : group(herding_grp,G)[owner(O)] & ally_pos(O,OX,OY) & pos(MyX,MyY,_) & jia.path_length(MyX, MyY, OX, OY, _, fences)
+  <- .print("ooo try role ",Role, " in ",G);
+     .send(O,askAll,play(_, herdboy, _), LBoys);
+     .send(O,askOne,current_cluster(_),current_cluster(LCluster));
+     .print("TTT - in try role - boys of ",O," are ",LBoys," his cluster size is ", .length(LCluster));
+     if (not has_enough_boys( .length(LBoys), .length(LCluster))) { // do not join a group with enough boys
+        .print("TTT - in try role - taking role ",Role," in ",G); 
+        jmoise.adopt_role(Role,G)
+     }.
 -!try_adopt(Role,[_|RG])
   <- .wait(500); 
      !try_adopt(Role,RG).
