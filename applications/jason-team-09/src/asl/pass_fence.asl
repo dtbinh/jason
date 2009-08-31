@@ -264,10 +264,10 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
      jmoise.set_goal_state(Sch,wait_others_pass,satisfied);
      
      .print("fff removing the scheme ",Sch," since all agentes has passed");
-     -pass_fence_scheme(SchId,_,_,_);
-     .broadcast(untell, pass_fence_scheme(SchId,_,_,_));
-     jmoise.set_goal_arg(SchId,pass_fence,"X",-1); // just to avoid others to think a scheme for a fence exists 
-     jmoise.set_goal_arg(SchId,pass_fence,"Y",-1);
+     -pass_fence_scheme(Sch,SX,SY,GK2);
+     .broadcast(untell, pass_fence_scheme(Sch,SX,SY,GK2));
+     jmoise.set_goal_arg(Sch,pass_fence,"X",-1); // just to avoid others to think a scheme for a fence exists 
+     jmoise.set_goal_arg(Sch,pass_fence,"Y",-1);
      !!remove_scheme_next_cicles(Sch);
 
      // if I am the poter1 (the last to pass), I need to finish it all
