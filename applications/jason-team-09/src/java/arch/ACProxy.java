@@ -282,17 +282,17 @@ public class ACProxy extends ACAgent implements Runnable {
 		boolean ok = true;
 		String  pingMsg;
 		
-		public void run() {
-			int d = new Random().nextInt(10000);
+		synchronized  public void run() {
+			int d = new Random().nextInt(15000);
             try {
                 while (running) {
                     if (isConnected())
-                        sleep(20000+d);
+                        sleep(40000+d);
                     else 
-                        sleep(2000);
+                        sleep(5000);
 					count++;
-					ok = false;
 					sentTime = System.currentTimeMillis();
+                    ok = false;
 					if (isConnected()) {
 					    pingMsg = "test:"+count;
 					    logger.info("Sending ping "+pingMsg);
