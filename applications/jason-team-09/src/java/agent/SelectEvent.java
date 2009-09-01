@@ -44,9 +44,11 @@ public class SelectEvent extends Agent {
         super.buf(percepts);
         if (cleanCows) {
             // remove old cows from the memory
-            
-            ((UniqueBelsBB)getTS().getAg().getBB()).remove_old_bels(Literal.parseLiteral("cow(x,x,x)"), "step", 6, getTS().getUserAgArch().getCycleNumber());
-            cleanCows = false;
+            int step = getTS().getUserAgArch().getCycleNumber();
+            if (step > 3) {
+                ((UniqueBelsBB)getTS().getAg().getBB()).remove_old_bels(Literal.parseLiteral("cow(x,x,x)"), "step", 6, step);
+                cleanCows = false;
+            }
         }
     }
 }

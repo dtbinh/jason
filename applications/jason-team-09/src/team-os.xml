@@ -156,7 +156,7 @@
               </plan>
             </goal>
             
-            <mission id="porter1" min="1">
+            <mission id="porter1" min="1" max="1">
                 <goal id="goto_switch1" />
                 <goal id="end_open_corral" />
             </mission>
@@ -193,12 +193,12 @@
               </plan>
             </goal>
             
-            <mission id="porter1" min="1">
+            <mission id="porter1" min="1" max="1">
                 <goal id="goto_switch1" />
                 <goal id="wait_gatekeeper2" />
                 <goal id="cross_fence" />
             </mission>
-            <mission id="porter2" min="1">
+            <mission id="porter2" min="1" max="1">
                 <goal id="goto_switch2" />
                 <goal id="wait_others_pass" />
             </mission>            

@@ -112,7 +112,7 @@ dist_cow_near_corral(Dist) :-
      has_enough_boys(N-1, .length(CAsList))
      // (N > 3 | (N > 1 & current_cluster(CAsList) & .length(CAsList) < 5))
   <- .print("rrr release an agent of my herding group, I have ",N," boys for a cluster of size ",.length(CAsList));
-     !release_boy([gaucho9,gaucho10,gaucho7,gaucho8,gaucho5,gaucho6,gaucho3,gaucho4],Gr);
+     !release_boy([gaucho9,gaucho10,gaucho7,gaucho8,gaucho5,gaucho6,gaucho3,gaucho4,gaucho1,gaucho2],Gr);
      .wait({+pos(_,_,_)}). // wait an extra step before try to release agents again
 +!release_boys[scheme(Sch),mission(Mission),group(Gr)].
 
@@ -133,7 +133,8 @@ dist_cow_near_corral(Dist) :-
 +!define_formation[scheme(Sch),mission(Mission), group(Gr)]
   <- .print("ooo I should define the formation of my group ",Gr);
      jia.cluster(Cluster,CAsList,NearCow);
-     -+current_cluster(CAsList);
+     .abolish(current_cluster(_)); // use abolish, since some some reason another agent sent its cluster to me, so remove them all
+     +current_cluster(CAsList);
      -+cow_near_corral(NearCow);
      .abolish(has_boy_beyond_fence(_,_));
      if ( .length(CAsList,CAL) & CAL > 0) {
@@ -219,7 +220,7 @@ calc_distances([pos(Fx,Fy)|TP], [d(D,pos(Fx,Fy))|TD], pos(AgX,AgY))
 +!start_open_corral[scheme(Sch),mission(Mission),group(Gr)]
    : switch(X,Y) & jia.is_corral_switch(X,Y) & // get the switch of our corral
      .print("yyy init test open corral for switch ",X,",",Y) & 
-     not (scheme(open_corral,SchId) & scheme_group(SchId, _) ) & // there is no scheme to open
+     not scheme(open_corral,SchId) & // scheme_group(SchId, _)) & // there is no scheme to open
      //pos(MeX, MeY, _) & jia.path_length(MeX,MeY,X,Y,Dist) &
      dist_cow_near_corral(Dist) &
      .print("yyy near cow distance from corral center is ",Dist) &
@@ -237,7 +238,15 @@ calc_distances([pos(Fx,Fy)|TP], [d(D,pos(Fx,Fy))|TD], pos(AgX,AgY))
      jmoise.set_goal_arg(SchId,goto_switch1,"X",PX);
      jmoise.set_goal_arg(SchId,goto_switch1,"Y",PY);
      jmoise.set_goal_arg(SchId,end_open_corral,"Boss", Me);
-     .send(HA, achieve, change_role(gatekeeper1, Gr)).
+     .send(HA, achieve, change_role(gatekeeper1, Gr));
+     .wait({ +pos(_,_,_) }). // wait one extra step so that HA can adopt the role and the next plan does not trigger
+     
++!start_open_corral[scheme(Sch),mission(Mission),group(Gr)]
+   : // if my open_corral scheme has no players, remove it
+     .my_name(Me) & 
+     scheme(open_corral,SchId)[owner(Me)] & sch_players(SchId,0)
+  <- .print("yyy removing scheme ",SchId," since no agent belongs to it");
+     jmoise.remove_scheme(SchId).
      
 +!start_open_corral[scheme(Sch),mission(Mission),group(Gr)].
 

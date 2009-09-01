@@ -280,8 +280,8 @@ corral_half_width(W) :-
 // if some scheme is finished, drop all intentions related to it.
 -scheme(_Spec,Sch)
   <- .print("ooo Removing all desires related to scheme ",Sch);
-     .abolish(_[scheme(Sch)]);
-     .drop_desire(_[scheme(Sch)]).
+     .drop_desire(_[scheme(Sch)]);
+     .abolish(_[scheme(Sch)]).
 
 // If my group is removed, remove also the schemes	 
 -group(_Spec,Gid)[owner(Me)]

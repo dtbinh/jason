@@ -1,5 +1,6 @@
 package jia;
 
+import env.WorldModel;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
@@ -16,7 +17,7 @@ public class fence extends DefaultInternalAction {
         LocalWorldModel model = ((CowboyArch)ts.getUserAgArch()).getModel();
         int x = (int)((NumberTerm)terms[0]).solve(); 
         int y = (int)((NumberTerm)terms[1]).solve();
-        return model.hasFence(x, y);
+        return model.hasObject(WorldModel.FENCE, x, y);
     }
 }
 

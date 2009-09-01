@@ -86,7 +86,7 @@ public class CowboyArch extends OrgAgent { //IdentifyCrashed {
 	    if (getMyId() == 0)
 	        gui = true;
 	    if ("yes".equals(stts.getUserParameter("write_status")))
-	        writeStatusThread = WriteStatusThread.create(this);
+	        writeStatusThread = WriteStatusThread.create(this, "yes".equals(stts.getUserParameter("dump_ags_mind")));
 	    
 	    teamId = stts.getUserParameter("teamid");
 	    if (teamId == null) 
@@ -209,6 +209,7 @@ public class CowboyArch extends OrgAgent { //IdentifyCrashed {
         Location c = new Location(x, y);
         if (model.getCorral().contains(c)) {// cows in the corral are not perceived
             perceivedCows.remove(cowId);
+            lastSeen.remove(cowId);
         } else {
             perceivedCows.put(cowId, c);
             lastSeen.put(cowId, getSimStep());
@@ -235,6 +236,9 @@ public class CowboyArch extends OrgAgent { //IdentifyCrashed {
     }
     public Map<Integer,Location> getPerceivedCows() {
         return perceivedCows;
+    }
+    public int getLastSeenCow(int cow) {
+        return lastSeen.get(cow);
     }
     
 	/** update the model with obstacle and share them with the team mates */
@@ -429,7 +433,7 @@ public class CowboyArch extends OrgAgent { //IdentifyCrashed {
             if (allEquals(lastActions) && lastActions.iterator().next() != Move.skip) {
                 final Location newLoc = WorldModel.getNewLocationForAction(getLastLocation(), lastActions.peek());
                 if (newLoc != null && !model.hasObject(WorldModel.OBSTACLE, newLoc)) {
-                    if (model.hasFence(newLoc.x, newLoc.y)) {
+                    if (model.hasObject(WorldModel.FENCE, newLoc)) {
                         logger.info("uuu adding restart for "+getAgName()+", case of fence, last actions "+lastActions);
                         getTS().getC().addAchvGoal(new LiteralImpl("restart_fence_case"), Intention.EmptyInt);
                     } else {

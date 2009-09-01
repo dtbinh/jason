@@ -139,6 +139,8 @@ public class TestBasicHerding {
     @Test
     public void testOtherSideFence() throws Exception {
         scenario4();
+        assertTrue( model.hasObject( WorldModel.FENCE, new Vec(18,2).getLocation(model)) );
+        
         Vec start = new Vec(model, 15, 45);
         Vec fence = new Vec(model, 18, 45);
         Vec target = new other_side_fence().computesOtherSide(model, start, fence);

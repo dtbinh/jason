@@ -1,6 +1,43 @@
+* 2010 team
+- [ ] use 2009 team, and others available, as opponents
+- [ ] see matches
+
+- [ ] background: general view of cows (model), background computation of possible clusters and their utility
+      eventually size of the team, allocation, ...
+
+- [ ] grupos de exploracao devem ser maiores (2 gr de 3 e um gr de 4)
+      - com formacao tb.
+      . evitaria problemas de perder parceiro e nao conseguir passar fence
+      . o leader podia continuar indo pro target evitando loops
+      . accommodate agents that can
+        not find a partner in the same area (due to the fences)
+- [ ] duplicate cows in BB and better handling of cows
+      - not only perception, cows, even seen a long time ago are still 'known'
+      - only one place for a cow
+
+- [ ] retaliation strategy
+
+- [ ] organisational trace/dump, +- like ag status (location+actions)
+
+- [ ] se a formacao do cluster eh muito horizontal (e nao oval) a formacao meia-lua pra tocar nao eh muito boa (? sera)
+
+- [ ] better GUI, mostra goals/roles dos agentes, o caminho que fizeram, o cluster atual, ....
+
 * 2009 team
 
+- [ ] increase cost of passing in a switch-lock place (to avoid to go there and cause conflict for who needs to go)
+
+- [ ] ver log5, 3 agentes travaram no switch do curral
+- [ ] some times, the formation is to far from the cluster (could be fault perception of cows, but also formation problem)
+- [ ] ver bug Jason Porter2=XXX no pass_fence.asl
+- [ ] usar .length do Jason (qdo arrumado)
+- [ ] problema aparente no IF do jason
+- [ ] declaration of bels, goals for Jason, so to check/warn programmer
+- [ ] remover de percepcao vacas que estao em outra area? (mas so com closed fence, nao open)
+- [ ] have only local world model (called worldmodel in pack env)
 - [X] impedir ags de entrar no curral
+
+- [X] hasFence usa binario CLOSE+OPEN
 
 - [X] debug why ags are not released from herding small clusters
 - [X] ver se crencas pass_fence_scheme(sch_189_pass_fence_sch,75,57,gaucho2) sao removidas da BB
@@ -17,27 +54,7 @@
 - [X] use cluster to detect intersections
 - [X] pass-fence for herding
 - [X] a decent plan for !release_boys
-
-- [ ] declaration of bels, goals for Jason, so to check/warn programmer
-
-- [ ] remover de percepcao vacas que estao em outra area? (mas so com closed fence, nao open)
-
-- [ ] grupos de exploracao devem ser maiores (2 gr de 3 e um gr de 4)
-      - com formacao tb.
-      . evitaria problemas de perder parceiro e nao conseguir passar fence
-      . o leader podia continuar indo pro target evitando loops
-      . accommodate agents that can
-        not find a partner in the same area (due to the fences)
-- [ ] duplicate cows in BB and better handling of cows
-      - not only perception, cows, even seen a long time ago are still 'known'
-      - only one place for a cow
-- [ ] hasFence usa binario CLOSE+OPEN
-- [ ] melhor criteria para criar pass_fence/open_corral (nao ser 'estar a 15 passos)
-
-- [ ] ver bug Jason Porter2=XXX no pass_fence.asl
-- [ ] usar .length do Jason (qdo arrumado)
-- [ ] problema aparente no IF do jason
-
+- [X] melhor criteria para criar pass_fence/open_corral (nao ser 'estar a 15 passos)
 - [X] arrumar scouter location, tem que ser na mesma area (cons. fence) que o leader
 - [X] backup de distancias entre lugares
     - usado em varios lugares, especialmente cluster

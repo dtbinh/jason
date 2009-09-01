@@ -35,7 +35,7 @@ public class fence_switch extends DefaultInternalAction {
         			if(i == 0 && j == 0) continue;
         			posx = (int)((NumberTerm)args[0]).solve()+i;
         			posy = (int)((NumberTerm)args[1]).solve()+j;
-        			while(model.hasFence(posx,posy)){
+        			while(model.hasObject(WorldModel.FENCE,posx,posy)){
 //        				ts.getAg().getLogger().info("ooooo cell at"+posx+"x"+posy+"has no switch, but it's a fence");
         				posx+= i;
         				posy+= j;

@@ -23,6 +23,7 @@ public class WorldModel extends GridWorldModel {
     public static final int   SWITCH = 1024;
     public static final int   OPEN_FENCE = 2048;
     public static final int   CLOSED_FENCE = 4096;
+    public static final int   FENCE = OPEN_FENCE + CLOSED_FENCE;
 
     public static final int   nbActions = 8;
 

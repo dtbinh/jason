@@ -100,22 +100,18 @@ public class LocalWorldModel extends WorldModel {
                                remove(OPEN_FENCE, x, y);
                            break;
         case SWITCH:       // the fence besides is an obstacle
-                           if (hasFence(x+1,y)) add(OBSTACLE, x+1,y);
-                           if (hasFence(x-1,y)) add(OBSTACLE, x-1,y);
-                           if (hasFence(x,y+1)) add(OBSTACLE, x,y+1);
-                           if (hasFence(x,y-1)) add(OBSTACLE, x,y-1);
+                           if (hasObject(FENCE, x+1,y)) add(OBSTACLE, x+1,y);
+                           if (hasObject(FENCE, x-1,y)) add(OBSTACLE, x-1,y);
+                           if (hasObject(FENCE, x,y+1)) add(OBSTACLE, x,y+1);
+                           if (hasObject(FENCE, x,y-1)) add(OBSTACLE, x,y-1);
                            add(OBSTACLE, x, y); // switch is obstacle
                            break;
         }   
     	super.add(value, x, y);
     }
     
-    public boolean hasFence(int x, int y) {
-        return hasObject(OPEN_FENCE, x,y) || hasObject(CLOSED_FENCE, x,y);
-    }
-    
     public boolean isHorizontalFence(int x, int y) {
-        return hasFence(x+1, y) || hasFence(x-1, y);
+        return hasObject(WorldModel.FENCE, x+1, y) || hasObject(WorldModel.FENCE, x-1, y);
     }
     
     /*
@@ -398,7 +394,7 @@ public class LocalWorldModel extends WorldModel {
 	    		}
 	    		
     			Location l = new Location(x+dx,y+dy);
-	    		if (isFree(l) && !l.equals(agloc) && l.isInArea(tl, br) && !hasFence(l.x, l.y)) {
+	    		if (isFree(l) && !l.equals(agloc) && l.isInArea(tl, br) && !hasObject(WorldModel.FENCE, l.x, l.y)) {
 	    			if (visited[l.x][l.y] < minVisited) { // a place better then minVisited! go there
 	    				return l;
 	    			} if (visited[l.x][l.y] == minVisited) { // a place in the minVisited level
@@ -458,7 +454,7 @@ public class LocalWorldModel extends WorldModel {
                             for (int j = 0; j < getHeight(); j++) {
                                 if (hasObject(WorldModel.OBSTACLE, i, j) && !arch.isEphemeralObstacle(new Location(i,j))) 
                                     sout.append("obstacle("+i+","+j+")\n");
-                                if (hasFence(i, j)) 
+                                if (hasObject(WorldModel.FENCE, i, j)) 
                                     sout.append("fence("+i+","+j+")\n");
                             }
                         

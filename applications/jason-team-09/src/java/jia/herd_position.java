@@ -216,7 +216,7 @@ public class herd_position extends DefaultInternalAction {
     		//System.out.println(" test "+s+" = "+l+" -- ");
         	if ( (!model.inGrid(l) || model.hasObject(WorldModel.OBSTACLE, l)  || model.hasObject(WorldModel.CORRAL, l)) && lastloc != null)
         		return lastloc;
-            if ( fenceAsObs && model.hasFence(l.x, l.y) && lastloc != null)
+            if ( fenceAsObs && model.hasObject(WorldModel.FENCE, l) && lastloc != null)
                 return lastloc;
     		lastloc = l;
     	}

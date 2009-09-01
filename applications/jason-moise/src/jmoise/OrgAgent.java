@@ -226,7 +226,7 @@ public class OrgAgent extends AgArch {
                 // update the number of players
                 getTS().getAg().delBel(createLiteral( "sch_players", new Atom(sch.getId()), new UnnamedVar()));
                 getTS().getAg().addBel(createLiteral( "sch_players", new Atom(sch.getId()), createNumber(sch.getPlayersQty())));
-            } 
+            }
         }
         List<Literal> deleted = orgBUF(toAdd, schemeLiteral);
         

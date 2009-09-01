@@ -45,7 +45,7 @@ public class cluster extends DefaultInternalAction {
             if (model == null)
             	return false;
 
-        	List<Location> locs = getCluster(model, 4, arch); //WorldModel.cowPerceptionRatio
+        	List<Location> locs = getCluster(model, 3, arch); 
         	
         	if (args.length == 1) {
                 return un.unifies(args[0], new ObjectTermImpl(locs));        	    

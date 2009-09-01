@@ -228,7 +228,7 @@ public class ACProxy extends ACAgent implements Runnable {
 			for (int id: arq.getPerceivedCows().keySet()) {
 			    Location l = arq.getPerceivedCows().get(id);
                 Literal lc = createLiteral("cow", createNumber(id), createNumber(l.x), createNumber(l.y));
-                lc.addAnnot(createStructure("step", createNumber(step)));
+                lc.addAnnot(createStructure("step", createNumber( arq.getLastSeenCow(id))));
                 percepts.add(lc);
 			}
 			

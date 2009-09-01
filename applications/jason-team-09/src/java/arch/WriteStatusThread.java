@@ -23,11 +23,13 @@ public class WriteStatusThread extends Thread {
     static  WriteStatusThread instance = null;
     private WriteStatusThread() {}
     
-    public static WriteStatusThread create(CowboyArch owner) { 
+    public static WriteStatusThread create(CowboyArch owner, boolean dumpAgsMind) { 
         if (instance == null) {
             instance = new WriteStatusThread();
             instance.owner = owner;
+            instance.mindag = dumpAgsMind;
             instance.start();
+            
         }
         return instance;
     }    
@@ -36,6 +38,7 @@ public class WriteStatusThread extends Thread {
     }
     
     private CowboyArch owner = null; 
+    private boolean    mindag = true;
     
     private static CowboyArch[] agents = new CowboyArch[WorldModel.agsByTeam];
 
@@ -63,10 +66,11 @@ public class WriteStatusThread extends Thread {
             asl2xml transformer = new asl2xml();
             
             out = new PrintWriter(fileName);
-            PrintWriter map = new PrintWriter("map-status.txt");
+            //PrintWriter map = new PrintWriter("map-status.txt");
             while (true) {
                 try {
                     // write map
+                    /*
                     map.println("\n\n** Agent "+owner.getAgName()+" in cycle "+owner.getSimStep()+"\n");
                     //for (int i=0; i<model.getNbOfAgs(); i++) {
                         // out.println("miner"+(i+1)+" is carrying "+model.getGoldsWithAg(i)+" gold(s), at "+model.getAgPos(i));
@@ -75,6 +79,7 @@ public class WriteStatusThread extends Thread {
                         map.println(owner.getModel().toString());                        
                     }
                     map.flush();
+                    */
                     
                     // write location of the agents
                     long timebefore = System.currentTimeMillis();
@@ -109,19 +114,21 @@ public class WriteStatusThread extends Thread {
                     
                     
                     // store the agents' mind
-                    for (CowboyArch arch : agents) {
-                        if (arch == null) break;
-                        try {
-                            File dirmind = new File("mind-ag/"+arch.getAgName());
-                            if (!dirmind.exists())
-                                dirmind.mkdirs();
-                            String agmind = transformer.transform(arch.getTS().getAg().getAgState());
-                            String filename = String.format("%5d.xml",arch.getSimStep()).replaceAll(" ","0");
-                            FileWriter outmind = new FileWriter(new File(dirmind+"/"+filename));
-                            outmind.write(agmind);
-                            outmind.close();
-                        } catch (Exception e) {
-                            System.out.println("error getting agent status "+e);                            
+                    if (mindag) {
+                        for (CowboyArch arch : agents) {
+                            if (arch == null) break;
+                            try {
+                                File dirmind = new File("mind-ag/"+arch.getAgName());
+                                if (!dirmind.exists())
+                                    dirmind.mkdirs();
+                                String agmind = transformer.transform(arch.getTS().getAg().getAgState());
+                                String filename = String.format("%5d.xml",arch.getSimStep()).replaceAll(" ","0");
+                                FileWriter outmind = new FileWriter(new File(dirmind+"/"+filename));
+                                outmind.write(agmind);
+                                outmind.close();
+                            } catch (Exception e) {
+                                System.out.println("error getting agent status "+e);                            
+                            }
                         }
                     }
                     

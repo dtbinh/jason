@@ -196,7 +196,8 @@ public class OrgManager extends AgArch {
             GroupInstance gr = currentOE.findGroup(grId);
 
             // send new OE to the members of the group
-            updateMembersOE(gr.getAgents(true));
+            updateMembersOE(gr.getAgents(true), gr.getOwner());
+
             sendReply(sender, mId, "ok");
         }        
     }
@@ -213,9 +214,8 @@ public class OrgManager extends AgArch {
             GroupInstance gr = currentOE.findGroup(grId);
 
             // notify other players
-            updateMembersOE(gr.getAgents(true));
             // and the sender (that is not in the group anymore)
-            updateMembersOE(sender);
+            updateMembersOE(gr.getAgents(true), sender, gr.getOwner());
             
             sendReply(sender, mId, "ok");
         }
@@ -233,7 +233,7 @@ public class OrgManager extends AgArch {
             SchemeInstance sch = currentOE.findScheme(schId);
 
             // notify to the scheme players the new player
-            updateMembersOE(sch.getPlayers());
+            updateMembersOE(sch.getPlayers(), sch.getOwner());
             sendReply(sender, mId, "ok");
         }
     }
@@ -266,9 +266,7 @@ public class OrgManager extends AgArch {
                 sch = omp.getScheme();
             }
 
-            updateMembersOE(sch.getPlayers());
-            updateMembersOE(sender);
-            updateMembersOE(sch.getOwner()); // the owner my be removed its mission already
+            updateMembersOE(sch.getPlayers(),sender,sch.getOwner()); // the owner may be removed its mission already
 
             sendReply(sender, mId, "ok");
         }
@@ -564,7 +562,7 @@ public class OrgManager extends AgArch {
 
     /* send OE to a set of agents */
     @SuppressWarnings("unchecked")
-	private void updateMembersOE(Collection ags) {
+	private void updateMembersOE(Collection ags, OEAgent... others) {
         Set<OEAgent> all = new HashSet<OEAgent>(); // to remove duplicates
         Iterator iAgs = ags.iterator();
         while (iAgs.hasNext()) {
@@ -576,9 +574,11 @@ public class OrgManager extends AgArch {
                 all.add(((Player) next).getPlayer());
 
         }
-        for (OEAgent ag : all) {
+        if (others != null)
+            for (OEAgent ag: others) 
+                all.add(ag);
+        for (OEAgent ag : all) 
             updateMembersOE(ag);
-        }
     }
 
     /** send OE to one agent */
