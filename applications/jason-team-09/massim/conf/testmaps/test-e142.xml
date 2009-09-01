@@ -95,25 +95,25 @@
 <actionclass class="massim.InvalidAction" id="invalid"/>
 </actionclassmap>
 
-<account actionclassmap="Grid" auxtimeout="5" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="A" timeout="8" username="a1"/>
-<account actionclassmap="Grid" auxtimeout="5" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="A" timeout="8" username="a2"/>
-<account actionclassmap="Grid" auxtimeout="5" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="A" timeout="8" username="a3"/>
-<account actionclassmap="Grid" auxtimeout="5" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="A" timeout="8" username="a4"/>
-<account actionclassmap="Grid" auxtimeout="5" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="A" timeout="8" username="a5"/>
-<account actionclassmap="Grid" auxtimeout="5" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="A" timeout="8" username="a6"/>
-<account actionclassmap="Grid" auxtimeout="5" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="A" timeout="8" username="a7"/>
-<account actionclassmap="Grid" auxtimeout="5" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="A" timeout="8" username="a8"/>
-<account actionclassmap="Grid" auxtimeout="5" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="A" timeout="8" username="a9"/>
-<account actionclassmap="Grid" auxtimeout="5" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="A" timeout="8" username="a10"/>
-<account actionclassmap="Grid" auxtimeout="500" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="B" timeout="1000" username="b1"/>
-<account actionclassmap="Grid" auxtimeout="500" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="B" timeout="1000" username="b2"/>
-<account actionclassmap="Grid" auxtimeout="500" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="B" timeout="1000" username="b3"/>
-<account actionclassmap="Grid" auxtimeout="500" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="B" timeout="1000" username="b4"/>
-<account actionclassmap="Grid" auxtimeout="500" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="B" timeout="1000" username="b5"/>
-<account actionclassmap="Grid" auxtimeout="500" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="B" timeout="1000" username="b6"/>
-<account actionclassmap="Grid" auxtimeout="500" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="B" timeout="1000" username="b7"/>
-<account actionclassmap="Grid" auxtimeout="500" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="B" timeout="1000" username="b8"/>
-<account actionclassmap="Grid" auxtimeout="500" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="B" timeout="1000" username="b9"/>
-<account actionclassmap="Grid" auxtimeout="500" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="B" timeout="1000" username="b10"/>
+<account actionclassmap="Grid" auxtimeout="500" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="A" timeout="2000" username="a1"/>
+<account actionclassmap="Grid" auxtimeout="500" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="A" timeout="2000" username="a2"/>
+<account actionclassmap="Grid" auxtimeout="500" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="A" timeout="2000" username="a3"/>
+<account actionclassmap="Grid" auxtimeout="500" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="A" timeout="2000" username="a4"/>
+<account actionclassmap="Grid" auxtimeout="500" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="A" timeout="2000" username="a5"/>
+<account actionclassmap="Grid" auxtimeout="500" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="A" timeout="2000" username="a6"/>
+<account actionclassmap="Grid" auxtimeout="500" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="A" timeout="2000" username="a7"/>
+<account actionclassmap="Grid" auxtimeout="500" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="A" timeout="2000" username="a8"/>
+<account actionclassmap="Grid" auxtimeout="500" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="A" timeout="2000" username="a9"/>
+<account actionclassmap="Grid" auxtimeout="500" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="A" timeout="2000" username="a10"/>
+<account actionclassmap="Grid" auxtimeout="500" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="B" timeout="2000" username="b1"/>
+<account actionclassmap="Grid" auxtimeout="500" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="B" timeout="2000" username="b2"/>
+<account actionclassmap="Grid" auxtimeout="500" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="B" timeout="2000" username="b3"/>
+<account actionclassmap="Grid" auxtimeout="500" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="B" timeout="2000" username="b4"/>
+<account actionclassmap="Grid" auxtimeout="500" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="B" timeout="2000" username="b5"/>
+<account actionclassmap="Grid" auxtimeout="500" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="B" timeout="2000" username="b6"/>
+<account actionclassmap="Grid" auxtimeout="500" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="B" timeout="2000" username="b7"/>
+<account actionclassmap="Grid" auxtimeout="500" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="B" timeout="2000" username="b8"/>
+<account actionclassmap="Grid" auxtimeout="500" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="B" timeout="2000" username="b9"/>
+<account actionclassmap="Grid" auxtimeout="500" defaultactionclass="GridSimulationAgentAction" maxpacketlength="65536" password="1" team="B" timeout="2000" username="b10"/>
 </accounts>
 </conf>
