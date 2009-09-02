@@ -11,7 +11,8 @@ import jmoise.OrgAgent;
 
 /** 
  *  An agent architecture that try to identify a crashed agent and then try to fix it.
- * 
+ *  (NOT USED)
+ *  
  *  @author Jomi
  */
 public class IdentifyCrashed extends OrgAgent {

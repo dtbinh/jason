@@ -64,9 +64,10 @@ public class WorldModel extends GridWorldModel {
     	return agsByTeam;
     }
     
+    private static final int OBS_FOR_NOT_FREE = ENEMY + AGENT + COW + CORRAL + ENEMYCORRAL;
     @Override 
     public boolean isFree(int x, int y) {
-        return super.isFree(x,y) && !hasObject(ENEMY, x, y) && !hasObject(AGENT, x, y) && !hasObject(COW, x, y) && !hasObject(CORRAL, x, y) && !hasObject(ENEMYCORRAL, x, y);
+        return super.isFree(x,y) && !hasObject(OBS_FOR_NOT_FREE, x, y); //!hasObject(ENEMY, x, y) && !hasObject(AGENT, x, y) && !hasObject(COW, x, y) && !hasObject(CORRAL, x, y) && !hasObject(ENEMYCORRAL, x, y);
     }
 
     public WorldView getView() {
@@ -89,18 +90,6 @@ public class WorldModel extends GridWorldModel {
     public Area getCorral() {
         return corral;
     }
-    /*
-    public boolean inCorral(Location l) {
-        return l.x >= corralUL.x && l.x <= corralDR.x &&
-               l.y >= corralUL.y && l.y <= corralDR.y;
-    }
-    */
-    
-    /*
-    public Location getCorralCenter() {
-        return new Location( (corralUL.x + corralDR.x)/2, (corralUL.y + corralDR.y)/2);
-    }
-    */
 
     public int getCowsBlue() {
     	return cowsBlue;
@@ -166,10 +155,10 @@ public class WorldModel extends GridWorldModel {
         }
         Location n = null;
         switch (dir) {
-        case north:    n =  new Location(l.x, l.y - 1); break;
+        case north:  n =  new Location(l.x, l.y - 1); break;
         case south:  n =  new Location(l.x, l.y + 1); break;
-        case east: n =  new Location(l.x + 1, l.y); break;
-        case west:  n =  new Location(l.x - 1, l.y); break;
+        case east:   n =  new Location(l.x + 1, l.y); break;
+        case west:   n =  new Location(l.x - 1, l.y); break;
         }
         if (n != null && canMoveTo(ag, n)) {
             // if there is an agent there, move that agent

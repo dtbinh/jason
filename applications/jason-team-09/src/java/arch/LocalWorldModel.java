@@ -281,6 +281,7 @@ public class LocalWorldModel extends WorldModel {
     	*/
     }
     
+    /** computes the distance between locations using A* and manages a cache of values */
     public int pathLength(Location start, Location target, boolean fenceAsObstacle, AgArch arch) throws Exception {
         if (distOutdated) {
             synchronized (dist) {
@@ -439,6 +440,8 @@ public class LocalWorldModel extends WorldModel {
     }
 
     private static final File directory = new File("bak-obs");
+    
+    /** creates a thread that stores obstacles, fences, switches in a file */
     public void createStoreObsThread(final CowboyArch arch) {
         new Thread("store obs") {
             @Override

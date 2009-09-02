@@ -13,6 +13,7 @@ import jason.asSyntax.directives.Directive;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/** directive used to generate maintenance goals related to organisational/ciclic goals */
 public class OrgMaintenanceGoal implements Directive {
 
     static Logger logger = Logger.getLogger(OrgMaintenanceGoal.class.getName());

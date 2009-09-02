@@ -21,24 +21,15 @@ MAS roman_farmers {
         //    - dump_ags_mind (boolean): whether to store the agents' mind in mind-ag directory
         //    - ac_sim_back_dir: the directory where massim stores the backup of the env state (used to show GUI)
         gaucho gaucho.asl
-              [teamid="gaucho", verbose=1,
+              [teamid="gaucho", verbose=1, write_status=yes, dump_ags_mind=yes,
                host="localhost", port=12300, username="b#nid", password="1"] 
               agentArchClass arch.ACArchitecture
 		      agentClass     agent.SelectEvent 
 		      beliefBaseClass agent.UniqueBelsBB("gsize(_,_)","steps(_)","ally_pos(key,_,_)","corral(_,_,_,_)",
 			                                     "target(_,_)", "group_leader(key,_)", //"cow(key,_,_)",
 												 "group_area(key, _)")
-			  #9;
-												  
-        gaucho10 gaucho.asl
-              [teamid="gaucho", verbose=1, gui=no, write_status=yes, dump_ags_mind=no,
-               host="localhost", port=12300, username="b#nid", password="1"] 
-              agentArchClass arch.ACArchitecture
-		      agentClass     agent.SelectEvent 
-		      beliefBaseClass agent.UniqueBelsBB("gsize(_,_)","steps(_)","ally_pos(key,_,_)","corral(_,_,_,_)",
-			                                     "target(_,_)", "group_leader(key,_)", //"cow(key,_,_)",
-												 "group_area(key, _)");
-												 
+			  #10;
+
 	directives: maintenance_goal = agent.OrgMaintenanceGoal;
 	
     aslSourcePath: "src/asl";

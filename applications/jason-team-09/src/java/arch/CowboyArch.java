@@ -85,8 +85,10 @@ public class CowboyArch extends OrgAgent { //IdentifyCrashed {
 	    gui = "yes".equals(stts.getUserParameter("gui"));
 	    if (getMyId() == 0)
 	        gui = true;
-	    if ("yes".equals(stts.getUserParameter("write_status")))
-	        writeStatusThread = WriteStatusThread.create(this, "yes".equals(stts.getUserParameter("dump_ags_mind")));
+	    boolean writeStatus = "yes".equals(stts.getUserParameter("write_status"));
+	    boolean dumpAgsMind = "yes".equals(stts.getUserParameter("dump_ags_mind"));
+	    if (writeStatus || dumpAgsMind)
+	        writeStatusThread = WriteStatusThread.create(this, writeStatus, dumpAgsMind);
 	    
 	    teamId = stts.getUserParameter("teamid");
 	    if (teamId == null) 
@@ -426,6 +428,9 @@ public class CowboyArch extends OrgAgent { //IdentifyCrashed {
                 getTS().getC().addAchvGoal(new LiteralImpl("restart"), Intention.EmptyInt);
                 //lo2 = new Location(-1,-1); // to not restart again in the next cycle
                 lastLocations.clear();
+                
+                perceivedCows.clear(); // TODO: we should not do that, but it seems this perceived cows is bugged. 
+                lastSeen.clear();
             } catch (Exception e) {
                 logger.info("Error in restart!"+ e);
             }

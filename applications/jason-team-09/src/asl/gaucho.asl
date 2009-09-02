@@ -42,8 +42,6 @@ corral_half_width(W) :-
    corral(UpperLeftX,_UpperLeftY,DownRightX,_DownRightY) &
    W = math.abs(UpperLeftX - DownRightX)/2.
    
-//    (math.abs(UpperLeftX - DownRightX)/2 + math.abs(UpperLeftY - DownRightY)/2)/2	 ).
-
   
 +end_of_simulation(_Result)
   <- -end_of_simulation(_);

@@ -24,15 +24,9 @@ public class WorldView extends GridWorldView {
 
 	private static final long serialVersionUID = 1L;
 
-    //MiningEnvironment env = null;
-    
 	JLabel     jCycle;
 	JLabel     jCowsC;
-
 	JLabel     jlMouseLoc;
-    //JComboBox  scenarios;
-    //JSlider    jSpeed;
-
 
     public void destroy() {
     	setVisible(false);
@@ -60,51 +54,15 @@ public class WorldView extends GridWorldView {
         JPanel args = new JPanel();
         args.setLayout(new BoxLayout(args, BoxLayout.Y_AXIS));
 
-        /*
-        scenarios = new JComboBox();
-        for (int i=1; i<=13; i++) {
-            scenarios.addItem(i);
-        }
-
-        JPanel sp = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        sp.setBorder(BorderFactory.createEtchedBorder());
-        sp.add(new JLabel("Scenario:"));
-        sp.add(scenarios);
-        
-        jSpeed = new JSlider();
-        jSpeed.setMinimum(0);
-        jSpeed.setMaximum(400);
-        jSpeed.setValue(50);
-        jSpeed.setPaintTicks(true);
-        jSpeed.setPaintLabels(true);
-        jSpeed.setMajorTickSpacing(100);
-        jSpeed.setMinorTickSpacing(20);
-        jSpeed.setInverted(true);
-        Hashtable<Integer,Component> labelTable = new Hashtable<Integer,Component>();
-        labelTable.put( 0, new JLabel("max") );
-        labelTable.put( 200, new JLabel("speed") );
-        labelTable.put( 400, new JLabel("min") );
-        jSpeed.setLabelTable( labelTable );
-        JPanel p = new JPanel(new FlowLayout());
-        p.setBorder(BorderFactory.createEtchedBorder());
-        p.add(jSpeed);
-        
-        args.add(sp);
-        args.add(p);
-        */
-
         JPanel msg = new JPanel();
         msg.setLayout(new BoxLayout(msg, BoxLayout.Y_AXIS));
         msg.setBorder(BorderFactory.createEtchedBorder());
         
         
         JPanel pmoise = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        //p.add(new JLabel("Click on the cells to add new pieces of gold."));
-        //pmoise.add(new JLabel("  (mouse at:"));
         jlMouseLoc = new JLabel("0,0");
         pmoise.add(jlMouseLoc);
         pmoise.setBorder(BorderFactory.createEtchedBorder());
-        //msg.add(p);
         
         JPanel p = new JPanel(new FlowLayout(FlowLayout.CENTER));
         p.add(new JLabel("Cycle:"));
@@ -124,44 +82,6 @@ public class WorldView extends GridWorldView {
         getContentPane().add(BorderLayout.SOUTH, s);        
 
         // Events handling
-        /*
-        jSpeed.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                //if (env != null) {
-                //    env.setSleep((int)jSpeed.getValue());
-                //}
-            }
-        });
-
-        scenarios.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent ievt) {
-                int w = ((Integer)scenarios.getSelectedItem()).intValue();
-                if (env != null && env.getSimId() != w) {
-                    env.startNewWorld(w);
-                }
-            }            
-        });
-        */
-        
-        /*
-        getCanvas().addMouseListener(new MouseListener() {
-            public void mouseClicked(MouseEvent e) {
-                int col = e.getX() / cellSizeW;
-                int lin = e.getY() / cellSizeH;
-                if (col >= 0 && lin >= 0 && col < getModel().getWidth() && lin < getModel().getHeight()) {
-                    WorldModel wm = (WorldModel)model;
-                    wm.add(WorldModel.COW, col, lin);
-                    //wm.setInitialNbGolds(wm.getInitialNbGolds()+1);
-                    update(col, lin);
-                }
-            }
-            public void mouseExited(MouseEvent e) {}
-            public void mouseEntered(MouseEvent e) {}
-            public void mousePressed(MouseEvent e) {}
-            public void mouseReleased(MouseEvent e) {}
-        });
-        */
-
         getCanvas().addMouseMotionListener(new MouseMotionListener() {
             public void mouseDragged(MouseEvent e) { }
             public void mouseMoved(MouseEvent e) {
@@ -173,13 +93,6 @@ public class WorldView extends GridWorldView {
             }            
         });
     }
-    
-    /*
-    public void setEnv(MiningEnvironment env) {
-        this.env = env;
-        scenarios.setSelectedIndex(env.getSimId()-1);
-    }
-    */
     
     public void setCycle(int c) {
     	if (jCycle != null) {

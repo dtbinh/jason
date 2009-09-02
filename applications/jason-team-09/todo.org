@@ -23,18 +23,27 @@
 
 - [ ] better GUI, mostra goals/roles dos agentes, o caminho que fizeram, o cluster atual, ....
 
+- [ ] do we still need SelectEvent class?
+
+- [ ] remove unused classes
+- [ ] use indexed BB from Jason dist
+
+- [ ] um sistema de reset que outros usuarios possam usar
+
 * 2009 team
 
 - [ ] increase cost of passing in a switch-lock place (to avoid to go there and cause conflict for who needs to go)
 
 - [ ] ver log5, 3 agentes travaram no switch do curral
 - [ ] some times, the formation is to far from the cluster (could be fault perception of cows, but also formation problem)
+
 - [ ] ver bug Jason Porter2=XXX no pass_fence.asl
-- [ ] usar .length do Jason (qdo arrumado)
 - [ ] problema aparente no IF do jason
+- [ ] usar .length do Jason (qdo arrumado)
+
 - [ ] declaration of bels, goals for Jason, so to check/warn programmer
 - [ ] remover de percepcao vacas que estao em outra area? (mas so com closed fence, nao open)
-- [ ] have only local world model (called worldmodel in pack env)
+
 - [X] impedir ags de entrar no curral
 
 - [X] hasFence usa binario CLOSE+OPEN

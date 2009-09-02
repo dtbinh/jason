@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 
 import env.WorldModel;
 
+/** thread that writes status data in files (agents' location, mind, ...) */
 public class WriteStatusThread extends Thread {
 
     protected Logger logger = Logger.getLogger(WriteStatusThread.class.getName());
@@ -23,11 +24,12 @@ public class WriteStatusThread extends Thread {
     static  WriteStatusThread instance = null;
     private WriteStatusThread() {}
     
-    public static WriteStatusThread create(CowboyArch owner, boolean dumpAgsMind) { 
+    public static WriteStatusThread create(CowboyArch owner, boolean writeLocations, boolean dumpAgsMind) { 
         if (instance == null) {
             instance = new WriteStatusThread();
             instance.owner = owner;
-            instance.mindag = dumpAgsMind;
+            instance.writeLocations = writeLocations;
+            instance.dumpAgsMinds = dumpAgsMind;
             instance.start();
             
         }
@@ -38,15 +40,18 @@ public class WriteStatusThread extends Thread {
     }
     
     private CowboyArch owner = null; 
-    private boolean    mindag = true;
+    private boolean    writeLocations = true;
+    private boolean    dumpAgsMinds   = true;
     
-    private static CowboyArch[] agents = new CowboyArch[WorldModel.agsByTeam];
+    private Map<Integer,List<Location>> locations;
 
+    private asl2xml transformer = new asl2xml();
+
+    private static CowboyArch[] agents = new CowboyArch[WorldModel.agsByTeam];
+    
     public static void registerAgent(String name, CowboyArch arch) {
         agents[arch.getMyId()] = arch;
     }
-    
-    Map<Integer,List<Location>> locations;
     
     public void reset() {
         // init locations
@@ -63,12 +68,19 @@ public class WriteStatusThread extends Thread {
         
         PrintWriter out = null;
         try {
-            asl2xml transformer = new asl2xml();
             
             out = new PrintWriter(fileName);
             //PrintWriter map = new PrintWriter("map-status.txt");
             while (true) {
                 try {
+                    // write location of the agents
+                    if (writeLocations) 
+                        writeLocations(out);
+                    
+                    // store the agents' mind
+                    if (dumpAgsMinds)
+                        writeMind();
+                    
                     // write map
                     /*
                     map.println("\n\n** Agent "+owner.getAgName()+" in cycle "+owner.getSimStep()+"\n");
@@ -80,57 +92,6 @@ public class WriteStatusThread extends Thread {
                     }
                     map.flush();
                     */
-                    
-                    // write location of the agents
-                    long timebefore = System.currentTimeMillis();
-                    waitNextCycle();
-                    long cycletime = System.currentTimeMillis() - timebefore;
-                    
-                    StringBuilder s = new StringBuilder(String.format("Step %5d:", owner.getSimStep()-1));
-                    for (int agId=0; agId<WorldModel.agsByTeam; agId++) {
-                    	if (agents[agId] != null) {
-	                        Location agp = agents[agId].getLastLocation();
-	                        if (agp != null) {
-	                            // count how long the agent is in the same location
-	                            int c = 0;
-	                            Iterator<Location> il = locations.get(agId).iterator();
-	                            while (il.hasNext() && il.next().equals(agp) && c <= 11) {
-	                                c++;
-	                            }
-	                            String sc = "*";
-	                            if (c < 10) sc = ""+c;
-	                            
-	                            locations.get(agId).add(0,agp);
-	                            String lastAct = shortActionFormat(agents[agId].getLastAction());
-	                            s.append(String.format("%3d,%2d/%s %s|", agp.x, agp.y, sc, lastAct));
-	                        }
-                    	}
-                    }
-                    
-                    s.append( String.format("%6d ms", cycletime));
-                    logger.info(s.toString());
-                    out.println(s.toString());
-                    out.flush();
-                    
-                    
-                    // store the agents' mind
-                    if (mindag) {
-                        for (CowboyArch arch : agents) {
-                            if (arch == null) break;
-                            try {
-                                File dirmind = new File("mind-ag/"+arch.getAgName());
-                                if (!dirmind.exists())
-                                    dirmind.mkdirs();
-                                String agmind = transformer.transform(arch.getTS().getAg().getAgState());
-                                String filename = String.format("%5d.xml",arch.getSimStep()).replaceAll(" ","0");
-                                FileWriter outmind = new FileWriter(new File(dirmind+"/"+filename));
-                                outmind.write(agmind);
-                                outmind.close();
-                            } catch (Exception e) {
-                                System.out.println("error getting agent status "+e);                            
-                            }
-                        }
-                    }
                     
                 } catch (InterruptedException e) { // no problem, quit the thread
                     return;
@@ -145,6 +106,57 @@ public class WriteStatusThread extends Thread {
         } finally {
             out.close();                
         }
+    }
+
+    private void writeMind() {
+        for (CowboyArch arch : agents) {
+            if (arch == null) break;
+            try {
+                File dirmind = new File("mind-ag/"+arch.getAgName());
+                if (!dirmind.exists())
+                    dirmind.mkdirs();
+                String agmind = transformer.transform(arch.getTS().getAg().getAgState());
+                String filename = String.format("%5d.xml",arch.getSimStep()).replaceAll(" ","0");
+                FileWriter outmind = new FileWriter(new File(dirmind+"/"+filename));
+                outmind.write(agmind);
+                outmind.close();
+            } catch (Exception e) {
+                System.out.println("error getting agent status "+e);                            
+            }
+        }
+    }
+    
+    private void writeLocations(PrintWriter out) throws InterruptedException {
+        long timebefore = System.currentTimeMillis();
+        waitNextCycle();
+        long cycletime = System.currentTimeMillis() - timebefore;
+        
+        StringBuilder s = new StringBuilder(String.format("Step %5d:", owner.getSimStep()-1));
+        for (int agId=0; agId<WorldModel.agsByTeam; agId++) {
+            if (agents[agId] != null) {
+                Location agp = agents[agId].getLastLocation();
+                if (agp != null) {
+                    // count how long the agent is in the same location
+                    int c = 0;
+                    Iterator<Location> il = locations.get(agId).iterator();
+                    while (il.hasNext() && il.next().equals(agp) && c <= 11) {
+                        c++;
+                    }
+                    String sc = "*";
+                    if (c < 10) sc = ""+c;
+                    
+                    locations.get(agId).add(0,agp);
+                    String lastAct = shortActionFormat(agents[agId].getLastAction());
+                    s.append(String.format("%3d,%2d/%s %s|", agp.x, agp.y, sc, lastAct));
+                }
+            }
+        }
+        
+        s.append( String.format("%6d ms", cycletime));
+        logger.info(s.toString());
+        out.println(s.toString());
+        out.flush();
+        
     }
     
     public String shortActionFormat(String act) {

@@ -44,13 +44,6 @@
 		</javac>
 	</target>
 
-	<target name="mind-view" depends="compile">
-		<java classname="test.MindView" failonerror="true" fork="yes" dir="${basedir}">
-			<classpath refid="project.classpath" />
-			<arg line="0" />
-		</java>
-	</target>
-
 	<target name="run" depends="compile">
 		<echo message="Running project ${ant.project.name}" />
 		<delete failonerror="no" includeEmptyDirs="true" verbose="false">
@@ -70,10 +63,4 @@
 		</delete>
 	</target>
 
-	<target name="transform">
-		<xslt style="src/agInspection.xsl" basedir="mind-ag/gaucho1" destdir="mind-ag/gaucho1" includes="*.xml" />
-		<xslt style="src/agInspection.xsl" basedir="mind-ag/gaucho3" destdir="mind-ag/gaucho3" includes="*.xml" />
-		<xslt style="src/agInspection.xsl" basedir="mind-ag/gaucho5" destdir="mind-ag/gaucho5" includes="*.xml" />
-		<xslt style="src/agInspection.xsl" basedir="mind-ag/gaucho7" destdir="mind-ag/gaucho7" includes="*.xml" />
-	</target>
 </project>

@@ -10,6 +10,8 @@ import java.util.Set;
 /**
  * Customised version of Belief Base where some beliefs are discarded.
  * 
+ * (NOT USED)
+ * 
  * E.g.:<br/>
  * <code>ag1 beliefBaseClass agent.DiscardBelsBB("my_status","picked");</code>
  * <br/>
