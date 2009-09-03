@@ -60,6 +60,7 @@ public class CowboyArch extends OrgAgent { //IdentifyCrashed {
 	String   teamId        = null;
 	
     Map<Integer, Location> perceivedCows = new HashMap<Integer,Location>(); // stores the location of some cows
+    Map<Integer,Integer> lastSeen = new HashMap<Integer, Integer>();        // and the step they were seen    
 
 	int        simStep  = 0;
 	
@@ -204,8 +205,6 @@ public class CowboyArch extends OrgAgent { //IdentifyCrashed {
         model.createStoreObsThread(this);
     }
 
-    Map<Integer,Integer> lastSeen = new HashMap<Integer, Integer>();
-    
     /** update set set of perceived cows */
     public void cowPerceived(int cowId, int x, int y) {
         Location c = new Location(x, y);
@@ -478,6 +477,8 @@ public class CowboyArch extends OrgAgent { //IdentifyCrashed {
     	getTS().getAg().addBel(Literal.parseLiteral("end_of_simulation("+result+")"));
     	model   = null;
         playing = false;
+        perceivedCows.clear();
+        lastSeen.clear();
         if (view != null) view.dispose();
     }
 	

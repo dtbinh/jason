@@ -313,7 +313,7 @@ calc_distances([pos(Fx,Fy)|TP], [d(D,pos(Fx,Fy))|TD], pos(AgX,AgY))
 { begin maintenance_goal("+pos(_,_,_)") }
 
 +!change_to_exploring[scheme(Sch),mission(Mission),group(Gr)]
-   : not cow(_,_,_)  | (current_cluster(CAsList) & .length(CAsList) <= 2)
+   : not cow(_,_,_)  //| (current_cluster(CAsList) & .length(CAsList) <= 2)
   <- .print("ooo I see no cow anymore");
      // wait two cycles to decide to change the formation (due to fault perception we may not see the cows) -- FIXED in Arch
 	 //.wait({+pos(_,_,_)});

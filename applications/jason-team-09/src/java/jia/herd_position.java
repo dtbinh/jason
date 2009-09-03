@@ -2,6 +2,7 @@ package jia;
 
 import static jason.asSyntax.ASSyntax.createNumber;
 import static jason.asSyntax.ASSyntax.createStructure;
+import jason.JasonException;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
@@ -170,6 +171,8 @@ public class herd_position extends DefaultInternalAction {
         s.setMaxDistFromCluster(stepsFromCenter+Search.DIST_FOR_AG_OBSTACLE);
         List<Nodo> np = Search.normalPath(s.search());
         int n = Math.min(stepsFromCenter, np.size());
+        if (n == 0)
+            throw new JasonException("**** there is no path for the cluster to the curral!!!! "+clusterLocs+" cows:"+cows);
 
         Vec cowstarget = new Vec(model, Search.getNodeLocation(np.get(n)));
         // find cow farthest of corral

@@ -2,6 +2,8 @@
 - [ ] use 2009 team, and others available, as opponents
 - [ ] see matches
 
+- [ ] ver logs onde teve mudanca de cenario, se deu tudo ok
+
 - [ ] background: general view of cows (model), background computation of possible clusters and their utility
       eventually size of the team, allocation, ...
 
@@ -30,9 +32,15 @@
 
 - [ ] um sistema de reset que outros usuarios possam usar
 
+- [ ] declaration of bels, goals for Jason, so to check/warn programmer
+
+- [ ] test with different parameter of simulation (like cowAttracted weight)
+
 * 2009 team
 
-- [ ] increase cost of passing in a switch-lock place (to avoid to go there and cause conflict for who needs to go)
+- [ ] increase cost of passing in a switch-lock place (to avoid to go there and cause conflict for who needs to go and also to not lead cows to that)
+
+- [ ] besides mind-dump, add org-dump
 
 - [ ] ver log5, 3 agentes travaram no switch do curral
 - [ ] some times, the formation is to far from the cluster (could be fault perception of cows, but also formation problem)
@@ -41,7 +49,6 @@
 - [ ] problema aparente no IF do jason
 - [ ] usar .length do Jason (qdo arrumado)
 
-- [ ] declaration of bels, goals for Jason, so to check/warn programmer
 - [ ] remover de percepcao vacas que estao em outra area? (mas so com closed fence, nao open)
 
 - [X] impedir ags de entrar no curral
