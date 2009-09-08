@@ -117,7 +117,7 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
 +!create_pass_fence_scheme(CurSch, Gr, SX, SY, FX, FY)
 //   : porter_candidates(CurSch, Gr, Cand1)
    : .findall(P, play(P,_,Gr) & can_play_porter(CurSch, P), Cand1) & 
-     .length(Cand1,N) & N > 1             // at least 2 players to start the scheme
+     .length(Cand1) > 1             // at least 2 players to start the scheme
   <- ?pos(MyX,MyY,_);
      jia.switch_places(SX,SY,MyX,MyY,P1X,P1Y,P2X,P2Y);
      .print("fff places for switch ",SX,",",SY," are ",P1X,",",P1Y," and ",P2X,",",P2Y," Cand1=",Cand1);

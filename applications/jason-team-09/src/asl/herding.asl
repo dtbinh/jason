@@ -137,11 +137,12 @@ dist_cow_near_corral(Dist) :-
      +current_cluster(CAsList);
      -+cow_near_corral(NearCow);
      .abolish(has_boy_beyond_fence(_,_));
-     if ( .length(CAsList,CAL) & CAL > 0) {
+     if ( .length(CAsList) > 0) {
         .findall(Boy, play(Boy, herdboy,Gr), Boys); //?my_group_players(G, herder);
         .my_name(Me);      
-        GrFor = [Me|Boys]; .length(GrFor,ForSize);  // TODO: fix bug to use funcion
-        jia.herd_position(ForSize,Cluster,L);
+        GrFor = [Me|Boys];
+        jia.herd_position(.length(GrFor),Cluster,L);
+
         //.reverse(L,RL); // use the reversed list so to priorise the border positions
         .print("ooo Formation is ",L, " for agents ",GrFor," in cluster ", Cluster);
         !alloc_all(GrFor,L);

@@ -59,17 +59,7 @@
      }.
      
 +!create_exploration_gr.
-     
-// If I started playing explorer in a group that has no scheme, create the scheme
-/*
-+play(Me,explorer,G)
-   : .my_name(Me) &
-     not scheme_group(_,G)
-  <- .print("Creating explore scheme for group ",G);
-     -target(_,_); // revome target so that a new one is selected by near unvisited
-     jmoise.create_scheme(explore_sch, [G]).
-*/
-     
+          
 // If I stop playing explorer, destroy the explore scheme/group I've created
 -play(Me,explorer,G)
    : .my_name(Me)
@@ -85,15 +75,6 @@
 	 }. */
 
 	 
-/*+group(exploration_grp,_)                // compute the area of the groups
-   : .my_name(gaucho1) &
-     group(team,TeamId) &
-     .findall(GId, group(exploration_grp,GId)[super_gr(TeamId)], LG) &
-	 LG = [G1,G2,G3]                     // there are three groups
-
-+group_area(ID,G,A)[source(self)]
-  <- .broadcast(tell, group_area(ID,G,A)).  
-*/
 	 
 /* -- plans for the goals of role explorer -- */
 
@@ -219,8 +200,6 @@
      .send(L,askOne,current_cluster(_),current_cluster(LCluster));
      .print("TTT boys of ",L," are ",LBoys," his cluster size is ", .length(LCluster));
      if (not has_enough_boys( .length(LBoys), .length(LCluster))) { 
-     //if (.length(LBoys) < 3 & .length(LCluster) > (.length(LBoys)+1)*5) {
-        //!!create_herding_gr(LScouters);
         .send(L,askOne,group(herding_grp,OtherGr)[owner(L)],group(herding_grp,OtherGr));
         
         .findall(Scouter,play(Scouter,scouter,MyGr),LScouters);

@@ -1,11 +1,34 @@
 * 2010 team
-- [ ] use 2009 team, and others available, as opponents
+
 - [ ] see matches
+- [ ] use 2009 team, and others available, as opponents
+- [ ] distributed running (run agents in different machines). Just to
+      test this feature
 
-- [ ] ver logs onde teve mudanca de cenario, se deu tudo ok
+** Main points
+   - debug tools 
+     - GUI, mostra goals/roles dos agentes, o caminho que fizeram, o cluster atual,
+     - traces by agents (better than grep, shows decisions, goals, history, relations, place in org, ...)
+     - organisational trace (org-dump)
+   - artifacts (?)/moise artifacts (the new version of moise)
+   - groups dynamic
+   - Jason modules, 
+   - Jason sintactical warnings (warn about a !goal without a plan,
+     test goal without a beliefs, ....)
 
-- [ ] background: general view of cows (model), background computation of possible clusters and their utility
-      eventually size of the team, allocation, ...
+** Cenario
+- [ ] duplicate cows in BB and better handling of cows
+      - not only perception, cows, even seen a long time ago are still 'known'
+      - only one place for a cow
+
+** Estrategias
+
+- [ ] estrategias de ataco/roubo/vinganca
+- [ ] retaliation strategy
+
+** Grupos
+
+- [ ] um sistema de exploração que divide dinamicamente o cenario
 
 - [ ] grupos de exploracao devem ser maiores (2 gr de 3 e um gr de 4)
       - com formacao tb.
@@ -13,36 +36,35 @@
       . o leader podia continuar indo pro target evitando loops
       . accommodate agents that can
         not find a partner in the same area (due to the fences)
-- [ ] duplicate cows in BB and better handling of cows
-      - not only perception, cows, even seen a long time ago are still 'known'
-      - only one place for a cow
 
-- [ ] retaliation strategy
+** parametros
+- [ ] uma implementação que otimiza a razão vacas/agentes e que pode
+      considerar a união de dois grupos para posteriormente liberar
+      outro agentes para levar mais vacas
 
-- [ ] organisational trace/dump, +- like ag status (location+actions)
+** Otimizacoes
+- [ ] background: general view of cows (model), background computation
+      of possible clusters and their utility eventually size of the
+      team, allocation, ...
+- [ ] se a formacao do cluster eh muito horizontal (e nao oval) a
+      formacao meia-lua pra tocar nao eh muito boa (? sera)
 
-- [ ] se a formacao do cluster eh muito horizontal (e nao oval) a formacao meia-lua pra tocar nao eh muito boa (? sera)
+** A*
+- [ ] Filtro de largura do caminho para o A*
+- [ ] increase cost of passing in a switch-lock place (to avoid to go
+      there and cause conflict for who needs to go and also to not
+      lead cows to that)
 
-- [ ] better GUI, mostra goals/roles dos agentes, o caminho que fizeram, o cluster atual, ....
-
+** Details
 - [ ] do we still need SelectEvent class?
-
 - [ ] remove unused classes
 - [ ] use indexed BB from Jason dist
-
+- [ ] ver logs onde teve mudanca de cenario, se deu tudo ok
 - [ ] um sistema de reset que outros usuarios possam usar
 
-- [ ] declaration of bels, goals for Jason, so to check/warn programmer
-
-- [ ] test with different parameter of simulation (like cowAttracted weight)
 
 * 2009 team
 
-- [ ] increase cost of passing in a switch-lock place (to avoid to go there and cause conflict for who needs to go and also to not lead cows to that)
-
-- [ ] besides mind-dump, add org-dump
-
-- [ ] ver log5, 3 agentes travaram no switch do curral
 - [ ] some times, the formation is to far from the cluster (could be fault perception of cows, but also formation problem)
 
 - [ ] ver bug Jason Porter2=XXX no pass_fence.asl

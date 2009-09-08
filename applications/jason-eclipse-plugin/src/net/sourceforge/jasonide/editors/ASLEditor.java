@@ -54,6 +54,7 @@ public class ASLEditor extends ColoringEditor {
 			jason.asSyntax.parser.as2j parser = new jason.asSyntax.parser.as2j(new FileReader(new File(asfileName)));
 			if (parser != null) {
 			    Agent ag = new Agent();
+			    ag.initAg();
 			    ag.setASLSrc(asfileName);
 				parser.agent(ag);
 			}
