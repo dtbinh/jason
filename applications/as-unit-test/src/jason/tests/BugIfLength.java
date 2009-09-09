@@ -28,6 +28,11 @@ public class BugIfLength {
     public void testProg() {
         ag.addGoal("start");
         ag.assertPrint("[a,b]2", 10);
+        ag.addGoal("start"); // repeat the test
+        ag.assertPrint("[a,b]2", 10);
+        ag.addBel("b(c)");
+        ag.addGoal("start"); // repeat the test
+        ag.assertPrint("[a,c,b]3", 10);
     }
 
 }
