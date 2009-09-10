@@ -19,20 +19,20 @@ import java.util.logging.Logger;
  */
 public abstract class MoiseBaseIA extends DefaultInternalAction  {
 
-	private static Logger logger = Logger.getLogger(MoiseBaseIA.class.getName());
+    private static Logger logger = Logger.getLogger(MoiseBaseIA.class.getName());
 
-	@Override
+    @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
-    	String    acName = this.getClass().getSimpleName(); // remove the package name "jmoise"
+        String    acName = this.getClass().getSimpleName(); // remove the package name "jmoise"
         Structure acTerm = new Structure(acName);
         acTerm.addTerms(args);
         // remove the last arg if unground (the return of the IA)
         if (!acTerm.getTerm(args.length-1).isGround()) {
-        	acTerm.delTerm(args.length-1);
+            acTerm.delTerm(args.length-1);
         }
-		if (logger.isLoggable(Level.FINE)) logger.fine("sending: "+acTerm);
-		
-		// send acTerm as message to OrgManager
+        if (logger.isLoggable(Level.FINE)) logger.fine("sending: "+acTerm);
+        
+        // send acTerm as message to OrgManager
         OrgAgent oag = (OrgAgent)ts.getUserAgArch();
         Message m = new Message("achieve", null, oag.getOrgManagerName(), acTerm);
         oag.sendMsg(m);
@@ -44,10 +44,10 @@ public abstract class MoiseBaseIA extends DefaultInternalAction  {
         }
         return true;
     }
-	
+    
     @Override
     public boolean suspendIntention() {
-    	return true;
+        return true;
     }
-	
+    
 }

@@ -38,19 +38,19 @@ import moise.os.ss.Group;
 */
 public class group_specification extends DefaultInternalAction  {
 
-	@Override public int getMaxArgs() { return 4; }
-	@Override public int getMinArgs() { return 1; }
-	
-	@Override protected void checkArguments(Term[] args) throws JasonException {
+    @Override public int getMaxArgs() { return 4; }
+    @Override public int getMinArgs() { return 1; }
+    
+    @Override protected void checkArguments(Term[] args) throws JasonException {
         super.checkArguments(args);
-	    if (!args[0].isAtom() && !args[0].isString()) 
+        if (!args[0].isAtom() && !args[0].isString()) 
             throw JasonException.createWrongArgument(this,"first argument must be an atom or string identifying the group specification");
-	}
-	
-	@Override
+    }
+    
+    @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
-	    checkArguments(args);
-	    
+        checkArguments(args);
+        
         String grId = "";
         if (args[0].isString())
             grId = ((StringTerm)args[0]).getString();
@@ -71,5 +71,5 @@ public class group_specification extends DefaultInternalAction  {
             i++;
         }
         return true;
-    }	
+    }   
 }

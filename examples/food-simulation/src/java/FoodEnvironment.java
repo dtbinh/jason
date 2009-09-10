@@ -5,7 +5,7 @@ import jason.asSyntax.Atom;
 import jason.asSyntax.Literal;
 import jason.asSyntax.NumberTerm;
 import jason.asSyntax.Structure;
-import jason.environment.SteppedEnvironment;
+import jason.environment.TimeSteppedEnvironment;
 import jason.environment.grid.Location;
 
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-public class FoodEnvironment extends SteppedEnvironment {
+public class FoodEnvironment extends TimeSteppedEnvironment {
 
     private Logger logger = Logger.getLogger("game-of-life.mas2j."+FoodEnvironment.class.getName());
 

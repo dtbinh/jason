@@ -562,7 +562,7 @@ public class OrgManager extends AgArch {
 
     /* send OE to a set of agents */
     @SuppressWarnings("unchecked")
-	private void updateMembersOE(Collection ags, OEAgent... others) {
+    private void updateMembersOE(Collection ags, OEAgent... others) {
         Set<OEAgent> all = new HashSet<OEAgent>(); // to remove duplicates
         Iterator iAgs = ags.iterator();
         while (iAgs.hasNext()) {

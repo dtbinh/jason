@@ -400,9 +400,9 @@ public class OrgAgent extends AgArch {
     }
 
     private void generateOrgGoalEvents() {
-	   OEAgent me = getMyOEAgent();
-	   for (GoalInstance gi : getMyOEAgent().getPossibleGoals()) {
-		   if (!alreadyGeneratedEvents.contains(gi)) {
+       OEAgent me = getMyOEAgent();
+       for (GoalInstance gi : getMyOEAgent().getPossibleGoals()) {
+           if (!alreadyGeneratedEvents.contains(gi)) {
                 alreadyGeneratedEvents.add(gi);
 
                 Literal l = Literal.parseLiteral(gi.getAsProlog());
@@ -429,29 +429,29 @@ public class OrgAgent extends AgArch {
                 // try to find the role/group of this goal
                 // (the first all resp group of the scheme where I am)
                 for (GroupInstance g: gi.getScheme().getResponsibleGroups()) {
-                	for (RolePlayer rp: g.getPlayers()) {
-                		if (rp.getPlayer().equals(me)) {
-                			l.addAnnot(createStructure("role", new Atom(rp.getRole().getId())));
-                			l.addAnnot(createStructure("group",new Atom(rp.getGroup().getId())));
-                		}
-                	}
+                    for (RolePlayer rp: g.getPlayers()) {
+                        if (rp.getPlayer().equals(me)) {
+                            l.addAnnot(createStructure("role", new Atom(rp.getRole().getId())));
+                            l.addAnnot(createStructure("group",new Atom(rp.getGroup().getId())));
+                        }
+                    }
                 }
                 getTS().updateEvents(new Event(new Trigger(TEOperator.add, TEType.achieve, l), Intention.EmptyInt));
                 if (logger.isLoggable(Level.FINE)) logger.fine("New goal: " + l);
-		   }
-	   }
+           }
+       }
     }
    
-   	private static final Atom aAchievementGoal = new Atom(GoalType.achievement.toString()); 
-   	private static final Atom aMaintenanceGoal = new Atom(GoalType.maintenance.toString());
-   	
-   	public static Atom getGoalTypeAtom(Goal g) {
-   		switch (g.getType()) {
-   		case achievement: return aAchievementGoal;
-   		case maintenance: return aMaintenanceGoal;
-   		}
-   		return null;
-   	}
+    private static final Atom aAchievementGoal = new Atom(GoalType.achievement.toString()); 
+    private static final Atom aMaintenanceGoal = new Atom(GoalType.maintenance.toString());
+    
+    public static Atom getGoalTypeAtom(Goal g) {
+        switch (g.getType()) {
+        case achievement: return aAchievementGoal;
+        case maintenance: return aMaintenanceGoal;
+        }
+        return null;
+    }
 
     void cleanGoalsOfSch(String schId) {
         Iterator<GoalInstance> i = alreadyGeneratedEvents.iterator();
@@ -563,10 +563,10 @@ public class OrgAgent extends AgArch {
         Literal gilInBB = getTS().getAg().findBel(gilforfind, u);
         if (gilInBB != null) {
             // the agent believes in the goal, remove if different
-        	// so that an event is produced
-        	if (!u.get(S).equals(gState) || !gap.equals(gilInBB.getTerm(1))) { 
+            // so that an event is produced
+            if (!u.get(S).equals(gState) || !gap.equals(gilInBB.getTerm(1))) { 
                 if (!getTS().getAg().delBel(gilInBB))
-                	logger.warning("Belief "+gilInBB+" should be deleted, but was not!");
+                    logger.warning("Belief "+gilInBB+" should be deleted, but was not!");
                 else 
                     if (logger.isLoggable(Level.FINE)) logger.fine("Remove goal belief: " + gil);
             }
@@ -576,6 +576,6 @@ public class OrgAgent extends AgArch {
         gil.setTerm(2, gState);
         
         if (getTS().getAg().addBel(gil))
-        	if (logger.isLoggable(Level.FINE)) logger.fine("New goal belief: " + gil);
+            if (logger.isLoggable(Level.FINE)) logger.fine("New goal belief: " + gil);
     }
 }

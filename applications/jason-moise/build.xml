@@ -8,7 +8,7 @@
     <property environment="env"/>
 
     <property name="version"         value="1"/>
-    <property name="release"         value="2"/>
+    <property name="release"         value="3.1"/>
     <property name="moiseDir"        value="${env.HOME}/Moise/svn-moise" />
     <property name="distDir"         value="${env.HOME}/tmp/jmoise-${version}.${release}" />
     <property name="distFile"        value="${env.HOME}/jason-moise-${version}.${release}" />
@@ -77,6 +77,7 @@
           <echo message="Generating J-Moise+ ${version}.${release}" />
           
           <fixcrlf srcdir="${basedir}"  eol="crlf" includes="**/*.txt,**/*.bat"  />
+	  <fixcrlf tab="remove" tablength="4" javafiles="true" includes="**/*.java,**/*.xml" srcdir="${basedir}/src" />
           
           <delete failonerror="no" includeEmptyDirs="true" >
               <fileset dir="${distDir}" />

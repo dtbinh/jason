@@ -44,6 +44,6 @@ public class set_goal_state extends MoiseBaseIA {
 
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
-    	return super.execute(ts,un,args);
+        return super.execute(ts,un,args);
     }
 }
