@@ -147,7 +147,7 @@ public class ACArchitecture extends CowboyArch {
 	    StringBuilder     notsent;
 	    
 	    WaitSleep() {
-	        super("WaitSpeepToSendAction");
+	        super("WaitSleepToSendAction"+getAgName());
 	    }
 	    
 	    void addAction(ActionExec action) {

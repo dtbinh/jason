@@ -1,6 +1,6 @@
 /* 
    Perceptions
-      Begin:
+      Beginning:
         gsize(Weight,Height)
         steps(MaxSteps)
         corral(UpperLeft.x,UpperLeft.y,DownRight.x,DownRight.y)
@@ -9,7 +9,7 @@
       Each step:
         pos(X,Y,Step)
         cow(Id,X,Y)
-        apply_pos(Name,X,Y)
+        ally_pos(Name,X,Y)
 
       End:
         end_of_simulation(Result)

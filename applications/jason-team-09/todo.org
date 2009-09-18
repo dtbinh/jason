@@ -4,15 +4,16 @@
 - [ ] use 2009 team, and others available, as opponents
 - [ ] distributed running (run agents in different machines). Just to
       test this feature
+- [ ] see team's description of other teams (CLIMA proc)
 
-** Main points
+** Main points (general)
    - debug tools 
      - GUI, mostra goals/roles dos agentes, o caminho que fizeram, o cluster atual,
      - traces by agents (better than grep, shows decisions, goals, history, relations, place in org, ...)
      - organisational trace (org-dump)
    - artifacts (?)/moise artifacts (the new version of moise)
    - groups dynamic
-   - Jason modules, 
+   - Jason modules 
    - Jason sintactical warnings (warn about a !goal without a plan,
      test goal without a beliefs, ....)
 
@@ -22,12 +23,10 @@
       - only one place for a cow
 
 ** Estrategias
-
 - [ ] estrategias de ataco/roubo/vinganca
 - [ ] retaliation strategy
 
 ** Grupos
-
 - [ ] um sistema de exploração que divide dinamicamente o cenario
 
 - [ ] grupos de exploracao devem ser maiores (2 gr de 3 e um gr de 4)
@@ -61,7 +60,8 @@
 - [ ] use indexed BB from Jason dist
 - [ ] ver logs onde teve mudanca de cenario, se deu tudo ok
 - [ ] um sistema de reset que outros usuarios possam usar
-
+- [ ] Profiling 
+- [ ] constants as functions without args
 
 * 2009 team
 

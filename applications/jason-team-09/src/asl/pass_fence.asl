@@ -9,7 +9,7 @@ need_cross_fence(Sch,FX,FY) :-     // used by exploration group
     pos(MX, MY, _) & 
     jia.has_object_in_path(MX, MY, TX, TY, closed_fence, FX, FY, Dist) &
     .print("fff I have a fence in my path at ",Dist," steps") &
-    jia.fence_switch(FX, FY, SX, SY) & not jia.is_corral_switch(SX,SY) & // the target can be place beind the corral, but by means of the corral
+    jia.fence_switch(FX, FY, SX, SY) & not jia.is_corral_switch(SX,SY) & // in case I need to pass through the corral to achieve my target
     Dist < 10.
 need_cross_fence(Sch,FX,FY) :-    // used by herding group 
     scheme(herd_sch,Sch) &
