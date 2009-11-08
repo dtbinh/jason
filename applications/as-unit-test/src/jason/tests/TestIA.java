@@ -20,12 +20,13 @@ public class TestIA {
         ag.addGoal("test");      
         ag.assertAct("act1", 10);
         ag.addGoal("add");      
+        ag.assertIdle(30);
         ag.addGoal("test");
         ag.assertAct("act0", 10);
         ag.addGoal("remove");
         int size = ag.getPL().size();
         ag.assertIdle(30);
-        Assert.assertEquals(size-1, ag.getPL().size());
+        Assert.assertTrue(size-1 == ag.getPL().size());
         ag.addGoal("test");
         ag.assertAct("act1", 10);        
     }

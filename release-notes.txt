@@ -1,6 +1,10 @@
 ---------------------------
-version 1.4
+version <next>
 ---------------------------
+
+Bugs fixed
+- equals in ObjectTermImpl, as reported by Tim Cleaver
+  in jason-bugs list
 
 
 ---------------------------

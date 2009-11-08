@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project basedir="." default="run" name="Jason">
+<project basedir="." default="usage" name="Jason">
 
     <property environment="env" />
 
@@ -22,7 +22,21 @@
     <property name="jedit.install.dir" value="${basedir}/bin/jedit" />
     <property name="plugin.jar.name" value="jason-jedit-plugin.jar" />
 
-    <path id="run.classpath">
+    <target name="usage">
+        <echo>
+TARGETS:
+    compile -- compiles the source files
+    jar     -- generates jason.jar
+    plugin  -- generates and configure jEdit plugin for Jason
+    test    -- runs jUnit tests
+    apidoc  -- generates javadoc
+    dist    -- genetares distribution file
+    clean   -- cleans the project
+    run     -- runs Jason
+        </echo>
+    </target>
+
+	<path id="run.classpath">
         <pathelement location="${jedit.install.dir}/jedit.jar" />
         <pathelement location="${saciJar}" />
         <pathelement location="${jadeJar}" />
