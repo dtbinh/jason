@@ -37,13 +37,13 @@ public class BugVarsAsArg {
         ag.assertPrint("45", 5); 
     }
 
-    @Test(timeout=2000)
+    @Test(timeout=2000) 
     public void testRule2() {
         ag.addGoal("test2");
         ag.assertPrint("[1,2]", 5); 
     }
 
-    @Test(timeout=2000)
+    @Test(timeout=2000) 
     public void testRule3() {
         ag.addGoal("test3");
         ag.assertPrint("[f,i,a]", 10); 

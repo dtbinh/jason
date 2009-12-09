@@ -588,6 +588,17 @@ java jade.Boot \
  bob:jason.infra.jade.JadeAgArch(auctionner.asl)
 \end{verbatim}
 
+In the case you need to start a more customised agent (architecture,
+belief base, ...), you can write a \jason project file with all the
+usual agent's parameters and then start the agent from this file. E.g.
+\begin{verbatim}
+jade.Boot "bob:jason.infra.jade.JadeAgArch(j-project test.mas2j bob)" 
+\end{verbatim}
+The parameter \texttt{j-project} indicates that the following
+parameter (\texttt{test.mas2j} in the above example) is the \jason
+project. The third parameter is the name of the agent as defined in
+the .mas2j file.
+
 
 \subsection{Is it possible to use only the \jason BDI engine?}
 
