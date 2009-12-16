@@ -576,20 +576,26 @@ example, to start a \jason agent called `bob' based on the AgentSpeak
 source code in file \texttt{auctioneer.asl}, execute the following
 command in a shell:
 \begin{verbatim}
-java jade.Boot bob:jason.infra.jade.JadeAgArch(auctionner.asl)
+java jade.Boot "bob:jason.infra.jade.JadeAgArch(auctionner.asl)"
 \end{verbatim}
 
 To start up also a simulated environment
 (implemented, for instance, in the \texttt{Env} class):
 
 \begin{verbatim}
-java jade.Boot \
+java jade.Boot "\
  environment:jason.infra.jade.JadeEnvironment(Env) \
- bob:jason.infra.jade.JadeAgArch(auctionner.asl)
+ bob:jason.infra.jade.JadeAgArch(auctionner.asl)"
 \end{verbatim}
 
+The arguments for the environment have to follow the class name, for example:
+\begin{verbatim}
+java jade.Boot "environment:jason.infra.jade.JadeEnvironment(Env arg1 arg2)"
+\end{verbatim}
+
+
 In the case you need to start a more customised agent (architecture,
-belief base, ...), you can write a \jason project file with all the
+belief base, ...), you can write (or reuse) a \jason project file with all the
 usual agent's parameters and then start the agent from this file. E.g.
 \begin{verbatim}
 jade.Boot "bob:jason.infra.jade.JadeAgArch(j-project test.mas2j bob)" 
@@ -597,7 +603,13 @@ jade.Boot "bob:jason.infra.jade.JadeAgArch(j-project test.mas2j bob)"
 The parameter \texttt{j-project} indicates that the following
 parameter (\texttt{test.mas2j} in the above example) is the \jason
 project. The third parameter is the name of the agent as defined in
-the .mas2j file.
+the .mas2j file. 
+
+The same approach can be used for the environment:
+\begin{verbatim}
+jade.Boot "bob:jason.infra.jade.JadeAgArch(j-project test.mas2j)" 
+\end{verbatim}
+
 
 
 \subsection{Is it possible to use only the \jason BDI engine?}
