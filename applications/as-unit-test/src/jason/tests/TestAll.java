@@ -23,6 +23,7 @@ import org.junit.runners.Suite.SuiteClasses;
     TestLoop.class,
     TestPlanbodyAsTerm.class,
     TestPlanFailure.class,
-    TestVarInContext.class
+    TestVarInContext.class,
+    TestUnnamedVar.class
  })
 public class TestAll { }
