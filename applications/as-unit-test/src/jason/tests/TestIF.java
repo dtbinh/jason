@@ -17,6 +17,23 @@ public class TestIF {
         // defines the agent's AgentSpeak code
         ag.parseAScode(
                 "b(3). " +
+                "+!test1 <- a1;\n "+
+                "           if( b(X)) { " +
+                "              jason.asunit.print(X); " +
+                "              b1; " +
+                "           } else {" +
+                "              jason.asunit.print(no); " +
+                "           }\n "+
+                "           a2.\n "+
+                
+                "+!test2 <- -b(_); !test1. "+
+                
+                "+!test3 <- if( b(X)) { Y = X*10; Z = 10; } else { Y = 60; Z=20; }; jason.asunit.print(Y,\" \",Z). "+
+                "+!test4 <- -b(_); !test3. "
+        );
+        /*
+        ag.parseAScode(
+                "b(3). " +
                 "+!test1 <- a1; "+
                 "           if( b(X), {jason.asunit.print(X); b1}, {jason.asunit.print(no)}); "+
                 "           a2. "+
@@ -26,6 +43,7 @@ public class TestIF {
                 "+!test3 <- if( b(X), { Y = X*10; Z = 10 }, { Y = 60; Z=20 }); jason.asunit.print(Y,\" \",Z). "+
                 "+!test4 <- -b(_); !test3. "
         );
+        */
     }
     
     @Test(timeout=2000)

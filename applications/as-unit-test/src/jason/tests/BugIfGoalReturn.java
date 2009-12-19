@@ -33,7 +33,7 @@ public class BugIfGoalReturn {
                     "    if (Ans == false) { "+
                     "       jason.asunit.print(Others); "+
                     "       !find_pass_fence_scheme(Others,SX,SY,PassSch,Porter2) "+
-                    "    }{ "+
+                    "    } else { "+
                     "       jason.asunit.print(asking_porter); "+
                     "       .send(Oag, askOne, play(_,gatekeeper2,_), play(Porter2,_,_)); "+
                     "       jason.asunit.print(Porter2); "+

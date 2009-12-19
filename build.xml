@@ -228,7 +228,7 @@ TARGETS:
 
     <!-- apidoc related tasks- -->
 
-    <target name="apidoc" depends="compile,apidocsimple,apidocuml,apidoxygen" />
+    <target name="apidoc" depends="compile,apidocsimple,apidocuml" />
     
     <condition property="dot-ok" value="true">
         <or>
@@ -241,14 +241,6 @@ TARGETS:
             <or>
                 <available file="dot"     filepath="${env.PATH}" />
                 <available file="dot.exe" filepath="${env.PATH}" />
-            </or>
-        </not>
-    </condition>
-    <condition property="doxygen-nok" value="true">
-        <not>
-            <or>
-                <available file="doxygen"     filepath="${env.PATH}" />
-                <available file="doxygen.exe" filepath="${env.PATH}" />
             </or>
         </not>
     </condition>
@@ -296,11 +288,6 @@ TARGETS:
                                     <param name="-link" value="http://java.sun.com/j2se/1.5/docs/api"/-->
                 </doclet>           
         </javadoc>
-    </target>
-    <target name="apidoxygen" unless="doxygen-nok" >
-        <exec executable="doxygen">
-            <arg line="doc/jason.doxygen"/>
-        </exec>
     </target>
 
 	<!-- generate only the UML diagrams in PDF format -->
