@@ -2,6 +2,14 @@
 version <next>
 ---------------------------
 
+Changes in the syntax
+- syntax of if/while/for statements are now like C/Java:
+      if ( X > 3) {
+           bla;
+      }
+  ";" is not required after "}"
+  last formula in <then> can be followed by ";"
+
 Bugs fixed
 - equals in ObjectTermImpl,
   as reported by Tim Cleaver in jason-bugs list
