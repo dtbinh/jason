@@ -221,7 +221,7 @@ public class CowboyArch extends OrgAgent { //IdentifyCrashed {
         Iterator<Location> i = perceivedCows.values().iterator();
         while (i.hasNext()) {
             Location l = i.next();
-            if (getModel().getAgPos(getMyId()).maxBorder(l)/2 > getModel().getAgPerceptionRatio()) {
+            if (getModel().getAgPos(getMyId()).distanceChebyshev(l)/2 > getModel().getAgPerceptionRatio()) {
                 //logger.info(getModel().getAgPerceptionRatio()+" iiiiii removing cow "+l+" i am at "+getModel().getAgPos(getMyId())+ " dist "+getModel().getAgPos(getMyId()).maxBorder(l));
                 i.remove();
             }

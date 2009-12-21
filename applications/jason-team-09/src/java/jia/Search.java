@@ -214,7 +214,7 @@ final class GridState implements Estado, Heuristica {
     }
 
     public int h() {
-        return pos.maxBorder(ia.to);
+        return pos.distanceChebyshev(ia.to);
     }
     
     public List<Estado> sucessores() {
@@ -247,12 +247,12 @@ final class GridState implements Estado, Heuristica {
         if (ia.considerCorralAsObstacles && ia.model.hasObject(WorldModel.CORRAL, newl)) 
             return;
         if (ia.considerAgentsAsObstacles) {
-            if (ia.model.hasObject(WorldModel.AGENT,newl) && ia.from.maxBorder(newl) <= Search.DIST_FOR_AG_OBSTACLE) 
+            if (ia.model.hasObject(WorldModel.AGENT,newl) && ia.from.distanceChebyshev(newl) <= Search.DIST_FOR_AG_OBSTACLE) 
                 return;
-            if (ia.model.hasObject(WorldModel.ENEMY,newl) && ia.from.maxBorder(newl) <= 1) 
+            if (ia.model.hasObject(WorldModel.ENEMY,newl) && ia.from.distanceChebyshev(newl) <= 1) 
                 return;
         }
-        if (ia.considerCowsAsObstacles   && ia.model.hasObject(WorldModel.COW,newl)   && ia.from.maxBorder(newl) <= Search.DIST_FOR_AG_OBSTACLE) 
+        if (ia.considerCowsAsObstacles   && ia.model.hasObject(WorldModel.COW,newl)   && ia.from.distanceChebyshev(newl) <= Search.DIST_FOR_AG_OBSTACLE) 
             return;
         if (ia.considerFenceAsObstacle   && ia.model.hasObject(WorldModel.FENCE, newl.x, newl.y)) 
             return;

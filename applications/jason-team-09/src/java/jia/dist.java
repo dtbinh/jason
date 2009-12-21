@@ -21,7 +21,7 @@ public class dist extends DefaultInternalAction {
         int iagy = (int) ((NumberTerm) terms[1]).solve();
         int itox = (int) ((NumberTerm) terms[2]).solve();
         int itoy = (int) ((NumberTerm) terms[3]).solve();
-        int dist = new Location(iagx, iagy).maxBorder(new Location(itox, itoy));
+        int dist = new Location(iagx, iagy).distanceChebyshev(new Location(itox, itoy));
         return un.unifies(terms[4], new NumberTermImpl(dist));
     }
 }

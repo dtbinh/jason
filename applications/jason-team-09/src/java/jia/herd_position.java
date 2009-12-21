@@ -178,7 +178,7 @@ public class herd_position extends DefaultInternalAction {
         // find cow farthest of corral
         Vec farcow = null;
         for (Vec c: cows)
-            if (farcow == null || farcow.getLocation(model).maxBorder(model.getCorral().center()) < c.getLocation(model).maxBorder(model.getCorral().center()))
+            if (farcow == null || farcow.getLocation(model).distanceChebyshev(model.getCorral().center()) < c.getLocation(model).distanceChebyshev(model.getCorral().center()))
                 farcow = c;
         
         //Collection<Vec> allcows = model.getCows();
@@ -230,10 +230,10 @@ public class herd_position extends DefaultInternalAction {
     private Location pathToNearCow(Location t, List<Location> cows) {
     	Location near = null;
         for (Location c: cows) {
-        	if (near == null || t.maxBorder(c) < t.maxBorder(near))
+        	if (near == null || t.distanceChebyshev(c) < t.distanceChebyshev(near))
         		near = c;
         }
-        if (near != null && t.maxBorder(near) > WorldModel.cowPerceptionRatio) { // if the agent is far from the near cow
+        if (near != null && t.distanceChebyshev(near) > WorldModel.cowPerceptionRatio) { // if the agent is far from the near cow
         	Vec nearcv = new Vec(model,near);
         	Vec dircow = new Vec(model,t).sub(nearcv);
         	//System.out.println("Near cow to "+t+" is "+near+" vec = "+dircow);
