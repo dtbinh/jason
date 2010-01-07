@@ -6,9 +6,12 @@ Changes in the syntax
 - syntax of if/while/for statements are now like C/Java:
       if ( X > 3) {
            bla;
+      } else {
+           bla;
       }
   ";" is not required after "}"
   last formula in <then> can be followed by ";"
+  keyword "else" is used
 
 Bugs fixed
 - equals in ObjectTermImpl,

@@ -45,7 +45,7 @@
       .my_name(Me);
       if (scheme(_,Sch)[owner(Me)]) {
          if (not sch_players(Sch,0)) {
-            .wait("+sch_players(Sch,0)", 1000, _)
+            .wait( { +sch_players(Sch,0)} , 1000, _)
          };
          jmoise.remove_scheme(Sch)
       }.
