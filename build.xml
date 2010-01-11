@@ -281,9 +281,9 @@ TARGETS:
                                     <param name="-qualify"/>
                                     <!--param name="-collapsible"/-->
                                     <param name="-postfixpackage"/>
-                                    <param name="-nodefontsize" value="16"/>
-                                    <param name="-nodefontpackagesize" value="12"/>
-                                    <param name="-edgefontsize" value="14"/>
+                                    <param name="-nodefontsize" value="14"/>
+                                    <param name="-nodefontpackagesize" value="8"/>
+                                    <param name="-edgefontsize" value="10"/>
                                     <!--param name="-link" value="http://java.sun.com/j2se/1.5.0/docs/guide/javadoc/doclet/spec"/>
                                     <param name="-link" value="http://java.sun.com/j2se/1.5/docs/api"/-->
                 </doclet>           

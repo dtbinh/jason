@@ -8,7 +8,7 @@
     <property environment="env"/>
 
     <property name="version"         value="1"/>
-    <property name="release"         value="3.1"/>
+    <property name="release"         value="3.2"/>
     <property name="moiseDir"        value="${env.HOME}/Moise/svn-moise" />
     <property name="distDir"         value="${env.HOME}/tmp/jmoise-${version}.${release}" />
     <property name="distFile"        value="${env.HOME}/jason-moise-${version}.${release}" />
@@ -18,6 +18,8 @@
         <pathelement location="src"/>
         <pathelement location="../../lib/jason.jar"/>
         <pathelement location="${basedir}/lib/moise.jar"/>
+        <pathelement location="${basedir}/lib/cartago-1.4.0.jar"/>
+        <pathelement location="${basedir}/lib/cartago-bridge.jar"/>
     </path>
 
 	<condition property="moisejar-nexist" value="yes">

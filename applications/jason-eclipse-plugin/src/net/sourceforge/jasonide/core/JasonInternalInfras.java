@@ -21,5 +21,5 @@ public interface JasonInternalInfras {
 	/**
 	 * Infrastructure JADE based.
 	 */
-	public static final String JADE = "JADE";	
+	public static final String JADE = "Jade";	
 }
