@@ -62,7 +62,7 @@ auction_id(0).
    <- jmoise.set_goal_arg(Sch,winner,"W",W); 
       jmoise.set_goal_state(Sch,winner,satisfied).
 
-// the root goal is permitted (it means that all sub-gols was achieved)
+// the root goal is permitted (it means that all sub-goals were achieved)
 +!auction(N)[scheme(Sch)] 
    :  auction_id(N) & winner(N,W,Vl) 
    <- .print("***** Auction ", N," is finished. The winner is ",W,", value is ",Vl," *****");

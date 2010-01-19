@@ -34,7 +34,11 @@ public class TestAddLogExprInBB {
                 
                 "+!t4   <- ?b(_, (B & not X)); "+  
                 "          ?(B); B = vl(N); jason.asunit.print(X); "+ // the ?(B) also change the var inside X (in gprolog it works like that)
-                "          act(N)." 
+                "          act(N)."  +
+
+                // failure test
+                "+!t5   <- N = 1; ?(N > 1); jason.asunit.print(nok). "+
+                "-!t5   <- jason.asunit.print(ok). "
         );
     }
     
@@ -59,4 +63,9 @@ public class TestAddLogExprInBB {
         ag.assertPrint("5 > 10", 0);
     }
 
+    @Test(timeout=2000)
+    public void testRule3() {
+        ag.addGoal("t5");
+        ag.assertPrint("ok", 10);
+    }
 }
