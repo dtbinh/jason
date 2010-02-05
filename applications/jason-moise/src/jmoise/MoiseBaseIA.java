@@ -21,6 +21,7 @@ public abstract class MoiseBaseIA extends DefaultInternalAction  {
 
     private static Logger logger = Logger.getLogger(MoiseBaseIA.class.getName());
 
+    /** executes the jmoise internal actions by communication with OrgManager */
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
         String    acName = this.getClass().getSimpleName(); // remove the package name "jmoise"

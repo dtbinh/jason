@@ -1,16 +1,10 @@
 ---------------------------
 version <next>
+
+revision XXX on SVN
 ---------------------------
 
-New features 
-- six new *experimental* (meta) events
-  . *!g: a plan for the achievement goal g has finished
-  . |!g: achievement goal g is suspended
-  . >!g: achievement goal g is resumed
-
-  . *!g: a plan for the test goal g has finished
-  . |?g: test goal g is suspended
-  . >?g: test goal g is resumed
+jEdit is updated to verson 4.3.
 
 API changes
 - a new listener can be added in TS to be notified about

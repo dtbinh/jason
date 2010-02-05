@@ -8,12 +8,12 @@ import jason.asSyntax.Term;
 
 <p>Organisational action: <b><code>jmoise.create_group( [gr_name(GrName),] GrSpecId [,
    SuperGrId] [, newGroupId] )</code></b>: used by an agent to create
-   a new group based on GrSpecId specification. If the first parameter
-   is a structure with functor gr_name, the term of this structure it will be
+   a new group instance based on GrSpecId specification. If the first parameter
+   is a structure with functor gr_name, the term of this structure will be
    the name of the new group.  GrSpecId is the name
    of the group in the structural specification, and SuperGrId is the
-   identification of the super group instance. The third parameter is
-   used in case a sub-groups is being created. If the last argument is
+   identification of the super group instance. The SuperGrId parameter is
+   used in case a sub-group is being created. If the last argument is
    a variable, it unifies with the unique identification given to the
    new group.
    
@@ -57,6 +57,6 @@ public class create_group extends MoiseBaseIA {
 
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
-    	return super.execute(ts,un,args);
-    }
+       return super.execute(ts,un,args);
+    }    
 }
