@@ -59,8 +59,10 @@ public class HouseModel extends GridWorldModel {
         setAgPos(0, r1); // move the robot in the grid
         
         // repaint the fridge and owner locations
-        view.update(lFridge.x,lFridge.y);
-        view.update(lOwner.x,lOwner.y);
+        if (view != null) {
+            view.update(lFridge.x,lFridge.y);
+            view.update(lOwner.x,lOwner.y);
+        }
         return true;
     }
     
@@ -68,7 +70,8 @@ public class HouseModel extends GridWorldModel {
         if (fridgeOpen && availableBeers > 0 && !carryingBeer) {
             availableBeers--;
             carryingBeer = true;
-            view.update(lFridge.x,lFridge.y);
+            if (view != null)
+                view.update(lFridge.x,lFridge.y);
             return true;
         } else {
             return false;
@@ -77,7 +80,8 @@ public class HouseModel extends GridWorldModel {
     
     boolean addBeer(int n) {
         availableBeers += n;
-        view.update(lFridge.x,lFridge.y);
+        if (view != null)
+            view.update(lFridge.x,lFridge.y);
         return true;
     }
     
@@ -85,7 +89,8 @@ public class HouseModel extends GridWorldModel {
         if (carryingBeer) {
             sipCount = 10;
             carryingBeer = false;
-            view.update(lOwner.x,lOwner.y);
+            if (view != null)
+                view.update(lOwner.x,lOwner.y);
             return true;
         } else {
             return false;
@@ -95,7 +100,8 @@ public class HouseModel extends GridWorldModel {
     boolean sipBeer() {
         if (sipCount > 0) {
             sipCount--;
-            view.update(lOwner.x,lOwner.y);
+            if (view != null)
+                view.update(lOwner.x,lOwner.y);
             return true;
         } else {
             return false;

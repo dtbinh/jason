@@ -19,7 +19,7 @@ two_randoms(R1,R2,N)   :- my.random(R1,N) & my.random(R2,N) & R2 \== R1.
 
 // As soon as I know of 2 players, I can start arresting
 +player(P)
-  :  .count(player(_),C) & C == 2
+  :  .count(player(_),2)
   <- !!arrest.
 
 // I have the goal to arrest a new pair of players (and I
@@ -40,7 +40,9 @@ two_randoms(R1,R2,N)   :- my.random(R1,N) & my.random(R2,N) & R2 \== R1.
 // Just got to know what the second player of a pair played,
 // so I can calculate the scores and inform them
 +play(T,M1)[source(P1)]
-  :  play(T,M2)[source(P2)] & P1 \== P2
+  :  (play(T,M2)[source(P2)] & P1 \== P2)
+     |
+     (play(T,M1)[source(A),source(B)] & A \== B) // the case where the two players took the same decision
   <- ?payoffs(M1,M2,S1,S2);
      .print("Scores at time ",T,": ",S1," ",S2);
      .send(P1,tell,score(T,S1));

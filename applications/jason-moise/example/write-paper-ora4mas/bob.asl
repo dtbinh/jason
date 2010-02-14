@@ -36,13 +36,13 @@
 	 //ora4mas.commit_mission(mBib, sch1).
 	 
 	 
--!start[error(I),norm_failure(NF)] <- .print("starting fails due to the normative failure: ",NF).	 
+//-!start[error(I),norm_failure(NF)] <- .print("starting fails due to the normative failure: ",NF).	 
 -!start[error(I),error_msg(M)] <- .print("failure in starting! ",I,": ",M).
 
 +?play(A,R,G) <- .wait({+play(A,R,G)}).
 
 // signals
-+norm_failure(N) <- .print("norm failure event:", N).
++norm_failure(N) <- .print("norm failure event: ", N).
 
 // plans to react to normative events like obligation created
 
