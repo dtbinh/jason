@@ -4,7 +4,12 @@ version <next>
 revision XXX on SVN
 ---------------------------
 
-jEdit is updated to verson 4.3.
+New features
+
+- jEdit is updated to verson 4.3.
+
+- backtracking on annotations
+
 
 API changes
 - a new listener can be added in TS to be notified about

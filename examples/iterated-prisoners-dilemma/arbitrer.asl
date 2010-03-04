@@ -40,9 +40,7 @@ two_randoms(R1,R2,N)   :- my.random(R1,N) & my.random(R2,N) & R2 \== R1.
 // Just got to know what the second player of a pair played,
 // so I can calculate the scores and inform them
 +play(T,M1)[source(P1)]
-  :  (play(T,M2)[source(P2)] & P1 \== P2)
-     |
-     (play(T,M1)[source(A),source(B)] & A \== B) // the case where the two players took the same decision
+  :  play(T,M2)[source(P2)] & P1 \== P2
   <- ?payoffs(M1,M2,S1,S2);
      .print("Scores at time ",T,": ",S1," ",S2);
      .send(P1,tell,score(T,S1));
