@@ -72,6 +72,7 @@ public class CartagoOrgAgent extends CAgentArch {
         CartagoEnvironment.getInstance().putCartagoAction("add_responsible_group", new AddResponsibleGroup());
         CartagoEnvironment.getInstance().putCartagoAction("adopt_role", new AdoptRole());
         CartagoEnvironment.getInstance().putCartagoAction("commit_mission", new CommitMission());
+        CartagoEnvironment.getInstance().putCartagoAction("leave_mission", new LeaveMission());
         CartagoEnvironment.getInstance().putCartagoAction("goal_achieved", new GoalAchieved());
 
         /*
@@ -379,7 +380,7 @@ public class CartagoOrgAgent extends CAgentArch {
                 ctx.use(act.getActionId(),aid,op,null,Long.MAX_VALUE);
                 ctx.focus(aid,null);
             } catch (Exception e) {
-                notifyActionFailure(agent,actionExec); 
+                notifyActionFailure(agent,actionExec);
                 logger.log(Level.SEVERE,"Cartago error: "+e, e);
             }
         }
@@ -405,6 +406,25 @@ public class CartagoOrgAgent extends CAgentArch {
         }
     }
 
+    class LeaveMission extends CartagoAction {
+        public void execute(String agName, CAgentArch agent, ICartagoContext ctx, Structure action, ActionExec actionExec){                     
+            try {
+                // parameters
+                String mission  = arg2str(action.getTerm(0));
+                String scheme   = arg2str(action.getTerm(1));
+                
+                Op op          = new Op("leaveMission", mission);
+                ArtifactId aid = ctx.lookupArtifact(scheme);
+
+                PendingAction act = agent.createPendingAction(agent, agName, action,  (ActionExec)actionExec);
+                ctx.use(act.getActionId(),aid,op,null,Long.MAX_VALUE);
+            } catch (Exception e) {
+                notifyActionFailure(agent,actionExec); 
+                logger.log(Level.SEVERE,"Cartago error: "+e, e);
+            }
+        }
+    }
+
     class GoalAchieved extends CartagoAction {
         public void execute(String agName, CAgentArch agent, ICartagoContext ctx, Structure action, ActionExec actionExec){                     
             try {
@@ -423,6 +443,8 @@ public class CartagoOrgAgent extends CAgentArch {
             }
         }
     }
+
+    
     /*
     private void resumeIntention(Event ev) {
         // get intention's key

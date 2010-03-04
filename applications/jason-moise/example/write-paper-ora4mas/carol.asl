@@ -17,32 +17,31 @@
 +!join <- .my_name(Me); join_workspace(ora4mas,"",user_id(Me)).
 	 	 
 // application domain goals
-+!wsecs <- .print("writing sections...").
-+!wrefs <- .print("organising bibliography...").
-
++!wsecs[scheme(S)]
+   <- .print("writing sections for scheme ",S,"...").
+ 
 +goal_state(Scheme,wsecs,_,_,statisfied)
     : .my_name(Me) & commitment(Me,mColaborator,Scheme)
    <- .print("sections are ok, leaving my mission....");
       leave_mission(mColaborator,Scheme).
-+goal_state(Scheme,wrefs,_,_,statisfied)
-    : .my_name(Me) & commitment(Me,mBib,Scheme)
-   <- .print("references are ok, leaving my mission....");
-      leave_mission(mBib,Scheme).
 
 // plans to react to normative events like obligation created
 
-+obligation(Ag,Norm,committed(Ag,Mission,Scheme),DeadLine)
++obligation(Ag,Norm,committed(Ag,mColaborator,Scheme),DeadLine)
     : .my_name(Ag)
-   <- .print("I am obliged to commit to ",Mission);
-      commit_mission(Mission,Scheme).
+   <- .print("I am obliged to commit to the scheme as a colaborator, so doing that...");
+      commit_mission(mColaborator,Scheme).
 	  
 +obligation(Ag,Norm,achieved(Scheme,Goal,Ag),DeadLine)
     : .my_name(Ag)
    <- .print("I am obliged to achieve goal ",Goal);
-      !Goal;
+      !Goal[scheme(Scheme)];
       goal_achieved(Goal,Scheme).
 	  
 +obligation(Ag,Norm,What,DeadLine)  
    : .my_name(Ag)
    <- .print("I am obliged to ",What,", but I don't know what to do!").
 
+// signals
++norm_failure(N) <- .print("norm failure event: ", N).
+   

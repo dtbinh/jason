@@ -15,6 +15,7 @@ MAS wp {
     agents:
         bob   agentArchClass ora4mas.CartagoOrgAgent;
         alice agentArchClass ora4mas.CartagoOrgAgent;
+        carol agentArchClass ora4mas.CartagoOrgAgent;
 
     classpath: "../../lib/moise.jar";"../../lib/jmoise.jar";"../../lib/c4jason.jar";"../../lib/cartago.jar";
 }

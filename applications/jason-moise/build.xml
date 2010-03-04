@@ -18,8 +18,8 @@
         <pathelement location="src"/>
         <pathelement location="../../lib/jason.jar"/>
         <pathelement location="${basedir}/lib/moise.jar"/>
-        <pathelement location="${basedir}/lib/cartago-1.4.0.jar"/>
-        <pathelement location="${basedir}/lib/cartago-bridge.jar"/>
+        <pathelement location="${basedir}/lib/cartago.jar"/>
+        <pathelement location="${basedir}/lib/c4jason.jar"/>
     </path>
 
 	<condition property="moisejar-nexist" value="yes">
