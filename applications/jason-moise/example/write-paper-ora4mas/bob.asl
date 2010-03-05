@@ -12,7 +12,7 @@
 	 .wait(300);
 	 
      //make_artifact("mypaper", "ora4mas.nopl.GroupBoard", [mypaper, "wp-os.xml", wpgroup, false, false	]); 
-     create_group(mypaper, "wp-os.xml", wpgroup, false, false);
+     create_group(mypaper, "wp-os.xml", wpgroup, false, true);
 	 .print("group created");
 	 
 	 //ora4mas.adopt_role(editor,mypaper);
@@ -29,7 +29,7 @@
 	 !run_scheme.
      
  +!run_scheme
-   <- create_scheme(sch1, "wp-os.xml", writePaperSch, false, false);
+   <- create_scheme(sch1, "wp-os.xml", writePaperSch, false, true);
 	  .print("scheme created");
 	  add_responsible_group(sch1,mypaper); 
 	  .print("scheme is linked to responsible group");
@@ -39,7 +39,9 @@
 +goal_state(Scheme,wp,_,_,statisfied)
    <- .print("all finished... removing artifact");
       .wait(1000);
-      dispose_artifact("sch1").
+      remove_scheme(sch1).
+      
++destroyed(Art) <- .print("Artifact ",Art," destroyed").      
 	 
 //-!start[error(I),norm_failure(NF)] <- .print("starting fails due to the normative failure: ",NF).	 
 -!start[error(I),error_msg(M)] <- .print("failure in starting! ",I,": ",M).
