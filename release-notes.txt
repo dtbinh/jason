@@ -1,15 +1,13 @@
 ---------------------------
-version <next>
+version 1.3.2
 
-revision XXX on SVN
+revision 1586 on SVN
 ---------------------------
 
 New features
 
-- jEdit is updated to verson 4.3.
-
 - backtracking on annotations
-
+  (and literal's annotations are sorted)
 
 API changes
 - a new listener can be added in TS to be notified about
