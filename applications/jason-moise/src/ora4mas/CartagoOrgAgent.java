@@ -45,7 +45,6 @@ import cartago.CartagoException;
 import cartago.Event;
 import cartago.ICartagoContext;
 import cartago.Op;
-import cartago.OpId;
 
 /**
   * Organisational Architecture, binds Jason agent to
