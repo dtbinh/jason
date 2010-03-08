@@ -72,10 +72,12 @@ public class CartagoOrgAgent extends CAgentArch {
                 
         // add org actions
         CartagoEnvironment.getInstance().putCartagoAction("create_group", new CreateGroup());
+        CartagoEnvironment.getInstance().putCartagoAction("remove_group", new RemoveOrgArt());
         CartagoEnvironment.getInstance().putCartagoAction("create_scheme", new CreateScheme());
-        CartagoEnvironment.getInstance().putCartagoAction("remove_scheme", new RemoveScheme());
+        CartagoEnvironment.getInstance().putCartagoAction("remove_scheme", new RemoveOrgArt());
         CartagoEnvironment.getInstance().putCartagoAction("add_responsible_group", new AddResponsibleGroup());
         CartagoEnvironment.getInstance().putCartagoAction("adopt_role", new AdoptRole());
+        CartagoEnvironment.getInstance().putCartagoAction("leave_role", new LeaveRole());
         CartagoEnvironment.getInstance().putCartagoAction("commit_mission", new CommitMission());
         CartagoEnvironment.getInstance().putCartagoAction("leave_mission", new LeaveMission());
         CartagoEnvironment.getInstance().putCartagoAction("goal_achieved", new GoalAchieved());
@@ -269,7 +271,6 @@ public class CartagoOrgAgent extends CAgentArch {
             v.addAnnot( ASSyntax.createStructure("artifact", new Atom(source.getName())));
             getTS().getAg().abolish(v, null);
         } catch (RevisionFailedException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -351,6 +352,35 @@ public class CartagoOrgAgent extends CAgentArch {
         }
     }
 
+    class RemoveOrgArt extends CartagoAction {
+        public void execute(String agName, CAgentArch agent, final ICartagoContext ctx, Structure action, ActionExec actionExec){                     
+            try {
+                String aId = arg2str(action.getTerm(0)); 
+
+                final ArtifactId aid = ctx.lookupArtifact(aId);
+                if (aid == null){
+                    logger.warning("dispose by "+agName+" failed - artifact not found: "+aId);
+                    notifyActionFailure(agent,actionExec);
+                } else {
+                    PendingAction act = agent.createPendingAction(agent, agName, action, actionExec);
+                    ctx.use(act.getActionId(),aid,new Op("destroy"),null,Long.MAX_VALUE);
+                    
+                    // call dispose later
+                    getTS().getAg().getScheduler().schedule(new Callable<Object>() {
+                        public Object call() throws Exception {
+                            ctx.disposeArtifact(aid);
+                            return null;
+                        }
+                    }, 4, TimeUnit.SECONDS);
+                }
+                notifyActionSuccess(agent, actionExec);
+            } catch (Exception e) {
+                notifyActionFailure(agent,actionExec); 
+                logger.log(Level.SEVERE,"Cartago error: "+e, e);
+            }
+        }
+    }
+    
     class CreateScheme extends CartagoAction {
         public void execute(String agName, CAgentArch agent, ICartagoContext ctx, Structure action, ActionExec actionExec){                     
             try {
@@ -371,129 +401,66 @@ public class CartagoOrgAgent extends CAgentArch {
         }
     }
 
-    class RemoveScheme extends CartagoAction {
-        public void execute(String agName, CAgentArch agent, final ICartagoContext ctx, Structure action, ActionExec actionExec){                     
+    // basic class for all other actions
+    abstract class OrgAction extends CartagoAction {
+        public void execute(String agName, CAgentArch agent, ICartagoContext ctx, Structure action, ActionExec actionExec){                     
             try {
-                // parameters
-                String sId = arg2str(action.getTerm(0)); 
-                
-                final ArtifactId aid = ctx.lookupArtifact(sId);
-                if (aid == null){
-                    logger.warning("dispose by "+agName+" failed - artifact not found: "+sId);
-                    notifyActionFailure(agent,actionExec);
-                } else {
-                    PendingAction act = agent.createPendingAction(agent, agName, action, actionExec);
-                    ctx.use(act.getActionId(),aid,new Op("destroy"),null,Long.MAX_VALUE);
-                    
-                    // call dispose later
-                    getTS().getAg().getScheduler().schedule(new Callable<Object>() {
-                        public Object call() throws Exception {
-                            ctx.disposeArtifact(aid);
-                            return null;
-                        }
-                    }, 4, TimeUnit.SECONDS);
-                }
+                PendingAction act = agent.createPendingAction(agent, agName, action, actionExec);
+                ArtifactId aid = ctx.lookupArtifact( arg2str(action.getTerm( getArtPosition()) ));
+                ctx.use(act.getActionId(), aid, getOp(action), null,Long.MAX_VALUE);
+                if (focusAfter())
+                    ctx.focus(aid,null);
+
             } catch (Exception e) {
                 notifyActionFailure(agent,actionExec); 
                 logger.log(Level.SEVERE,"Cartago error: "+e, e);
             }
+        }
+        abstract Op getOp(Structure action);
+        int getArtPosition() { return 1; } // the position of the art id in the parameters
+        boolean focusAfter() { return false; }
+    }
+
+
+    class AddResponsibleGroup extends OrgAction {
+        Op getOp(Structure action) {
+            return new Op("addScheme", arg2str(action.getTerm(0)));
         }
     }
     
-    class AddResponsibleGroup extends CartagoAction {
-        public void execute(String agName, CAgentArch agent, ICartagoContext ctx, Structure action, ActionExec actionExec){                     
-            try {
-                // parameters
-                String scheme  = arg2str(action.getTerm(0));
-                String group   = arg2str(action.getTerm(1));
-                
-                Op op          = new Op("addScheme", scheme);
-                ArtifactId aid = ctx.lookupArtifact(group);
-                
-                PendingAction act = agent.createPendingAction(agent, agName, action, actionExec);
-                ctx.use(act.getActionId(),aid,op,null,Long.MAX_VALUE);
-            } catch (Exception e) {
-                notifyActionFailure(agent,actionExec); 
-                logger.log(Level.SEVERE,"Cartago error: "+e, e);
-            }
+    class AdoptRole extends OrgAction {
+        Op getOp(Structure action) {
+            return new Op("adoptRole", arg2str(action.getTerm(0)));
+        }
+        boolean focusAfter() { 
+            return true; 
         }
     }
     
-    class AdoptRole extends CartagoAction {
-        public void execute(String agName, CAgentArch agent, ICartagoContext ctx, Structure action, ActionExec actionExec){                     
-            try {
-                // parameters
-                String role    = arg2str(action.getTerm(0));
-                String group   = arg2str(action.getTerm(1));
-                
-                Op op          = new Op("adoptRole", role);
-                ArtifactId aid = ctx.lookupArtifact(group);
-                
-                PendingAction act = agent.createPendingAction(agent, agName, action, actionExec);
-                ctx.use(act.getActionId(),aid,op,null,Long.MAX_VALUE);
-                ctx.focus(aid,null);
-            } catch (Exception e) {
-                notifyActionFailure(agent,actionExec);
-                logger.log(Level.SEVERE,"Cartago error: "+e, e);
-            }
-        }
-    }
-    
-    class CommitMission extends CartagoAction {
-        public void execute(String agName, CAgentArch agent, ICartagoContext ctx, Structure action, ActionExec actionExec){                     
-            try {
-                // parameters
-                String mission  = arg2str(action.getTerm(0));
-                String scheme   = arg2str(action.getTerm(1));
-                
-                Op op          = new Op("commitMission", mission);
-                ArtifactId aid = ctx.lookupArtifact(scheme);
-                
-                PendingAction act = agent.createPendingAction(agent, agName, action, actionExec);
-                ctx.use(act.getActionId(),aid,op,null,Long.MAX_VALUE);
-                ctx.focus(aid,null);
-            } catch (Exception e) {
-                notifyActionFailure(agent,actionExec); 
-                logger.log(Level.SEVERE,"Cartago error: "+e, e);
-            }
+    class LeaveRole extends OrgAction {
+        Op getOp(Structure action) {
+            return new Op("leaveRole", arg2str(action.getTerm(0)));
         }
     }
 
-    class LeaveMission extends CartagoAction {
-        public void execute(String agName, CAgentArch agent, ICartagoContext ctx, Structure action, ActionExec actionExec){                     
-            try {
-                // parameters
-                String mission  = arg2str(action.getTerm(0));
-                String scheme   = arg2str(action.getTerm(1));
-                
-                Op op          = new Op("leaveMission", mission);
-                ArtifactId aid = ctx.lookupArtifact(scheme);
-
-                PendingAction act = agent.createPendingAction(agent, agName, action, actionExec);
-                ctx.use(act.getActionId(),aid,op,null,Long.MAX_VALUE);
-            } catch (Exception e) {
-                notifyActionFailure(agent,actionExec); 
-                logger.log(Level.SEVERE,"Cartago error: "+e, e);
-            }
+    class CommitMission extends OrgAction {
+        Op getOp(Structure action) {
+            return new Op("commitMission", arg2str(action.getTerm(0)));
+        }
+        boolean focusAfter() { 
+            return true; 
         }
     }
 
-    class GoalAchieved extends CartagoAction {
-        public void execute(String agName, CAgentArch agent, ICartagoContext ctx, Structure action, ActionExec actionExec){                     
-            try {
-                // parameters
-                String goal     = arg2str(action.getTerm(0));
-                String scheme   = arg2str(action.getTerm(1));
-                
-                Op op          = new Op("goalAchieved", goal);
-                ArtifactId aid = ctx.lookupArtifact(scheme);
-                
-                PendingAction act = agent.createPendingAction(agent, agName, action, actionExec);
-                ctx.use(act.getActionId(),aid,op,null,Long.MAX_VALUE);
-            } catch (Exception e) {
-                notifyActionFailure(agent,actionExec); 
-                logger.log(Level.SEVERE,"Cartago error: "+e, e);
-            }
+    class LeaveMission extends OrgAction {
+        Op getOp(Structure action) {
+            return new Op("leaveMission", arg2str(action.getTerm(0)));
+        }
+    }
+
+    class GoalAchieved extends OrgAction {
+        Op getOp(Structure action) {
+            return new Op("goalAchieved", arg2str(action.getTerm(0)));
         }
     }
 

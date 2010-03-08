@@ -1,4 +1,5 @@
-/* Initial beliefs and rules */
+// This agent creates the group/scheme to write a paper
+// and adopts the role "editor" in the group
 
 /* Initial goals */
 
@@ -24,35 +25,35 @@
      // wait for carol
      ?play(C,writer,mypaper);
 	 
-	 //ora4mas.adopt_role(writer,mypaper);
 	 .print("roles adopted, writers are ",A," and ",B);
-	 !run_scheme.
-     
- +!run_scheme
-   <- create_scheme(sch1, "wp-os.xml", writePaperSch, false, true);
-	  .print("scheme created");
-	  add_responsible_group(sch1,mypaper); 
-	  .print("scheme is linked to responsible group");
-	 
-	  commit_mission(mManager, sch1).
-	 
-+goal_state(Scheme,wp,_,_,statisfied)
-   <- .print("all finished... removing artifact");
-      .wait(1000);
-      remove_scheme(sch1).
-      
-+destroyed(Art) <- .print("Artifact ",Art," destroyed").      
-	 
-//-!start[error(I),norm_failure(NF)] <- .print("starting fails due to the normative failure: ",NF).	 
+	 !run_scheme(sch1).
+
+// general error handler for goal start 
 -!start[error(I),error_msg(M)] <- .print("failure in starting! ",I,": ",M).
+     
+ +!run_scheme(S)
+   <- create_scheme(S, "wp-os.xml", writePaperSch, false, true);
+	  .print("scheme ",S," created");
+	  add_responsible_group(S,mypaper); 
+	  .print("scheme is linked to responsible group");	 
+	  commit_mission(mManager, S).
+	 
+// when the root goal of the scheme is statisfied, remove the scheme     
++goal_state(sch1,wp,_,_,satisfied)
+   <- .print("all finished... removing artifact for sch1");
+      .wait(1000);
+      remove_scheme(sch1);
+      .print("starting a new scheme...");
+      !run_scheme(sch2).
+      
 
 +?play(A,R,G) <- .wait({+play(A,R,G)}).
 
 // signals
 +norm_failure(N) <- .print("norm failure event: ", N).
++destroyed(Art)  <- .print("Artifact ",Art," destroyed").      
 
 // plans to react to normative events like obligation created
-
 	  
 +obligation(Ag,Norm,achieved(Scheme,Goal,Ag),DeadLine)
     : .my_name(Ag)
@@ -63,7 +64,7 @@
    : .my_name(Ag)
    <- .print("I am obliged to ",What,", but I don't know what to do!").
 
-// for debug
+// for debug (prints out the new states of goals)
 +goal_state(Sch,Goal,CommittedAgs,AchievedBy,State)
    <- .print("                         goal changed: ", goal_state(Sch,Goal,CommittedAgs,AchievedBy,State)).
    

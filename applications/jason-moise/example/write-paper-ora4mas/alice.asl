@@ -1,4 +1,6 @@
-/* Initial beliefs and rules */
+// this agent waits for the group creation and then
+// adopts the role write and
+// commits to the missions mColaborator and mBib
 
 /* Initial goals */
 
@@ -20,11 +22,11 @@
 +!wsecs <- .print("writing sections...").
 +!wrefs <- .print("organising bibliography...").
 
-+goal_state(Scheme,wsecs,_,_,statisfied)
++goal_state(Scheme,wsecs,_,_,satisfied)
     : .my_name(Me) & commitment(Me,mColaborator,Scheme)
    <- .print("sections are ok, leaving my mission....");
       leave_mission(mColaborator,Scheme).
-+goal_state(Scheme,wrefs,_,_,statisfied)
++goal_state(Scheme,wrefs,_,_,satisfied)
     : .my_name(Me) & commitment(Me,mBib,Scheme)
    <- .print("references are ok, leaving my mission....");
       leave_mission(mBib,Scheme).
