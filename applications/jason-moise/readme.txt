@@ -1,12 +1,12 @@
 This Jason application exemplifies how to develop agent in an organised
 society based on the Moise+ organisational model (http://moise.sf.net).
 
-To run some application, using JasonIDE open the project 
-    example/writePaper/writePaper.mas2j
-or
-    example/auction/orgAuction.mas2j
+Two platforms are provided:
 
-and start it. The chapter 4 of doc/tutorial.pdf explains in details 
-the examples.
+- S-Moise: a special agent, called OrgManager, is used 
+  to manage the organisation
 
-Note: Jason 1.3.1 is required.
+- ORA4MAS: distributed artefacts are used in place of
+  OrgManager
+
+See doc folder and examples for more information

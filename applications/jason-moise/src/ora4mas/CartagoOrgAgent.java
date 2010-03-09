@@ -81,6 +81,7 @@ public class CartagoOrgAgent extends CAgentArch {
         CartagoEnvironment.getInstance().putCartagoAction("commit_mission", new CommitMission());
         CartagoEnvironment.getInstance().putCartagoAction("leave_mission", new LeaveMission());
         CartagoEnvironment.getInstance().putCartagoAction("goal_achieved", new GoalAchieved());
+        CartagoEnvironment.getInstance().putCartagoAction("set_goal_arg", new SetGoalArgValue());
 
         /*
         if (stts.getUserParameter("workspace") != null) {
@@ -461,6 +462,15 @@ public class CartagoOrgAgent extends CAgentArch {
     class GoalAchieved extends OrgAction {
         Op getOp(Structure action) {
             return new Op("goalAchieved", arg2str(action.getTerm(0)));
+        }
+    }
+
+    class SetGoalArgValue extends OrgAction {
+        Op getOp(Structure action) {
+            return new Op("setArgumentValue", arg2str(action.getTerm(1)), arg2str(action.getTerm(2)), arg2str(action.getTerm(3)));
+        }
+        int getArtPosition() {
+            return 0;
         }
     }
 
