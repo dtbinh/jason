@@ -12,9 +12,12 @@ auction_id(0).
 
 // create a group to execute the auction
 +!create_group 
-   <- create_group(auction, "auction-os.xml", auctionGroup, false, true);
+   <- .my_name(Me); join_workspace(ora4mas,"",user_id(Me));
+      create_group(auction, "auction-os.xml", auctionGroup, false, true);
       adopt_role(auctioneer,auction).
-
+-!create_group[error(E), error_msg(M), reason(R)]
+   <- .print("** Error ",E," creating auction group: ",M);
+      .print("** The reason is ",R).
 
 // when I start playing the role "auctioneer",
 // create a doAuction scheme.
@@ -24,18 +27,16 @@ auction_id(0).
    <- !create_scheme.
 
 +!create_scheme 
-   <- ?auction_id(Id); 
-      .concat("sch",Id,Sch);
-      create_scheme(Sch, "auction-os.xml", "doAuction", false, true);
-      .my_name(Me);
-      ?play(Me,_,Gr);
+   <- ?auction_id(Id); .concat("sch",Id,Sch); // create a new scheme id
+      create_scheme(Sch, "auction-os.xml", "doAuction", false, false);
+      .my_name(Me); ?play(Me,_,Gr); // discover my group id
       add_responsible_group(Sch,Gr).
 -!create_scheme[error(Id), error_msg(M), code_line(Line)] 
    <- .print("Error ",Id, " ",M," -- at line ", Line).
 
 // when a scheme has finished, start another
 +destroyed(Art) 
-   :  auction_id(N) & N < 7
+   :  auction_id(N) & N < 70
    <- !create_scheme.
 
 /*   
@@ -49,9 +50,14 @@ auction_id(0).
       -+auction_id(N+1); 
       -+winner(N+1,no,0);
       set_goal_arg(Sch,auction,"N",N+1);
-      .print("Waiting participants for 1 second....");
-      .wait(1000);
+      //.print("Waiting participants for 1 second....");
+      //.wait(1000);
+      .print("Waiting for 3 participants....");
+      !wait_participants(3);
       .print("Go!").
+      
++!wait_participants(N) : .count(play(_,participant,_), N).
++!wait_participants(N) <- .wait( { +play(_,participant,_) }, 100); !wait_participants(N).
       
 +!winner[scheme(Sch)] 
    :  auction_id(N) & winner(N,W,_) 

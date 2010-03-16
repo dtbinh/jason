@@ -25,7 +25,7 @@
      // wait for carol
      ?play(C,writer,mypaper);
 	 
-	 .print("roles adopted, writers are ",A," and ",B);
+	 .print("roles adopted, writers are ",A," and ",C);
 	 !run_scheme(sch1).
 
 // general error handler for goal start 

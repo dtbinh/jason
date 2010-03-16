@@ -111,7 +111,7 @@ public class CartagoOrgAgent extends CAgentArch {
         boolean org = false;
         if (isOrgArt(aid.getArtifactType())) 
             for (ArtifactObsProperty ob: props)
-                if (updateBB(aid, ob.getName(), ob.getValue())) 
+                if (updateBB(aid, ob.getName(), ob.getValue(0))) 
                     org = true;
         
         if (org)
@@ -140,10 +140,23 @@ public class CartagoOrgAgent extends CAgentArch {
         return super.perceive();
     }
     
+    @SuppressWarnings("unchecked")
     private boolean updateBB(final ArtifactId source, String label, final Object content) {
         //System.out.println(" ["+getAgName()+ "] * "+label+" = "+content);
         synchronized (runOnPerceive) {
             if (label.equals(GroupBoard.obsPropSchemes)) {
+                
+                // focus on all schemes of the group
+                try {
+                    ICartagoContext actx = getCurrentContext();
+                    for (String s: (Collection<String>)content) {
+                        ArtifactId aid = actx.lookupArtifact(s);
+                        actx.focus(aid, null);
+                    }
+                } catch (CartagoException e) {
+                    logger.log(Level.SEVERE,"Error on focusing "+content, e);
+                }
+
                 runOnPerceive.put(piResponsibleGroup, new Runnable() {  public void run() {
                     updateResponsibleGroup(source, content);
                 }});
@@ -218,8 +231,6 @@ public class CartagoOrgAgent extends CAgentArch {
 
     @SuppressWarnings("unchecked")
     private void updateResponsibleGroup(ArtifactId source, Object content)  {
-        ICartagoContext actx    = getCurrentContext();
-
         // content is a set of schemes
         Atom gId = new Atom(source.getName());
         List<Literal> toAdd = new ArrayList<Literal>();
@@ -230,12 +241,6 @@ public class CartagoOrgAgent extends CAgentArch {
             l.addAnnot(ASSyntax.createStructure("artifact", ASSyntax.createAtom(source.getName())));
             l.addAnnot(ASSyntax.createStructure("artifact", schAtom));
             toAdd.add(l);
-            try {
-                ArtifactId aid = actx.lookupArtifact(s);
-                actx.focus(aid, null);
-            } catch (CartagoException e) {
-                logger.log(Level.SEVERE,"Error on org update "+content, e);
-            }
         }
         orgBUF(toAdd, piResponsibleGroup);
     }
@@ -283,6 +288,8 @@ public class CartagoOrgAgent extends CAgentArch {
     }
     
     private List<Literal> orgBUF(List<Literal> toAdd, PredicateIndicator bel) {
+        if (getTS().getLogger().isLoggable(Level.FINE)) getTS().getLogger().fine("orgBUF for "+bel+" with "+toAdd);
+
         List<Literal> toDel = new ArrayList<Literal>();
         Agent ag = getTS().getAg();
         
@@ -307,6 +314,8 @@ public class CartagoOrgAgent extends CAgentArch {
                 }
             }
         }
+        
+        if (getTS().getLogger().isLoggable(Level.FINE)) getTS().getLogger().fine("org buf add: "+toAdd+"\norg bug del: "+toDel);        
         try {
             for (Literal l: toDel)
                 ag.delBel(l);
@@ -315,7 +324,9 @@ public class CartagoOrgAgent extends CAgentArch {
                 ag.addBel(l);
         } catch (RevisionFailedException e) {
             e.printStackTrace();
-        } 
+        }
+        
+        if (getTS().getLogger().isLoggable(Level.FINE)) getTS().getLogger().fine("end of orgBUG");
         return toDel;
     }
     
@@ -338,7 +349,7 @@ public class CartagoOrgAgent extends CAgentArch {
             try {
                 // parameters
                 String gId = arg2str(action.getTerm(0)); 
-                
+
                 ArtifactId aid = ctx.makeArtifact(
                         gId,   
                         GroupBoard.class.getName(),  
