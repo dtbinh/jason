@@ -7,6 +7,7 @@ import jason.asSemantics.ActionExec;
 import jason.asSemantics.Agent;
 import jason.asSyntax.ASSyntax;
 import jason.asSyntax.Atom;
+import jason.asSyntax.ListTerm;
 import jason.asSyntax.Literal;
 import jason.asSyntax.PredicateIndicator;
 import jason.asSyntax.StringTerm;
@@ -205,12 +206,14 @@ public class CartagoOrgAgent extends CAgentArch {
     private void updateSpecification(ArtifactId source, Object content, PredicateIndicator pi) {
         try {
             if (content instanceof ToProlog) {
+
                 List<Literal> toAdd = new ArrayList<Literal>();                
                 Literal l = ASSyntax.parseLiteral( ((ToProlog)content).getAsProlog() );
                 l.addSource(ASSyntax.createAtom(source.getWorkspaceId().getName()));
-                l.addAnnot(ASSyntax.createStructure("artifact", ASSyntax.createAtom(source.getName())));
+                Term artAnnot = ASSyntax.createStructure("artifact", ASSyntax.createAtom(source.getName()));
+                l.addAnnot(artAnnot);
                 toAdd.add(l);
-                orgBUF(toAdd, pi);
+                orgBUF(toAdd, pi, artAnnot);
             }
         } catch (ParseException e) {
             logger.log(Level.SEVERE,"Error updating "+content, e);
@@ -220,55 +223,59 @@ public class CartagoOrgAgent extends CAgentArch {
     @SuppressWarnings("unchecked")
     private void updateObligations(ArtifactId source, Object content) {
         List<Literal> toAdd = new ArrayList<Literal>();
+        Term artAnnot = ASSyntax.createStructure("artifact", ASSyntax.createAtom(source.getName()));
         for (Literal o: (Collection<Literal>)content) {
             Literal l = o.copy();
             l.addSource(ASSyntax.createAtom(source.getWorkspaceId().getName()));
-            //l.addAnnot(ASSyntax.createStructure("artifact", ASSyntax.createAtom(ev.getSourceId().getName())));
+            l.addAnnot(artAnnot);
             toAdd.add(l);
         }
-        orgBUF(toAdd, piObligation);
+        orgBUF(toAdd, piObligation, artAnnot);
     }
 
     @SuppressWarnings("unchecked")
     private void updateResponsibleGroup(ArtifactId source, Object content)  {
         // content is a set of schemes
         Atom gId = new Atom(source.getName());
+        Term grAnnot = ASSyntax.createStructure("artifact", ASSyntax.createAtom(source.getName()));
         List<Literal> toAdd = new ArrayList<Literal>();
         for (String s: (Collection<String>)content) {
             Atom schAtom = new Atom(s);
             Literal l = createLiteral(piResponsibleGroup.getFunctor(), gId, schAtom);
             l.addSource(ASSyntax.createAtom(source.getWorkspaceId().getName()));
-            l.addAnnot(ASSyntax.createStructure("artifact", ASSyntax.createAtom(source.getName())));
+            l.addAnnot(grAnnot);
             l.addAnnot(ASSyntax.createStructure("artifact", schAtom));
             toAdd.add(l);
         }
-        orgBUF(toAdd, piResponsibleGroup);
+        orgBUF(toAdd, piResponsibleGroup, grAnnot);
     }
 
     @SuppressWarnings("unchecked")
     private void updatePlayers(ArtifactId source, Object content, PredicateIndicator pred) {
         // event arg is a collection of Players (from oe)
+        Term artAnnot = ASSyntax.createStructure("artifact", ASSyntax.createAtom(source.getName()));
         List<Literal> toAdd = new ArrayList<Literal>();
         for (Player p: (Collection<Player>)content) {
             Literal l = createLiteral(pred.getFunctor(), new Atom(p.getAg()), new Atom(p.getTarget()), new Atom(source.getName()));
             l.addSource(ASSyntax.createAtom(source.getWorkspaceId().getName()));
-            l.addAnnot(ASSyntax.createStructure("artifact", ASSyntax.createAtom(source.getName())));
+            l.addAnnot(artAnnot);
             toAdd.add(l);
         }
-        orgBUF(toAdd, pred);
+        orgBUF(toAdd, pred, artAnnot);
     }
     
     @SuppressWarnings("unchecked")
     private void updateGoals(ArtifactId source, Object content) {
         // event arg is a collection of literals with goal state
+        Term artAnnot = ASSyntax.createStructure("artifact", ASSyntax.createAtom(source.getName()));
         List<Literal> toAdd = new ArrayList<Literal>();
         for (Literal g: (Collection<Literal>)content) {
             Literal l = g.copy();
             l.addSource(ASSyntax.createAtom(source.getWorkspaceId().getName()));
-            l.addAnnot(ASSyntax.createStructure("artifact", ASSyntax.createAtom(source.getName())));
+            l.addAnnot(artAnnot);
             toAdd.add(l);
         }
-        orgBUF(toAdd, SchemeBoard.piGoalState);
+        orgBUF(toAdd, SchemeBoard.piGoalState, artAnnot);
     }
 
     private void cleanupBB(ArtifactId source) {
@@ -287,8 +294,8 @@ public class CartagoOrgAgent extends CAgentArch {
                aType.equals(SchemeBoard.class.getName());
     }
     
-    private List<Literal> orgBUF(List<Literal> toAdd, PredicateIndicator bel) {
-        if (getTS().getLogger().isLoggable(Level.FINE)) getTS().getLogger().fine("orgBUF for "+bel+" with "+toAdd);
+    private List<Literal> orgBUF(List<Literal> toAdd, PredicateIndicator bel, Term source) {
+        if (getTS().getLogger().isLoggable(Level.FINE)) getTS().getLogger().fine("orgBUF for "+bel+" with "+toAdd+" for "+source);
 
         List<Literal> toDel = new ArrayList<Literal>();
         Agent ag = getTS().getAg();
@@ -298,19 +305,21 @@ public class CartagoOrgAgent extends CAgentArch {
         if (i != null) {
             while (i.hasNext()) {
                 Literal l = i.next();
-                
-                boolean isInOE = false;
-                Iterator<Literal> ip = toAdd.iterator();
-                while (ip.hasNext()) {
-                    Literal p = ip.next();
-                    if (p.equalsAsStructure(l)) {
-                        isInOE = true;
-                        ip.remove();
-                        break;
+                ListTerm artifacts = l.getAnnots("artifact");
+                if (source == null || artifacts.contains(source)) { // consider only beliefs from source art
+                    boolean isInOE = false;
+                    Iterator<Literal> ip = toAdd.iterator();
+                    while (ip.hasNext()) {
+                        Literal p = ip.next();
+                        if (p.equalsAsStructure(l)) { // if the beliefs is in the BB, remove from toAdd (ignore annots)
+                            isInOE = true;
+                            ip.remove();
+                            break;
+                        }
                     }
-                }
-                if (!isInOE) {
-                    toDel.add(l);
+                    if (!isInOE) { // if the beliefs is not in toADD, remove from BB
+                        toDel.add(l);
+                    }
                 }
             }
         }
