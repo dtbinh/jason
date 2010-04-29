@@ -340,7 +340,7 @@ public class OrgAgent extends AgArch {
             }
         } else {
             Structure body = (Structure)pi.peek().removeCurrentStep(); // remove the internal action
-            C.addIntention(pi); // add the intention back in I
+            C.resumeIntention(pi); // add the intention back in I
             
             // try to unify the return value
             //System.out.println("answer is "+content+" or "+DefaultTerm.parse(content)+" with body "+body);
