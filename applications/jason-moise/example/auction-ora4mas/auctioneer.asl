@@ -98,3 +98,7 @@ auction_id(0).
       !Goal[scheme(Scheme)];
       goal_achieved(Goal,Scheme).
       
+-obligation(Ag,Norm,achieved(Scheme,Goal,Ag),DeadLine)
+    : .my_name(Ag) & .intend(Goal)
+   <- .print("I am not obliged to achieve goal ",Goal," anymore");
+      .drop_desire(Goal).   
