@@ -129,6 +129,13 @@ TARGETS:
 
 
     <target name="jar" depends="compile">
+        <propertyfile file="${dist.properties}">
+            <entry key="version" value="${version}" />
+            <entry key="release" value="${release}" />
+            <!-- entry default="0" key="build" operation="+" type="int" /-->
+            <entry key="build.date" type="date" value="now" />
+        </propertyfile>
+        <property file="${dist.properties}" />
         <jar jarfile="${jasonJar}" >
             <fileset dir="${build.dir}">
                 <include name="jason/**/*.class" />
@@ -156,14 +163,6 @@ TARGETS:
     </target>
     
     <target name="plugin" depends="compile, jar">
-        <propertyfile file="${dist.properties}">
-            <entry key="version" value="${version}" />
-            <entry key="release" value="${release}" />
-            <!-- entry default="0" key="build" operation="+" type="int" /-->
-            <entry key="build.date" type="date" value="now" />
-        </propertyfile>
-        <property file="${dist.properties}" />
-
         <jar jarfile="${jedit.install.dir}/jars/${plugin.jar.name}">
             <fileset dir="${basedir}/src/jeditPlugin">
                 <include name="Jason.props" />
