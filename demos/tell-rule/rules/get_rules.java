@@ -28,7 +28,7 @@ public class get_rules extends DefaultInternalAction {
             	Literal l = i.next();
                 if (l.isRule()) {
                     if (un.clone().unifies(pattern, l)) {
-                        l = (Literal)l.clone();
+                        l = l.copy();
                         l.delSources();
                         result.add(new StringTermImpl(l.toString()));
                     }
@@ -36,7 +36,7 @@ public class get_rules extends DefaultInternalAction {
             }
             return un.unifies(args[1],result);
         } catch (Exception e) {
-            logger.warning("Error in internal action 'add_rule'! "+e);
+            logger.warning("Error in internal action 'get_rules'! "+e);
         }
         return false;
     }

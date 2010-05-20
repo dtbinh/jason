@@ -15,7 +15,7 @@ x(V) :- V < 30.
 +!start : true 
    <- .send(receiver,tellRule,"a :- b & c"); // send a rule as a string
       .send(receiver,achieve,test);
-      rules.get_rules(x(_),L);   // get all rules with header x(_)
+      rules.get_rules(x(_),L);   // get all rules with head x(_)
       .print("Sending rules ", L);
       .send(receiver,tellRule,L).
 
