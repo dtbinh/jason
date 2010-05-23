@@ -26,7 +26,13 @@
 +goal_state(Scheme,wsecs,_,_,satisfied)
     : .my_name(Me) & commitment(Me,mColaborator,Scheme)
    <- .print("sections are ok, leaving my mission....");
-      leave_mission(mColaborator,Scheme).
+      !quit(Scheme).
+      
++!quit(Scheme)       
+   <- leave_mission(mColaborator,Scheme);
+      .print("I succeeded leaving ", Scheme).
+-!quit(Scheme)[error_msg(M)]
+   <- .print("Error leaving mission ", M).
 
 // plans to react to normative events like obligation created
 

@@ -11,6 +11,7 @@ import jason.asSyntax.ListTerm;
 import jason.asSyntax.Literal;
 import jason.asSyntax.PredicateIndicator;
 import jason.asSyntax.StringTerm;
+import jason.asSyntax.StringTermImpl;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 import jason.asSyntax.UnnamedVar;
@@ -38,14 +39,18 @@ import ora4mas.nopl.oe.Player;
 import c4jason.CAgentArch;
 import c4jason.CartagoAction;
 import c4jason.CartagoEnvironment;
-import c4jason.PendingAction;
+import c4jason.actions.PendingAction;
 import cartago.ArtifactConfig;
 import cartago.ArtifactId;
 import cartago.ArtifactObsProperty;
+import cartago.CartagoEvent;
 import cartago.CartagoException;
-import cartago.Event;
 import cartago.ICartagoContext;
 import cartago.Op;
+import cartago.events.ArtifactObsEvent;
+import cartago.events.FocusCompletedEvent;
+import cartago.events.ObsPropAddedEvent;
+import cartago.events.ObsPropUpdatedEvent;
 
 /**
   * Organisational Architecture, binds Jason agent to
@@ -57,7 +62,6 @@ public class CartagoOrgAgent extends CAgentArch {
     private String            currentOS              = null;
     
     protected Map<PredicateIndicator,Runnable> runOnPerceive = new HashMap<PredicateIndicator,Runnable>();
-    //public static final Structure ora4masSource = ASSyntax.createStructure("source", new Atom("ora4mas"));
     
     public static final PredicateIndicator piResponsibleGroup = new PredicateIndicator("responsible_group", 2);
     public static final PredicateIndicator piObligation       = new PredicateIndicator(NormativeProgram.OblFunctor, 4);
@@ -65,6 +69,8 @@ public class CartagoOrgAgent extends CAgentArch {
     public static final PredicateIndicator piSchSpec          = new PredicateIndicator("scheme_specification", 3);
     public static final PredicateIndicator piGrPlayer         = new PredicateIndicator("play", 3);
     public static final PredicateIndicator piSchPlayer        = new PredicateIndicator("commitment", 3);
+    public static final PredicateIndicator piSglDestroy        = new PredicateIndicator(OrgArt.sglDestroyed, 0);
+    
 
     @Override
     public void initAg(String agClass, ClassParameters bbPars, String asSrc, Settings stts) throws JasonException {
@@ -84,18 +90,6 @@ public class CartagoOrgAgent extends CAgentArch {
         CartagoEnvironment.getInstance().putCartagoAction("goal_achieved", new GoalAchieved());
         CartagoEnvironment.getInstance().putCartagoAction("set_goal_arg", new SetGoalArgValue());
 
-        /*
-        if (stts.getUserParameter("workspace") != null) {
-            try {
-                String wsp = stts.getUserParameter("workspace");
-                if (wsp.startsWith("\""))
-                    wsp = wsp.substring(1,wsp.length()-1);
-                logger.info("Joining workspace "+wsp);
-                getContext("default").getContext().joinWorkspace(wsp, null, null, new UserIdCredential(getAgName()));
-            } catch (CartagoException e) {
-                logger.log(Level.SEVERE, "Error joining workspace "+stts.getUserParameter("workspace"), e);
-            }
-        }*/
     }
 
     public String getCurrentOSFile() {
@@ -106,35 +100,62 @@ public class CartagoOrgAgent extends CAgentArch {
         this.currentOS = currentOS;
     }
     
-    
     @Override
-    public void notifyNewObsPropSet(ArtifactId aid,  ArtifactObsProperty[] props, int timestamp) {
-        boolean org = false;
-        if (isOrgArt(aid.getArtifactType())) 
-            for (ArtifactObsProperty ob: props)
-                if (updateBB(aid, ob.getName(), ob.getValue(0))) 
-                    org = true;
+    public void notifyCartagoEvent(CartagoEvent cev) {
+        ArtifactId aid  = null;
+        String     label = null;
+        Object     content = null;
         
-        if (org)
+        //ArtifactObsProperty prop = null;
+
+        if (cev.isNewObsProp()) {
+            ObsPropAddedEvent ev = (ObsPropAddedEvent)cev;
+            aid     = ev.getArtifactId();
+            label   = ev.getProperty().getName();
+            content = ev.getProperty().getValue();
+        } else if (cev.isObsPropUpdated()) {
+            ObsPropUpdatedEvent ev = (ObsPropUpdatedEvent)cev;
+            aid     = ev.getArtifactId();            
+            label   = ev.getProperty().getName();
+            content = ev.getProperty().getValue();
+        } else if (cev.isObsEvent()) {
+            ArtifactObsEvent ev = (ArtifactObsEvent)cev;
+            aid     = ev.getSourceId();            
+            label   = ev.getLabel();
+            content = ev.getContent(0);
+        //} else if (cev.isOpCompleted()) {
+        //    OpCompletedEvent ev = (OpCompletedEvent) cev;
+        //    System.out.println(" finished **** " + ev.getOp().getName());
+        } else if (cev.isFocusSucceeded()) { // special case, many props
+            FocusCompletedEvent ev = (FocusCompletedEvent)cev;
+            aid = ev.getArtifactId();
+            if (isOrgArt(aid.getArtifactType())) {
+                for (ArtifactObsProperty p: ev.getProperties()) {
+                    updateBB(aid, p.getName(), p.getValue());
+                }
+                getArchInfraTier().wake();
+                return;
+            }
+        }
+        
+        if (aid != null && isOrgArt(aid.getArtifactType()) && updateBB(aid, label, content) ) 
             getArchInfraTier().wake();
         else
-            super.notifyNewObsPropSet(aid, props, timestamp);
-    }
-    
-    @Override
-    public void notifyEnvChanged(Event ev) {
-        if (isOrgArt(ev.getSourceId().getArtifactType()) && updateBB(ev.getSourceId(), ev.getLabel(), ev.getContent(0)) )
-            getArchInfraTier().wake(); // ignore for cartago
-        else
-            super.notifyEnvChanged(ev); 
-    };
-    
+            super.notifyCartagoEvent(cev);
+    }   
+  
     @Override
     public List<Literal> perceive() {
         synchronized (runOnPerceive) {
-            for (PredicateIndicator pi: runOnPerceive.keySet()) {
+            
+            Runnable clean = runOnPerceive.remove(piSglDestroy); // cleanBB should be run as the last task
+            
+            for (PredicateIndicator pi: runOnPerceive.keySet())
                 runOnPerceive.get(pi).run();
-            }
+            
+            if (clean != null)
+                clean.run();
+            
             runOnPerceive.clear();
         }
 
@@ -152,7 +173,7 @@ public class CartagoOrgAgent extends CAgentArch {
                     ICartagoContext actx = getCurrentContext();
                     for (String s: (Collection<String>)content) {
                         ArtifactId aid = actx.lookupArtifact(s);
-                        actx.focus(aid, null);
+                        actx.focus(aid);
                     }
                 } catch (CartagoException e) {
                     logger.log(Level.SEVERE,"Error on focusing "+content, e);
@@ -192,7 +213,7 @@ public class CartagoOrgAgent extends CAgentArch {
                 // TODO: fail the intention and put good annotations in the failure event
             } else if (label.equals(SchemeBoard.obsPropGroups)) { // ignore this obs prop in jason
             } else if (label.equals(OrgArt.sglDestroyed)) { // artifact destroyed
-                runOnPerceive.put(piSchSpec, new Runnable() {  public void run() {
+                runOnPerceive.put(piSglDestroy, new Runnable() {  public void run() {
                     cleanupBB(source);
                 }});
                 return false;
@@ -363,11 +384,14 @@ public class CartagoOrgAgent extends CAgentArch {
                         gId,   
                         GroupBoard.class.getName(),  
                         new ArtifactConfig( gId, arg2str(action.getTerm(1)), arg2str(action.getTerm(2)), arg2bool(action.getTerm(3)), arg2bool(action.getTerm(4))));
-                ctx.focus(aid, null);
+                ctx.focus(aid);
 
+                //logger.info("created "+aid+"@"+aid.getWorkspaceId().getName());
                 notifyActionSuccess(agent, actionExec);
             } catch (CartagoException e) {
-                notifyActionFailure(agent,actionExec); 
+                Literal reason = ASSyntax.createLiteral("cartago_action_failed",action);
+                String   msg   = "Error in create group "+e.getMessage();
+                notifyActionFailure(agent, actionExec, reason, msg); 
                 logger.log(Level.SEVERE,"Cartago error: "+e, e);
             }
         }
@@ -376,12 +400,12 @@ public class CartagoOrgAgent extends CAgentArch {
     class RemoveOrgArt extends CartagoAction {
         public void execute(String agName, CAgentArch agent, final ICartagoContext ctx, Structure action, ActionExec actionExec){                     
             try {
-                String aId = arg2str(action.getTerm(0)); 
+                String artIdStr = arg2str(action.getTerm(0)); 
 
-                final ArtifactId aid = ctx.lookupArtifact(aId);
+                final ArtifactId aid = ctx.lookupArtifact(artIdStr);
                 if (aid == null){
-                    logger.warning("dispose by "+agName+" failed - artifact not found: "+aId);
-                    notifyActionFailure(agent,actionExec);
+                    logger.warning("remove art by "+agName+" failed - artifact not found: "+artIdStr);
+                    notifyActionFailure(agent, actionExec, ASSyntax.createLiteral("artifact_unknown",new StringTermImpl(artIdStr)), "artifact "+aid+" does not exist to be removed.");
                 } else {
                     PendingAction act = agent.createPendingAction(agent, agName, action, actionExec);
                     ctx.use(act.getActionId(),aid,new Op("destroy"),null,Long.MAX_VALUE);
@@ -396,7 +420,9 @@ public class CartagoOrgAgent extends CAgentArch {
                 }
                 notifyActionSuccess(agent, actionExec);
             } catch (Exception e) {
-                notifyActionFailure(agent,actionExec); 
+                Literal reason = ASSyntax.createLiteral("cartago_action_failed",action);
+                String   msg   = "Error in remove group "+e.getMessage();
+                notifyActionFailure(agent, actionExec, reason, msg); 
                 logger.log(Level.SEVERE,"Cartago error: "+e, e);
             }
         }
@@ -412,11 +438,13 @@ public class CartagoOrgAgent extends CAgentArch {
                         sId,   
                         SchemeBoard.class.getName(),  
                         new ArtifactConfig( sId, arg2str(action.getTerm(1)), arg2str(action.getTerm(2)), arg2bool(action.getTerm(3)), arg2bool(action.getTerm(4))));
-                ctx.focus(aid, null);
+                ctx.focus(aid);
 
                 notifyActionSuccess(agent, actionExec);
             } catch (CartagoException e) {
-                notifyActionFailure(agent,actionExec); 
+                Literal reason = ASSyntax.createLiteral("cartago_action_failed",action);
+                String   msg   = "Error in create group "+e.getMessage();
+                notifyActionFailure(agent, actionExec, reason, msg); 
                 logger.log(Level.SEVERE,"Cartago error: "+e, e);
             }
         }
@@ -424,16 +452,18 @@ public class CartagoOrgAgent extends CAgentArch {
 
     // basic class for all other actions
     abstract class OrgAction extends CartagoAction {
-        public void execute(String agName, CAgentArch agent, ICartagoContext ctx, Structure action, ActionExec actionExec){                     
+        public void execute(String agName, CAgentArch agent, ICartagoContext ctx, Structure action, ActionExec actionExec) {                     
             try {
                 PendingAction act = agent.createPendingAction(agent, agName, action, actionExec);
                 ArtifactId aid = ctx.lookupArtifact( arg2str(action.getTerm( getArtPosition()) ));
                 ctx.use(act.getActionId(), aid, getOp(action), null,Long.MAX_VALUE);
                 if (focusAfter())
-                    ctx.focus(aid,null);
+                    ctx.focus(aid);
 
             } catch (Exception e) {
-                notifyActionFailure(agent,actionExec); 
+                Literal reason = ASSyntax.createLiteral("cartago_action_failed",action);
+                String   msg   = "Error in organisational action "+action+": "+e.getMessage();
+                notifyActionFailure(agent, actionExec, reason, msg); 
                 logger.log(Level.SEVERE,"Cartago error: "+e, e);
             }
         }
@@ -494,33 +524,4 @@ public class CartagoOrgAgent extends CAgentArch {
         }
     }
 
-    
-    /*
-    private void resumeIntention(Event ev) {
-        // get intention's key
-        String intentionKey = null;
-        String evKey = String.valueOf(ev.getSourceId().getId() + ev.getRelatedOpId().getOpName());
-        for (String k: getTS().getC().getPendingIntentions().keySet()) {
-            if (k.startsWith(evKey)) {
-                intentionKey = k;
-                break;
-            }
-        }
-        
-        // resume/fail intention
-        if (intentionKey != null) {
-            if (ev.getContent().getLabel().equals("op_exec_completed")) {
-                ConcurrentInternalAction.resume(getTS(), intentionKey, false, null);                    
-            } else if (ev.getContent().getLabel().equals(OrgArt.sglNormFailure)) { // fail the intention                    
-                Literal reason = ((JasonLiteralWrapper)ev.getContent(0)).getLiteral();
-                List<Term> failAnnots = JasonException.createBasicErrorAnnots( "norm_failure", "Error resuming pending intention related to organisational action: "+ev);
-                failAnnots.add(ASSyntax.createStructure("norm_failure", reason.getTerm(0)));
-                ConcurrentInternalAction.resume(getTS(), intentionKey, true, failAnnots);  
-            } else if (ev.getContent().getLabel().equals("op_exec_failed")) { // fail the intention
-                ConcurrentInternalAction.resume(getTS(), intentionKey, true, JasonException.createBasicErrorAnnots( "fail_resume", "Error resuming pending intention related to organisational action"));                    
-            }
-        }
-    }
-    */
-    
 }
