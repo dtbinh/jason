@@ -24,9 +24,13 @@ public class BugVarsAsArg {
                 "append([], L, L). "+
                 "append([H|T], L1, [H|L2]) :- append(T, L1, L2). "+
 
-                "+!test1 <- ?test_rule(T,A); A = a(V); T=45; jason.asunit.print(V). "+
-                "+!test2 <- ?ml(A,B,L); A=1; B=2; jason.asunit.print(L). "+
-                "+!test3 <- L=[X,Y]; ?append(L, [Z], L2); Z=a; X=f; Y=i; jason.asunit.print(L2). "
+                "+!pml0(L,L). "+
+                "+!pml(V1,V2,R) <- !pml0([V1,V2],R). "+
+
+                "+!test1  <- ?test_rule(T,A); A = a(V); T=45; jason.asunit.print(V). "+
+                "+!test2  <- ?ml(A,B,L); A=1; B=2; jason.asunit.print(L). "+
+                "+!test2p <- !pml(A,B,L); A=1; B=2; jason.asunit.print(L). "+
+                "+!test3  <- L=[X,Y]; ?append(L, [Z], L2); Z=a; X=f; Y=i; jason.asunit.print(L2). "
         );
     }
     
@@ -41,6 +45,12 @@ public class BugVarsAsArg {
     public void testRule2() {
         ag.addGoal("test2");
         ag.assertPrint("[1,2]", 5); 
+    }
+
+    @Test(timeout=2000) 
+    public void testRule2p() {
+        ag.addGoal("test2p");
+        ag.assertPrint("[1,2]", 15); 
     }
 
     @Test(timeout=2000) 

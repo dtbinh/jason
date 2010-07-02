@@ -24,7 +24,7 @@ public class BugUnamedVars {
                 "wrap2([], _). "+
                 "wrap2([_ | Rest], Result) :- wrap2(Rest, Temp) & Result = wrapped(_, Temp). "+
                 
-                "+!start : wrap([a,b,c],R) & R = [wrapped(a), wrapped(b), wrapped(c)] <- jason.asunit.print(ok)."+
+                "+!start : wrap([a1,b1,c1],R) & R = [wrapped(a), wrapped(b), wrapped(c)] <- jason.asunit.print(ok)."+
                 "+!start : wrap([a,b,c],R) & R = [wrapped(a), wrapped(a), wrapped(a)] <- jason.asunit.print(nok). " +
                 "+!test2 : wrap2([1, 2, 3], Result) & Result = wrapped(1, wrapped(2, wrapped(3, 4))) <- jason.asunit.print(ok). "
         );
