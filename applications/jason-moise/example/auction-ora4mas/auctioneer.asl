@@ -57,7 +57,7 @@ auction_id(0).
       .print("Go!").
       
 +!wait_participants(N) : .count(play(_,participant,_), N).
-+!wait_participants(N) <- .wait( { +play(_,participant,_) }, 100); !wait_participants(N).
++!wait_participants(N) <- .wait( { +play(_,participant,_) }, 100, _); !wait_participants(N).
       
 +!winner[scheme(Sch)] 
    :  auction_id(N) & winner(N,W,_) 
@@ -102,3 +102,6 @@ auction_id(0).
     : .my_name(Ag) & .intend(Goal)
    <- .print("I am not obliged to achieve goal ",Goal," anymore");
       .drop_desire(Goal).   
+	  
+//+well_formed(X) <- .print("Well formed for ",X).	  
+

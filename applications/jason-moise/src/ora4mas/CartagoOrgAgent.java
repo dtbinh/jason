@@ -69,7 +69,8 @@ public class CartagoOrgAgent extends CAgentArch {
     public static final PredicateIndicator piSchSpec          = new PredicateIndicator("scheme_specification", 3);
     public static final PredicateIndicator piGrPlayer         = new PredicateIndicator("play", 3);
     public static final PredicateIndicator piSchPlayer        = new PredicateIndicator("commitment", 3);
-    public static final PredicateIndicator piSglDestroy        = new PredicateIndicator(OrgArt.sglDestroyed, 0);
+    public static final PredicateIndicator piSglDestroy       = new PredicateIndicator(OrgArt.sglDestroyed, 0);
+    public static final PredicateIndicator piWF               = new PredicateIndicator("well_formed", 1);
     
 
     @Override
@@ -186,6 +187,10 @@ public class CartagoOrgAgent extends CAgentArch {
                 runOnPerceive.put(SchemeBoard.piGoalState, new Runnable() {  public void run() {
                     updateGoals(source, content);
                 }});
+            } else if (label.equals(GroupBoard.obsWellFormed)) {
+                runOnPerceive.put(piWF, new Runnable() {  public void run() {
+                    updateWF(source, content, piWF);
+                }});
             } else if (label.equals(SchemeBoard.obsPropOblActv)) {
                 runOnPerceive.put(piObligation, new Runnable() {  public void run() {
                     updateObligations(source, content);
@@ -297,6 +302,16 @@ public class CartagoOrgAgent extends CAgentArch {
             toAdd.add(l);
         }
         orgBUF(toAdd, SchemeBoard.piGoalState, artAnnot);
+    }
+
+    private void updateWF(ArtifactId source, Object content, PredicateIndicator pred) {
+        Term artAnnot = ASSyntax.createStructure("artifact", ASSyntax.createAtom(source.getName()));
+        List<Literal> toAdd = new ArrayList<Literal>();
+        Literal l = createLiteral(pred.getFunctor(), new Atom(content.toString()));
+        l.addSource(ASSyntax.createAtom(source.getWorkspaceId().getName()));
+        l.addAnnot(artAnnot);
+        toAdd.add(l);
+        orgBUF(toAdd, pred, artAnnot);
     }
 
     private void cleanupBB(ArtifactId source) {
