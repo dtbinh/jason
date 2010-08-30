@@ -1,3 +1,5 @@
+*** This project is not maintained anymore ***
+
 This Jason application exemplifies how to develop agent in an organised
 society based on the Moise+ organisational model (http://moise.sf.net).
 
