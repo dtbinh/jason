@@ -610,6 +610,18 @@ The same approach can be used for the environment:
 jade.Boot "bob:jason.infra.jade.JadeAgArch(j-project test.mas2j)" 
 \end{verbatim}
 
+\subsection{How can I customise the Jade sniffer?}
+
+In the project directory, create a file called
+\texttt{c-sniffer.properties} with your preferences (see
+\url{http://www.cs.uta.fi/kurssit/AgO/harj/jade_harkat/doc/tools/sniffer/html/jdoc/jade/tools/sniffer/Sniffer.html}
+ for more details). Once started, Jason will copy this file to
+\texttt{sniffer.properties} to be used by the Jade's sniffer. If no
+customisation is provided, Jason creates a default properties file
+with the names of the agents.
+
+
+
 
 
 \subsection{Is it possible to use only the \jason BDI engine?}
