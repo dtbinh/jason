@@ -1,4 +1,20 @@
 ---------------------------
+version 1.3.4
+
+revision XXXX on SVN
+---------------------------
+
+New features
+- possibility to customize the sniffer.properties of JADE
+- new function to compute standard deviation
+
+Bugs fixed
+- atomic plans that fail aren't removed from the intention set.
+- succeed_goal doesn't consider the case where several goals exist
+- backtrack on annotations doesn't work with tail as in p[A|R]
+
+
+---------------------------
 version 1.3.3
 
 revision 1603 on SVN
