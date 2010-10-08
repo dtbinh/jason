@@ -4,6 +4,9 @@ version 1.3.4
 revision XXXX on SVN
 ---------------------------
 
+New example
+- wumpus (inspired by Russel & Norvig book)
+
 New features
 - possibility to customize the sniffer.properties of JADE
 - new function to compute standard deviation
