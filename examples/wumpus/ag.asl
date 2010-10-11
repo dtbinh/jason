@@ -7,9 +7,8 @@
 
 /* Initial beliefs and rules */
 
-pos(1,1).            // my initial location,
-orientation(east).   // orientation 
-has_gold(no).        // and having the gold
+pos(1,1).            // my initial location
+orientation(east).   // and orientation 
 
 // scenario borders
 // borders(BottomLeftX, BottomLeftY, TopRightX, TopRightY) 
@@ -31,7 +30,7 @@ borders(1, 1, 4, 4). // for R&N
    <- !update(breeze); // update perception for location 1,1
       !update(stench).	  
 
-+!find(gold) : has_gold(yes).
++!find(gold) : has_gold.
 +!find(gold) 
    <- !explore;
       !find(gold).
@@ -59,7 +58,7 @@ borders(1, 1, 4, 4). // for R&N
 
 +glitter 
    <- grab;
-      -+has_gold(yes);
+      +has_gold;
 	  .succeed_goal(explore). // to stop exploring
 
 +!test // solution for R&N scenario
