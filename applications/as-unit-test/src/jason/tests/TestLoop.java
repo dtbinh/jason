@@ -82,13 +82,13 @@ public class TestLoop {
     @Test(timeout=2000)
     public void testFor3() {
         ag.addGoal("test5");
-        ag.assertPrint("1", 4);
-        ag.assertPrint("2", 4);
-        ag.assertPrint("3", 4);
-        ag.assertPrint("4", 4);
-        ag.assertPrint("a", 4);
-        ag.assertPrint("b", 4);
-        ag.assertPrint("c", 4);
+        ag.assertPrint("1", 5);
+        ag.assertPrint("2", 5);
+        ag.assertPrint("3", 5);
+        ag.assertPrint("4", 5);
+        ag.assertPrint("a", 5);
+        ag.assertPrint("b", 5);
+        ag.assertPrint("c", 5);
         ag.assertPrint("end", 10);
     }
 }

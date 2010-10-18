@@ -8,6 +8,9 @@ New example
 - wumpus (inspired by Russel & Norvig book)
 
 New features
+- creation of ant scripts to help the running of jade agents 
+  in a distributed configuration. See demos/distributed-jade
+  for examples and the FAQ for more details.
 - possibility to customize the sniffer.properties of JADE
 - new function to compute standard deviation
 
@@ -15,6 +18,9 @@ Bugs fixed
 - atomic plans that fail aren't removed from the intention set.
 - succeed_goal doesn't consider the case where several goals exist
 - backtrack on annotations doesn't work with tail as in p[A|R]
+
+Other changes
+- jade is updated to 4.0.1
 
 
 ---------------------------

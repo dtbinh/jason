@@ -590,7 +590,7 @@ java jade.Boot "\
 
 The arguments for the environment have to follow the class name, for example:
 \begin{verbatim}
-java jade.Boot "environment:jason.infra.jade.JadeEnvironment(Env arg1 arg2)"
+java jade.Boot "environment:jason.infra.jade.JadeEnvironment(Env,arg1,arg2)"
 \end{verbatim}
 
 
@@ -598,7 +598,7 @@ In the case you need to start a more customised agent (architecture,
 belief base, ...), you can write (or reuse) a \jason project file with all the
 usual agent's parameters and then start the agent from this file. E.g.
 \begin{verbatim}
-jade.Boot "bob:jason.infra.jade.JadeAgArch(j-project test.mas2j bob)" 
+jade.Boot "bob:jason.infra.jade.JadeAgArch(j-project,test.mas2j,bob)" 
 \end{verbatim}
 The parameter \texttt{j-project} indicates that the following
 parameter (\texttt{test.mas2j} in the above example) is the \jason
@@ -607,7 +607,7 @@ the .mas2j file.
 
 The same approach can be used for the environment:
 \begin{verbatim}
-jade.Boot "bob:jason.infra.jade.JadeAgArch(j-project test.mas2j)" 
+jade.Boot "j_environment:jason.infra.jade.JadeEnvironment(j-project,test.mas2j)" 
 \end{verbatim}
 
 \subsection{How can I customise the Jade sniffer?}
@@ -619,6 +619,65 @@ In the project directory, create a file called
 \texttt{sniffer.properties} to be used by the Jade's sniffer. If no
 customisation is provided, Jason creates a default properties file
 with the names of the agents.
+
+\subsection{How to run my agents on several machines with \jade?}
+
+The 'play' button of jEdit plugin always run all the agents in the
+current host. To run them on several machines there are two
+mechanisms.
+
+\subsubsection{Defining the container of each agent}
+
+In the project file, you have to setup the host's name where the main
+container will run and the container of where agents will run, as in
+the following example (this example is available in the demos
+directory):
+\begin{verbatim}
+MAS demo_distributed_jade {
+
+    infrastructure: Jade(main_container_host("localhost")) 
+	// replace localhost by the name or IP of the host where the main container will run
+
+    agents:
+        a at "Main-Container"; // agent a will run the same host as the main container
+        b at "c1";             // agent c will run on the host where container c1 will run
+        c at "c2" #3;          // ....
+        d at "c1";
+}
+\end{verbatim}
+
+Steps to run the system:
+\begin{itemize}
+\item create the ant script to run the agents: either press play in the jEdit plugin or type
+\begin{verbatim}
+   $ cd <your project directory>
+   $ <jason dir>/bin/mas2j.sh <the .mas2h file>
+\end{verbatim}
+
+  The script has the task \texttt{main-container} to run the main
+  container and one task to start each container defined in the
+  project (c1 and c2, in the above example).
+
+\item Go to host X and run the main container there by starting the
+  main-container task of the script:
+\begin{verbatim}
+   $ cd bin
+   $ and main-container
+\end{verbatim}
+
+\item Go to host Y and start container c1 there
+\begin{verbatim}
+   $ and c1
+\end{verbatim}
+
+\item Go to host Z and start container c2 there
+\begin{verbatim}
+   $ ant c2
+\end{verbatim}
+\end{itemize}
+
+
+\subsubsection{Defining a class that allocate the agents}
 
 
 
