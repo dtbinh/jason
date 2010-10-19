@@ -623,10 +623,10 @@ with the names of the agents.
 \subsection{How to run my agents on several machines with \jade?}
 
 The 'play' button of jEdit plugin always run all the agents in the
-current host. To run them on several machines there are two
-mechanisms.
+current host even using JADE infrastructure. To run them on several
+machines there are two mechanisms.
 
-\subsubsection{Defining the container of each agent}
+\subsubsection{Defining a container for each agent}
 
 In the project file, you have to setup the host's name where the main
 container will run and the container of where agents will run, as in
@@ -647,40 +647,85 @@ MAS demo_distributed_jade {
 \end{verbatim}
 
 Steps to run the system:
-\begin{itemize}
-\item create the ant script to run the agents: either press play in the jEdit plugin or type
+\begin{enumerate}
+\item Create the Ant script to run the agents by either pressing play in
+  the jEdit plugin or typing
 \begin{verbatim}
    $ cd <your project directory>
    $ <jason dir>/bin/mas2j.sh <the .mas2h file>
 \end{verbatim}
 
-  The script has the task \texttt{main-container} to run the main
+  The script has the task \texttt{Main-Container} to run the JADE main
   container and one task to start each container defined in the
-  project (c1 and c2, in the above example).
+  project (\texttt{c1} and \texttt{c2}, in the above example).
 
 \item Go to host X and run the main container there by starting the
-  main-container task of the script:
+  main container task of the script:
 \begin{verbatim}
    $ cd bin
-   $ and main-container
+   $ ant Main-Container
 \end{verbatim}
 
 \item Go to host Y and start container c1 there
 \begin{verbatim}
-   $ and c1
+   $ ant c1
 \end{verbatim}
 
 \item Go to host Z and start container c2 there
 \begin{verbatim}
    $ ant c2
 \end{verbatim}
-\end{itemize}
+\end{enumerate}
 
 
 \subsubsection{Defining a class that allocate the agents}
 
+In the second mechanism the \texttt{at} primitive of the project isn't
+used, in its place a Java class is provided to indicate which
+containers have to be created and how agents are distributed on them.
+The project definition is thus like the following
+(\texttt{myAllocator} is the name of the Java class and
+\texttt{[c1,c2]} is the list of containers).
+\begin{verbatim}
+MAS demo_distributed_jade {
 
+    infrastructure: Jade(
+        main_container_host("localhost"),    // replace localhost by the name or IP of the host where the main container will run
+        container_allocation("myAllocator",  // the name of the class that will allocate the agents to containers
+                             "[c1,c2]")      // the name and number of containers
+    ) 
+	
 
+    agents:
+        a; 
+        b;   
+        c #3; 
+        d #5;
+}
+\end{verbatim}
+
+In the above example (available in the demos/distributed-jade/case2
+directory), the class \texttt{myAllocator} allocates the same number
+of agents to each container. You might see the code of this class for
+details.
+
+To run this system, replace the commands of step 1 of the previous
+section as follows (the other steps remains the same).
+
+For Unix:
+\begin{verbatim}
+   $ cd <your project directory>
+   $ ant -f bin/build.xml compile
+   $ <jason dir>/bin/mas2j.sh <the .mas2h file>
+\end{verbatim}
+
+For Windows and other plaforms:
+\begin{verbatim}
+   > cd <your project directory>
+   > ant -f bin/build.xml compile
+   > set JASONLIB=<the Jason lib directory>
+   > java -classpath bin\classes;%JASONLIB%\jason.jar jason.mas2j.parser.mas2j  <the .mas2h file>
+\end{verbatim}
 
 
 \subsection{Is it possible to use only the \jason BDI engine?}
