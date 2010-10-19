@@ -43,101 +43,101 @@ import org.semanticweb.owl.model.OWLException;
  *
  */
 public class JASDLEnvironment extends Environment {
-	private ProtocolProcessor processor;
+    private ProtocolProcessor processor;
 
-	private JASDLOntologyManager jom;
+    private JASDLOntologyManager jom;
 
 
-	@Override
-	public void init(String[] args){
-		super.init(args);
-		try {
-			jom = new JASDLOntologyManager(Logger.getLogger(this.getClass().getName()));
-		} catch (OWLException e) {
-			throw new RuntimeException(e);
-		}
-		jom.setReasoner(new Reasoner(jom.getOntologyManager()));
-		processor = new ProtocolProcessor(jom, JASDLParams.DEFAULT_MAPPING_STRATEGIES);
-	}
+    @Override
+    public void init(String[] args){
+        super.init(args);
+        try {
+            jom = new JASDLOntologyManager(Logger.getLogger(this.getClass().getName()));
+        } catch (OWLException e) {
+            throw new RuntimeException(e);
+        }
+        jom.setReasoner(new Reasoner(jom.getOntologyManager()));
+        processor = new ProtocolProcessor(jom, JASDLParams.DEFAULT_MAPPING_STRATEGIES);
+    }
 
-	public JASDLOntologyManager getJom() {
-		return jom;
-	}
+    public JASDLOntologyManager getJom() {
+        return jom;
+    }
 
-	public SELiteralFactory getSELiteralFactory() {
-		return jom.getSELiteralFactory();
-	}
+    public SELiteralFactory getSELiteralFactory() {
+        return jom.getSELiteralFactory();
+    }
 
-	public void addPercept(Literal per) {
-		try {
-			super.addPercept((Literal) processor.processOutgoingStructure(per));
-		} catch (JASDLException e) {
-			e.printStackTrace();
-		}
-	}
+    public void addPercept(Literal per) {
+        try {
+            super.addPercept((Literal) processor.processOutgoingStructure(per));
+        } catch (JASDLException e) {
+            e.printStackTrace();
+        }
+    }
 
-	public void addPercept(String agName, Literal per) {
-		try {
-			super.addPercept(agName, (Literal) processor.processOutgoingStructure(per));
-		} catch (JASDLException e) {
-			e.printStackTrace();
-		}
-	}
+    public void addPercept(String agName, Literal per) {
+        try {
+            super.addPercept(agName, (Literal) processor.processOutgoingStructure(per));
+        } catch (JASDLException e) {
+            e.printStackTrace();
+        }
+    }
 
-	public boolean containsPercept(Literal per) {
-		try {
-			return super.containsPercept((Literal) processor.processOutgoingStructure(per));
-		} catch (JASDLException e) {
-			e.printStackTrace();
-			return false;
-		}
-	}
+    public boolean containsPercept(Literal per) {
+        try {
+            return super.containsPercept((Literal) processor.processOutgoingStructure(per));
+        } catch (JASDLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
-	public boolean containsPercept(String agName, Literal per) {
-		try {
-			return super.containsPercept(agName, (Literal) processor.processOutgoingStructure(per));
-		} catch (JASDLException e) {
-			e.printStackTrace();
-			return false;
-		}
-	}
+    public boolean containsPercept(String agName, Literal per) {
+        try {
+            return super.containsPercept(agName, (Literal) processor.processOutgoingStructure(per));
+        } catch (JASDLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
-	public boolean removePercept(Literal per) {
-		try {
-			return super.removePercept((Literal) processor.processOutgoingStructure(per));
-		} catch (JASDLException e) {
-			e.printStackTrace();
-			return false;
-		}
-	}
+    public boolean removePercept(Literal per) {
+        try {
+            return super.removePercept((Literal) processor.processOutgoingStructure(per));
+        } catch (JASDLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
-	@Override
-	public boolean removePercept(String agName, Literal per) {
-		try {
-			return super.removePercept(agName, (Literal) processor.processOutgoingStructure(per));
-		} catch (JASDLException e) {
-			e.printStackTrace();
-			return false;
-		}
-	}
+    @Override
+    public boolean removePercept(String agName, Literal per) {
+        try {
+            return super.removePercept(agName, (Literal) processor.processOutgoingStructure(per));
+        } catch (JASDLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
-	@Override
-	public int removePerceptsByUnif(Literal per) {
-		try {
-			return super.removePerceptsByUnif((Literal) processor.processOutgoingStructure(per));
-		} catch (JASDLException e) {
-			e.printStackTrace();
-			return 0;
-		}
-	}
+    @Override
+    public int removePerceptsByUnif(Literal per) {
+        try {
+            return super.removePerceptsByUnif((Literal) processor.processOutgoingStructure(per));
+        } catch (JASDLException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
 
-	public int removePerceptsByUnif(String agName, Literal per) {
-		try {
-			return super.removePerceptsByUnif(agName, (Literal) processor.processOutgoingStructure(per));
-		} catch (JASDLException e) {
-			e.printStackTrace();
-			return 0;
-		}
-	}
+    public int removePerceptsByUnif(String agName, Literal per) {
+        try {
+            return super.removePerceptsByUnif(agName, (Literal) processor.processOutgoingStructure(per));
+        } catch (JASDLException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
 
 }

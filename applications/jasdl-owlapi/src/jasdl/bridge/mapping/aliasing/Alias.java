@@ -34,55 +34,55 @@ import jason.asSyntax.Atom;
  *
  */
 public class Alias {
-	private Atom functor;
+    private Atom functor;
 
-	private Atom label;
+    private Atom label;
 
-	public Alias(String functor, Atom label) {
-		this(new Atom(functor), label);
-	}
+    public Alias(String functor, Atom label) {
+        this(new Atom(functor), label);
+    }
 
-	public Alias(Atom functor, Atom label) {
-		super();
-		this.functor = functor;
-		this.label = label;
-	}
+    public Alias(Atom functor, Atom label) {
+        super();
+        this.functor = functor;
+        this.label = label;
+    }
 
-	/**
-	 * Matches functor and label
-	 */
-	@Override
-	public boolean equals(Object _other) {
-		if (!(_other instanceof Alias)) {
-			return false;
-		}
-		Alias other = (Alias) _other;
-		return functor.equals(other.functor) && label.equals(other.label);
-	}
+    /**
+     * Matches functor and label
+     */
+    @Override
+    public boolean equals(Object _other) {
+        if (!(_other instanceof Alias)) {
+            return false;
+        }
+        Alias other = (Alias) _other;
+        return functor.equals(other.functor) && label.equals(other.label);
+    }
 
-	/**
-	 * Hash-code equivalent to hash-code of functor concatenated with label
-	 */
-	@Override
-	public int hashCode() {
-		return (functor.getFunctor() + label.getFunctor()).hashCode();
-	}
+    /**
+     * Hash-code equivalent to hash-code of functor concatenated with label
+     */
+    @Override
+    public int hashCode() {
+        return (functor.getFunctor() + label.getFunctor()).hashCode();
+    }
 
-	@Override
-	public String toString() {
-		return functor + "[" + label + "]";
-	}
+    @Override
+    public String toString() {
+        return functor + "[" + label + "]";
+    }
 
-	public boolean isAllDifferent() {
-		return functor.equals(JASDLParams.OWL_ALL_DIFFERENT_FUNCTOR);
-	}
+    public boolean isAllDifferent() {
+        return functor.equals(JASDLParams.OWL_ALL_DIFFERENT_FUNCTOR);
+    }
 
-	public Atom getFunctor() {
-		return functor;
-	}
+    public Atom getFunctor() {
+        return functor;
+    }
 
-	public Atom getLabel() {
-		return label;
-	}
+    public Atom getLabel() {
+        return label;
+    }
 
 }

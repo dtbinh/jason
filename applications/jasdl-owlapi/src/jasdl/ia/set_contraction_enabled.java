@@ -36,25 +36,25 @@ import java.util.logging.Logger;
  */
 public class set_contraction_enabled extends DefaultInternalAction {
 
-	private Logger logger = Logger.getLogger("jasdl." + set_contraction_enabled.class.getName());
+    private Logger logger = Logger.getLogger("jasdl." + set_contraction_enabled.class.getName());
 
-	@Override
-	public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
-		try {
-			JASDLAgent agent = (JASDLAgent) ts.getAg();
-			if (args[0].equals(Literal.LTrue)) {
-				agent.getConfig().setContractionEnabled(true);
-			} else if (args[0].equals(Literal.LFalse)) {
-				agent.getConfig().setContractionEnabled(false);
-			} else {
-				throw new Exception("Argument must be boolean");
-			}
-			return true;
-		} catch (Exception e) {
-			logger.warning("Error in internal action 'jasdl.ia.set_contraction_enabled'! Reason:");
-			e.printStackTrace();
-			return false;
-		}
-	}
+    @Override
+    public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
+        try {
+            JASDLAgent agent = (JASDLAgent) ts.getAg();
+            if (args[0].equals(Literal.LTrue)) {
+                agent.getConfig().setContractionEnabled(true);
+            } else if (args[0].equals(Literal.LFalse)) {
+                agent.getConfig().setContractionEnabled(false);
+            } else {
+                throw new Exception("Argument must be boolean");
+            }
+            return true;
+        } catch (Exception e) {
+            logger.warning("Error in internal action 'jasdl.ia.set_contraction_enabled'! Reason:");
+            e.printStackTrace();
+            return false;
+        }
+    }
 
 }

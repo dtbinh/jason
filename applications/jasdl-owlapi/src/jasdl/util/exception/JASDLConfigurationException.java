@@ -21,11 +21,11 @@ package jasdl.util.exception;
 
 public class JASDLConfigurationException extends JASDLException {
 
-	public JASDLConfigurationException(String message) {
-		super(message);
-	}
+    public JASDLConfigurationException(String message) {
+        super(message);
+    }
 
-	public JASDLConfigurationException(String message, Exception e) {
-		super(message);
-	}
+    public JASDLConfigurationException(String message, Exception e) {
+        super(message);
+    }
 }

@@ -23,15 +23,15 @@ import commerce.exception.AgentModelException;
 
 public class ModelMobileAgentException extends AgentModelException {
 
-	public ModelMobileAgentException() {
-	}
+    public ModelMobileAgentException() {
+    }
 
-	public ModelMobileAgentException(String msg, Exception cause) {
-		super(msg, cause);
-	}
+    public ModelMobileAgentException(String msg, Exception cause) {
+        super(msg, cause);
+    }
 
-	public ModelMobileAgentException(String msg) {
-		super(msg);
-	}
+    public ModelMobileAgentException(String msg) {
+        super(msg);
+    }
 
 }

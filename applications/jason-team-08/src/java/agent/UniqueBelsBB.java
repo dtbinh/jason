@@ -35,55 +35,55 @@ public class UniqueBelsBB extends DefaultBeliefBase {
     
     public void init(Agent ag, String[] args) {
         this.myAgent = ag;
-    	for (int i=0; i<args.length; i++) {
-    		Literal arg = Literal.parseLiteral(args[i]);
-    		uniqueBels.put(arg.getFunctor(), arg);
-    	}
+        for (int i=0; i<args.length; i++) {
+            Literal arg = Literal.parseLiteral(args[i]);
+            uniqueBels.put(arg.getFunctor(), arg);
+        }
     }
 
-	@Override
-	public boolean add(Literal bel) {
-		Literal kb = uniqueBels.get(bel.getFunctor());
-		if (kb != null && kb.getArity() == bel.getArity()) { // is a constrained bel?
-			
-			// find the bel in BB and eventually remove it
-			u.clear();
-			Literal linbb = null;
-			boolean remove = false;
+    @Override
+    public boolean add(Literal bel) {
+        Literal kb = uniqueBels.get(bel.getFunctor());
+        if (kb != null && kb.getArity() == bel.getArity()) { // is a constrained bel?
+            
+            // find the bel in BB and eventually remove it
+            u.clear();
+            Literal linbb = null;
+            boolean remove = false;
 
-			Iterator<Literal> relevant = getCandidateBeliefs(bel, null);
-			if (relevant != null) {
-			    final int kbArity = kb.getArity();
-				while (relevant.hasNext() && !remove) {
-					linbb = relevant.next();
+            Iterator<Literal> relevant = getCandidateBeliefs(bel, null);
+            if (relevant != null) {
+                final int kbArity = kb.getArity();
+                while (relevant.hasNext() && !remove) {
+                    linbb = relevant.next();
 
-					// check equality of all terms that are "key"
-					// if some key is different, no problem
-					// otherwise, remove the current bel
-					boolean equals = true;
-					for (int i = 0; i<kbArity; i++) {
-						Term kbt = kb.getTerm(i);
-						if (!kbt.isVar()) { // is key?
-							if (!u.unifies(bel.getTerm(i), linbb.getTerm(i))) {
-								equals = false;
-								break;
-							}
-						}
-					}
-					// TODO: prefer source(percept) info
-					if (equals) {
-						remove = true;
-					}
-				}
-			}
-			if (remove) {
-				remove(linbb);
-			}
-		}
-		return super.add(bel);
-	}
-	
-	public void remove_old_bels(Literal bel, String timeAnnot, int maxAge, int curAge) {
+                    // check equality of all terms that are "key"
+                    // if some key is different, no problem
+                    // otherwise, remove the current bel
+                    boolean equals = true;
+                    for (int i = 0; i<kbArity; i++) {
+                        Term kbt = kb.getTerm(i);
+                        if (!kbt.isVar()) { // is key?
+                            if (!u.unifies(bel.getTerm(i), linbb.getTerm(i))) {
+                                equals = false;
+                                break;
+                            }
+                        }
+                    }
+                    // TODO: prefer source(percept) info
+                    if (equals) {
+                        remove = true;
+                    }
+                }
+            }
+            if (remove) {
+                remove(linbb);
+            }
+        }
+        return super.add(bel);
+    }
+    
+    public void remove_old_bels(Literal bel, String timeAnnot, int maxAge, int curAge) {
         Iterator<Literal> relevant = getCandidateBeliefs(bel, null);
         if (relevant != null) {
             List<Literal> toDel = new ArrayList<Literal>();
@@ -120,6 +120,6 @@ public class UniqueBelsBB extends DefaultBeliefBase {
                 remove(l);
             }
         }
-	}
+    }
 
 }

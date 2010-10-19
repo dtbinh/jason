@@ -55,187 +55,187 @@ import org.semanticweb.owl.model.OWLOntology;
  */
 public class SELiteral {
 
-	protected Structure ontologyAnnotation = null;
+    protected Structure ontologyAnnotation = null;
 
-	protected OWLOntology ontology = null;
+    protected OWLOntology ontology = null;
 
-	protected OWLIndividualAxiom axiom = null;
+    protected OWLIndividualAxiom axiom = null;
 
-	protected Set<OWLIndividualAxiom> axioms = null;
+    protected Set<OWLIndividualAxiom> axioms = null;
 
-	protected JASDLOntologyManager jom;
+    protected JASDLOntologyManager jom;
 
-	protected Literal literal;
+    protected Literal literal;
 
-	/**
-	 * Note: does not check validity of supplied literal. 
-	 * @param literal
-	 * @param jasdlOntologyManager
-	 */
-	public SELiteral(Literal literal, JASDLOntologyManager jasdlOntologyManager) {
-		this.literal = (Literal) literal.clone(); // TODO: for some reason, without cloning the literal we have trouble with annotations on incoming propsotional content?!
-		this.jom = jasdlOntologyManager;
-	}
+    /**
+     * Note: does not check validity of supplied literal. 
+     * @param literal
+     * @param jasdlOntologyManager
+     */
+    public SELiteral(Literal literal, JASDLOntologyManager jasdlOntologyManager) {
+        this.literal = (Literal) literal.clone(); // TODO: for some reason, without cloning the literal we have trouble with annotations on incoming propsotional content?!
+        this.jom = jasdlOntologyManager;
+    }
 
-	public Structure getOntologyAnnotation() throws JASDLInvalidSELiteralException {
-		if (ontologyAnnotation == null || !JASDLParams.USE_SELITERAL_CACHING) {
-			ListTerm os = literal.getAnnots(JASDLParams.ONTOLOGY_ANNOTATION_FUNCTOR);
-			if (os.size() == 0) {
-				throw new JASDLNotEnrichedException("Not semantically-enriched");
-			}
-			if (os.size() > 1) {
-				throw new JASDLInvalidSELiteralException("Multiple ontology annotations present");
-			}
-			Term t = os.get(0);
-			if (!(t instanceof Structure)) {
-				throw new JASDLInvalidSELiteralException("Invalid ontology annotation term");
-			}
-			ontologyAnnotation = (Structure) t;
+    public Structure getOntologyAnnotation() throws JASDLInvalidSELiteralException {
+        if (ontologyAnnotation == null || !JASDLParams.USE_SELITERAL_CACHING) {
+            ListTerm os = literal.getAnnots(JASDLParams.ONTOLOGY_ANNOTATION_FUNCTOR);
+            if (os.size() == 0) {
+                throw new JASDLNotEnrichedException("Not semantically-enriched");
+            }
+            if (os.size() > 1) {
+                throw new JASDLInvalidSELiteralException("Multiple ontology annotations present");
+            }
+            Term t = os.get(0);
+            if (!(t instanceof Structure)) {
+                throw new JASDLInvalidSELiteralException("Invalid ontology annotation term");
+            }
+            ontologyAnnotation = (Structure) t;
 
-			if (ontologyAnnotation.getArity() != 1) {
-				throw new JASDLInvalidSELiteralException("Invalid ontology annotation arity");
-			}
-		}
-		return ontologyAnnotation;
-	}
+            if (ontologyAnnotation.getArity() != 1) {
+                throw new JASDLInvalidSELiteralException("Invalid ontology annotation arity");
+            }
+        }
+        return ontologyAnnotation;
+    }
 
-	public OWLOntology getOntology() throws JASDLInvalidSELiteralException, JASDLUnknownMappingException {
-		if (ontology == null || !JASDLParams.USE_SELITERAL_CACHING) {
-			Structure o = getOntologyAnnotation();
-			if (o.getTerm(0).isStructure()) { // Checking for atomicity directly does not seem to work
-				ontology = jom.getLabelManager().getRight((Atom) o.getTerm(0));
-			} else {
-				throw new JASDLInvalidSELiteralException("Invalid ontology annotation format on " + o);
-			}
-		}
-		return ontology;
-	}
+    public OWLOntology getOntology() throws JASDLInvalidSELiteralException, JASDLUnknownMappingException {
+        if (ontology == null || !JASDLParams.USE_SELITERAL_CACHING) {
+            Structure o = getOntologyAnnotation();
+            if (o.getTerm(0).isStructure()) { // Checking for atomicity directly does not seem to work
+                ontology = jom.getLabelManager().getRight((Atom) o.getTerm(0));
+            } else {
+                throw new JASDLInvalidSELiteralException("Invalid ontology annotation format on " + o);
+            }
+        }
+        return ontology;
+    }
 
-	public Atom getOntologyLabel() throws JASDLInvalidSELiteralException, JASDLUnknownMappingException {
-		return jom.getLabelManager().getLeft(getOntology());
-	}
+    public Atom getOntologyLabel() throws JASDLInvalidSELiteralException, JASDLUnknownMappingException {
+        return jom.getLabelManager().getLeft(getOntology());
+    }
 
-	/**
-	 * Convenience method, calls AliasFactory
-	 * @return	the alias associated with this SELiteral
-	 */
-	public Alias toAlias() throws JASDLInvalidSELiteralException, JASDLUnknownMappingException {
-		return AliasFactory.INSTANCE.create(this);
-	}
+    /**
+     * Convenience method, calls AliasFactory
+     * @return  the alias associated with this SELiteral
+     */
+    public Alias toAlias() throws JASDLInvalidSELiteralException, JASDLUnknownMappingException {
+        return AliasFactory.INSTANCE.create(this);
+    }
 
-	/**
-	 * Convenience method, calls AliasManager to retrieve the ontological object referred to by the alias representing
-	 * this SELiteral. Special case is made for unmapped strongly-negated class assertions. Such SELiterals are identified by 
-	 * the "~" prefix to their functor. In this case the "unegated" ontological object is obtained, complemented and mapped
-	 * to the negated alias for future use.
-	 * @return	 the ontological object referred to by the alias representing this SELiteral
-	 * @throws JASDLUnknownMappingException
-	 */
-	public OWLObject toOWLObject() throws JASDLInvalidSELiteralException, JASDLUnknownMappingException, JASDLDuplicateMappingException {
-		try {
-			return jom.getAliasManager().getRight(this.toAlias());
-		} catch (JASDLUnknownMappingException e) {
-			Alias alias = toAlias();
-			if (alias.getFunctor().toString().startsWith("~")) {
-				if (literal.getArity() == 2) {
-					throw new JASDLInvalidSELiteralException("JASDL does not currently support negated property assertions");
-				}
-				Atom unnegatedFunctor = new Atom(alias.getFunctor().toString().substring(1));
-				Alias unnegatedAlias = AliasFactory.INSTANCE.create(unnegatedFunctor, alias.getLabel());
-				if (unnegatedAlias.equals(JASDLParams.OWL_THING) || unnegatedAlias.equals(JASDLParams.OWL_NOTHING)) {
-					throw new JASDLInvalidSELiteralException("owl:thing and owl:nothing should not be negated");
-				}
-				OWLClass unnegated = (OWLClass) jom.getAliasManager().getRight(unnegatedAlias);
-				OWLDescription negated = jom.getOWLDataFactory().getOWLObjectComplementOf(unnegated);
-				jom.getAliasManager().put(alias, negated);
+    /**
+     * Convenience method, calls AliasManager to retrieve the ontological object referred to by the alias representing
+     * this SELiteral. Special case is made for unmapped strongly-negated class assertions. Such SELiterals are identified by 
+     * the "~" prefix to their functor. In this case the "unegated" ontological object is obtained, complemented and mapped
+     * to the negated alias for future use.
+     * @return   the ontological object referred to by the alias representing this SELiteral
+     * @throws JASDLUnknownMappingException
+     */
+    public OWLObject toOWLObject() throws JASDLInvalidSELiteralException, JASDLUnknownMappingException, JASDLDuplicateMappingException {
+        try {
+            return jom.getAliasManager().getRight(this.toAlias());
+        } catch (JASDLUnknownMappingException e) {
+            Alias alias = toAlias();
+            if (alias.getFunctor().toString().startsWith("~")) {
+                if (literal.getArity() == 2) {
+                    throw new JASDLInvalidSELiteralException("JASDL does not currently support negated property assertions");
+                }
+                Atom unnegatedFunctor = new Atom(alias.getFunctor().toString().substring(1));
+                Alias unnegatedAlias = AliasFactory.INSTANCE.create(unnegatedFunctor, alias.getLabel());
+                if (unnegatedAlias.equals(JASDLParams.OWL_THING) || unnegatedAlias.equals(JASDLParams.OWL_NOTHING)) {
+                    throw new JASDLInvalidSELiteralException("owl:thing and owl:nothing should not be negated");
+                }
+                OWLClass unnegated = (OWLClass) jom.getAliasManager().getRight(unnegatedAlias);
+                OWLDescription negated = jom.getOWLDataFactory().getOWLObjectComplementOf(unnegated);
+                jom.getAliasManager().put(alias, negated);
 
-				return negated;
-			} else {
-				throw e;
-			}
-		}
-	}
+                return negated;
+            } else {
+                throw e;
+            }
+        }
+    }
 
-	/**
-	 * Placed here for convenient (varying) usage by subclasses
-	 * Validates since terms are mutable
-	 * @return
-	 * @throws JASDLUnknownMappingException
-	 */
-	public OWLIndividual getOWLIndividual(int i) throws JASDLException {
-		return getOWLIndividual(literal.getTerm(i));
-	}
+    /**
+     * Placed here for convenient (varying) usage by subclasses
+     * Validates since terms are mutable
+     * @return
+     * @throws JASDLUnknownMappingException
+     */
+    public OWLIndividual getOWLIndividual(int i) throws JASDLException {
+        return getOWLIndividual(literal.getTerm(i));
+    }
 
-	/**
-	 * Fetches the individual referenced by the term in any known ontology. 
-	 * If not found, instantiate a new individual in ontology of this SE-Literal.
-	 * Validates and doesn't cache since terms are mutable.
-	 * @see JASDLOntologyManager#getOWLIndividual(Alias)
-	 * @return
-	 * @throws JASDLUnknownMappingException
-	 */
-	public OWLIndividual getOWLIndividual(Term term) throws JASDLException {
-		Alias alias = new Alias((Atom)term, getOntologyLabel());	
-		return jom.getOWLIndividual(alias);
-	}
+    /**
+     * Fetches the individual referenced by the term in any known ontology. 
+     * If not found, instantiate a new individual in ontology of this SE-Literal.
+     * Validates and doesn't cache since terms are mutable.
+     * @see JASDLOntologyManager#getOWLIndividual(Alias)
+     * @return
+     * @throws JASDLUnknownMappingException
+     */
+    public OWLIndividual getOWLIndividual(Term term) throws JASDLException {
+        Alias alias = new Alias((Atom)term, getOntologyLabel());    
+        return jom.getOWLIndividual(alias);
+    }
 
-	public Literal getLiteral() {
-		return literal;
-	}
+    public Literal getLiteral() {
+        return literal;
+    }
 
-	public SELiteralClassAssertion asClassAssertion() {
-		return new SELiteralClassAssertion(literal, jom);
-	}
+    public SELiteralClassAssertion asClassAssertion() {
+        return new SELiteralClassAssertion(literal, jom);
+    }
 
-	public SELiteralObjectPropertyAssertion asObjectPropertyAssertion() {
-		return new SELiteralObjectPropertyAssertion(literal, jom);
-	}
+    public SELiteralObjectPropertyAssertion asObjectPropertyAssertion() {
+        return new SELiteralObjectPropertyAssertion(literal, jom);
+    }
 
-	public SELiteralDataPropertyAssertion asDataPropertyAssertion() {
-		return new SELiteralDataPropertyAssertion(literal, jom);
-	}
+    public SELiteralDataPropertyAssertion asDataPropertyAssertion() {
+        return new SELiteralDataPropertyAssertion(literal, jom);
+    }
 
-	public SELiteralAllDifferentAssertion asAllDifferentAssertion() {
-		return new SELiteralAllDifferentAssertion(literal, jom);
-	}
+    public SELiteralAllDifferentAssertion asAllDifferentAssertion() {
+        return new SELiteralAllDifferentAssertion(literal, jom);
+    }
 
-	/**
-	 * Returns all non-JASDL annotations to this literal
-	 * @return
-	 * @throws JASDLException
-	 */
-	public ListTerm getSemanticallyNaiveAnnotations() throws JASDLException {
-		ListTerm annotsClone = (ListTerm) literal.getAnnots().clone(); // clone so as not to affect original literal
-		annotsClone.remove(getOntologyAnnotation());
-		return annotsClone;
-		//TODO: drop anon and named? uneccessary I think since they are isolated to architecture level.
-	}
+    /**
+     * Returns all non-JASDL annotations to this literal
+     * @return
+     * @throws JASDLException
+     */
+    public ListTerm getSemanticallyNaiveAnnotations() throws JASDLException {
+        ListTerm annotsClone = (ListTerm) literal.getAnnots().clone(); // clone so as not to affect original literal
+        annotsClone.remove(getOntologyAnnotation());
+        return annotsClone;
+        //TODO: drop anon and named? uneccessary I think since they are isolated to architecture level.
+    }
 
-	// *** Mutators ***
+    // *** Mutators ***
 
-	/**
-	 * Sets the ontology annotation of this SELiteral to be the fully-qualified physical namespace of the associated ontology
-	 */
-	public void qualifyOntologyAnnotation() throws JASDLException {
-		getOntologyAnnotation().setTerm(0, new StringTermImpl(jom.getPhysicalURIManager().getRight((getOntology())).toString()));
-	}
+    /**
+     * Sets the ontology annotation of this SELiteral to be the fully-qualified physical namespace of the associated ontology
+     */
+    public void qualifyOntologyAnnotation() throws JASDLException {
+        getOntologyAnnotation().setTerm(0, new StringTermImpl(jom.getPhysicalURIManager().getRight((getOntology())).toString()));
+    }
 
-	/**
-	 * Clones the literal associated with this SELiteral, replacing its functor with the suppleid
-	 * @param newFunctor	functor to replace the original functor with
-	 * @return
-	 */
-	public void mutateFunctor(String newFunctor) throws JASDLException {
-		Literal mutated = new LiteralImpl(!literal.negated(), newFunctor); // negation dealt with by ~ prefix
-		mutated.addTerms(literal.getTerms());
-		mutated.addAnnots(literal.getAnnots());
-		literal = mutated;
-	}
+    /**
+     * Clones the literal associated with this SELiteral, replacing its functor with the suppleid
+     * @param newFunctor    functor to replace the original functor with
+     * @return
+     */
+    public void mutateFunctor(String newFunctor) throws JASDLException {
+        Literal mutated = new LiteralImpl(!literal.negated(), newFunctor); // negation dealt with by ~ prefix
+        mutated.addTerms(literal.getTerms());
+        mutated.addAnnots(literal.getAnnots());
+        literal = mutated;
+    }
 
-	//	*************	
+    //  *************   
 
-	public String toString() {
-		return literal.toString();
-	}
-	
+    public String toString() {
+        return literal.toString();
+    }
+    
 }

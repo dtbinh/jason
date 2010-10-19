@@ -30,10 +30,10 @@ public class switch_places extends DefaultInternalAction {
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
         try {
-        	CowboyArch arch       = (CowboyArch)ts.getUserAgArch();
+            CowboyArch arch       = (CowboyArch)ts.getUserAgArch();
             LocalWorldModel model = arch.getModel();
             if (model == null)
-            	return false;
+                return false;
             
             int lx = (int)((NumberTerm)args[0]).solve();
             int ly = (int)((NumberTerm)args[1]).solve();
@@ -73,40 +73,40 @@ public class switch_places extends DefaultInternalAction {
             Location[] d = {new Location(0,1), new Location(0,-1), new Location(1,0), new Location(-1,0) };
             
             for(int k =0; k < 4; ++k) {
-            	Location candidate = new Location(switchPlace.x-d[k].x,switchPlace.y-d[k].y);
-            	if(model.inGrid(candidate) && model.isFreeOfObstacle(candidate) && !model.hasFence(candidate.x, candidate.y)) {
+                Location candidate = new Location(switchPlace.x-d[k].x,switchPlace.y-d[k].y);
+                if(model.inGrid(candidate) && model.isFreeOfObstacle(candidate) && !model.hasFence(candidate.x, candidate.y)) {
 
-            		Nodo solution = new Search(model, agPlace, candidate, null,false, false, false, false, true, false, ts.getUserAgArch()).search();
+                    Nodo solution = new Search(model, agPlace, candidate, null,false, false, false, false, true, false, ts.getUserAgArch()).search();
 
-            		if(solution != null) {
-            			int length = solution.getProfundidade();
-                		ts.getLogger().info("fff candidate "+candidate.x+" "+candidate.y+" length "+length);
-            			if(dist[1]<0 || length<dist[1])
-            			{
-            				dist[1]=length;
-            				freeSwitch[1]=candidate;
-            				if(dist[0]<0 || dist[1] < dist[0])
-            				{
-            					dist[1]=dist[0];
-            					dist[0]=length;
-            					freeSwitch[1]=freeSwitch[0];
-            					freeSwitch[0]=candidate;
-            				}
-            			}
-            		}
-            		
-            	}
-            	
+                    if(solution != null) {
+                        int length = solution.getProfundidade();
+                        ts.getLogger().info("fff candidate "+candidate.x+" "+candidate.y+" length "+length);
+                        if(dist[1]<0 || length<dist[1])
+                        {
+                            dist[1]=length;
+                            freeSwitch[1]=candidate;
+                            if(dist[0]<0 || dist[1] < dist[0])
+                            {
+                                dist[1]=dist[0];
+                                dist[0]=length;
+                                freeSwitch[1]=freeSwitch[0];
+                                freeSwitch[0]=candidate;
+                            }
+                        }
+                    }
+                    
+                }
+                
             }
             if(dist[1]>=0)
-            	return 
-            	    un.unifies(args[2], new NumberTermImpl(freeSwitch[0].x)) && 
-            		un.unifies(args[3], new NumberTermImpl(freeSwitch[0].y)) &&
-            		un.unifies(args[4], new NumberTermImpl(freeSwitch[1].x)) && 
-            	    un.unifies(args[5], new NumberTermImpl(freeSwitch[1].y));
-            	    */
+                return 
+                    un.unifies(args[2], new NumberTermImpl(freeSwitch[0].x)) && 
+                    un.unifies(args[3], new NumberTermImpl(freeSwitch[0].y)) &&
+                    un.unifies(args[4], new NumberTermImpl(freeSwitch[1].x)) && 
+                    un.unifies(args[5], new NumberTermImpl(freeSwitch[1].y));
+                    */
         } catch (Throwable e) {
-            ts.getLogger().log(Level.SEVERE, "switch_places error: "+e, e);    		
+            ts.getLogger().log(Level.SEVERE, "switch_places error: "+e, e);         
         }
         return false;
     }

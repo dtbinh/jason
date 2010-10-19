@@ -9,7 +9,7 @@
 go_depot :- carrying_gold(3).
 go_depot :- carrying_gold(N) & N > 0 & pos(_,_,Step) & steps(_,NSteps) & Step+200 > NSteps.
 
-// find a free random location	  
+// find a free random location    
 random_pos(X,Y) :- 
    pos(AgX,AgY,_) &
    jia.random(RX,20)   & X = (RX-10)+AgX & X > 0 &
@@ -61,17 +61,17 @@ random_pos(X,Y) :-
 +pos(X,Y,_) 
    : back_pos(BX,BY) & jia.direction(X, Y, BX, BY, D) // one step towards back_pos
   <- do(D).
-	 
-/* -- random move -- */	 
+     
+/* -- random move -- */  
 +pos(_,_,_) 
    <- !define_new_pos.
-	  
+      
 +!define_new_pos
    <- ?pos(X,Y,_);
-	  ?random_pos(NX,NY);
+      ?random_pos(NX,NY);
      //.print("New point ",NX,",",NY);
-	  -+back_pos(NX,NY);
-	  jia.direction(X, Y, NX, NY, D);
+      -+back_pos(NX,NY);
+      jia.direction(X, Y, NX, NY, D);
       do(D).
 
  

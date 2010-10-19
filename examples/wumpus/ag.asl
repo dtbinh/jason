@@ -25,10 +25,10 @@ borders(1, 1, 4, 4). // for R&N
    <- !init;
       !find(gold);
       !quit_cave.
-     	  
+          
 +!init 
    <- !update(breeze); // update perception for location 1,1
-      !update(stench).	  
+      !update(stench).    
 
 +!find(gold) : has_gold.
 +!find(gold) 
@@ -40,14 +40,14 @@ borders(1, 1, 4, 4). // for R&N
       !goto(1,1);
       climb.
 
-	  
-// TODO: find near safe and unvisited location	  
+      
+// TODO: find near safe and unvisited location    
 +!explore
     : borders(BottomLeftX, BottomLeftY, TopRightX, TopRightY) &
-	  .range(X,BottomLeftX,TopRightX) &
-	  .range(Y,BottomLeftY,TopRightY) &
-	  not visited(X,Y) &
-	  safe(X,Y)
+      .range(X,BottomLeftX,TopRightX) &
+      .range(Y,BottomLeftY,TopRightY) &
+      not visited(X,Y) &
+      safe(X,Y)
    <- .print("going to ",X,",",Y);
       !goto(X,Y).
 +!explore
@@ -59,7 +59,7 @@ borders(1, 1, 4, 4). // for R&N
 +glitter 
    <- grab;
       +has_gold;
-	  .succeed_goal(explore). // to stop exploring
+      .succeed_goal(explore). // to stop exploring
 
 +!test // solution for R&N scenario
    <- !init;
@@ -85,21 +85,21 @@ borders(1, 1, 4, 4). // for R&N
 +!do(forward)
    <- forward;
       ?pos(X,Y);
-	  ?orientation(O);
-	  
-	  if (bump) {
-		 +wall(X,Y);
-	  } else {
-    	 !update(pos(X,Y),O);
-	     !update(breeze);
+      ?orientation(O);
+      
+      if (bump) {
+         +wall(X,Y);
+      } else {
+         !update(pos(X,Y),O);
+         !update(breeze);
          !update(stench);
-	  }.
+      }.
 
-// perform action turn and update beliefs accordingly	  
+// perform action turn and update beliefs accordingly     
 +!do(turn(D))
    <- turn(D); 
       ?orientation(O);
-	  !update(orientation(O),D).
+      !update(orientation(O),D).
 
 // update beliefs using a coordinate system
 

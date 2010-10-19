@@ -26,8 +26,8 @@ import bebops.common.KernelsetFilter;
 
 public class JASDLKernelsetFilter extends KernelsetFilter {
 
-	public boolean retain(OWLAxiom axiom) {
-		return (axiom instanceof OWLIndividualAxiom);
-	}
+    public boolean retain(OWLAxiom axiom) {
+        return (axiom instanceof OWLIndividualAxiom);
+    }
 
 }

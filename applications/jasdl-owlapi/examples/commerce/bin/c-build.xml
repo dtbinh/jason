@@ -2,13 +2,13 @@
 
 <project name ="custombuild" basedir="..">
 
-	<import file="build.xml"/>
-	
-	<target name="user-init">
-		<!-- compile JASDL for convenience -->
-		<ant dir="../../" inheritAll="false" target="jar"/>
-	</target>
-	
-	<target name="user-end">
-	</target>
+    <import file="build.xml"/>
+    
+    <target name="user-init">
+        <!-- compile JASDL for convenience -->
+        <ant dir="../../" inheritAll="false" target="jar"/>
+    </target>
+    
+    <target name="user-end">
+    </target>
 </project>

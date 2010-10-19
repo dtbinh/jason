@@ -39,7 +39,7 @@ public class MiningPlanet extends jason.environment.Environment {
     };
 
     @Override
-	public void init(String[] args) {
+    public void init(String[] args) {
         hasGUI = args[2].equals("yes"); 
         sleep  = Integer.parseInt(args[1]);
         initWorld(Integer.parseInt(args[0]));
@@ -54,7 +54,7 @@ public class MiningPlanet extends jason.environment.Environment {
     }
 
     @Override
-	public void stop() {
+    public void stop() {
         running = false;
         super.stop();
     }
@@ -105,15 +105,15 @@ public class MiningPlanet extends jason.environment.Environment {
     
     public void initWorld(int w) {
         simId = w;
-    	try {
-	        switch (w) {
-	        case 1: model = WorldModel.world1(); break;
-	        case 2: model = WorldModel.world2(); break;
-	        case 3: model = WorldModel.world3(); break;
-	        default:
-	            logger.info("Invalid index!");
-	            return;
-	        }
+        try {
+            switch (w) {
+            case 1: model = WorldModel.world1(); break;
+            case 2: model = WorldModel.world2(); break;
+            case 3: model = WorldModel.world3(); break;
+            default:
+                logger.info("Invalid index!");
+                return;
+            }
             clearPercepts();
             addPercept(Literal.parseLiteral("gsize(" + simId + "," + model.getWidth() + "," + model.getHeight() + ")"));
             addPercept(Literal.parseLiteral("depot(" + simId + "," + model.getDepot().x + "," + model.getDepot().y + ")"));
@@ -124,9 +124,9 @@ public class MiningPlanet extends jason.environment.Environment {
             }
             updateAgsPercept();        
             informAgsEnvironmentChanged();
-    	} catch (Exception e) {
-    		logger.warning("Error creating world "+e);
-    	}
+        } catch (Exception e) {
+            logger.warning("Error creating world "+e);
+        }
     }
     
     public void endSimulation() {

@@ -31,27 +31,27 @@ import jmca.util.JmcaException;
  *
  */
 public abstract class SelectionStrategy<T>{
-	/**
-	 * The agent this selection strategy belongs to
-	 */
-	protected Agent master;
-	
-	
-	public SelectionStrategy(Agent master){
-		this.master = master;
-	}
-	
-	/**
-	 * Choose, from those provided, a set of aspects that this selection strategy deems acceptable
-	 * @param from				the aspects to choose from
-	 * @return					a set of acceptable aspects
-	 * @throws JmcaException
-	 */
-	public abstract List<T> select(List<T> from, List<T>intersection) throws JmcaException;
-	
-	public String toString(){
-		return master.toString();
-	}
-	
-	
+    /**
+     * The agent this selection strategy belongs to
+     */
+    protected Agent master;
+    
+    
+    public SelectionStrategy(Agent master){
+        this.master = master;
+    }
+    
+    /**
+     * Choose, from those provided, a set of aspects that this selection strategy deems acceptable
+     * @param from              the aspects to choose from
+     * @return                  a set of acceptable aspects
+     * @throws JmcaException
+     */
+    public abstract List<T> select(List<T> from, List<T>intersection) throws JmcaException;
+    
+    public String toString(){
+        return master.toString();
+    }
+    
+    
 }

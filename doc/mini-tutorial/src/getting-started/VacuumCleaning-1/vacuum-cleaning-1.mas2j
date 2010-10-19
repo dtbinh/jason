@@ -3,7 +3,7 @@
 */
 
 MAS vacuum_cleaning {
-	environment: VCWorld
-	agents: vc;
+    environment: VCWorld
+    agents: vc;
 }
 

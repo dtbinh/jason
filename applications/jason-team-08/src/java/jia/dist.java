@@ -23,7 +23,7 @@ public class dist extends DefaultInternalAction {
             int dist = new Location(iagx, iagy).maxBorder(new Location(itox, itoy));
             return un.unifies(terms[4], new NumberTermImpl(dist));
         } catch (Throwable e) {
-            ts.getLogger().log(Level.SEVERE, "dist error: "+e, e);    		
+            ts.getLogger().log(Level.SEVERE, "dist error: "+e, e);          
         }
         return false;
     }

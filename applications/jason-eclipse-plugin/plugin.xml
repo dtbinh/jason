@@ -83,7 +83,7 @@
             project="false"/>
    </extension>
 
-	<extension
+    <extension
          point="org.eclipse.ui.preferencePages">
       <page
             name="Jason Plugin"

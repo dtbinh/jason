@@ -23,11 +23,11 @@ import jason.JasonException;
 
 public class JASDLException extends JasonException {
 
-	public JASDLException(String msg, Exception cause) {
-		super(msg, cause);
-	}
+    public JASDLException(String msg, Exception cause) {
+        super(msg, cause);
+    }
 
-	public JASDLException(String message) {
-		super(message);
-	}
+    public JASDLException(String message) {
+        super(message);
+    }
 }

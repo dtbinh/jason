@@ -32,42 +32,42 @@ import env.WorldView;
  */
 public class CowboyArch extends IdentifyCrashed { 
 
-	LocalWorldModel model = null;
-	WorldView       view  = null;
-	
-	String     simId = null;
-	int	       myId  = -1;
-	boolean    gui   = false;
-	boolean    playing = false;
-	
-	String   massimBackDir = null;
-	ACViewer acView        = null;
-	
-	int        simStep  = 0;
-	
-	WriteStatusThread writeStatusThread = null;
-	
-	protected Logger logger = Logger.getLogger(CowboyArch.class.getName());
+    LocalWorldModel model = null;
+    WorldView       view  = null;
+    
+    String     simId = null;
+    int        myId  = -1;
+    boolean    gui   = false;
+    boolean    playing = false;
+    
+    String   massimBackDir = null;
+    ACViewer acView        = null;
+    
+    int        simStep  = 0;
+    
+    WriteStatusThread writeStatusThread = null;
+    
+    protected Logger logger = Logger.getLogger(CowboyArch.class.getName());
 
-	public static Atom aOBSTACLE    = new Atom("obstacle");
-	public static Atom aENEMY       = new Atom("enemy");
-	public static Atom aENEMYCORRAL = new Atom("enemycorral");
-	public static Atom aALLY        = new Atom("ally");
-	public static Atom aEMPTY       = new Atom("empty");
-	
-	
-	@Override
+    public static Atom aOBSTACLE    = new Atom("obstacle");
+    public static Atom aENEMY       = new Atom("enemy");
+    public static Atom aENEMYCORRAL = new Atom("enemycorral");
+    public static Atom aALLY        = new Atom("ally");
+    public static Atom aEMPTY       = new Atom("empty");
+    
+    
+    @Override
     public void initAg(String agClass, ClassParameters bbPars, String asSrc, Settings stts) throws JasonException {
-		super.initAg(agClass, bbPars, asSrc, stts);
-		model = new LocalWorldModel(10,10, WorldModel.agsByTeam, getTS().getAg().getBB()); // just to have a default model
-	    gui = "yes".equals(stts.getUserParameter("gui"));
-	    if ("yes".equals(stts.getUserParameter("write_status"))) {
-	        writeStatusThread = WriteStatusThread.create(this);
+        super.initAg(agClass, bbPars, asSrc, stts);
+        model = new LocalWorldModel(10,10, WorldModel.agsByTeam, getTS().getAg().getBB()); // just to have a default model
+        gui = "yes".equals(stts.getUserParameter("gui"));
+        if ("yes".equals(stts.getUserParameter("write_status"))) {
+            writeStatusThread = WriteStatusThread.create(this);
         }
-	    WriteStatusThread.registerAgent(getAgName(), this);
-	    
+        WriteStatusThread.registerAgent(getAgName(), this);
+        
         // create the viewer for contest simulator
-	    massimBackDir = stts.getUserParameter("ac_sim_back_dir");
+        massimBackDir = stts.getUserParameter("ac_sim_back_dir");
         if (massimBackDir != null && massimBackDir.startsWith("\"")) 
             massimBackDir = massimBackDir.substring(1,massimBackDir.length()-1);
         logger = Logger.getLogger(CowboyArch.class.getName() + ".CA-" + getAgName());

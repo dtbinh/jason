@@ -15,13 +15,13 @@ public class TestEnv extends jason.environment.Environment {
 
     @Override
     public boolean executeAction(String agName, Structure action) {
-		if (action.getFunctor().equals("burn")) {
-			addPercept(Literal.parseLiteral("fire"));
+        if (action.getFunctor().equals("burn")) {
+            addPercept(Literal.parseLiteral("fire"));
             return true;
-		} else {
- 			logger.info("executing: "+action+", but not implemented!");
+        } else {
+            logger.info("executing: "+action+", but not implemented!");
             return false;
-		}
+        }
     }
 
     /** Called before the end of MAS execution */

@@ -14,6 +14,6 @@ test(1).
    <- +a(40); 
       myia.clone("bob");
       .send(bob,tell,p(10)).
-	  
+      
 +p(X) : a(V) <- .print(X," : ",V).
 

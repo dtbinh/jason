@@ -16,32 +16,32 @@ import uk.ac.manchester.cs.owl.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRen
  *
  */
 public abstract class NormalisingOWLObjectShortFormProvider implements ShortFormProvider {
-	
-	protected JASDLOntologyManager jom;
+    
+    protected JASDLOntologyManager jom;
 
 
-	public NormalisingOWLObjectShortFormProvider(JASDLOntologyManager jom){
-		this.jom = jom;
-	}
-	
+    public NormalisingOWLObjectShortFormProvider(JASDLOntologyManager jom){
+        this.jom = jom;
+    }
+    
 
-	public void dispose() {
-	}
-	
-	
-	public String getShortForm(OWLEntity entity) {		
-		// detect run-time defined classes and render them in "normal" form (i.e. in terms of schema-defined classes)
-		if(entity.isOWLClass()){
-			try{
-				OWLDescription desc = jom.getDefinitionManager().getRight(entity.asOWLClass());
-				ManchesterOWLSyntaxOWLObjectRendererImpl renderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
-				renderer.setShortFormProvider(this);				
-				return renderer.render(desc);
-			}catch(JASDLUnknownMappingException e){			
-			}
-		}
-		return null;
-	}
-	
-	
+    public void dispose() {
+    }
+    
+    
+    public String getShortForm(OWLEntity entity) {      
+        // detect run-time defined classes and render them in "normal" form (i.e. in terms of schema-defined classes)
+        if(entity.isOWLClass()){
+            try{
+                OWLDescription desc = jom.getDefinitionManager().getRight(entity.asOWLClass());
+                ManchesterOWLSyntaxOWLObjectRendererImpl renderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
+                renderer.setShortFormProvider(this);                
+                return renderer.render(desc);
+            }catch(JASDLUnknownMappingException e){         
+            }
+        }
+        return null;
+    }
+    
+    
 }

@@ -25,14 +25,14 @@ public class get_rules extends DefaultInternalAction {
             Iterator<Literal> i = ts.getAg().getBB().getCandidateBeliefs(pattern, un);
             ListTerm result = new ListTermImpl();
             while (i.hasNext()) {
-            	Literal l = i.next();
+                Literal l = i.next();
                 if (l.isRule()) {
                     if (un.clone().unifies(pattern, l)) {
                         l = l.copy();
                         l.delSources();
                         result.add(new StringTermImpl(l.toString()));
                     }
-            	}
+                }
             }
             return un.unifies(args[1],result);
         } catch (Exception e) {

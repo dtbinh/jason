@@ -70,30 +70,30 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
    : need_cross_fence(Sch, FX, FY) &
      jia.fence_switch(FX, FY, SX, SY)
   <- if (pass_fence_scheme(OtherSch,SX,SY,GK1) & scheme(pass_fence_sch,OtherSch)) { // if an active scheme for the same switch exists...
-	    !join_pass_fence_scheme(OtherSch,GK1)
-	 }{
-	    !create_pass_fence_scheme(Sch, Gr, SX, SY, FX, FY)
-	 }.  
+        !join_pass_fence_scheme(OtherSch,GK1)
+     }{
+        !create_pass_fence_scheme(Sch, Gr, SX, SY, FX, FY)
+     }.  
      /*
      .my_name(Me);
      .findall(PFSch, scheme(pass_fence_sch,PFSch), PFSchs); // [owner(Oag)] & Oag \== Me
-	 !find_pass_fence_scheme(PFSchs, SX, SY, OtherSch, Porter2);
-	 .print("fff pass_fence porter2 ",OtherSch," from candidates ",PFSchs);
-	 if (OtherSch == no_scheme) {
-	    !create_pass_fence_scheme(Sch, Gr, SX, SY, FX, FY)
-	 }{
-	    !join_pass_fence_scheme(OtherSch,Porter2)
-	 }.*/  
+     !find_pass_fence_scheme(PFSchs, SX, SY, OtherSch, Porter2);
+     .print("fff pass_fence porter2 ",OtherSch," from candidates ",PFSchs);
+     if (OtherSch == no_scheme) {
+        !create_pass_fence_scheme(Sch, Gr, SX, SY, FX, FY)
+     }{
+        !join_pass_fence_scheme(OtherSch,Porter2)
+     }.*/  
 
 +!start_pass_fence[scheme(Sch),mission(Mission), group(Gr), role(Role)]
    : need_cross_fence(Sch, FX, FY) &
      not jia.fence_switch(FX, FY, _, _)
   <- .print("fff I need to discover where the switch is");
-  	 !fence_as_obstacle(15).
+     !fence_as_obstacle(15).
      
 +!start_pass_fence[scheme(Sch),mission(Mission),group(Gr),role(Role)].
-	 
-{ end }	 
+     
+{ end }  
 
 /*
 +!find_pass_fence_scheme([],SX,SY,no_scheme,no_porter).
@@ -188,7 +188,7 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
   <- .findall(Ag, .member(Ag,Others) & ally_pos(Ag,X,Y) & jia.fence(X,Y), InFence);
      .difference(Others, InFence, NewO);
      .wait( { +pos(_,_,_) }, 2000, _); // remove only in the next step, when they moved from the fence
-	 .print("fff removing ",InFence," from others ",Others," remain ",NewO);
+     .print("fff removing ",InFence," from others ",Others," remain ",NewO);
      jmoise.set_goal_arg(Sch,wait_others_pass,"Others",NewO);
      !!clean_others(Sch,N-1).
 +!clean_others(Sch,0)
@@ -213,7 +213,7 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
      -+target(X,Y);
      .wait({ +pos(_,_,_) } );
      !goto_switch(X,Y,Sch,Goal).
-     	
+        
 
 +!goto_switch1(X,Y)[scheme(Sch)]
   <- !goto_switch(X,Y,Sch,goto_switch1).
@@ -258,7 +258,7 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
 +!wait_others_pass(_)[scheme(Sch),mission(Mission),group(Gr),role(Role)]
    : goal_state(Sch,wait_others_pass(Others),ready) & // should not use the parameter of the event, since it changes
      .my_name(Me) & .findall(P, play(P,_,Gr) & P \== Me, Mates) & // I need to wait all other members of my group, but me
-	 .print("fff I should wait ",Mates," and ",Others) &
+     .print("fff I should wait ",Mates," and ",Others) &
      Others == [] &
      all_passed(Mates) // & no_cowboy_in_fence
   <- .print("fff all passed");
@@ -278,12 +278,12 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
         if (play(GP1, gatekeeper1, Gr)) {     
            .print("fff asking ",GP1," to stop playing gatekeeper1");
            .send(GP1, achieve, quit_all_missions_roles);
-    	   .wait(1000); // wait GP1 to quit
-    	   .send(GP1, achieve, create_exploration_gr)
-    	};
-    	// remove my own gatekeeper role (so that I can accept the ask scouter that will be send by the partner)
-    	jmoise.remove_role(Role,Gr);
-    	!!create_exploration_gr
+           .wait(1000); // wait GP1 to quit
+           .send(GP1, achieve, create_exploration_gr)
+        };
+        // remove my own gatekeeper role (so that I can accept the ask scouter that will be send by the partner)
+        jmoise.remove_role(Role,Gr);
+        !!create_exploration_gr
      }{
         if (play(GP1, gatekeeper1, Gr)) {     
            .print("fff asking porters ",GP1," and myself to get back their herdboy roles");
@@ -291,23 +291,23 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
         };
         !!change_role(herdboy, Gr)
      }.
-//  	 jmoise.remove_scheme(Sch). // must be the last thing (since the deletion of the scheme cause the drop of this goal)
+//       jmoise.remove_scheme(Sch). // must be the last thing (since the deletion of the scheme cause the drop of this goal)
      
 +!wait_others_pass(_)[scheme(Sch),mission(Mission),group(Gr),role(Role)]
   <- !check_conflict_pass_fence(Sch).
 
-{ end }	 
+{ end }  
 
 +!check_conflict_pass_fence(Sch)
       // in case we have two schemes for the same fence, abort one
   <- .my_name(Me);
      ?goal_state(Sch,pass_fence(SX,SY,_,_),_);
      .findall(PFSch, scheme(pass_fence_sch,PFSch)[owner(OS)] & PFSch \== Sch & OS < Me, PFSchs);
-	 !find_pass_fence_scheme(PFSchs, SX, SY, OtherSch, _);
-	 if (OtherSch \== no_scheme) {
-	     .print("fff ** conflict, two pass fence schemes for the same fence, aborting ",Sch);
-	     jmoise.remove_scheme(Sch)
-	 }.
+     !find_pass_fence_scheme(PFSchs, SX, SY, OtherSch, _);
+     if (OtherSch \== no_scheme) {
+         .print("fff ** conflict, two pass fence schemes for the same fence, aborting ",Sch);
+         jmoise.remove_scheme(Sch)
+     }.
 +!check_conflict_pass_fence(_).
 -!check_conflict_pass_fence(_).
 
@@ -317,9 +317,9 @@ is_vertical(FX,FY)   :- jia.fence(FX,FY+1) | jia.fence(FX,FY-1).
      .findall(P, commitment(P,_,Sch), Players);
      jmoise.remove_scheme(Sch);
      // and restart team mates
-  	.send(Players, achieve, quit_all_missions_roles);
-  	.wait(1000); // wait them to quit
-  	.send(Players, achieve, create_exploration_gr).
+    .send(Players, achieve, quit_all_missions_roles);
+    .wait(1000); // wait them to quit
+    .send(Players, achieve, create_exploration_gr).
      
 +!restart_fence_case
   <- .print("fff restart pass fence, setting fence as obstacle for moving.");

@@ -54,7 +54,7 @@ public class plot extends DefaultInternalAction {
             dataset.addSeries(agName, data);            
         }
     }
-	
+    
     private double[][] getData(int maxStep) {
         double[][] r = new double[2][maxStep+1];
         int vl = 0;

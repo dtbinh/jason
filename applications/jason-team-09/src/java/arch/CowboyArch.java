@@ -46,62 +46,62 @@ import env.WorldModel.Move;
  */
 public class CowboyArch extends OrgAgent { //IdentifyCrashed { 
 
-	LocalWorldModel model = null;
-	WorldView       view  = null;
-	
-	String     simId = null;
-	int	       myId  = -1;
-	boolean    gui   = false;
-	boolean    playing = false;
-	
-	String   massimBackDir = null;
-	//ACViewer acView        = null;
-	
-	String   teamId        = null;
-	
+    LocalWorldModel model = null;
+    WorldView       view  = null;
+    
+    String     simId = null;
+    int        myId  = -1;
+    boolean    gui   = false;
+    boolean    playing = false;
+    
+    String   massimBackDir = null;
+    //ACViewer acView        = null;
+    
+    String   teamId        = null;
+    
     Map<Integer, Location> perceivedCows = new HashMap<Integer,Location>(); // stores the location of some cows
     Map<Integer,Integer> lastSeen = new HashMap<Integer, Integer>();        // and the step they were seen    
 
-	int        simStep  = 0;
-	
-	WriteStatusThread writeStatusThread = null;
-	
-	protected Logger logger = Logger.getLogger(CowboyArch.class.getName());
+    int        simStep  = 0;
+    
+    WriteStatusThread writeStatusThread = null;
+    
+    protected Logger logger = Logger.getLogger(CowboyArch.class.getName());
 
-	public static Atom aOBSTACLE    = new Atom("obstacle");
-	public static Atom aENEMY       = new Atom("enemy");
-	public static Atom aENEMYCORRAL = new Atom("enemycorral");
-	public static Atom aALLY        = new Atom("ally");
-	public static Atom aEMPTY       = new Atom("empty");
-	public static Atom aSWITCH      = new Atom("switch");
+    public static Atom aOBSTACLE    = new Atom("obstacle");
+    public static Atom aENEMY       = new Atom("enemy");
+    public static Atom aENEMYCORRAL = new Atom("enemycorral");
+    public static Atom aALLY        = new Atom("ally");
+    public static Atom aEMPTY       = new Atom("empty");
+    public static Atom aSWITCH      = new Atom("switch");
     public static Atom aFENCE       = new Atom("fence");
     public static Atom aOPEN        = new Atom("open");
     public static Atom aCLOSED      = new Atom("closed");
-	
-	
-	@Override
+    
+    
+    @Override
     public void initAg(String agClass, ClassParameters bbPars, String asSrc, Settings stts) throws JasonException {
-		super.initAg(agClass, bbPars, asSrc, stts);
-		//model = new LocalWorldModel(150,150, WorldModel.agsByTeam, getTS().getAg().getBB()); // just to have a default model
-	    gui = "yes".equals(stts.getUserParameter("gui"));
-	    if (getMyId() == 0)
-	        gui = true;
-	    boolean writeStatus = "yes".equals(stts.getUserParameter("write_status"));
-	    boolean dumpAgsMind = "yes".equals(stts.getUserParameter("dump_ags_mind"));
-	    if (writeStatus || dumpAgsMind)
-	        writeStatusThread = WriteStatusThread.create(this, writeStatus, dumpAgsMind);
-	    
-	    teamId = stts.getUserParameter("teamid");
-	    if (teamId == null) 
-	        logger.info("*** No 'teamid' parameter!!!!");
-	    else if (teamId.startsWith("")) 
-	        teamId = teamId.substring(1, teamId.length()-1);
-	        
-	    
-	    WriteStatusThread.registerAgent(getAgName(), this);
-	    
+        super.initAg(agClass, bbPars, asSrc, stts);
+        //model = new LocalWorldModel(150,150, WorldModel.agsByTeam, getTS().getAg().getBB()); // just to have a default model
+        gui = "yes".equals(stts.getUserParameter("gui"));
+        if (getMyId() == 0)
+            gui = true;
+        boolean writeStatus = "yes".equals(stts.getUserParameter("write_status"));
+        boolean dumpAgsMind = "yes".equals(stts.getUserParameter("dump_ags_mind"));
+        if (writeStatus || dumpAgsMind)
+            writeStatusThread = WriteStatusThread.create(this, writeStatus, dumpAgsMind);
+        
+        teamId = stts.getUserParameter("teamid");
+        if (teamId == null) 
+            logger.info("*** No 'teamid' parameter!!!!");
+        else if (teamId.startsWith("")) 
+            teamId = teamId.substring(1, teamId.length()-1);
+            
+        
+        WriteStatusThread.registerAgent(getAgName(), this);
+        
         // create the viewer for contest simulator
-	    massimBackDir = stts.getUserParameter("ac_sim_back_dir");
+        massimBackDir = stts.getUserParameter("ac_sim_back_dir");
         if (massimBackDir != null && massimBackDir.startsWith("\"")) 
             massimBackDir = massimBackDir.substring(1,massimBackDir.length()-1);
         logger = Logger.getLogger(CowboyArch.class.getName() + ".CA-" + getAgName());

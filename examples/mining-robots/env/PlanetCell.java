@@ -2,8 +2,8 @@ package env;
 
 public class PlanetCell {
 
-	public PlanetCell() {
-	
-	}
+    public PlanetCell() {
+    
+    }
 
 }

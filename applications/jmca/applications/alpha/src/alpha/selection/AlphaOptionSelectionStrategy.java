@@ -37,32 +37,32 @@ import jmca.selection.SelectionStrategy;
  *
  */
 public class AlphaOptionSelectionStrategy extends SelectionStrategy<Option>{
-	
-	/**
-	 * How many Options should be taken from head of (ordered) Option list
-	 */
-	private static int choose = 2;
-	
-	public AlphaOptionSelectionStrategy(Agent master){
-		super(master);
-	}
-	
-	public List<Option> select(List<Option> options, List<Option> intersection){
-		Comparator<Option> comp = new Comparator<Option>(){
-			public int compare(Option a, Option b) {
-				String af = a.getPlan().getLabel().getFunctor();
-				String bf = b.getPlan().getLabel().getFunctor();
-				return af.compareTo(bf);
-			}			
-		};		
-		Collections.sort(options, comp);		
-		Vector<Option> chosen = new Vector<Option>();
-		for(int i=0; i<choose; i++){
-			if(i>(options.size()-1)){
-				break;
-			}
-			chosen.add(options.get(i));
-		}
-		return chosen;
-	}
+    
+    /**
+     * How many Options should be taken from head of (ordered) Option list
+     */
+    private static int choose = 2;
+    
+    public AlphaOptionSelectionStrategy(Agent master){
+        super(master);
+    }
+    
+    public List<Option> select(List<Option> options, List<Option> intersection){
+        Comparator<Option> comp = new Comparator<Option>(){
+            public int compare(Option a, Option b) {
+                String af = a.getPlan().getLabel().getFunctor();
+                String bf = b.getPlan().getLabel().getFunctor();
+                return af.compareTo(bf);
+            }           
+        };      
+        Collections.sort(options, comp);        
+        Vector<Option> chosen = new Vector<Option>();
+        for(int i=0; i<choose; i++){
+            if(i>(options.size()-1)){
+                break;
+            }
+            chosen.add(options.get(i));
+        }
+        return chosen;
+    }
 }

@@ -33,22 +33,22 @@ import org.semanticweb.owl.model.OWLDescription;
  */
 public class DefinitionManager extends MappingManager<OWLClass, OWLDescription> {
 
-	/**
-	 * Extended to permit a definition to be mapped to many aliases
-	 * (i.e. may be defined in many personal ontologies)
-	 * @param x
-	 * @param y
-	 * @throws JASDLDuplicateMappingException
-	 */
-	@Override
-	public void put(OWLClass x, OWLDescription y) throws JASDLDuplicateMappingException {
-		logger.finest("mapping " + x + " <-> " + y);
+    /**
+     * Extended to permit a definition to be mapped to many aliases
+     * (i.e. may be defined in many personal ontologies)
+     * @param x
+     * @param y
+     * @throws JASDLDuplicateMappingException
+     */
+    @Override
+    public void put(OWLClass x, OWLDescription y) throws JASDLDuplicateMappingException {
+        logger.finest("mapping " + x + " <-> " + y);
 
-		if (isKnownLeft(x)) {
-			throw new JASDLDuplicateMappingException("Duplicate mapping on " + x);
-		}
+        if (isKnownLeft(x)) {
+            throw new JASDLDuplicateMappingException("Duplicate mapping on " + x);
+        }
 
-		xToYMap.put(x, y);
-		yToXMap.put(y, x);
-	}
+        xToYMap.put(x, y);
+        yToXMap.put(y, x);
+    }
 }

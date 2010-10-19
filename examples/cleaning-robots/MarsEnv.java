@@ -12,60 +12,60 @@ import java.util.logging.Logger;
 
 public class MarsEnv extends Environment {
 
-	public static final int GSize = 7; // grid size
+    public static final int GSize = 7; // grid size
     public static final int GARB  = 16; // garbage code in grid model
 
-	public static final Term    ns = Literal.parseLiteral("next(slot)");
-	public static final Term    pg = Literal.parseLiteral("pick(garb)");
-	public static final Term    dg = Literal.parseLiteral("drop(garb)");
-	public static final Term    bg = Literal.parseLiteral("burn(garb)");
-	public static final Literal g1 = Literal.parseLiteral("garbage(r1)");
-	public static final Literal g2 = Literal.parseLiteral("garbage(r2)");
+    public static final Term    ns = Literal.parseLiteral("next(slot)");
+    public static final Term    pg = Literal.parseLiteral("pick(garb)");
+    public static final Term    dg = Literal.parseLiteral("drop(garb)");
+    public static final Term    bg = Literal.parseLiteral("burn(garb)");
+    public static final Literal g1 = Literal.parseLiteral("garbage(r1)");
+    public static final Literal g2 = Literal.parseLiteral("garbage(r2)");
 
-	static Logger logger = Logger.getLogger(MarsEnv.class.getName());
+    static Logger logger = Logger.getLogger(MarsEnv.class.getName());
 
     private MarsModel model;
     private MarsView  view;
-	
+    
     @Override
-	public void init(String[] args) {
+    public void init(String[] args) {
         model = new MarsModel();
         view  = new MarsView(model);
         model.setView(view);
         updatePercepts();
-	}
+    }
     
     @Override
-	public boolean executeAction(String ag, Structure action) {
+    public boolean executeAction(String ag, Structure action) {
         logger.info(ag+" doing: "+ action);
-		try {
-			if (action.equals(ns)) {
-				model.nextSlot();
-			} else if (action.getFunctor().equals("move_towards")) {
-				int x = (int)((NumberTerm)action.getTerm(0)).solve();
-				int y = (int)((NumberTerm)action.getTerm(1)).solve();
-	            model.moveTowards(x,y);
-			} else if (action.equals(pg)) {
-	            model.pickGarb();
-			} else if (action.equals(dg)) {
-	            model.dropGarb();
-			} else if (action.equals(bg)) {
-			    model.burnGarb();
-			} else {
-			    return false;
-	        }
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+        try {
+            if (action.equals(ns)) {
+                model.nextSlot();
+            } else if (action.getFunctor().equals("move_towards")) {
+                int x = (int)((NumberTerm)action.getTerm(0)).solve();
+                int y = (int)((NumberTerm)action.getTerm(1)).solve();
+                model.moveTowards(x,y);
+            } else if (action.equals(pg)) {
+                model.pickGarb();
+            } else if (action.equals(dg)) {
+                model.dropGarb();
+            } else if (action.equals(bg)) {
+                model.burnGarb();
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         
         updatePercepts();
 
         try {
             Thread.sleep(200);
         } catch (Exception e) {}
-		return true;
-	}
-	
+        return true;
+    }
+    
     /** creates the agents perception based on the MarsModel */
     void updatePercepts() {
         clearPercepts();
@@ -100,13 +100,13 @@ public class MarsEnv extends Environment {
             
             // initial location of agents
             try {
-				setAgPos(0, 0, 0);
+                setAgPos(0, 0, 0);
             
-				Location r2Loc = new Location(GSize/2, GSize/2);
-				setAgPos(1, r2Loc);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+                Location r2Loc = new Location(GSize/2, GSize/2);
+                setAgPos(1, r2Loc);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             
             // initial location of garbage
             add(GARB, 3, 0);

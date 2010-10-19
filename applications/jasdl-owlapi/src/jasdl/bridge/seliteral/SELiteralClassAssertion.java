@@ -29,16 +29,16 @@ import org.semanticweb.owl.model.OWLIndividual;
 
 public class SELiteralClassAssertion extends SELiteral {
 
-	public SELiteralClassAssertion(Literal l, JASDLOntologyManager jasdlOntologyManager) {
-		super(l, jasdlOntologyManager);
-	}
+    public SELiteralClassAssertion(Literal l, JASDLOntologyManager jasdlOntologyManager) {
+        super(l, jasdlOntologyManager);
+    }
 
-	public OWLDescription getOWLDescription() throws JASDLException {
-		return (OWLDescription) toOWLObject();
-	}
+    public OWLDescription getOWLDescription() throws JASDLException {
+        return (OWLDescription) toOWLObject();
+    }
 
-	public OWLIndividual getOWLIndividual() throws JASDLException {
-		return getOWLIndividual(JASDLParams.DOMAIN);
-	}
+    public OWLIndividual getOWLIndividual() throws JASDLException {
+        return getOWLIndividual(JASDLParams.DOMAIN);
+    }
 
 }

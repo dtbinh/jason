@@ -246,7 +246,7 @@ public class ColoringEditor extends TextEditor {
     protected void handlePreferenceStoreChanged(PropertyChangeEvent event) {
         if (getSourceViewer() == null || getSourceViewer().getTextWidget() == null) return;
         try {
-        	AdaptedSourceViewer viewer= (AdaptedSourceViewer) getSourceViewer();
+            AdaptedSourceViewer viewer= (AdaptedSourceViewer) getSourceViewer();
             if (viewer != null) {
                 String p = event.getProperty();
                 if (ColoringSourceViewerConfiguration.SPACES_FOR_TABS.equals(p)) {

@@ -25,7 +25,7 @@ cow_perception_ratio(4).
 
 /* -- useful rules */ 
 
-// find a free random location	  
+// find a free random location    
 random_pos(X,Y) :- 
    pos(AgX,AgY,_) &
    jia.random(RX,40)   & RX > 5 & X = (RX-20)+AgX & X > 0 &

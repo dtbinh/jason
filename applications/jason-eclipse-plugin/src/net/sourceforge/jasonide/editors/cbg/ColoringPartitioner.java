@@ -14,9 +14,9 @@ import org.eclipse.jface.text.rules.IPartitionTokenScanner;
 
 public class ColoringPartitioner extends FastPartitioner {
 
-	public ColoringPartitioner(IPartitionTokenScanner scanner, String[] legalContentTypes) {
-		super(scanner, legalContentTypes);
-	}
+    public ColoringPartitioner(IPartitionTokenScanner scanner, String[] legalContentTypes) {
+        super(scanner, legalContentTypes);
+    }
 
     public ITypedRegion[] computePartitioning(int offset, int length, boolean includeZeroLengthPartitions) {
         if(fDocument == null) return new ITypedRegion[0];

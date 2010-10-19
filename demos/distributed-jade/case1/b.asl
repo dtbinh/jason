@@ -10,5 +10,5 @@
 
 +!start : true 
     <- .print("hello world.");
-	   .send(a,tell,hello).
+       .send(a,tell,hello).
 

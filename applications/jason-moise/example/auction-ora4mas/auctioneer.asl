@@ -102,6 +102,6 @@ auction_id(0).
     : .my_name(Ag) & .intend(Goal)
    <- .print("I am not obliged to achieve goal ",Goal," anymore");
       .drop_desire(Goal).   
-	  
-//+well_formed(X) <- .print("Well formed for ",X).	  
+      
+//+well_formed(X) <- .print("Well formed for ",X).    
 

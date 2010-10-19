@@ -24,7 +24,7 @@ public class SimpleJasonAgent extends AgArch {
     private static Logger logger = Logger.getLogger(SimpleJasonAgent.class.getName());
 
     public static void main(String[] a) {
-    	RunCentralisedMAS.setupLogger();
+        RunCentralisedMAS.setupLogger();
         SimpleJasonAgent ag = new SimpleJasonAgent();
         ag.run();
     }
@@ -86,8 +86,8 @@ public class SimpleJasonAgent extends AgArch {
     // a very simple implementation of sleep
     @Override
     public void sleep() {
-    	try {
-	    Thread.sleep(1000);
+        try {
+        Thread.sleep(1000);
         } catch (InterruptedException e) {}
     }
     

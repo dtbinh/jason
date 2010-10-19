@@ -77,173 +77,173 @@ import org.semanticweb.owl.model.SWRLRule;
  */
 public class IndividualAxiomToDescriptionConverter implements OWLAxiomVisitor {
 
-	private OWLDataFactory factory;
+    private OWLDataFactory factory;
 
-	private OWLDescription desc;
+    private OWLDescription desc;
 
-	public IndividualAxiomToDescriptionConverter(OWLDataFactory factory) {
-		this.factory = factory;
-	}
+    public IndividualAxiomToDescriptionConverter(OWLDataFactory factory) {
+        this.factory = factory;
+    }
 
-	public OWLDescription convert(OWLAxiom axiom) {
-		axiom.accept(this);
-		return getDescription();
-	}
+    public OWLDescription convert(OWLAxiom axiom) {
+        axiom.accept(this);
+        return getDescription();
+    }
 
-	public OWLDescription getDescription() {
-		return desc;
-	}
+    public OWLDescription getDescription() {
+        return desc;
+    }
 
-	public void visit(OWLClassAssertionAxiom axiom) {
-		desc = factory.getOWLObjectIntersectionOf(new OWLDescription[] { axiom.getDescription(), factory.getOWLObjectOneOf(Collections.singleton(axiom.getIndividual())) });
-	}
+    public void visit(OWLClassAssertionAxiom axiom) {
+        desc = factory.getOWLObjectIntersectionOf(new OWLDescription[] { axiom.getDescription(), factory.getOWLObjectOneOf(Collections.singleton(axiom.getIndividual())) });
+    }
 
-	public void visit(OWLObjectPropertyAssertionAxiom axiom) {
-		desc = factory.getOWLObjectIntersectionOf(new OWLDescription[] { factory.getOWLObjectValueRestriction(axiom.getProperty(), axiom.getObject()), factory.getOWLObjectOneOf(Collections.singleton(axiom.getSubject())) });
-	}
+    public void visit(OWLObjectPropertyAssertionAxiom axiom) {
+        desc = factory.getOWLObjectIntersectionOf(new OWLDescription[] { factory.getOWLObjectValueRestriction(axiom.getProperty(), axiom.getObject()), factory.getOWLObjectOneOf(Collections.singleton(axiom.getSubject())) });
+    }
 
-	public void visit(OWLDataPropertyAssertionAxiom axiom) {
-		desc = factory.getOWLObjectIntersectionOf(new OWLDescription[] { factory.getOWLDataValueRestriction(axiom.getProperty(), axiom.getObject()), factory.getOWLObjectOneOf(Collections.singleton(axiom.getSubject())) });
-	}
+    public void visit(OWLDataPropertyAssertionAxiom axiom) {
+        desc = factory.getOWLObjectIntersectionOf(new OWLDescription[] { factory.getOWLDataValueRestriction(axiom.getProperty(), axiom.getObject()), factory.getOWLObjectOneOf(Collections.singleton(axiom.getSubject())) });
+    }
 
-	public void visit(OWLDifferentIndividualsAxiom axiom) {
-		Set<OWLDescription> nominals = new HashSet<OWLDescription>();
-		for (OWLIndividual individual : axiom.getIndividuals()) {
-			nominals.add(factory.getOWLObjectComplementOf(factory.getOWLObjectOneOf(individual)));
-		}
-		desc = factory.getOWLObjectIntersectionOf(nominals);
-	}
+    public void visit(OWLDifferentIndividualsAxiom axiom) {
+        Set<OWLDescription> nominals = new HashSet<OWLDescription>();
+        for (OWLIndividual individual : axiom.getIndividuals()) {
+            nominals.add(factory.getOWLObjectComplementOf(factory.getOWLObjectOneOf(individual)));
+        }
+        desc = factory.getOWLObjectIntersectionOf(nominals);
+    }
 
-	public void visit(OWLSubClassAxiom axiom) {
-		throw new OWLRuntimeException("Unimplemented");
-	}
+    public void visit(OWLSubClassAxiom axiom) {
+        throw new OWLRuntimeException("Unimplemented");
+    }
 
-	public void visit(OWLNegativeObjectPropertyAssertionAxiom axiom) {
-		throw new OWLRuntimeException("Unimplemented");
-	}
+    public void visit(OWLNegativeObjectPropertyAssertionAxiom axiom) {
+        throw new OWLRuntimeException("Unimplemented");
+    }
 
-	public void visit(OWLAntiSymmetricObjectPropertyAxiom axiom) {
-		throw new OWLRuntimeException("Unimplemented");
-	}
+    public void visit(OWLAntiSymmetricObjectPropertyAxiom axiom) {
+        throw new OWLRuntimeException("Unimplemented");
+    }
 
-	public void visit(OWLReflexiveObjectPropertyAxiom axiom) {
-		throw new OWLRuntimeException("Unimplemented");
-	}
+    public void visit(OWLReflexiveObjectPropertyAxiom axiom) {
+        throw new OWLRuntimeException("Unimplemented");
+    }
 
-	public void visit(OWLDisjointClassesAxiom axiom) {
-		throw new OWLRuntimeException("Unimplemented");
-	}
+    public void visit(OWLDisjointClassesAxiom axiom) {
+        throw new OWLRuntimeException("Unimplemented");
+    }
 
-	public void visit(OWLDataPropertyDomainAxiom axiom) {
-		throw new OWLRuntimeException("Unimplemented");
-	}
+    public void visit(OWLDataPropertyDomainAxiom axiom) {
+        throw new OWLRuntimeException("Unimplemented");
+    }
 
-	public void visit(OWLImportsDeclaration axiom) {
-		throw new OWLRuntimeException("Unimplemented");
-	}
+    public void visit(OWLImportsDeclaration axiom) {
+        throw new OWLRuntimeException("Unimplemented");
+    }
 
-	public void visit(OWLAxiomAnnotationAxiom axiom) {
-		throw new OWLRuntimeException("Unimplemented");
-	}
+    public void visit(OWLAxiomAnnotationAxiom axiom) {
+        throw new OWLRuntimeException("Unimplemented");
+    }
 
-	public void visit(OWLObjectPropertyDomainAxiom axiom) {
-		throw new OWLRuntimeException("Unimplemented");
-	}
+    public void visit(OWLObjectPropertyDomainAxiom axiom) {
+        throw new OWLRuntimeException("Unimplemented");
+    }
 
-	public void visit(OWLEquivalentObjectPropertiesAxiom axiom) {
-		throw new OWLRuntimeException("Unimplemented");
-	}
+    public void visit(OWLEquivalentObjectPropertiesAxiom axiom) {
+        throw new OWLRuntimeException("Unimplemented");
+    }
 
-	public void visit(OWLNegativeDataPropertyAssertionAxiom axiom) {
-		throw new OWLRuntimeException("Unimplemented");
-	}
+    public void visit(OWLNegativeDataPropertyAssertionAxiom axiom) {
+        throw new OWLRuntimeException("Unimplemented");
+    }
 
-	public void visit(OWLDisjointDataPropertiesAxiom axiom) {
-		throw new OWLRuntimeException("Unimplemented");
-	}
+    public void visit(OWLDisjointDataPropertiesAxiom axiom) {
+        throw new OWLRuntimeException("Unimplemented");
+    }
 
-	public void visit(OWLDisjointObjectPropertiesAxiom axiom) {
-		throw new OWLRuntimeException("Unimplemented");
-	}
+    public void visit(OWLDisjointObjectPropertiesAxiom axiom) {
+        throw new OWLRuntimeException("Unimplemented");
+    }
 
-	public void visit(OWLObjectPropertyRangeAxiom axiom) {
-		throw new OWLRuntimeException("Unimplemented");
-	}
+    public void visit(OWLObjectPropertyRangeAxiom axiom) {
+        throw new OWLRuntimeException("Unimplemented");
+    }
 
-	public void visit(OWLFunctionalObjectPropertyAxiom axiom) {
-		throw new OWLRuntimeException("Unimplemented");
-	}
+    public void visit(OWLFunctionalObjectPropertyAxiom axiom) {
+        throw new OWLRuntimeException("Unimplemented");
+    }
 
-	public void visit(OWLObjectSubPropertyAxiom axiom) {
-		throw new OWLRuntimeException("Unimplemented");
-	}
+    public void visit(OWLObjectSubPropertyAxiom axiom) {
+        throw new OWLRuntimeException("Unimplemented");
+    }
 
-	public void visit(OWLDisjointUnionAxiom axiom) {
-		throw new OWLRuntimeException("Unimplemented");
-	}
+    public void visit(OWLDisjointUnionAxiom axiom) {
+        throw new OWLRuntimeException("Unimplemented");
+    }
 
-	public void visit(OWLDeclarationAxiom axiom) {
-		throw new OWLRuntimeException("Unimplemented");
-	}
+    public void visit(OWLDeclarationAxiom axiom) {
+        throw new OWLRuntimeException("Unimplemented");
+    }
 
-	public void visit(OWLEntityAnnotationAxiom axiom) {
-		throw new OWLRuntimeException("Unimplemented");
-	}
+    public void visit(OWLEntityAnnotationAxiom axiom) {
+        throw new OWLRuntimeException("Unimplemented");
+    }
 
-	public void visit(OWLOntologyAnnotationAxiom axiom) {
-		throw new OWLRuntimeException("Unimplemented");
-	}
+    public void visit(OWLOntologyAnnotationAxiom axiom) {
+        throw new OWLRuntimeException("Unimplemented");
+    }
 
-	public void visit(OWLSymmetricObjectPropertyAxiom axiom) {
-		throw new OWLRuntimeException("Unimplemented");
-	}
+    public void visit(OWLSymmetricObjectPropertyAxiom axiom) {
+        throw new OWLRuntimeException("Unimplemented");
+    }
 
-	public void visit(OWLDataPropertyRangeAxiom axiom) {
-		throw new OWLRuntimeException("Unimplemented");
-	}
+    public void visit(OWLDataPropertyRangeAxiom axiom) {
+        throw new OWLRuntimeException("Unimplemented");
+    }
 
-	public void visit(OWLFunctionalDataPropertyAxiom axiom) {
-		throw new OWLRuntimeException("Unimplemented");
-	}
+    public void visit(OWLFunctionalDataPropertyAxiom axiom) {
+        throw new OWLRuntimeException("Unimplemented");
+    }
 
-	public void visit(OWLEquivalentDataPropertiesAxiom axiom) {
-		throw new OWLRuntimeException("Unimplemented");
-	}
+    public void visit(OWLEquivalentDataPropertiesAxiom axiom) {
+        throw new OWLRuntimeException("Unimplemented");
+    }
 
-	public void visit(OWLEquivalentClassesAxiom axiom) {
-		throw new OWLRuntimeException("Unimplemented");
-	}
+    public void visit(OWLEquivalentClassesAxiom axiom) {
+        throw new OWLRuntimeException("Unimplemented");
+    }
 
-	public void visit(OWLTransitiveObjectPropertyAxiom axiom) {
-		throw new OWLRuntimeException("Unimplemented");
-	}
+    public void visit(OWLTransitiveObjectPropertyAxiom axiom) {
+        throw new OWLRuntimeException("Unimplemented");
+    }
 
-	public void visit(OWLIrreflexiveObjectPropertyAxiom axiom) {
-		throw new OWLRuntimeException("Unimplemented");
-	}
+    public void visit(OWLIrreflexiveObjectPropertyAxiom axiom) {
+        throw new OWLRuntimeException("Unimplemented");
+    }
 
-	public void visit(OWLDataSubPropertyAxiom axiom) {
-		throw new OWLRuntimeException("Unimplemented");
-	}
+    public void visit(OWLDataSubPropertyAxiom axiom) {
+        throw new OWLRuntimeException("Unimplemented");
+    }
 
-	public void visit(OWLInverseFunctionalObjectPropertyAxiom axiom) {
-		throw new OWLRuntimeException("Unimplemented");
-	}
+    public void visit(OWLInverseFunctionalObjectPropertyAxiom axiom) {
+        throw new OWLRuntimeException("Unimplemented");
+    }
 
-	public void visit(OWLSameIndividualsAxiom axiom) {
-		throw new OWLRuntimeException("Unimplemented");
-	}
+    public void visit(OWLSameIndividualsAxiom axiom) {
+        throw new OWLRuntimeException("Unimplemented");
+    }
 
-	public void visit(OWLObjectPropertyChainSubPropertyAxiom axiom) {
-		throw new OWLRuntimeException("Unimplemented");
-	}
+    public void visit(OWLObjectPropertyChainSubPropertyAxiom axiom) {
+        throw new OWLRuntimeException("Unimplemented");
+    }
 
-	public void visit(OWLInverseObjectPropertiesAxiom axiom) {
-		throw new OWLRuntimeException("Unimplemented");
-	}
+    public void visit(OWLInverseObjectPropertiesAxiom axiom) {
+        throw new OWLRuntimeException("Unimplemented");
+    }
 
-	public void visit(SWRLRule rule) {
-		throw new OWLRuntimeException("Unimplemented");
-	}
+    public void visit(SWRLRule rule) {
+        throw new OWLRuntimeException("Unimplemented");
+    }
 
 }

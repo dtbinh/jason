@@ -22,24 +22,24 @@ package commerce.model;
 import jason.runtime.Settings;
 
 public class Product {
-	public String brand;
-	public String classification;
-	public double RRP;
-	public double weight;	
-	
-	public Product(String classification, String brand, double rrp, double weight) {
-		super();
-		this.brand = brand;
-		this.classification = classification;
-		this.RRP = rrp;
-		this.weight = weight;
-	}
-	
-	public Product(Settings stts){
-		this.brand = stts.getUserParameter("product_brand");
-		this.classification = stts.getUserParameter("product_classification");
-		this.RRP = Double.parseDouble(stts.getUserParameter("product_rrp"));
-		this.weight = Double.parseDouble(stts.getUserParameter("product_weight"));
-	}
-	
+    public String brand;
+    public String classification;
+    public double RRP;
+    public double weight;   
+    
+    public Product(String classification, String brand, double rrp, double weight) {
+        super();
+        this.brand = brand;
+        this.classification = classification;
+        this.RRP = rrp;
+        this.weight = weight;
+    }
+    
+    public Product(Settings stts){
+        this.brand = stts.getUserParameter("product_brand");
+        this.classification = stts.getUserParameter("product_classification");
+        this.RRP = Double.parseDouble(stts.getUserParameter("product_rrp"));
+        this.weight = Double.parseDouble(stts.getUserParameter("product_weight"));
+    }
+    
 }

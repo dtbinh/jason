@@ -11,7 +11,7 @@ import arch.LocalWorldModel;
 
 public final class Vec implements Cloneable, Comparable<Vec> {
     
-	// immutable fields (for a immutable object)
+    // immutable fields (for a immutable object)
     public final double x,y;
     public final double r,t;
     
@@ -59,51 +59,51 @@ public final class Vec implements Cloneable, Comparable<Vec> {
         return new Vec( x * e, y * e);
     }
     public Vec newAngle(double t) {
-		while (t > PI2) t = t - PI2;
-		while (t < 0)   t = t + PI2;
-		return new Vec(r*Math.cos(t), r*Math.sin(t));    	
+        while (t > PI2) t = t - PI2;
+        while (t < 0)   t = t + PI2;
+        return new Vec(r*Math.cos(t), r*Math.sin(t));       
     }
     
     /** turn the vec to 90 degrees clockwise */
     public Vec turn90CW() {
-    	return new Vec(y, -x);
+        return new Vec(y, -x);
     }
     /** turn the vec to 90 degrees anticlockwise */
     public Vec turn90ACW() {
-    	return new Vec(-y, x);    	
+        return new Vec(-y, x);      
     }
     
     public Vec newMagnitude(double r) {
         return new Vec(r*Math.cos(t), r*Math.sin(t));
     }
 
-	/**
-	 * Provides info on which octant (0-7) the vector lies in.
-	 * 0 indicates 0 radians +- PI/8 1-7 continue CCW.
-	 * @return 0 - 7, depending on which direction the vector is pointing.
-	 */
-	public int octant() {
-		double	temp = t + Math.PI/8;
-		if (temp<0) 
-			temp += Math.PI*2;
-		return ((int)(temp/(Math.PI/4))%8);
-	}
+    /**
+     * Provides info on which octant (0-7) the vector lies in.
+     * 0 indicates 0 radians +- PI/8 1-7 continue CCW.
+     * @return 0 - 7, depending on which direction the vector is pointing.
+     */
+    public int octant() {
+        double  temp = t + Math.PI/8;
+        if (temp<0) 
+            temp += Math.PI*2;
+        return ((int)(temp/(Math.PI/4))%8);
+    }
 
-	/**
-	 * Provides info on which quadrant (0-3) the vector lies in.
-	 * 0 indicates 0 radians +- PI/4 1-3 continue CCW.
-	 * @return 0 - 3, depending on which direction the vector is pointing.
-	 */
-	public int quadrant() {
-		double temp = t + Math.PI/4;
-		if (temp<0) temp += Math.PI*2;
-		return ((int)(temp/(Math.PI/2))%4);
-	}
+    /**
+     * Provides info on which quadrant (0-3) the vector lies in.
+     * 0 indicates 0 radians +- PI/4 1-3 continue CCW.
+     * @return 0 - 3, depending on which direction the vector is pointing.
+     */
+    public int quadrant() {
+        double temp = t + Math.PI/4;
+        if (temp<0) temp += Math.PI*2;
+        return ((int)(temp/(Math.PI/2))%4);
+    }
 
-	@Override
-	public int hashCode() {
-	    return (int)((x + y) * 37);
-	}
+    @Override
+    public int hashCode() {
+        return (int)((x + y) * 37);
+    }
     
     @Override
     public boolean equals(Object o) {
@@ -117,13 +117,13 @@ public final class Vec implements Cloneable, Comparable<Vec> {
     }
     
     public int compareTo(Vec o) {
-    	if (r > o.r) return 1;
-    	if (r < o.r) return -1;
-    	return 0;
+        if (r > o.r) return 1;
+        if (r < o.r) return -1;
+        return 0;
     }
 
     public Object clone() {
-    	return this; // it is an immutable object, no need to create a new one
+        return this; // it is an immutable object, no need to create a new one
     }
 
     
@@ -146,22 +146,22 @@ public final class Vec implements Cloneable, Comparable<Vec> {
     }
 
     public static List<Vec> sub(Collection<Vec> vs, Vec ref) {
-    	List<Vec> r = new ArrayList<Vec>(vs.size());
+        List<Vec> r = new ArrayList<Vec>(vs.size());
         for (Vec v: vs) {
-        	r.add(v.sub(ref));
+            r.add(v.sub(ref));
         }
         return r;
     }
     
     /*
     public static List<Vec> cluster(List<Vec> vs, int maxstddev) {
-    	vs = new ArrayList<Vec>(vs); // result vectors in the cluster
-    	Vec mean   = Vec.mean(vs);
+        vs = new ArrayList<Vec>(vs); // result vectors in the cluster
+        Vec mean   = Vec.mean(vs);
         Vec stddev = Vec.stddev(vs, mean);
         
         // remove max if stddev is too big
         while (stddev.magnitude() > maxstddev) {
-        	Vec max  = Vec.max(Vec.sub(vs, mean));
+            Vec max  = Vec.max(Vec.sub(vs, mean));
             vs.remove(max.add(mean));
             mean   = Vec.mean(vs);
             stddev = Vec.stddev(vs, mean);
@@ -184,7 +184,7 @@ public final class Vec implements Cloneable, Comparable<Vec> {
     public static Vec stddev(Collection<Vec> vs, Vec mean) {
         if (vs.isEmpty())
             return new Vec(0,0);
-    	double x = 0, y = 0;
+        double x = 0, y = 0;
         for (Vec v: vs) {
             x += Math.pow(v.x - mean.x, 2);
             y += Math.pow(v.y - mean.y, 2);

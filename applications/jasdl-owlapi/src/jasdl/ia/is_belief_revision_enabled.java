@@ -36,19 +36,19 @@ import java.util.logging.Logger;
  */
 public class is_belief_revision_enabled extends DefaultInternalAction {
 
-	private Logger logger = Logger.getLogger("jasdl." + is_belief_revision_enabled.class.getName());
+    private Logger logger = Logger.getLogger("jasdl." + is_belief_revision_enabled.class.getName());
 
-	@Override
-	public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
-		try {
-			JASDLAgent agent = (JASDLAgent) ts.getAg();
-			Literal res = agent.getConfig().isBeliefRevisionEnabled() ? Literal.LTrue : Literal.LFalse;
-			return un.unifies(args[0], res);
-		} catch (Exception e) {
-			logger.warning("Error in internal action 'jasdl.ia.is_belief_revision_enabled'! Reason:");
-			e.printStackTrace();
-			return false;
-		}
-	}
+    @Override
+    public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
+        try {
+            JASDLAgent agent = (JASDLAgent) ts.getAg();
+            Literal res = agent.getConfig().isBeliefRevisionEnabled() ? Literal.LTrue : Literal.LFalse;
+            return un.unifies(args[0], res);
+        } catch (Exception e) {
+            logger.warning("Error in internal action 'jasdl.ia.is_belief_revision_enabled'! Reason:");
+            e.printStackTrace();
+            return false;
+        }
+    }
 
 }

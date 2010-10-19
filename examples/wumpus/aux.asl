@@ -24,15 +24,15 @@ breeze(3,2).
    for (.member(X, [1,2,3,4])) {
        for (.member(Y, [1,2,3,4])) {
          !safe(X,Y);
-		 !pit(X,Y);
-		 !wumpus(X,Y);
-		 if (safe(X,Y) & not visited(X,Y)) {
-		    .print("**")
-		 }
-		 if (might_be_pit(X,Y) & not pit(X,Y) & not ~pit(X,Y)) {
-		    .print("   ??",X,",",Y)
-		 }
-	  }
+         !pit(X,Y);
+         !wumpus(X,Y);
+         if (safe(X,Y) & not visited(X,Y)) {
+            .print("**")
+         }
+         if (might_be_pit(X,Y) & not pit(X,Y) & not ~pit(X,Y)) {
+            .print("   ??",X,",",Y)
+         }
+      }
    }.
    
 +!safe(X,Y) : safe(X,Y) <- .print(safe(X,Y)).

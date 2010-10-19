@@ -27,9 +27,9 @@
 
     <!-- tasks the user can override in his/her c-build.xml script -->
     <target name="user-init">
-    	<ant antfile="../jason-moise/build.xml" target="jar" inheritall="false" />
-	    <copy file="../jason-moise/lib/jmoise.jar" todir="lib" />
-	    <copy file="../jason-moise/lib/moise.jar" todir="lib" />
+        <ant antfile="../jason-moise/build.xml" target="jar" inheritall="false" />
+        <copy file="../jason-moise/lib/jmoise.jar" todir="lib" />
+        <copy file="../jason-moise/lib/moise.jar" todir="lib" />
     </target>
     <target name="user-end">
     </target>

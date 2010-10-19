@@ -12,6 +12,6 @@
 +!c(X)   <- act; // do some action
             act; // act twice!
             screen.show_counter(X); // show counter
-			!!c(X+1). // continue
+            !!c(X+1). // continue
 
 +executed_actions(X) : X mod 9 \== 0 <- .println("Problem! ",X).

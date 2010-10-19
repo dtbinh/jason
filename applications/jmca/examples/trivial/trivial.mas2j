@@ -41,27 +41,27 @@ MAS mas {
     infrastructure: Centralised
 
     agents:
-	       agent
-       	   agent.asl
-	       [
-		   /* JMCA Configuration */
-			// Our composition chain for the Option aspect as described above
-			jmca_Option_selection_strategies="alpha.selection.AlphaOptionSelectionStrategy, elbpp.selection.ElbppOptionSelectionStrategy",
-			// The mediation strategy we are using for the Option aspect. Defaults to this if omitted
-			jmca_Option_mediation_strategy="jmca.mediation.OverrulingIntersection"
-				
-			/* Here we show composition for the Option aspect only. Selection functions for other aspects (Event, Message, Intention, ActionExec)
-			 * can be set here in a similar way. For example:
-			 * jmca_Event_selection_strategies="somemodule.SomeEventModule"
-			 * jmca_Event_mediation_strategy="somemodule.policy.SomePolicy" // <- notice we are using a non-default selection policy implementation here
-			 */
-	       ]
-		   
-		   // the agentClass must be set to this (or a derivative) to use JMCA
-	       agentClass jmca.asSemantics.JmcaAgent       
-	       #1;
-		   
-		   // include the necessary libraries
-		   classpath:  "../../lib/jmca.jar"; "../../applications/elbpp/lib/elbpp.jar"; "../../applications/alpha/lib/alpha.jar";
+           agent
+           agent.asl
+           [
+           /* JMCA Configuration */
+            // Our composition chain for the Option aspect as described above
+            jmca_Option_selection_strategies="alpha.selection.AlphaOptionSelectionStrategy, elbpp.selection.ElbppOptionSelectionStrategy",
+            // The mediation strategy we are using for the Option aspect. Defaults to this if omitted
+            jmca_Option_mediation_strategy="jmca.mediation.OverrulingIntersection"
+                
+            /* Here we show composition for the Option aspect only. Selection functions for other aspects (Event, Message, Intention, ActionExec)
+             * can be set here in a similar way. For example:
+             * jmca_Event_selection_strategies="somemodule.SomeEventModule"
+             * jmca_Event_mediation_strategy="somemodule.policy.SomePolicy" // <- notice we are using a non-default selection policy implementation here
+             */
+           ]
+           
+           // the agentClass must be set to this (or a derivative) to use JMCA
+           agentClass jmca.asSemantics.JmcaAgent       
+           #1;
+           
+           // include the necessary libraries
+           classpath:  "../../lib/jmca.jar"; "../../applications/elbpp/lib/elbpp.jar"; "../../applications/alpha/lib/alpha.jar";
 }
 

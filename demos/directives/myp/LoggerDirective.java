@@ -24,8 +24,8 @@ public class LoggerDirective implements Directive {
 
     public Agent process(Pred directive, Agent outerContent, Agent innerContent) {
         try {
-        	Agent newAg = new Agent();
-        	newAg.initAg();
+            Agent newAg = new Agent();
+            newAg.initAg();
             // add .print(te) in the begin and end of the plan
             for (Plan p: innerContent.getPL()) {
                 Literal print1 = Literal.parseLiteral(".print(\"Entering \","+p.getTrigger().getLiteral()+")");

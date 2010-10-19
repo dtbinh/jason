@@ -42,41 +42,41 @@ public class herd_position extends DefaultInternalAction {
     public static final int    agDistanceInFormation = 3;
 
     public enum Formation { 
-    	one   { Vec[] getDistances() { return new Vec[] { new Vec(0,0) }; } }, 
+        one   { Vec[] getDistances() { return new Vec[] { new Vec(0,0) }; } }, 
         two   { Vec[] getDistances() { return new Vec[] { new Vec(sd+1,0), new Vec(-sd, 0) }; } },
         three { Vec[] getDistances() { return new Vec[] { new Vec(0,0),  new Vec(d, -1), new Vec(-d, -1) }; } },
-    	four  { Vec[] getDistances() { return new Vec[] { new Vec(sd+1,0), new Vec(-sd, 0), new Vec(d+sd, -3), new Vec(-(d+sd), -3) }; } },
+        four  { Vec[] getDistances() { return new Vec[] { new Vec(sd+1,0), new Vec(-sd, 0), new Vec(d+sd, -3), new Vec(-(d+sd), -3) }; } },
         five  { Vec[] getDistances() { return new Vec[] { new Vec(0,0),  new Vec(d, -1), new Vec(-d, -1), new Vec(d*2-1,-4), new Vec(-d*2,-4) }; } },
-    	six   { Vec[] getDistances() { return new Vec[] { new Vec(sd+1,0), new Vec(-sd, 0), new Vec(d+sd, -3), new Vec(-(d+sd), -3), new Vec(d*2+sd-2, -6), new Vec(-(d*2+sd-2), -6) }; } };
-    	abstract Vec[] getDistances();
-    	private static final int d  = agDistanceInFormation;
-    	private static final int sd = agDistanceInFormation/2;
+        six   { Vec[] getDistances() { return new Vec[] { new Vec(sd+1,0), new Vec(-sd, 0), new Vec(d+sd, -3), new Vec(-(d+sd), -3), new Vec(d*2+sd-2, -6), new Vec(-(d*2+sd-2), -6) }; } };
+        abstract Vec[] getDistances();
+        private static final int d  = agDistanceInFormation;
+        private static final int sd = agDistanceInFormation/2;
     };
     
     LocalWorldModel model;
     List<Location> lastCluster = null;
 
     public void setModel(LocalWorldModel model) {
-    	this.model = model;
+        this.model = model;
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
         try {
-        	CowboyArch arch       = (CowboyArch)ts.getUserAgArch();
-        	model = arch.getModel();
+            CowboyArch arch       = (CowboyArch)ts.getUserAgArch();
+            model = arch.getModel();
             if (model == null)
-            	return false;
+                return false;
             Location agLoc = model.getAgPos(arch.getMyId());
 
             // identify the formation id
             Formation formation = Formation.six;
             if (args[0].isNumeric()) {
-            	int index = (int)((NumberTerm)args[0]).solve();
-            	formation = Formation.values()[ index-1 ];
+                int index = (int)((NumberTerm)args[0]).solve();
+                formation = Formation.values()[ index-1 ];
             } else {
-            	formation = Formation.valueOf(args[0].toString());
+                formation = Formation.valueOf(args[0].toString());
             }
             
             // get the cluster
@@ -84,33 +84,33 @@ public class herd_position extends DefaultInternalAction {
             
             // update GUI
             if (arch.hasGUI())
-            	setFormationLoc(clusterLocs, formation);
+                setFormationLoc(clusterLocs, formation);
 
             // if the return is a location for one agent
             if (args.length == 4) {
-	            Location agTarget = getAgTarget(clusterLocs, formation, agLoc);
-	            if (agTarget != null) {
-	                return un.unifies(args[2], new NumberTermImpl(agTarget.x)) && 
-	                       un.unifies(args[3], new NumberTermImpl(agTarget.y));
-	            } else {
-	            	ts.getLogger().info("No target! I am at "+agLoc+" places are "+formationPlaces(clusterLocs, formation)+" cluster is "+lastCluster);
-	            }
+                Location agTarget = getAgTarget(clusterLocs, formation, agLoc);
+                if (agTarget != null) {
+                    return un.unifies(args[2], new NumberTermImpl(agTarget.x)) && 
+                           un.unifies(args[3], new NumberTermImpl(agTarget.y));
+                } else {
+                    ts.getLogger().info("No target! I am at "+agLoc+" places are "+formationPlaces(clusterLocs, formation)+" cluster is "+lastCluster);
+                }
             } else {
-            	// return all the locations for the formation
-            	List<Location> locs = formationPlaces(clusterLocs, formation);
-            	if (locs != null && locs.size() > 0) {
-            		ListTerm r = new ListTermImpl();
-            		ListTerm tail = r;
-            		for (Location l: locs) {
-            			tail = tail.append(createStructure("pos", createNumber(l.x), createNumber(l.y)));
-            		}
-            		return un.unifies(args[2], r);
-            	} else {
-	            	ts.getLogger().info("No possible formation! I am at "+agLoc+" places are "+formationPlaces(clusterLocs, formation));            		
-            	}
+                // return all the locations for the formation
+                List<Location> locs = formationPlaces(clusterLocs, formation);
+                if (locs != null && locs.size() > 0) {
+                    ListTerm r = new ListTermImpl();
+                    ListTerm tail = r;
+                    for (Location l: locs) {
+                        tail = tail.append(createStructure("pos", createNumber(l.x), createNumber(l.y)));
+                    }
+                    return un.unifies(args[2], r);
+                } else {
+                    ts.getLogger().info("No possible formation! I am at "+agLoc+" places are "+formationPlaces(clusterLocs, formation));                    
+                }
             }
         } catch (Throwable e) {
-            ts.getLogger().log(Level.SEVERE, "herd_position error: "+e, e);    		
+            ts.getLogger().log(Level.SEVERE, "herd_position error: "+e, e);         
         }
         return false;
     }
@@ -119,29 +119,29 @@ public class herd_position extends DefaultInternalAction {
         Location r = null;
         List<Location> locs = formationPlaces(clusterLocs, formation);
         if (locs != null) {
-        	for (Location l : locs) {
-	            if (ag.equals(l) || // I am there
-	                //model.countObjInArea(WorldModel.AGENT, l, 1) == 0) { // no one else is there
-	            	!model.hasObject(WorldModel.AGENT, l)) {
-	        		r = l;
-	        		break;
-	        	}
-	        }
+            for (Location l : locs) {
+                if (ag.equals(l) || // I am there
+                    //model.countObjInArea(WorldModel.AGENT, l, 1) == 0) { // no one else is there
+                    !model.hasObject(WorldModel.AGENT, l)) {
+                    r = l;
+                    break;
+                }
+            }
         }
         if (r != null)
-        	r = model.nearFree(r, null);
+            r = model.nearFree(r, null);
         return r;
     }
 
     public void setFormationLoc(List<Location> clusterLocs, Formation formation) throws Exception {
-    	model.removeAll(WorldModel.FORPLACE);
+        model.removeAll(WorldModel.FORPLACE);
         List<Location> locs = formationPlaces(clusterLocs, formation);
         if (locs != null) {
-	        for (Location l : locs) {
-	            if (model.inGrid(l)) {
-	            	model.add(WorldModel.FORPLACE, l);
-	            }
-	    	}
+            for (Location l : locs) {
+                if (model.inGrid(l)) {
+                    model.add(WorldModel.FORPLACE, l);
+                }
+            }
         }
     }
     
@@ -175,17 +175,17 @@ public class herd_position extends DefaultInternalAction {
         //System.out.println("Ags target = "+agsTarget+" mean = "+mean + " far cow is "+farcow);
         List<Location> r = new ArrayList<Location>();
         for (Vec position: formation.getDistances()) { // 2, -2, 6, -6, ....
-        	//System.out.println(".......  "+position+" + "+agsTarget+" = " + agTarget);
-        	Location l = findFirstFreeLocTowardsTarget(agsTarget, position, mean, model);
-        	//System.out.println(" =       "+position+" result  "+l);
-        	if (l == null) {
+            //System.out.println(".......  "+position+" + "+agsTarget+" = " + agTarget);
+            Location l = findFirstFreeLocTowardsTarget(agsTarget, position, mean, model);
+            //System.out.println(" =       "+position+" result  "+l);
+            if (l == null) {
                 l = model.nearFree(agsTarget.add(mean).getLocation(model), r);              
-        	} else {
+            } else {
                 if (clusterLocs.size() > 10)
                     l = pathToNearCow(l, clusterLocs);
                 if ( !model.inGrid(l) || model.hasObject(WorldModel.OBSTACLE, l) || r.contains(l))
                     l = model.nearFree(l, r);
-        	}
+            }
             r.add( l );
         }
         //System.out.println("all places "+r);
@@ -202,54 +202,54 @@ public class herd_position extends DefaultInternalAction {
         Location l = t.newMagnitude(maxSize).add(startandref).getLocation(model);
         
         Location lastloc = null;
-    	for (int s = 1; s <= maxSize; s++) {
-    	    l = t.newMagnitude(s).add(startandref).getLocation(model);
-    		//System.out.println(" test "+s+" = "+l+" -- ");
-        	if ( (!model.inGrid(l) || model.hasObject(WorldModel.OBSTACLE, l)  || model.hasObject(WorldModel.CORRAL, l)) && lastloc != null)
-        		return lastloc;
-    		lastloc = l;
-    	}
-    	
-    	return l;
+        for (int s = 1; s <= maxSize; s++) {
+            l = t.newMagnitude(s).add(startandref).getLocation(model);
+            //System.out.println(" test "+s+" = "+l+" -- ");
+            if ( (!model.inGrid(l) || model.hasObject(WorldModel.OBSTACLE, l)  || model.hasObject(WorldModel.CORRAL, l)) && lastloc != null)
+                return lastloc;
+            lastloc = l;
+        }
+        
+        return l;
     }
     
     private Location pathToNearCow(Location t, List<Location> cows) {
-    	Location near = null;
+        Location near = null;
         for (Location c: cows) {
-        	if (near == null || t.maxBorder(c) < t.maxBorder(near))
-        		near = c;
+            if (near == null || t.maxBorder(c) < t.maxBorder(near))
+                near = c;
         }
         if (near != null) {
-        	Vec nearcv = new Vec(model,near);
-        	Vec dircow = new Vec(model,t).sub(nearcv);
-        	//System.out.println("Near cow to "+t+" is "+near+" vec = "+dircow);
-        	for (int s = 1; s <= 20; s++) {
-        		Location l = dircow.newMagnitude(s).add(nearcv).getLocation(model);
-        		if (!model.hasObject(WorldModel.COW,l))
-        			return l;
-        	}
+            Vec nearcv = new Vec(model,near);
+            Vec dircow = new Vec(model,t).sub(nearcv);
+            //System.out.println("Near cow to "+t+" is "+near+" vec = "+dircow);
+            for (int s = 1; s <= 20; s++) {
+                Location l = dircow.newMagnitude(s).add(nearcv).getLocation(model);
+                if (!model.hasObject(WorldModel.COW,l))
+                    return l;
+            }
         }
-    	return t;
+        return t;
     }
     
-	/*
+    /*
     public Location nearFreeForAg(LocalWorldModel model, Location ag, Location t) throws Exception {
         // run A* to get the path from ag to t
-    	if (! model.inGrid(t))
-    		t = model.nearFree(t);
-    	
+        if (! model.inGrid(t))
+            t = model.nearFree(t);
+        
         Search s = new Search(model, ag, t, null, true, true, true, false, null);
         List<Nodo> np = s.normalPath(s.search());
-    	
+        
         int i = 0;
         ListIterator<Nodo> inp = np.listIterator(np.size());
         while (inp.hasPrevious()) {
-        	Nodo n = inp.previous();
-        	if (model.isFree(s.getNodeLocation(n))) {
-        		return s.getNodeLocation(n);
-        	}
-        	if (i++ > 3) // do not go to far from target
-        		break;
+            Nodo n = inp.previous();
+            if (model.isFree(s.getNodeLocation(n))) {
+                return s.getNodeLocation(n);
+            }
+            if (i++ > 3) // do not go to far from target
+                break;
         }
         return model.nearFree(t);
     }

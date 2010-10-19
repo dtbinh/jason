@@ -16,8 +16,8 @@ public class LifeEnvironment extends jason.environment.TimeSteppedEnvironment {
     /** Called before the MAS execution with the args informed in .mas2j */
     @Override
     public void init(String[] args) {
-		super.init(new String[] { "3000" } ); // set step timeout
-		setOverActionsPolicy(OverActionsPolicy.ignoreSecond);
+        super.init(new String[] { "3000" } ); // set step timeout
+        setOverActionsPolicy(OverActionsPolicy.ignoreSecond);
         model = new LifeModel(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
         model.setView(new LifeView(model, this));
         updateAgsPercept();
@@ -25,11 +25,11 @@ public class LifeEnvironment extends jason.environment.TimeSteppedEnvironment {
 
     @Override
     public boolean executeAction(String agName, Structure action) {
-    	String actId = action.getFunctor();
-    	if (actId.equals("skip")) 
-    		return true;
+        String actId = action.getFunctor();
+        if (actId.equals("skip")) 
+            return true;
         
-    	int ag = getAgIdBasedOnName(agName);
+        int ag = getAgIdBasedOnName(agName);
         if (actId.equals("die"))
             model.dead(ag);
         else if (actId.equals("live"))
@@ -41,26 +41,26 @@ public class LifeEnvironment extends jason.environment.TimeSteppedEnvironment {
 
     @Override
     protected void stepStarted(int step) {
-    	//logger.info("start step "+step);
+        //logger.info("start step "+step);
     }
     
     private long sum = 0;
     
     @Override
     protected void stepFinished(int step, long time, boolean timeout) {
-    	long mean = (step > 0 ? sum / step : 0);
-    	logger.info("step "+step+" finished in "+time+" ms. mean = "+mean);
-    	sum += time;
+        long mean = (step > 0 ? sum / step : 0);
+        logger.info("step "+step+" finished in "+time+" ms. mean = "+mean);
+        sum += time;
     }
-	
+    
     int getAgIdBasedOnName(String agName) {
         return (Integer.parseInt(agName.substring(4))) - 1;
     }
     
     @Override
     protected void updateAgsPercept() {
-    	for (int i = 0; i < model.getNbOfAgs(); i++) {
-    	    updateAgPercept(i);
+        for (int i = 0; i < model.getNbOfAgs(); i++) {
+            updateAgPercept(i);
         }
     }
 

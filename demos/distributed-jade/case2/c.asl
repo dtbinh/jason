@@ -6,7 +6,7 @@
 
 +!start 
     <- .print("hello world.");
-	   !wait_for(a).
+       !wait_for(a).
 +!wait_for(A) : .all_names(L) & .member(A,L)        
     <- .send(A,tell,hello).
 +!wait_for(A) 

@@ -79,12 +79,12 @@
         <scheme id="explore_sch" >
             <goal id="find_cows" >
               <plan operator="parallel">
-			    <goal id="init_scheme">
-				   <plan operator="sequence">
-				     <goal id="find_scouter"        ds="find a scouter to help in the exploration" />
+                <goal id="init_scheme">
+                   <plan operator="sequence">
+                     <goal id="find_scouter"        ds="find a scouter to help in the exploration" />
                      <goal id="change_to_herding"   ds="verify if necessary to create the herding group" type="maintenance"/>
-				   </plan>
-				</goal>
+                   </plan>
+                </goal>
                 <goal id="goto_near_unvisited" ds="go to the near unvisited location inside the area of the group" type="maintenance"/>
                 <goal id="share_seen_cows"     ds="share seen cows with other agents in the scheme" type="maintenance"/>
                 <goal id="follow_leader"       ds="follow the leader of the scheme/group" type="maintenance"/>

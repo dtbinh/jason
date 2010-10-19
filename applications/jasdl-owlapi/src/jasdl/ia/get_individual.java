@@ -35,39 +35,39 @@ import java.util.logging.Logger;
  * Unifies with the second parameter the individual within a (unary, i.e. assertion of class membership) ground SE-Literal.
  * 
  * Example:
- * 	jasdl.ia.get_individual(bread(hovis)[o(c)], Individual), unifies Individual with the atom bread.
- * 	
+ *  jasdl.ia.get_individual(bread(hovis)[o(c)], Individual), unifies Individual with the atom bread.
+ *  
  * Usage:
- * 	jasdl.ia.get_individual(Assertion, Individual) where Assertion is any valid, unary and ground SE-Literal.
+ *  jasdl.ia.get_individual(Assertion, Individual) where Assertion is any valid, unary and ground SE-Literal.
  * 
  * @author Tom Klapiscak
  */
 public class get_individual extends DefaultInternalAction {
 
-	private Logger logger = Logger.getLogger("jasdl." + get_individual.class.getName());
+    private Logger logger = Logger.getLogger("jasdl." + get_individual.class.getName());
 
-	@Override
-	public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
-		try {
-			if (!args[0].isLiteral()) {
-				throw new Exception("The first argument of get_individual must be a literal");
-			}
-			Literal l = (Literal) args[0];
+    @Override
+    public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
+        try {
+            if (!args[0].isLiteral()) {
+                throw new Exception("The first argument of get_individual must be a literal");
+            }
+            Literal l = (Literal) args[0];
 
-			JASDLAgent agent = (JASDLAgent) ts.getAg();
-			SELiteral sl = agent.getSELiteralFactory().construct(l);
+            JASDLAgent agent = (JASDLAgent) ts.getAg();
+            SELiteral sl = agent.getSELiteralFactory().construct(l);
 
-			SELiteralClassAssertion slcls = sl.asClassAssertion();
+            SELiteralClassAssertion slcls = sl.asClassAssertion();
 
-			Alias alias = agent.getAliasManager().getLeft(slcls.getOWLIndividual());
+            Alias alias = agent.getAliasManager().getLeft(slcls.getOWLIndividual());
 
-			return un.unifies(alias.getFunctor(), args[1]);
+            return un.unifies(alias.getFunctor(), args[1]);
 
-		} catch (Exception e) {
-			logger.warning("Error in internal action 'jasdl.ia.get_individual'! Reason:");
-			e.printStackTrace();
-			return false;
-		}
-	}
+        } catch (Exception e) {
+            logger.warning("Error in internal action 'jasdl.ia.get_individual'! Reason:");
+            e.printStackTrace();
+            return false;
+        }
+    }
 
 }

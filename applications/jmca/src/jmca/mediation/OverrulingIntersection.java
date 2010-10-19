@@ -39,24 +39,24 @@ import jmca.util.JmcaException;
  * mutually-agreed upon decision can be made.<p>
  * @author Tom Klapiscak
  *
- * @param <T>	The type of aspect this instance of OverrulingIntersection deals with
+ * @param <T>   The type of aspect this instance of OverrulingIntersection deals with
  */
 public class OverrulingIntersection<T> implements MediationStrategy<T>{
-	public void init(Settings stts){
-		// do nothing
-	}
-	
-	@SuppressWarnings("unchecked")
-	public List<T> apply(List<SelectionStrategy<T>> selectionStrategies, List<T> elements) throws JmcaException{
-		List<T> intersection = new Vector<T>();
-		intersection.addAll(elements);
-		for(SelectionStrategy selectionStrategy : selectionStrategies){
-			List<T> chosen = selectionStrategy.select(elements, intersection);		
-			intersection.retainAll(chosen);
-			if(intersection.isEmpty()){ // no agreement, override earlier selections
-				intersection = chosen;
-			}
-		}
-		return intersection;
-	}
+    public void init(Settings stts){
+        // do nothing
+    }
+    
+    @SuppressWarnings("unchecked")
+    public List<T> apply(List<SelectionStrategy<T>> selectionStrategies, List<T> elements) throws JmcaException{
+        List<T> intersection = new Vector<T>();
+        intersection.addAll(elements);
+        for(SelectionStrategy selectionStrategy : selectionStrategies){
+            List<T> chosen = selectionStrategy.select(elements, intersection);      
+            intersection.retainAll(chosen);
+            if(intersection.isEmpty()){ // no agreement, override earlier selections
+                intersection = chosen;
+            }
+        }
+        return intersection;
+    }
 }

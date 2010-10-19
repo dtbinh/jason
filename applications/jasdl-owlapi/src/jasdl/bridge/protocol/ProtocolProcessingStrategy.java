@@ -24,5 +24,5 @@ import jasdl.util.exception.JASDLException;
 import jason.asSyntax.Literal;
 
 public interface ProtocolProcessingStrategy {
-	public Literal process(Literal propcont, JASDLOntologyManager jasdlOntologyManager) throws JASDLException;
+    public Literal process(Literal propcont, JASDLOntologyManager jasdlOntologyManager) throws JASDLException;
 }

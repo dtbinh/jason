@@ -35,19 +35,19 @@ import org.semanticweb.owl.vocab.XSDVocabulary;
  *
  */
 public abstract class XSDDatatypeChecker implements OWLEntityChecker {
-	private Map<String, OWLDataType> dataTypeNameMap;
+    private Map<String, OWLDataType> dataTypeNameMap;
 
-	public XSDDatatypeChecker(OWLDataFactory dataFactory) {
-		dataTypeNameMap = new HashMap<String, OWLDataType>();
-		for (XSDVocabulary v : XSDVocabulary.values()) {
-			//	System.out.println(v);
-			dataTypeNameMap.put(v.getURI().getFragment(), dataFactory.getOWLDataType(v.getURI()));
-			dataTypeNameMap.put("xsd:" + v.getURI().getFragment(), dataFactory.getOWLDataType(v.getURI()));
-		}
-	}
+    public XSDDatatypeChecker(OWLDataFactory dataFactory) {
+        dataTypeNameMap = new HashMap<String, OWLDataType>();
+        for (XSDVocabulary v : XSDVocabulary.values()) {
+            //  System.out.println(v);
+            dataTypeNameMap.put(v.getURI().getFragment(), dataFactory.getOWLDataType(v.getURI()));
+            dataTypeNameMap.put("xsd:" + v.getURI().getFragment(), dataFactory.getOWLDataType(v.getURI()));
+        }
+    }
 
-	public OWLDataType getOWLDataType(String name) {
-		return dataTypeNameMap.get(name);
-	}
+    public OWLDataType getOWLDataType(String name) {
+        return dataTypeNameMap.get(name);
+    }
 
 }

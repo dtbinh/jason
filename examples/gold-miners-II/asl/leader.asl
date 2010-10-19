@@ -13,12 +13,12 @@
      +quad(S,3, 0,       CellH,   W div 2 - 1, (CellH * 2)-1); 
      +quad(S,4, W div 2, CellH,   W - 1,       (CellH * 2)-1);
       
-	 !inform_quad(S,miner1,1);
-	 !inform_quad(S,miner2,2);
-	 !inform_quad(S,miner3,3);
-	 !inform_quad(S,miner4,4).
-	 
-	 
+     !inform_quad(S,miner1,1);
+     !inform_quad(S,miner2,2);
+     !inform_quad(S,miner3,3);
+     !inform_quad(S,miner4,4).
+     
+     
 // only informs the quadrant if the depot is not in the quadrant
 +!inform_quad(S,Miner,Q)
   :  quad(S,Q,X1,Y1,X2,Y2) &
@@ -31,9 +31,9 @@
   <- .print("Miner ",Miner," is in the depot quadrant.").
 
 
-/*	 
+/*   
 
-	 +init_pos(S,X,Y)[source(A)]
+     +init_pos(S,X,Y)[source(A)]
   :  gsize(S,_,_) & 
      .count(init_pos(S,_,_),6) // if all miners have sent their position
   <- // remember who doesn't have a quadrant allocated

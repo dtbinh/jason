@@ -29,20 +29,20 @@ import org.semanticweb.owl.model.OWLObjectProperty;
 
 public class SELiteralObjectPropertyAssertion extends SELiteralPropertyAssertion {
 
-	public SELiteralObjectPropertyAssertion(Literal l, JASDLOntologyManager jasdlOntologyManager) {
-		super(l, jasdlOntologyManager);
-	}
+    public SELiteralObjectPropertyAssertion(Literal l, JASDLOntologyManager jasdlOntologyManager) {
+        super(l, jasdlOntologyManager);
+    }
 
-	public OWLIndividual getSubject() throws JASDLException {
-		return getOWLIndividual(JASDLParams.DOMAIN);
-	}
+    public OWLIndividual getSubject() throws JASDLException {
+        return getOWLIndividual(JASDLParams.DOMAIN);
+    }
 
-	public OWLObjectProperty getPredicate() throws JASDLException {
-		return (OWLObjectProperty) toOWLObject();
-	}
+    public OWLObjectProperty getPredicate() throws JASDLException {
+        return (OWLObjectProperty) toOWLObject();
+    }
 
-	public OWLIndividual getObject() throws JASDLException {
-		return getOWLIndividual(JASDLParams.RANGE);
-	}
+    public OWLIndividual getObject() throws JASDLException {
+        return getOWLIndividual(JASDLParams.RANGE);
+    }
 
 }

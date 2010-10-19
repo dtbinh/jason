@@ -9,7 +9,7 @@ public class RoomEnv extends Environment {
     boolean doorLocked = true;
     
     @Override
-	public void init(String[] args) {
+    public void init(String[] args) {
         // initial percepts
         addPercept(ld);
     }
@@ -19,21 +19,21 @@ public class RoomEnv extends Environment {
      */
     @Override
     public boolean executeAction(String ag, Structure act) {
-	    System.out.println("Agent "+ag+" is doing "+act);
-	    clearPercepts();
+        System.out.println("Agent "+ag+" is doing "+act);
+        clearPercepts();
         
-	    if (act.getFunctor().equals("lock"))
-		    doorLocked = true;
+        if (act.getFunctor().equals("lock"))
+            doorLocked = true;
 
-	    if (act.getFunctor().equals("unlock"))
-		    doorLocked = false;
-	
-	    // update percepts given state of the environment
-	    if (doorLocked)
-		    addPercept(ld);
-	    else
-		    addPercept(nld);
-	    return true;
+        if (act.getFunctor().equals("unlock"))
+            doorLocked = false;
+    
+        // update percepts given state of the environment
+        if (doorLocked)
+            addPercept(ld);
+        else
+            addPercept(nld);
+        return true;
     }
 }
 

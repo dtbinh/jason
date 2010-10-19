@@ -31,19 +31,19 @@ import org.w3c.dom.NodeList;
 public class ACProxy extends ACAgent implements Runnable {
 
     String         rid; // the response id of the current cycle
-	ACArchitecture arq;
-	boolean        running = true;
-	
-	private Logger logger = Logger.getLogger(ACProxy.class.getName());
-	private DocumentBuilder documentbuilder;
+    ACArchitecture arq;
+    boolean        running = true;
+    
+    private Logger logger = Logger.getLogger(ACProxy.class.getName());
+    private DocumentBuilder documentbuilder;
 
-	ConnectionMonitor monitor = new ConnectionMonitor();
-	
-	public ACProxy(ACArchitecture arq, String host, int port, String username, String password) {
-		logger = Logger.getLogger(ACProxy.class.getName()+"."+arq.getAgName());
-		//logger.setLevel(Level.FINE);
-		
-		if (host.startsWith("\"")) {
+    ConnectionMonitor monitor = new ConnectionMonitor();
+    
+    public ACProxy(ACArchitecture arq, String host, int port, String username, String password) {
+        logger = Logger.getLogger(ACProxy.class.getName()+"."+arq.getAgName());
+        //logger.setLevel(Level.FINE);
+        
+        if (host.startsWith("\"")) {
 			host = host.substring(1,host.length()-1);
 		}
 		setPort(port);

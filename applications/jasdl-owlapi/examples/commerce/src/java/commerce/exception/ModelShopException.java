@@ -21,15 +21,15 @@ package commerce.exception;
 
 public class ModelShopException extends AgentModelException {
 
-	public ModelShopException() {
-	}
+    public ModelShopException() {
+    }
 
-	public ModelShopException(String msg, Exception cause) {
-		super(msg, cause);
-	}
+    public ModelShopException(String msg, Exception cause) {
+        super(msg, cause);
+    }
 
-	public ModelShopException(String msg) {
-		super(msg);
-	}
+    public ModelShopException(String msg) {
+        super(msg);
+    }
 
 }

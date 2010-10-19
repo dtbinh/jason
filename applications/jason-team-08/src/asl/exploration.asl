@@ -13,28 +13,28 @@
 
 +!define_areas
   <- ?gsize(W,H);
-	 X = math.round(((W*H)/3)/H);
-	 +group_area(0, area(0,   0,       X,   H-1));
-	 +group_area(1, area(X+1, 0,       W-1, H/2));
-	 +group_area(2, area(X+1, (H/2)+1, W-1, H-1)).
-	 
+     X = math.round(((W*H)/3)/H);
+     +group_area(0, area(0,   0,       X,   H-1));
+     +group_area(1, area(X+1, 0,       W-1, H/2));
+     +group_area(2, area(X+1, (H/2)+1, W-1, H-1)).
+     
 +!create_exploration_gr
    : .my_name(Me) &
      agent_id(Me,AgId) &
      AgId mod 2 == 1 &          // I have an odd Id and thus have to create a exploring group
-	 not .intend(create_exploration_gr)
+     not .intend(create_exploration_gr)
   <- // create the team, if necessary
-	 if( Me == gaucho1 & not group(team,_) ) {
+     if( Me == gaucho1 & not group(team,_) ) {
          jmoise.create_group(team) 
-	 };
+     };
 
-	 // create the exploration group
+     // create the exploration group
      if( not group(exploration_grp,_)[owner(Me)] ) {
-	    ?group(team,TeamGroup); // get the team Id
+        ?group(team,TeamGroup); // get the team Id
         jmoise.create_group(exploration_grp,TeamGroup,G);
-		.print("ooo Exploration group ",G," created")
+        .print("ooo Exploration group ",G," created")
      } {
-	    ?group(exploration_grp,G)[owner(Me)]
+        ?group(exploration_grp,G)[owner(Me)]
      };
      
      // adopt role explorer in the group
@@ -52,27 +52,27 @@
 -play(Me,explorer,_)
    : .my_name(Me)
   <- for( scheme(explore_sch,S)[owner(Me)] ) {
-	    .print("ooo Removing scheme ",S);
-	    jmoise.remove_scheme(S);
-		.wait(1000)
-	 };
-	 for( group(exploration_grp,G)[owner(Me)] ) {
-	    .print("ooo Removing group ",G," since I am not in the group anymore");
-	    jmoise.remove_group(G);
-		.wait(1000)
-	 }.
+        .print("ooo Removing scheme ",S);
+        jmoise.remove_scheme(S);
+        .wait(1000)
+     };
+     for( group(exploration_grp,G)[owner(Me)] ) {
+        .print("ooo Removing group ",G," since I am not in the group anymore");
+        jmoise.remove_group(G);
+        .wait(1000)
+     }.
 
-	 
+     
 /*+group(exploration_grp,_)                // compute the area of the groups
    : .my_name(gaucho1) &
      group(team,TeamId) &
      .findall(GId, group(exploration_grp,GId)[super_gr(TeamId)], LG) &
-	 LG = [G1,G2,G3]                     // there are three groups
+     LG = [G1,G2,G3]                     // there are three groups
 
 +group_area(ID,G,A)[source(self)]
   <- .broadcast(tell, group_area(ID,G,A)).  
 */
-	 
+     
 /* -- plans for the goals of role explorer -- */
 
 +!find_scouter[scheme(Sch),group(G)]
@@ -81,9 +81,9 @@
      // test if I received the area of my group
      //?group_area(AreaId,G,A);
      //.print("ooo Scouters candidates =", LSOdd," in area ",group_area(AreaId,G,A));
-	 
+     
      !find_scouter([], G);
-	 jmoise.set_goal_state(Sch, find_scouter, satisfied).
+     jmoise.set_goal_state(Sch, find_scouter, satisfied).
 -!find_scouter[scheme(Sch),group(G)]
   <- .wait(1000); !find_scouter[scheme(Sch),group(G)].
   
@@ -103,7 +103,7 @@
               ally_pos(AgName,X,Y) & agent_id(AgName,Id) & Id mod 2 == 0 & jia.path_length(MyX, MyY, X, Y, D),
               LOdd);
      .sort(LOdd, LSOdd);
-	 !find_scouter(LSOdd,G).
+     !find_scouter(LSOdd,G).
 +!find_scouter([ag_d(_,AgName)|_],GId)
   <- .print("ooo Ask ",AgName," to play scouter");
      .send(AgName, achieve, play_role(scouter,GId));
@@ -113,24 +113,24 @@
      !find_scouter(LSOdd,GId).  
      
 
-	 
+     
 { begin maintenance_goal("+at_target") }
 
 +!goto_near_unvisited[scheme(Sch),mission(Mission)]
   <- .print("ooo I should find the nearest unvisited location and go there!");
      .my_name(Me); 
-	 ?agent_id(Me,MyId);
+     ?agent_id(Me,MyId);
      ?group_area(MyId div 2, Area);  // get the area of my group
-	 
+     
      ?pos(MeX, MeY, _);             // get my location
      jia.near_least_visited(MeX, MeY, Area, TargetX, TargetY);
      -+target(TargetX, TargetY).
-	 
-	 /* added by the pattern
-	 .wait({+at_target}).
+     
+     /* added by the pattern
+     .wait({+at_target}).
      !!goto_near_unvisited[scheme(Sch),mission(Mission)]
-	 */
-	 
+     */
+     
 { end }
 
 /* added by the pattern
@@ -160,8 +160,8 @@
      }.
 
 +!change_to_herding[scheme(Sch),mission(Mission)].
-	 
-{ end }	 
+     
+{ end }  
 
 +!ask_all_cows([],[]).
 +!ask_all_cows([L|Leaders],Cows)
@@ -197,13 +197,13 @@
      // If I am far from him, go to him
      if( DistanceToLeader > (AGPR * 2) -3) {
         .print("ooo Approaching leader.");
-     	-+target(LX,LY)
+        -+target(LX,LY)
      } {
         .print("ooo being in formation with leader.");
         .send(Leader,askOne,target(_,_),target(TX,TY));
         jia.scouter_pos(LX, LY, TX, TY, SX, SY);
-     	-+target(SX,SY)
+        -+target(SX,SY)
      }.
-	 
-{ end }	 
+     
+{ end }  
 

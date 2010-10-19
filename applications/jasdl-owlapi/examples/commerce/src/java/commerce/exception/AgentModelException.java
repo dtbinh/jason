@@ -21,16 +21,16 @@ package commerce.exception;
 
 public class AgentModelException extends CommerceException{
 
-	public AgentModelException() {
-		super();
-	}
+    public AgentModelException() {
+        super();
+    }
 
-	public AgentModelException(String msg, Exception cause) {
-		super(msg, cause);
-	}
-	
-	public AgentModelException(String msg) {
-		super(msg);
-	}
+    public AgentModelException(String msg, Exception cause) {
+        super(msg, cause);
+    }
+    
+    public AgentModelException(String msg) {
+        super(msg);
+    }
 
 }

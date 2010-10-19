@@ -21,8 +21,8 @@ package jasdl.bridge.mapping.aliasing;
 
 public class DecapitaliseMappingStrategy implements MappingStrategy {
 
-	public String apply(String input) {
-		return input.substring(0, 1).toLowerCase() + input.substring(1);
-	}
+    public String apply(String input) {
+        return input.substring(0, 1).toLowerCase() + input.substring(1);
+    }
 
 }

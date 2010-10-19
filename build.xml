@@ -34,7 +34,7 @@ TARGETS:
         </echo>
     </target>
 
-	<path id="run.classpath">
+    <path id="run.classpath">
         <pathelement location="${jedit.install.dir}/jedit.jar" />
         <pathelement location="${saciJar}" />
         <pathelement location="${jadeJar}" />
@@ -280,29 +280,29 @@ TARGETS:
         </javadoc>
     </target>
 
-	<!-- generate only the UML diagrams in PDF format -->
-	<target name="uml" unless="dot-nok" >
-	       	<property name="uml.dir" value="${basedir}/doc/uml"/>
-	       	<property name="src.uml.dir" value="${src.dir}/doc/uml"/>
-	       	<mkdir dir="${uml.dir}"/>
-	       	<javadoc sourcepath="src" packagenames="jason.asSyntax" package="true" >
-	           <doclet name="org.umlgraph.doclet.UmlGraph" path="${basedir}/lib/UMLGraph.jar">
+    <!-- generate only the UML diagrams in PDF format -->
+    <target name="uml" unless="dot-nok" >
+            <property name="uml.dir" value="${basedir}/doc/uml"/>
+            <property name="src.uml.dir" value="${src.dir}/doc/uml"/>
+            <mkdir dir="${uml.dir}"/>
+            <javadoc sourcepath="src" packagenames="jason.asSyntax" package="true" >
+               <doclet name="org.umlgraph.doclet.UmlGraph" path="${basedir}/lib/UMLGraph.jar">
                    <param name="-hide" value="java.*"/>
                    <param name="-enumconstants" />
-	               <param name="-d" value="${uml.dir}"/>
-	           </doclet>
-	       	</javadoc>
-			<move file="${uml.dir}/graph.dot" tofile="${uml.dir}/syntax.dot" />
-	        <apply executable="dot" dest="${uml.dir}" parallel="false">
-	         	<arg value="-Tpdf"/>
-	         	<arg value="-o"/>
-	         	<targetfile/>
-	         	<srcfile/>
-	         	<fileset dir="${uml.dir}" includes="*.dot"/>
-	         	<mapper type="glob" from="*.dot" to="*.pdf"/>
-	        </apply>
-	</target>
-	
+                   <param name="-d" value="${uml.dir}"/>
+               </doclet>
+            </javadoc>
+            <move file="${uml.dir}/graph.dot" tofile="${uml.dir}/syntax.dot" />
+            <apply executable="dot" dest="${uml.dir}" parallel="false">
+                <arg value="-Tpdf"/>
+                <arg value="-o"/>
+                <targetfile/>
+                <srcfile/>
+                <fileset dir="${uml.dir}" includes="*.dot"/>
+                <mapper type="glob" from="*.dot" to="*.pdf"/>
+            </apply>
+    </target>
+    
 
     <!-- distribution related tasks -->
     
@@ -310,9 +310,9 @@ TARGETS:
 
         <echo message="Generating Jason ${version}.${release}" />
 
-        <fixcrlf eol="crlf" includes="**/*.txt,**/*.bat" srcdir="${basedir}" />
+        <fixcrlf eol="crlf" includes="**/*.txt,**/*.bat,**/*.mas2j,**/*.asl" srcdir="${basedir}" />
 
-        <fixcrlf tab="remove" tablength="4" javafiles="true" includes="**/*.java,**/*.xml" srcdir="${basedir}/src" />
+        <fixcrlf tab="remove" tablength="4" javafiles="true" includes="**/*.java,**/*.xml,**/*.mas2j,**/*.asl" srcdir="${basedir}" />
 
         <delete failonerror="no" includeEmptyDirs="true">
             <fileset dir="${distDir}" />

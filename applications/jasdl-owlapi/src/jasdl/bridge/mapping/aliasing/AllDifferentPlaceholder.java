@@ -46,93 +46,93 @@ import org.semanticweb.owl.model.OWLOntology;
  *
  */
 public class AllDifferentPlaceholder implements OWLEntity {
-	public static URI ALL_DIFFERENT_PLACEHOLDER_URI = URI.create("http://all/different.owl#placeholder");
+    public static URI ALL_DIFFERENT_PLACEHOLDER_URI = URI.create("http://all/different.owl#placeholder");
 
-	private Atom label;
+    private Atom label;
 
-	public AllDifferentPlaceholder(Atom label) {
-		this.label = label;
-	}
+    public AllDifferentPlaceholder(Atom label) {
+        this.label = label;
+    }
 
-	public void accept(OWLEntityVisitor visitor) {
-	}
+    public void accept(OWLEntityVisitor visitor) {
+    }
 
-	public Set<OWLAnnotationAxiom> getAnnotationAxioms(OWLOntology ontology) {
-		return null;
-	}
+    public Set<OWLAnnotationAxiom> getAnnotationAxioms(OWLOntology ontology) {
+        return null;
+    }
 
-	public Set<OWLAnnotation> getAnnotations(OWLOntology ontology) {
-		return null;
-	}
+    public Set<OWLAnnotation> getAnnotations(OWLOntology ontology) {
+        return null;
+    }
 
-	public Set<OWLAnnotation> getAnnotations(OWLOntology ontology, URI annotationURI) {
-		return null;
-	}
+    public Set<OWLAnnotation> getAnnotations(OWLOntology ontology, URI annotationURI) {
+        return null;
+    }
 
-	public void accept(OWLObjectVisitor visitor) {
+    public void accept(OWLObjectVisitor visitor) {
 
-	}
+    }
 
-	public void accept(OWLNamedObjectVisitor visitor) {
-	}
+    public void accept(OWLNamedObjectVisitor visitor) {
+    }
 
-	public URI getURI() {
-		return ALL_DIFFERENT_PLACEHOLDER_URI;
-	}
+    public URI getURI() {
+        return ALL_DIFFERENT_PLACEHOLDER_URI;
+    }
 
-	public boolean equals(Object other) {
-		if (!(other instanceof AllDifferentPlaceholder)) {
-			return false;
-		}
-		return label.equals(((AllDifferentPlaceholder) other).label);
-	}
+    public boolean equals(Object other) {
+        if (!(other instanceof AllDifferentPlaceholder)) {
+            return false;
+        }
+        return label.equals(((AllDifferentPlaceholder) other).label);
+    }
 
-	public int hashCode() {
-		return label.hashCode();
-	}
+    public int hashCode() {
+        return label.hashCode();
+    }
 
-	public OWLClass asOWLClass() {
-		return null;
-	}
+    public OWLClass asOWLClass() {
+        return null;
+    }
 
-	public OWLDataProperty asOWLDataProperty() {
-		return null;
-	}
+    public OWLDataProperty asOWLDataProperty() {
+        return null;
+    }
 
-	public OWLDataType asOWLDataType() {
-		return null;
-	}
+    public OWLDataType asOWLDataType() {
+        return null;
+    }
 
-	public OWLIndividual asOWLIndividual() {
-		return null;
-	}
+    public OWLIndividual asOWLIndividual() {
+        return null;
+    }
 
-	public OWLObjectProperty asOWLObjectProperty() {
-		return null;
-	}
+    public OWLObjectProperty asOWLObjectProperty() {
+        return null;
+    }
 
-	public boolean isOWLClass() {
-		return false;
-	}
+    public boolean isOWLClass() {
+        return false;
+    }
 
-	public boolean isOWLDataProperty() {
-		return false;
-	}
+    public boolean isOWLDataProperty() {
+        return false;
+    }
 
-	public boolean isOWLDataType() {
-		return false;
-	}
+    public boolean isOWLDataType() {
+        return false;
+    }
 
-	public boolean isOWLIndividual() {
-		return false;
-	}
+    public boolean isOWLIndividual() {
+        return false;
+    }
 
-	public boolean isOWLObjectProperty() {
-		return false;
-	}
+    public boolean isOWLObjectProperty() {
+        return false;
+    }
 
-	public int compareTo(OWLObject arg0) {
-		return 0;
-	}
+    public int compareTo(OWLObject arg0) {
+        return 0;
+    }
 
 }

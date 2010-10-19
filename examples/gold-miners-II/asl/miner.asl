@@ -26,13 +26,13 @@ search_gold_strategy(near_unvisited). // initial strategy
 +pos(_,_,0) 
   <- ?gsize(S,_,_);
      .print("Starting simulation ", S);
-	 !inform_gsize_to_leader(S);
-	 !choose_goal.
-	 
+     !inform_gsize_to_leader(S);
+     !choose_goal.
+     
 +!inform_gsize_to_leader(S) : .my_name(miner1) 
    <- ?depot(S,DX,DY);
-	  .send(leader,tell,depot(S,DX,DY));
-	  ?gsize(S,W,H); 
+      .send(leader,tell,depot(S,DX,DY));
+      ?gsize(S,W,H); 
       .send(leader,tell,gsize(S,W,H)).
 +!inform_gsize_to_leader(_).
 
@@ -51,7 +51,7 @@ search_gold_strategy(near_unvisited). // initial strategy
  :  container_has_space &               // I have space for more gold
     .findall(gold(X,Y),gold(X,Y),LG) &  // LG is all known golds
     evaluate_golds(LG,LD) &             // evaluate golds in LD
-	.print("All golds=",LG,", evaluation=",LD) &
+    .print("All golds=",LG,", evaluation=",LD) &
     .length(LD) > 0 &                   // is there a gold to fetch?
     .min(LD,d(D,NewG,_)) &              // get the near
     worthwhile(NewG)
@@ -103,10 +103,10 @@ search_gold_strategy(near_unvisited). // initial strategy
   <- .print("New goal is find gold: ",S);
      -free;
      +free;
-	 .drop_all_desires;
+     .drop_all_desires;
      !!search_gold(S).
 
-	 
+     
 // also calculates the agent distance for a list of golds, 
 // but considers other agents committed to the same gold and
 // the agent fatigue
@@ -132,7 +132,7 @@ check_commit(gold(X,Y),MyD,committed_by(Ag,at(OtX,OtY),far(OtD)))
      jia.ag_pos(Ag,OtX,OtY) &                // get its location
      jia.path_length(OtX,OtY,X,Y,OtD) &      // calc its distance from the gold
      MyD < OtD.                              // ok to consider the gold if I am near
-	 
+     
 
 worthwhile(gold(_,_)) :- 
      carrying_gold(0).
@@ -195,22 +195,22 @@ worthwhile(gold(GX,GY)) :-
      !remove(gold(_,_));
      .abolish(picked(_));
 
-	 -+search_gold_strategy(near_unvisited);
-	 .abolish(quadrant(X1,Y1,X2,Y2));
+     -+search_gold_strategy(near_unvisited);
+     .abolish(quadrant(X1,Y1,X2,Y2));
      .abolish(last_checked(_,_));
 
      -+free;
-	 
+     
      .print("-- END ",S,": ",R).
 
 +!remove(gold(X,Y))
   <- .abolish(gold(X,Y));
      .abolish(committed_to(gold(X,Y),_,_));
      .abolish(picked(gold(X,Y)));
-	 .abolish(announced(gold(X,Y)));
+     .abolish(announced(gold(X,Y)));
      .abolish(allocated(gold(X,Y),_)).
 
-@rl[atomic]	 
+@rl[atomic]  
 +restart 
   <- .print("*** Start it all again!"); 
      .drop_all_desires;

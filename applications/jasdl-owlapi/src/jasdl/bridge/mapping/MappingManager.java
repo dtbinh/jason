@@ -35,89 +35,89 @@ import java.util.logging.Logger;
  * @param <Y>
  */
 public class MappingManager<X extends Object, Y extends Object> {
-	protected Logger logger = Logger.getLogger(this.getClass().toString());
+    protected Logger logger = Logger.getLogger(this.getClass().toString());
 
-	protected HashMap<X, Y> xToYMap;
+    protected HashMap<X, Y> xToYMap;
 
-	protected HashMap<Y, X> yToXMap;
+    protected HashMap<Y, X> yToXMap;
 
-	public MappingManager() {
-		xToYMap = new HashMap<X, Y>();
-		yToXMap = new HashMap<Y, X>();
-	}
+    public MappingManager() {
+        xToYMap = new HashMap<X, Y>();
+        yToXMap = new HashMap<Y, X>();
+    }
 
-	/**
-	 * Maps an x to a y and visa-versa.
-	 * 1 <-> 1 relationships enforced to prevent ambiguous mapping.
-	 * @param alias
-	 * @param entity
-	 * @throws JASDLDuplicateMappingException	if either alias or entity is already mapped (thus breaking 1 <-> 1 constraint)
-	 */
-	public void put(X x, Y y) throws JASDLDuplicateMappingException {
-		logger.finest("mapping " + x + " <-> " + y);
+    /**
+     * Maps an x to a y and visa-versa.
+     * 1 <-> 1 relationships enforced to prevent ambiguous mapping.
+     * @param alias
+     * @param entity
+     * @throws JASDLDuplicateMappingException   if either alias or entity is already mapped (thus breaking 1 <-> 1 constraint)
+     */
+    public void put(X x, Y y) throws JASDLDuplicateMappingException {
+        logger.finest("mapping " + x + " <-> " + y);
 
-		if (isKnownLeft(x)) {
-			throw new JASDLDuplicateMappingException("Duplicate mapping on " + x);
-		}
-		if (isKnownRight(y)) {
-			throw new JASDLDuplicateMappingException("Duplicate mapping on " + y);
-		}
+        if (isKnownLeft(x)) {
+            throw new JASDLDuplicateMappingException("Duplicate mapping on " + x);
+        }
+        if (isKnownRight(y)) {
+            throw new JASDLDuplicateMappingException("Duplicate mapping on " + y);
+        }
 
-		xToYMap.put(x, y);
-		yToXMap.put(y, x);
-	}
+        xToYMap.put(x, y);
+        yToXMap.put(y, x);
+    }
 
-	/**
-	 * Gets the alias associated with an entity
-	 * @param entity
-	 * @return
-	 * @throws JASDLUnknownMappingException	if entity is unknown (not mapped)
-	 */
-	public X getLeft(Y y) throws JASDLUnknownMappingException {
-		X x = yToXMap.get(y);
-		if (x == null) {
-			throw new JASDLUnknownMappingException("Unknown mapping " + y);
-		}
-		return x;
-	}
+    /**
+     * Gets the alias associated with an entity
+     * @param entity
+     * @return
+     * @throws JASDLUnknownMappingException if entity is unknown (not mapped)
+     */
+    public X getLeft(Y y) throws JASDLUnknownMappingException {
+        X x = yToXMap.get(y);
+        if (x == null) {
+            throw new JASDLUnknownMappingException("Unknown mapping " + y);
+        }
+        return x;
+    }
 
-	/**
-	 * Gets the entity associated with an alias
-	 * @param alias
-	 * @return
-	 * @throws JASDLUnknownMappingException	if alias is unknown (not mapped)
-	 */
-	public Y getRight(X x) throws JASDLUnknownMappingException {
-		Y y = xToYMap.get(x);
-		if (y == null) {
-			throw new JASDLUnknownMappingException("Unknown mapping " + x);
-		}
-		return y;
-	}
+    /**
+     * Gets the entity associated with an alias
+     * @param alias
+     * @return
+     * @throws JASDLUnknownMappingException if alias is unknown (not mapped)
+     */
+    public Y getRight(X x) throws JASDLUnknownMappingException {
+        Y y = xToYMap.get(x);
+        if (y == null) {
+            throw new JASDLUnknownMappingException("Unknown mapping " + x);
+        }
+        return y;
+    }
 
-	public boolean isKnownLeft(X x) {
-		return xToYMap.containsKey(x);
-	}
+    public boolean isKnownLeft(X x) {
+        return xToYMap.containsKey(x);
+    }
 
-	public boolean isKnownRight(Y y) {
-		return yToXMap.containsKey(y);
-	}
+    public boolean isKnownRight(Y y) {
+        return yToXMap.containsKey(y);
+    }
 
-	public Set<X> getLefts() {
-		return xToYMap.keySet();
-	}
+    public Set<X> getLefts() {
+        return xToYMap.keySet();
+    }
 
-	public Set<Y> getRights() {
-		return yToXMap.keySet();
-	}
+    public Set<Y> getRights() {
+        return yToXMap.keySet();
+    }
 
-	public void removeByLeft(X x) {
-		Y y = xToYMap.remove(x);
-		yToXMap.remove(y);
-	}
+    public void removeByLeft(X x) {
+        Y y = xToYMap.remove(x);
+        yToXMap.remove(y);
+    }
 
-	public void removeByRight(Y y) {
-		X x = yToXMap.remove(y);
-		xToYMap.remove(x);
-	}
+    public void removeByRight(Y y) {
+        X x = yToXMap.remove(y);
+        xToYMap.remove(x);
+    }
 }

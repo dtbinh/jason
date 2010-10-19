@@ -40,60 +40,60 @@ import jmca.selection.SelectionStrategy;
  *
  */
 public class ElbppOptionSelectionStrategy extends SelectionStrategy<Option>{
-	private Logger logger = Logger.getLogger(this.getClass().getName());
-	
-	public static String PRIORITY_LEVEL_ANNOT = "pl";
-	public static int DEFAULT_PRIORITY_LEVEL = 0;
-	
-	public ElbppOptionSelectionStrategy(Agent master){
-		super(master);
-	}
+    private Logger logger = Logger.getLogger(this.getClass().getName());
+    
+    public static String PRIORITY_LEVEL_ANNOT = "pl";
+    public static int DEFAULT_PRIORITY_LEVEL = 0;
+    
+    public ElbppOptionSelectionStrategy(Agent master){
+        super(master);
+    }
 
-	
-	public List<Option> select(List<Option> options, List<Option> intersection){
-		List<Option> chosen = new Vector<Option>();
-		
-		// get highest priority in list:
-		int max = 0;
-		for(Option option : options){
-			int pl = getPriorityLevel(option.getPlan().getLabel());
-			if(pl>max){
-				max=pl;
-			}
-		}
-		
-		// retain only those that have a priority of max		
-		for(Option option : options){
-			int pl = getPriorityLevel(option.getPlan().getLabel());
-			if(pl==max){
-				chosen.add(option);
-			}
-		}
-		
-		logger.fine("Chosen: "+chosen);
-		
-		return chosen;
-	}
-	
-	private int getPriorityLevel(Pred pred){
-		for(Term _annot : pred.getAnnots()){
-			if(_annot.isLiteral()){
-				Literal annot = (Literal)_annot;
-				if(annot.getFunctor().equals(PRIORITY_LEVEL_ANNOT)){
-					Term _l = annot.getTerm(0);
-					if(_l.isNumeric()){
-						NumberTerm l = (NumberTerm)_l;
-						try{
-							return (int)l.solve();
-						}catch(Exception e){
-							logger.warning("Exception caught calculating priority level of "+pred+". Reason: "+e);
-						}
-					}
-				}
-			}
-		}
-		return DEFAULT_PRIORITY_LEVEL;
-	}	
-	
-	
+    
+    public List<Option> select(List<Option> options, List<Option> intersection){
+        List<Option> chosen = new Vector<Option>();
+        
+        // get highest priority in list:
+        int max = 0;
+        for(Option option : options){
+            int pl = getPriorityLevel(option.getPlan().getLabel());
+            if(pl>max){
+                max=pl;
+            }
+        }
+        
+        // retain only those that have a priority of max        
+        for(Option option : options){
+            int pl = getPriorityLevel(option.getPlan().getLabel());
+            if(pl==max){
+                chosen.add(option);
+            }
+        }
+        
+        logger.fine("Chosen: "+chosen);
+        
+        return chosen;
+    }
+    
+    private int getPriorityLevel(Pred pred){
+        for(Term _annot : pred.getAnnots()){
+            if(_annot.isLiteral()){
+                Literal annot = (Literal)_annot;
+                if(annot.getFunctor().equals(PRIORITY_LEVEL_ANNOT)){
+                    Term _l = annot.getTerm(0);
+                    if(_l.isNumeric()){
+                        NumberTerm l = (NumberTerm)_l;
+                        try{
+                            return (int)l.solve();
+                        }catch(Exception e){
+                            logger.warning("Exception caught calculating priority level of "+pred+". Reason: "+e);
+                        }
+                    }
+                }
+            }
+        }
+        return DEFAULT_PRIORITY_LEVEL;
+    }   
+    
+    
 }

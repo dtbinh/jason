@@ -19,14 +19,14 @@ public class BlocksWorld extends jason.environment.Environment {
     boolean hasGUI   = true;
     
     @Override
-	public void init(String[] args) {
+    public void init(String[] args) {
         hasGUI = args[2].equals("yes"); 
         sleep  = Integer.parseInt(args[1]);
         initWorld(Integer.parseInt(args[0]));
-		updateAllPercepts();
+        updateAllPercepts();
     }
     
-	@Override
+    @Override
     synchronized public boolean executeAction(String ag, Structure action) {
         boolean result = false;
         try {
@@ -34,19 +34,19 @@ public class BlocksWorld extends jason.environment.Environment {
                 Thread.sleep(sleep);
             }
             
-			//logger.info("Agent "+ag+" is doing: "+action);
+            //logger.info("Agent "+ag+" is doing: "+action);
 
             if (action.getFunctor().equals("move")) {
-				// Location loc = new Location( (int)((NumberTerm)action.getTerm(0)).solve(),(int)((NumberTerm)action.getTerm(1)).solve());
-				LinkedList<String> adds=new LinkedList<String>(), dels=new LinkedList<String>();
+                // Location loc = new Location( (int)((NumberTerm)action.getTerm(0)).solve(),(int)((NumberTerm)action.getTerm(1)).solve());
+                LinkedList<String> adds=new LinkedList<String>(), dels=new LinkedList<String>();
                 result = model.move(action.getTerm(0).toString(),action.getTerm(1).toString(), adds, dels);
-				if (result) {
-					for(String d: dels)
-						removePercept("agent",Literal.parseLiteral(d));
-					for(String a: adds)
-						addPercept("agent",Literal.parseLiteral(a));
-				}
-			} else {
+                if (result) {
+                    for(String d: dels)
+                        removePercept("agent",Literal.parseLiteral(d));
+                    for(String a: adds)
+                        addPercept("agent",Literal.parseLiteral(a));
+                }
+            } else {
                 logger.info("executing: " + action + ", but it has not been implemented!");
             }
             return true;
@@ -57,32 +57,32 @@ public class BlocksWorld extends jason.environment.Environment {
         return false;
     }
 
-	private void updateAllPercepts() {
+    private void updateAllPercepts() {
         clearPercepts("agent");
         for (Stack<String> s : model.getStacks()) {
-			for (int i=1; i<s.size(); i++) {
-				addPercept("agent", Literal.parseLiteral("on("+s.get(i)+","+s.get(i-1)+")"));
-			}
-		}
-	}
-	
+            for (int i=1; i<s.size(); i++) {
+                addPercept("agent", Literal.parseLiteral("on("+s.get(i)+","+s.get(i-1)+")"));
+            }
+        }
+    }
+    
     public void initWorld(int w) {
-    	try {
-	        switch (w) {
-				   case 1: model = WorldModel.world1(); break;
-				   case 2: model = WorldModel.world2(); break;
-				   case 3: model = WorldModel.world2(); break;
-	        default:
-	            logger.info("Invalid index!");
-	            return;
-	        }
+        try {
+            switch (w) {
+                   case 1: model = WorldModel.world1(); break;
+                   case 2: model = WorldModel.world2(); break;
+                   case 3: model = WorldModel.world2(); break;
+            default:
+                logger.info("Invalid index!");
+                return;
+            }
            
             if (hasGUI) {
                 view = new WorldView(model);
             }   
             informAgsEnvironmentChanged();
-    	} catch (Exception e) {
-    		logger.warning("Error creating world "+e);
-    	}
+        } catch (Exception e) {
+            logger.warning("Error creating world "+e);
+        }
     }
 }

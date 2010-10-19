@@ -46,7 +46,7 @@ corral_half_width(W) :-
 +end_of_simulation(_Result)
   <- -end_of_simulation(_);
      .drop_all_desires;
-	 .abolish(cow(_,_,_));
+     .abolish(cow(_,_,_));
      !remove_org.
 
 +!restart
@@ -72,14 +72,14 @@ corral_half_width(W) :-
      // try to adopt scouter in some exploration
      .findall(GE, group(exploration_grp,GE),  LGE);
      !try_adopt(scouter,LGE);
-	 
-	 // if I still have no role, try herdboy
+     
+     // if I still have no role, try herdboy
      if ( not play(Me,_,_) ) {
         .findall(GH, group(herding_grp,GH),  LGH);
         !try_adopt(herdboy,LGH)
      };
      
-	 // if I still have no role, try to move
+     // if I still have no role, try to move
      //if ( not play(Me,_,_) & switch(X,Y) & not pos(X,Y,_) & pos(MyX,MyY,_) & jia.path_length(MyX, MyY, X, Y, _, fences)) {
      //   .print("ooo no more groups to try a role! going to a switch ",X,",",Y,", just in case it helps someone else!");
      //   -+target(X,Y)
@@ -97,7 +97,7 @@ corral_half_width(W) :-
 +!try_adopt(_Role,[]).
 +!try_adopt(Role,[G|_])
    : group(exploration_grp,G)[owner(O)] & ally_pos(O,OX,OY) & pos(MyX,MyY,_) & jia.path_length(MyX, MyY, OX, OY, _, fences) &
-     not (scheme_group(Sch,G) & scheme(pass_fence_sch,Sch))	 // do not enter in groups passing fences
+     not (scheme_group(Sch,G) & scheme(pass_fence_sch,Sch))  // do not enter in groups passing fences
   <- .print("ooo try role ",Role, " in ",G);
      jmoise.adopt_role(Role,G).
 +!try_adopt(Role,[G|_])
@@ -124,10 +124,10 @@ corral_half_width(W) :-
 +cow(Id,X,Y)[source(percept),step(C)]
    : .my_name(Me) & play(Me,_,Gr) & 
      (play(Leader,explorer,Gr) | play(Leader,herder,Gr)) &
-	 Leader \== Me // .intend(share_seen_cows) 
+     Leader \== Me // .intend(share_seen_cows) 
   <- //.print("ooo send cow ",cow(Id,X,Y));
      //jmoise.broadcast(Gr, tell, cow(Id,X,Y)).
-	 .send(Leader, tell, cow(Id,X,Y)[step(C)]).
+     .send(Leader, tell, cow(Id,X,Y)[step(C)]).
 
 /* // seems not to work correctly
 +cow(Id,X,Y)[source(A),step(S)]
@@ -136,11 +136,11 @@ corral_half_width(W) :-
         if (not (OX == X & OY == Y)) {
            .print("qqq someone told me about the cow ",Id," seen on step ",S," but I also believe it is in another place, based on step ",OS);
            if (S > OS) {
-	           .print("qqq removing my bel for cow ",Id);
-	           .abolish( cow(Id, OX, OY) )
+               .print("qqq removing my bel for cow ",Id);
+               .abolish( cow(Id, OX, OY) )
            }{
                .print("qqq removing what was told for cow ",Id);       
-	           .abolish( cow(Id, X, Y) )
+               .abolish( cow(Id, X, Y) )
            }
         }
      }. 
@@ -182,27 +182,27 @@ corral_half_width(W) :-
    
 +!change_role(NewRole,GT)[source(S)]
   <- .my_name(Me); 
-	 .print("ooo Changing to role ",NewRole," in group ",GT,", as asked by ",S);
-	 
+     .print("ooo Changing to role ",NewRole," in group ",GT,", as asked by ",S);
+     
      // if I play herder in another group, and my new role is herdboy (the groups are merging)...
      if( NewRole == herdboy & play(Me,herder,G) & G \== GT) {
-	    // ask all herdboys to also change the group
-		// and I need to wait that everybody has moved (see problem of concurrent merging)
-		!wait_no_players(herdboy,G,GT)
-	 };
+        // ask all herdboys to also change the group
+        // and I need to wait that everybody has moved (see problem of concurrent merging)
+        !wait_no_players(herdboy,G,GT)
+     };
      !quit_all_missions_roles;
      jmoise.adopt_role(NewRole,GT).
-	 
+     
 +!wait_no_players(R,G,GT) : not play(_,R,G).
 +!wait_no_players(R,G,GT) 
   <- .findall(Ag,play(Ag,R,G),Ags);
-	 .send(Ags, achieve, change_role(R,GT));
+     .send(Ags, achieve, change_role(R,GT));
      .print("ooo waiting no players of ",R," in ",G," current players are ",Ags); 
      .wait(1000);
      !wait_no_players(R,G,GT).
-	 
+     
 // causes a loop:
-// -!change_role(R,G)	 
+// -!change_role(R,G)    
 //  <- .wait(500); !change_role(R,G).
   
 +!play_role(R,G)
@@ -216,24 +216,24 @@ corral_half_width(W) :-
 +!quit_all_missions_roles
   <- .my_name(Me);
   
-	 // if I play any other role, give it up
+     // if I play any other role, give it up
      while( play(Me,R,OG) ) {
         .print("ooo Removing my role ",R," in ",OG);
         jmoise.remove_role(R,OG) //; .wait(200)
      };
      
      // give up all missions
-	 while( commitment(Me,M,Sch) ) {
+     while( commitment(Me,M,Sch) ) {
         .print("ooo Removing my mission ",M," in ",Sch);
         jmoise.remove_mission(M,Sch) //; .wait(200)
-	 }.
+     }.
 -!quit_all_missions_roles[error_msg(M),code(C)] <- .println("*** ",C," - ",M). // no problem if it fails, it is better to continue
 
-	 
+     
 +!remove_scheme_next_cicles(Sch)
   <- .wait( { +pos(_,_,_) } ); .wait( { +pos(_,_,_) } );
      jmoise.remove_scheme(Sch).
-  	 
+     
 // finish the scheme if it has no more players
 // and it was created by me
 //+sch_players(Sch,0) 
@@ -281,13 +281,13 @@ corral_half_width(W) :-
      .drop_desire(_[scheme(Sch)]);
      .abolish(_[scheme(Sch)]).
 
-// If my group is removed, remove also the schemes	 
+// If my group is removed, remove also the schemes   
 -group(_Spec,Gid)[owner(Me)]
    : .my_name(Me)
   <- while( scheme(_,SchId)[owner(Me)] & not scheme_group(SchId, _) ) {
-	    .print("ooo yyyyy removing scheme without responsible group ",SchId);
-	    jmoise.remove_scheme(SchId)
-	 }.
+        .print("ooo yyyyy removing scheme without responsible group ",SchId);
+        jmoise.remove_scheme(SchId)
+     }.
 
 
 /* -- includes -- */

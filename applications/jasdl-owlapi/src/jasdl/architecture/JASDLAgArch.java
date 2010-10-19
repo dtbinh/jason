@@ -38,106 +38,106 @@ import java.util.logging.Logger;
 
 public class JASDLAgArch extends AgArch {
 
-	private ProtocolProcessor processor;
+    private ProtocolProcessor processor;
 
-	@Override
-	public void initAg(String agClass, ClassParameters bbPars, String asSrc, Settings stts) throws JasonException {
-		super.initAg(agClass, bbPars, asSrc, stts);
+    @Override
+    public void initAg(String agClass, ClassParameters bbPars, String asSrc, Settings stts) throws JasonException {
+        super.initAg(agClass, bbPars, asSrc, stts);
 
-		processor = new ProtocolProcessor(getAgent().getJom(), getAgent().getDefaultMappingStrategies());
-	}
+        processor = new ProtocolProcessor(getAgent().getJom(), getAgent().getDefaultMappingStrategies());
+    }
 
-	@Override
-	public void checkMail() {
-		super.checkMail();
+    @Override
+    public void checkMail() {
+        super.checkMail();
 
-		// temporary set to hold processed message clones
-		Queue<Message> tempMail = new ConcurrentLinkedQueue<Message>();
-		Queue<Message> mail = getTS().getC().getMailBox();
+        // temporary set to hold processed message clones
+        Queue<Message> tempMail = new ConcurrentLinkedQueue<Message>();
+        Queue<Message> mail = getTS().getC().getMailBox();
 
-		// mustn't affect original message object, otherwise effects are global (i.e. at infrastructure level) 
-		for (Message message : mail) {
-			try {
-				Message clone = (Message) message.clone();
-				processIncomingMessage(clone);
-				tempMail.add(clone);
-			} catch (JASDLException e) {
-				// don't fail, just print warning
-				getLogger().warning("Error processing incoming message " + message + ". Reason: " + e);
-			}
-		}
-		// need to affect original mail queue
-		mail.clear();
-		mail.addAll(tempMail);
+        // mustn't affect original message object, otherwise effects are global (i.e. at infrastructure level) 
+        for (Message message : mail) {
+            try {
+                Message clone = (Message) message.clone();
+                processIncomingMessage(clone);
+                tempMail.add(clone);
+            } catch (JASDLException e) {
+                // don't fail, just print warning
+                getLogger().warning("Error processing incoming message " + message + ". Reason: " + e);
+            }
+        }
+        // need to affect original mail queue
+        mail.clear();
+        mail.addAll(tempMail);
 
-		if (!mail.isEmpty()) {
-			getLogger().fine("Pending messages: " + mail);
-		}
-	}
+        if (!mail.isEmpty()) {
+            getLogger().fine("Pending messages: " + mail);
+        }
+    }
 
-	@Override
-	public void sendMsg(Message msg) throws Exception {
-		processOutgoingMessage(msg);
-		getLogger().fine("Sending message: " + msg);
-		super.sendMsg(msg);
-	}
+    @Override
+    public void sendMsg(Message msg) throws Exception {
+        processOutgoingMessage(msg);
+        getLogger().fine("Sending message: " + msg);
+        super.sendMsg(msg);
+    }
 
-	@Override
-	public void broadcast(Message msg) throws Exception {
-		processOutgoingMessage(msg);
-		getLogger().fine("Broadcasting message: " + msg);
-		super.broadcast(msg);
-	}
+    @Override
+    public void broadcast(Message msg) throws Exception {
+        processOutgoingMessage(msg);
+        getLogger().fine("Broadcasting message: " + msg);
+        super.broadcast(msg);
+    }
 
-	private Logger getLogger() {
-		return getAgent().getLogger();
-	}
+    private Logger getLogger() {
+        return getAgent().getLogger();
+    }
 
-	private JASDLAgent getAgent() {
-		return (JASDLAgent) getTS().getAg();
-	}
+    private JASDLAgent getAgent() {
+        return (JASDLAgent) getTS().getAg();
+    }
 
-	private void processIncomingMessage(Message msg) throws JASDLException {
-		Object propcont = msg.getPropCont();
-		if (propcont == null) {
-			return;
-		}
-		if (propcont instanceof Structure) { // only Structures require processing
-			msg.setPropCont(processor.processIncomingStructure((Structure) propcont));
-		}
-	}
+    private void processIncomingMessage(Message msg) throws JASDLException {
+        Object propcont = msg.getPropCont();
+        if (propcont == null) {
+            return;
+        }
+        if (propcont instanceof Structure) { // only Structures require processing
+            msg.setPropCont(processor.processIncomingStructure((Structure) propcont));
+        }
+    }
 
-	private void processOutgoingMessage(Message msg) throws JASDLException {
-		Object propcont = msg.getPropCont();
-		if (propcont == null) {
-			return;
-		}
-		if (propcont instanceof Structure) { // only Structures require processing
-			msg.setPropCont(processor.processOutgoingStructure((Structure) propcont));
-		}
-	}
+    private void processOutgoingMessage(Message msg) throws JASDLException {
+        Object propcont = msg.getPropCont();
+        if (propcont == null) {
+            return;
+        }
+        if (propcont instanceof Structure) { // only Structures require processing
+            msg.setPropCont(processor.processOutgoingStructure((Structure) propcont));
+        }
+    }
 
-	/**
-	 * Applies incoming propositional content processing to incoming percepts from the environment.
-	 * This is performed so environments can create percepts for which alias and label mapping is properly performed.
-	 * This allows environments to reference ontological objects without knowing an agent's (arbitrary) mappings.
-	 */
-	@Override
-	public List<Literal> perceive() {
-		List<Literal> unprocessedPercepts = super.perceive();
-		if (unprocessedPercepts == null) {
-			return null;
-		}
-		List<Literal> processedPercepts = new Vector<Literal>();
-		for (Literal percept : unprocessedPercepts) {
-			try {
-				processedPercepts.add((Literal) processor.processIncomingStructure(percept));
-			} catch (JASDLException e) {
-				getLogger().warning("Error processing incoming percept " + percept + ". Reason: ");
-				e.printStackTrace();
-			}
-		}
-		return processedPercepts;
-	}
+    /**
+     * Applies incoming propositional content processing to incoming percepts from the environment.
+     * This is performed so environments can create percepts for which alias and label mapping is properly performed.
+     * This allows environments to reference ontological objects without knowing an agent's (arbitrary) mappings.
+     */
+    @Override
+    public List<Literal> perceive() {
+        List<Literal> unprocessedPercepts = super.perceive();
+        if (unprocessedPercepts == null) {
+            return null;
+        }
+        List<Literal> processedPercepts = new Vector<Literal>();
+        for (Literal percept : unprocessedPercepts) {
+            try {
+                processedPercepts.add((Literal) processor.processIncomingStructure(percept));
+            } catch (JASDLException e) {
+                getLogger().warning("Error processing incoming percept " + percept + ". Reason: ");
+                e.printStackTrace();
+            }
+        }
+        return processedPercepts;
+    }
 
 }

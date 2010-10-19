@@ -13,9 +13,9 @@
 +!charge <- plug; .wait({ -battery(low) }); unplug. 
 
              // note: the plan for charge does not need to care about
-			 // other goals. the programmer of this plan is concerned
-			 // about charging and not possible concurrent goals
-			 // interralation between goals are handled by meta events
+             // other goals. the programmer of this plan is concerned
+             // about charging and not possible concurrent goals
+             // interralation between goals are handled by meta events
 
 
 /* meta-plans */

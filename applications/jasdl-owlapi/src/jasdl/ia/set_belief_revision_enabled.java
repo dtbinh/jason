@@ -36,25 +36,25 @@ import java.util.logging.Logger;
  */
 public class set_belief_revision_enabled extends DefaultInternalAction {
 
-	private Logger logger = Logger.getLogger("jasdl." + set_belief_revision_enabled.class.getName());
+    private Logger logger = Logger.getLogger("jasdl." + set_belief_revision_enabled.class.getName());
 
-	@Override
-	public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
-		try {
-			JASDLAgent agent = (JASDLAgent) ts.getAg();
-			if (args[0].equals(Literal.LTrue)) {
-				agent.getConfig().setBeliefRevisionEnabled(true);
-			} else if (args[0].equals(Literal.LFalse)) {
-				agent.getConfig().setBeliefRevisionEnabled(false);
-			} else {
-				throw new Exception("Argument must be boolean");
-			}
-			return true;
-		} catch (Exception e) {
-			logger.warning("Error in internal action 'jasdl.ia.set_belief_revision_enabled'! Reason:");
-			e.printStackTrace();
-			return false;
-		}
-	}
+    @Override
+    public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
+        try {
+            JASDLAgent agent = (JASDLAgent) ts.getAg();
+            if (args[0].equals(Literal.LTrue)) {
+                agent.getConfig().setBeliefRevisionEnabled(true);
+            } else if (args[0].equals(Literal.LFalse)) {
+                agent.getConfig().setBeliefRevisionEnabled(false);
+            } else {
+                throw new Exception("Argument must be boolean");
+            }
+            return true;
+        } catch (Exception e) {
+            logger.warning("Error in internal action 'jasdl.ia.set_belief_revision_enabled'! Reason:");
+            e.printStackTrace();
+            return false;
+        }
+    }
 
 }

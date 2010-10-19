@@ -14,7 +14,7 @@ MAS auction {
 
        bob auctioneer  agentArchClass ora4mas.CartagoOrgAgent;
        ag1             agentArchClass ora4mas.CartagoOrgAgent;
-	   ag2             agentArchClass ora4mas.CartagoOrgAgent;
+       ag2             agentArchClass ora4mas.CartagoOrgAgent;
        ag3             agentArchClass ora4mas.CartagoOrgAgent;
 
    classpath: "../../lib/moise.jar";"../../lib/jmoise.jar";"../../lib/c4jason.jar";"../../lib/cartago.jar";

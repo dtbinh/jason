@@ -15,7 +15,7 @@ import java.util.Iterator;
 public class random extends DefaultInternalAction {
     
     private Random random = new Random();    
-	
+    
     @Override
     public Object execute(final TransitionSystem ts, final Unifier un, final Term[] args) throws Exception {
         try {
@@ -27,7 +27,7 @@ public class random extends DefaultInternalAction {
             }
             final int max = (int)((NumberTerm)args[1]).solve();
 
-			return new Iterator<Unifier>() {
+            return new Iterator<Unifier>() {
                 
                 // we always have a next random number
                 public boolean hasNext() { 

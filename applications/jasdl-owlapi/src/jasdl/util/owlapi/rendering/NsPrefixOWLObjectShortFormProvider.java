@@ -36,26 +36,26 @@ import org.semanticweb.owl.model.OWLEntity;
  */
 public class NsPrefixOWLObjectShortFormProvider extends NormalisingOWLObjectShortFormProvider {
 
-	public NsPrefixOWLObjectShortFormProvider(JASDLOntologyManager jom) {
-		super(jom);		
-	}
+    public NsPrefixOWLObjectShortFormProvider(JASDLOntologyManager jom) {
+        super(jom);     
+    }
 
-	public void dispose() {
-	}
+    public void dispose() {
+    }
 
-	public String getShortForm(OWLEntity entity) {
-		String shortForm = super.getShortForm(entity);
-		if(shortForm != null){
-			// run-time defined class, has been normalised
-			return shortForm;
-		}else{
-			try {			
-				Alias alias = jom.getAliasManager().getLeft(entity);
-				return alias.getLabel() + ":" + alias.getFunctor();
-			} catch (JASDLException e) {
-				throw new RuntimeException("Exception caught attempting to render " + entity, e);
-			}
-		}
-	}
-		
+    public String getShortForm(OWLEntity entity) {
+        String shortForm = super.getShortForm(entity);
+        if(shortForm != null){
+            // run-time defined class, has been normalised
+            return shortForm;
+        }else{
+            try {           
+                Alias alias = jom.getAliasManager().getLeft(entity);
+                return alias.getLabel() + ":" + alias.getFunctor();
+            } catch (JASDLException e) {
+                throw new RuntimeException("Exception caught attempting to render " + entity, e);
+            }
+        }
+    }
+        
 }

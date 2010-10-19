@@ -35,22 +35,22 @@ import java.util.logging.Logger;
  */
 public class get_functor extends DefaultInternalAction {
 
-	private Logger logger = Logger.getLogger("jasdl." + get_functor.class.getName());
+    private Logger logger = Logger.getLogger("jasdl." + get_functor.class.getName());
 
-	@Override
-	public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
-		try {
-			if (!args[0].isStructure()) {
-				throw new Exception("The first argument of get_functor must be a structure");
-			}
-			Structure s = (Structure) args[0];
+    @Override
+    public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
+        try {
+            if (!args[0].isStructure()) {
+                throw new Exception("The first argument of get_functor must be a structure");
+            }
+            Structure s = (Structure) args[0];
 
-			return un.unifies(args[1], new Atom(s.getFunctor()));
-		} catch (Exception e) {
-			logger.warning("Error in internal action 'jasdl.ia.get_functor'! Reason:");
-			e.printStackTrace();
-			return false;
-		}
-	}
+            return un.unifies(args[1], new Atom(s.getFunctor()));
+        } catch (Exception e) {
+            logger.warning("Error in internal action 'jasdl.ia.get_functor'! Reason:");
+            e.printStackTrace();
+            return false;
+        }
+    }
 
 }

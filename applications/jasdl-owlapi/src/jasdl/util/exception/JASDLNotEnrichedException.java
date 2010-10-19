@@ -20,12 +20,12 @@
 package jasdl.util.exception;
 
 public class JASDLNotEnrichedException extends JASDLInvalidSELiteralException {
-	public JASDLNotEnrichedException(String message) {
-		super(message);
-	}
+    public JASDLNotEnrichedException(String message) {
+        super(message);
+    }
 
-	public JASDLNotEnrichedException(String msg, Exception cause) {
-		super(msg, cause);
-	}
+    public JASDLNotEnrichedException(String msg, Exception cause) {
+        super(msg, cause);
+    }
 
 }

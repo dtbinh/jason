@@ -25,11 +25,11 @@
 +!calc_bid(gold(GX,GY), Bid) 
   :  container_has_space & 
      .findall(gold(X,Y),gold(X,Y),LG) &
-	 LG \== [] &                            // i know some gold location
+     LG \== [] &                            // i know some gold location
      pos(AgX,AgY,_) & 
      calc_gold_distance(LG,LD) &            // get the distance to all known golds
-	 .min(LD,d(BestGoldDist,BestGold)) &    // the distance of best gold
-	 jia.path_length(AgX,AgY,GX,GY,GDist)   // my distance to gold to bid
+     .min(LD,d(BestGoldDist,BestGold)) &    // the distance of best gold
+     jia.path_length(AgX,AgY,GX,GY,GDist)   // my distance to gold to bid
      //.print("G=",gold(GX,GY),"/",GDist," Best=",BestGold,"/",BestGoldDist);
   <- GDist <= BestGoldDist; // should fail in this case
      //!worthwhile(gold(GX,GY));
@@ -39,9 +39,9 @@
 +!calc_bid(gold(GX,GY), Bid) 
   :  container_has_space 
   <- ?pos(AgX,AgY,_); 
-	 jia.path_length(AgX,AgY,GX,GY,GDist);  // my distance to gold
+     jia.path_length(AgX,AgY,GX,GY,GDist);  // my distance to gold
      jia.add_fatigue(GDist,Bid).
-	 
+     
 // bid high otherwise (I do not have space)
 +!calc_bid(_, 10000). 
 -!calc_bid(_, 11000). 

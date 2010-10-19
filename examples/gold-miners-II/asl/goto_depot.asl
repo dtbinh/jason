@@ -3,9 +3,9 @@
 +!goto_depot
   :  depot(_,DX,DY) & carrying_gold(N) & N > 0
   <- .print("Going to depot to deliver ",N," golds.");
-	 // announce to others all golds I perceived that are not handled/announced yet
-	 .findall(gold(X,Y),gold(X,Y)[source(self)],L);
-	 !announce_not_handled_golds(L);
+     // announce to others all golds I perceived that are not handled/announced yet
+     .findall(gold(X,Y),gold(X,Y)[source(self)],L);
+     !announce_not_handled_golds(L);
      !pos(DX,DY);
      !ensure(drop,0);
      !leave_depot;

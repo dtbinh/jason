@@ -2,6 +2,6 @@
 // can create another (see ag1.asl source)
 
 MAS create_agent {
-	infrastructure: Centralised
-  	agents: ag1;
+    infrastructure: Centralised
+    agents: ag1;
 }

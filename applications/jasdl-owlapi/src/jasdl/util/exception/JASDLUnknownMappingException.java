@@ -21,12 +21,12 @@ package jasdl.util.exception;
 
 
 public class JASDLUnknownMappingException extends JASDLException {
-	public JASDLUnknownMappingException(String message) {
-		super(message);
-	}
+    public JASDLUnknownMappingException(String message) {
+        super(message);
+    }
 
-	public JASDLUnknownMappingException(String msg, Exception cause) {
-		super(msg, cause);
-	}
+    public JASDLUnknownMappingException(String msg, Exception cause) {
+        super(msg, cause);
+    }
 
 }

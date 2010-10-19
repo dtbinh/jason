@@ -6,12 +6,12 @@ import jason.runtime.Settings;
 
 public abstract class AgentModel extends ObjectModel {
 
-	public AgentModel(Atom id, Model model, Environment env, Settings stts) {
-		super(id, model, env, stts);
-	}
-	
-	public void addPercepts(){
-		// do nothing
-	}
+    public AgentModel(Atom id, Model model, Environment env, Settings stts) {
+        super(id, model, env, stts);
+    }
+    
+    public void addPercepts(){
+        // do nothing
+    }
 
 }

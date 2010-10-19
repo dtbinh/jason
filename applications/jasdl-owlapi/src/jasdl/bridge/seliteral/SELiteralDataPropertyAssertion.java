@@ -37,25 +37,25 @@ import org.semanticweb.owl.vocab.XSDVocabulary;
 
 public class SELiteralDataPropertyAssertion extends SELiteralPropertyAssertion {
 
-	public SELiteralDataPropertyAssertion(Literal l, JASDLOntologyManager jasdlOntologyManager) {
-		super(l, jasdlOntologyManager);
-	}
+    public SELiteralDataPropertyAssertion(Literal l, JASDLOntologyManager jasdlOntologyManager) {
+        super(l, jasdlOntologyManager);
+    }
 
-	public OWLDataProperty getPredicate() throws JASDLException {
-		return (OWLDataProperty) toOWLObject();
-	}
+    public OWLDataProperty getPredicate() throws JASDLException {
+        return (OWLDataProperty) toOWLObject();
+    }
 
-	public OWLTypedConstant getObject() throws JASDLException {
-		OWLOntology ontology = getOntology();
-		OWLDataType typ = (OWLDataType) getPredicate().getRanges(ontology).toArray()[0];// will this always return exactly 1 range? If not, how should I deal with it
-		XSDVocabulary wrapper = XSDVocabularyUtils.getByName(typ.toString());
-		Term o = literal.getTerm(JASDLParams.RANGE);
-		if (XSDVocabularyUtils.requiresStringTermRepresentation(wrapper)) {
-			if (!surroundedBy(o.toString(), "\"")) {
+    public OWLTypedConstant getObject() throws JASDLException {
+        OWLOntology ontology = getOntology();
+        OWLDataType typ = (OWLDataType) getPredicate().getRanges(ontology).toArray()[0];// will this always return exactly 1 range? If not, how should I deal with it
+        XSDVocabulary wrapper = XSDVocabularyUtils.getByName(typ.toString());
+        Term o = literal.getTerm(JASDLParams.RANGE);
+        if (XSDVocabularyUtils.requiresStringTermRepresentation(wrapper)) {
+            if (!surroundedBy(o.toString(), "\"")) {
 				throw new JASDLInvalidSELiteralException("Data type mismatch on " + this);
 			}
 		}
 		return jom.getOntologyManager().getOWLDataFactory().getOWLTypedConstant(strip(o.toString().replace("\\\"", "\""), "\""), typ); // quotes stripped
-	}
+    }
 
 }

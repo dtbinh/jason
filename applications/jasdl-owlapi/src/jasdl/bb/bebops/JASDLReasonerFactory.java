@@ -27,21 +27,21 @@ import com.clarkparsia.explanation.ReasonerFactory;
 
 public class JASDLReasonerFactory implements ReasonerFactory {
 
-	public JASDLReasonerFactory() {
-		super();
-	}
+    public JASDLReasonerFactory() {
+        super();
+    }
 
-	public boolean requiresExplicitClassification() {
-		return false;
-	}
+    public boolean requiresExplicitClassification() {
+        return false;
+    }
 
-	public OWLReasoner createReasoner(OWLOntologyManager manager) {
-		Reasoner pellet = new Reasoner(manager);
-		return pellet;
-	}
+    public OWLReasoner createReasoner(OWLOntologyManager manager) {
+        Reasoner pellet = new Reasoner(manager);
+        return pellet;
+    }
 
-	public String getReasonerName() {
-		return "reasoner";
-	}
+    public String getReasonerName() {
+        return "reasoner";
+    }
 
 }

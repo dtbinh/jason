@@ -49,50 +49,50 @@ import bebops.common.IndividualAxiomToDescriptionConverter;
  */
 public class get_class_definition extends DefaultInternalAction {
 
-	private Logger logger = Logger.getLogger("jasdl." + get_class_definition.class.getName());
+    private Logger logger = Logger.getLogger("jasdl." + get_class_definition.class.getName());
 
-	@Override
-	public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
-		try {
-			if (!args[0].isLiteral()) {
-				throw new Exception(get_class_definition.class.getName() + "'s first argument must be a literal");
-			}
-			Literal l = (Literal) args[0];
+    @Override
+    public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
+        try {
+            if (!args[0].isLiteral()) {
+                throw new Exception(get_class_definition.class.getName() + "'s first argument must be a literal");
+            }
+            Literal l = (Literal) args[0];
 
-			JASDLAgent agent = (JASDLAgent) ts.getAg();
+            JASDLAgent agent = (JASDLAgent) ts.getAg();
 
-			SELiteral sl = agent.getSELiteralFactory().construct(l);
+            SELiteral sl = agent.getSELiteralFactory().construct(l);
 
-			String expression = "";
-			if (sl.getLiteral().isGround()) {
-				IndividualAxiomToDescriptionConverter conv = new IndividualAxiomToDescriptionConverter(agent.getOWLDataFactory(), agent.getReasoner());
-				//for(OWLAxiom axiom : ){
-				OWLAxiom axiom = agent.getSELiteralToAxiomConverter().create(sl);
-				agent.getLogger().finest("Rendering axiom " + axiom);
+            String expression = "";
+            if (sl.getLiteral().isGround()) {
+                IndividualAxiomToDescriptionConverter conv = new IndividualAxiomToDescriptionConverter(agent.getOWLDataFactory(), agent.getReasoner());
+                //for(OWLAxiom axiom : ){
+                OWLAxiom axiom = agent.getSELiteralToAxiomConverter().create(sl);
+                agent.getLogger().finest("Rendering axiom " + axiom);
 
-				OWLDescription desc = conv.performDirectConversion(axiom);
-				expression += agent.getJom().getManchesterNsPrefixOWLObjectRenderer().render(desc);
-				//}
-			} else {
-				// TODO: Extract to SELiteral class (e.g. getDescription)? 
-				OWLObject o = sl.toOWLObject();
-				if (o instanceof OWLClass) {
-					expression += agent.getJom().getManchesterNsPrefixOWLObjectRenderer().render((OWLClass) o);
-				} else {
-					throw new Exception("Not yet implemented for properties");
-				}
+                OWLDescription desc = conv.performDirectConversion(axiom);
+                expression += agent.getJom().getManchesterNsPrefixOWLObjectRenderer().render(desc);
+                //}
+            } else {
+                // TODO: Extract to SELiteral class (e.g. getDescription)? 
+                OWLObject o = sl.toOWLObject();
+                if (o instanceof OWLClass) {
+                    expression += agent.getJom().getManchesterNsPrefixOWLObjectRenderer().render((OWLClass) o);
+                } else {
+                    throw new Exception("Not yet implemented for properties");
+                }
 
-			}
+            }
 
-			expression = expression.replace("\n", " ");
-			
-			return un.unifies(args[1], new StringTermImpl(expression));
+            expression = expression.replace("\n", " ");
+            
+            return un.unifies(args[1], new StringTermImpl(expression));
 
-		} catch (Exception e) {
-			logger.warning("Error in internal action '" + get_class_definition.class.getName() + "'! Reason:");
-			e.printStackTrace();
-			return false;
-		}
-	}
+        } catch (Exception e) {
+            logger.warning("Error in internal action '" + get_class_definition.class.getName() + "'! Reason:");
+            e.printStackTrace();
+            return false;
+        }
+    }
 
 }

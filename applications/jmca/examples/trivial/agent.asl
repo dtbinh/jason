@@ -30,24 +30,24 @@
  */ 
 
 !begin.
-	
+    
 @a[pl(0)]
 +!begin
-	<-
-	.print("a").
-	
+    <-
+    .print("a").
+    
 @b[pl(1)]
 +!begin
-	<-
-	.print("b").
-	
+    <-
+    .print("b").
+    
 @c[pl(1)]
 +!begin
-	<-
-	.print("c").
-	
+    <-
+    .print("c").
+    
 @d[pl(0)]
 +!begin
-	<-
-	.print("d").
+    <-
+    .print("d").
 

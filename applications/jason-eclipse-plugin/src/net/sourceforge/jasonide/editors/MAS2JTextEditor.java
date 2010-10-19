@@ -7,11 +7,11 @@ import net.sourceforge.jasonide.editors.cbg.ColoringEditor;
  * @author Germano
  */
 public class MAS2JTextEditor extends ColoringEditor {
-	
-	public MAS2JTextEditor() {
-		super();
-	}
-	public void dispose() {
-		super.dispose();
-	}
+    
+    public MAS2JTextEditor() {
+        super();
+    }
+    public void dispose() {
+        super.dispose();
+    }
 }

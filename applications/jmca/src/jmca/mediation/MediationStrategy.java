@@ -34,23 +34,23 @@ import jmca.util.JmcaException;
  * @param <T> The type of aspect this mediation strategy instance deals with
  */
 public interface MediationStrategy<T> {
-	
-	/**
-	 * Initialisation specific to this mediation strategy must be performed here.
-	 * Passed the entire .mas2j settings instance, allowing for the specification
-	 * of mediation strategy specific parameters in the .mas2j file
-	 * @param stts		the mas2j settings object for the agent this mediation strategy instance applies to
-	 */
-	public void init(Settings stts);
-	
-	/**
-	 * Implementations of this method must apply the select method of each selection strategy in the composition chain in turn,
-	 * mediating between each. It must ultimately arrive upon an "agreed" set of aspect instances.
-	 * 
-	 * @param selectionStrategies			a composition chain of selection strategies dealing with the same aspect as this mediation strategy
-	 * @param elements			the list of aspect instances that each selection strategy must choose from
-	 * @return					the "agreed" set, influenced by each selection strategy, mediated by this mediation strategy
-	 * @throws JmcaException
-	 */
-	public List<T> apply(List<SelectionStrategy<T>> selectionStrategies, List<T> elements) throws JmcaException;
+    
+    /**
+     * Initialisation specific to this mediation strategy must be performed here.
+     * Passed the entire .mas2j settings instance, allowing for the specification
+     * of mediation strategy specific parameters in the .mas2j file
+     * @param stts      the mas2j settings object for the agent this mediation strategy instance applies to
+     */
+    public void init(Settings stts);
+    
+    /**
+     * Implementations of this method must apply the select method of each selection strategy in the composition chain in turn,
+     * mediating between each. It must ultimately arrive upon an "agreed" set of aspect instances.
+     * 
+     * @param selectionStrategies           a composition chain of selection strategies dealing with the same aspect as this mediation strategy
+     * @param elements          the list of aspect instances that each selection strategy must choose from
+     * @return                  the "agreed" set, influenced by each selection strategy, mediated by this mediation strategy
+     * @throws JmcaException
+     */
+    public List<T> apply(List<SelectionStrategy<T>> selectionStrategies, List<T> elements) throws JmcaException;
 }

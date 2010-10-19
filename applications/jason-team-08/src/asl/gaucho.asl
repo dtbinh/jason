@@ -44,7 +44,7 @@ cow_perception_ratio(4).
 +end_of_simulation(_Result)
   <- -end_of_simulation(_);
      .drop_all_desires;
-	 .abolish(cow(_,_,_));
+     .abolish(cow(_,_,_));
      !remove_org.
 
 +!restart
@@ -64,8 +64,8 @@ cow_perception_ratio(4).
      // try to adopt scouter in some exploration
      .findall(GE, group(exploration_grp,GE),  LGE);
      !try_adopt(scouter,LGE);
-	 
-	 // if I still have no role, try herdboy
+     
+     // if I still have no role, try herdboy
      if ( not play(Me,_,_) ) {
         .findall(GH, group(herding_grp,GH),  LGH);
         !try_adopt(herdboy,LGH)
@@ -88,10 +88,10 @@ cow_perception_ratio(4).
 +cow(Id,X,Y)[source(percept),step(C)]
    : .my_name(Me) & play(Me,_,Gr) & 
      (play(Leader,explorer,Gr) | play(Leader,herder,Gr)) &
-	 Leader \== Me // .intend(share_seen_cows) 
+     Leader \== Me // .intend(share_seen_cows) 
   <- //.print("ooo send cow ",cow(Id,X,Y));
      //jmoise.broadcast(Gr, tell, cow(Id,X,Y)).
-	 .send(Leader, tell, cow(Id,X,Y)[step(C)]).
+     .send(Leader, tell, cow(Id,X,Y)[step(C)]).
 -cow(Id,X,Y)[source(percept)]
    //: .my_name(Me) & play(Me,_,Gr) //& (play(Leader,explorer,Gr) | play(Leader,herder,Gr)) // .intend(share_seen_cows) 
   <- //.print("ooo broadcast untell cow ",cow(Id,X,Y));
@@ -127,19 +127,19 @@ cow_perception_ratio(4).
    
 +!change_role(NewRole,GT)[source(S)]
   <- .my_name(Me); 
-	 .print("ooo Changing to role ",NewRole," in group ",GT,", as asked by ",S);
-	 
+     .print("ooo Changing to role ",NewRole," in group ",GT,", as asked by ",S);
+     
      // if I play herder in another group, and my new role is herdboy (the groups are merging)...
      if( NewRole == herdboy & play(Me,herder,G) & G \== GT) {
-	    // ask all herdboys to also change the group
-	    .findall(Boy,play(Boy,herdboy,G),HerdBoys);
-		.send(HerdBoys, achieve, change_role(herdboy,GT))
-	 };
+        // ask all herdboys to also change the group
+        .findall(Boy,play(Boy,herdboy,G),HerdBoys);
+        .send(HerdBoys, achieve, change_role(herdboy,GT))
+     };
      !quit_all_missions_roles;
      jmoise.adopt_role(NewRole,GT).
-	 
+     
 // causes a loop:
-// -!change_role(R,G)	 
+// -!change_role(R,G)    
 //  <- .wait(500); !change_role(R,G).
   
 +!play_role(R,G)
@@ -153,20 +153,20 @@ cow_perception_ratio(4).
 +!quit_all_missions_roles
   <- .my_name(Me);
   
-	 // if I play any other role, give it up
+     // if I play any other role, give it up
      while( play(Me,R,OG) ) {
         .print("ooo Removing my role ",R," in ",OG);
         jmoise.remove_role(R,OG)
      };
      
      // give up all missions
-	 while( commitment(Me,M,Sch) ) {
+     while( commitment(Me,M,Sch) ) {
         .print("ooo Removing my mission ",M," in ",Sch);
         jmoise.remove_mission(M,Sch)
-	 }.
+     }.
 -!quit_all_missions_roles[error_msg(M),code(C)] <- .println("*** ",C," - ",M). // no problem if it fails, it is better to continue
 
-	 
+     
 // finish the scheme if it has no more players
 // and it was created by me
 //+sch_players(Sch,0) 

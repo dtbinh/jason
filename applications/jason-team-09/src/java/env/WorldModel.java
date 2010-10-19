@@ -29,7 +29,7 @@ public class WorldModel extends GridWorldModel {
 
     public static final int   agsByTeam = 10;
     
-    public int   			  agPerceptionRatio  = 8;
+    public int                agPerceptionRatio  = 8;
     public static final int   cowPerceptionRatio = 4;    
 
     
@@ -40,9 +40,9 @@ public class WorldModel extends GridWorldModel {
 
     int                       cowsBlue = 0; // #cows the blue team puts in the corral
     int                       cowsRed  = 0; // #cows the red team puts in the corral
-    int 					  initialNbCows = 0;
+    int                       initialNbCows = 0;
     
-    int	                      maxSteps = 0; // number of steps of the simulation
+    int                       maxSteps = 0; // number of steps of the simulation
     String                    opponent;
     
     private Logger            logger   = Logger.getLogger("jasonTeamSimLocal.mas2j." + WorldModel.class.getName());
@@ -53,7 +53,7 @@ public class WorldModel extends GridWorldModel {
 
 
     public static WorldModel create(int w, int h, int nbAg) {
-    	return new WorldModel(w,h,nbAg);
+        return new WorldModel(w,h,nbAg);
     }
     
     public WorldModel(int w, int h, int nbAg) {
@@ -61,7 +61,7 @@ public class WorldModel extends GridWorldModel {
     }
 
     public int getAgsByTeam() {
-    	return agsByTeam;
+        return agsByTeam;
     }
     
     private static final int OBS_FOR_NOT_FREE = ENEMY + AGENT + COW + CORRAL + ENEMYCORRAL;
@@ -71,7 +71,7 @@ public class WorldModel extends GridWorldModel {
     }
 
     public WorldView getView() {
-    	return (WorldView)view;
+        return (WorldView)view;
     }
     
     public int getData(Location l) {
@@ -80,11 +80,11 @@ public class WorldModel extends GridWorldModel {
     
     // upper 
     public void setCorral(Location upperLeft, Location downRight) {
-	    for (int l=upperLeft.y; l<=downRight.y; l++)
+        for (int l=upperLeft.y; l<=downRight.y; l++)
             for (int c=upperLeft.x; c<=downRight.x; c++) {
                 data[c][l] = CORRAL; // + OBSTACLE; obstacle can not be included in corral, some algs compute distance to corral
             }
-	    corral = new Area(upperLeft, downRight);
+        corral = new Area(upperLeft, downRight);
     }
     
     public Area getCorral() {
@@ -92,11 +92,11 @@ public class WorldModel extends GridWorldModel {
     }
 
     public int getCowsBlue() {
-    	return cowsBlue;
+        return cowsBlue;
     }
 
     public int getCowsRed() {
-    	return cowsRed;
+        return cowsRed;
     }
     
     public void setCowsBlue(int c) {
@@ -120,23 +120,23 @@ public class WorldModel extends GridWorldModel {
     }
     
     public void setMaxSteps(int s) {
-    	maxSteps = s;
+        maxSteps = s;
     }
     public int getMaxSteps() {
-    	return maxSteps;
+        return maxSteps;
     }
     public void setAgPerceptionRatio(int ratio) {
-    	agPerceptionRatio=ratio;
+        agPerceptionRatio=ratio;
     }
     public int getAgPerceptionRatio() {
-    	return agPerceptionRatio;
+        return agPerceptionRatio;
     }
         
     public void removeAll(int obj) {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-            	if (hasObject(obj, i, j))
-            		remove(obj, i, j);
+                if (hasObject(obj, i, j))
+                    remove(obj, i, j);
             }
         }
     }
@@ -175,47 +175,47 @@ public class WorldModel extends GridWorldModel {
     }
     
     public void wall(int x1, int y1, int x2, int y2) {
-    	for (int i=x1; i<=x2; i++) {
-    		for (int j=y1; j<=y2; j++) {
-    			add(OBSTACLE, i, j);;
-    		}
-    	}
+        for (int i=x1; i<=x2; i++) {
+            for (int j=y1; j<=y2; j++) {
+                add(OBSTACLE, i, j);;
+            }
+        }
     }
     
     public String toString() {
-    	StringBuilder s = new StringBuilder("|");
+        StringBuilder s = new StringBuilder("|");
 
-    	for (int i = 0; i < getWidth(); i++) {
-    	    s.append('-');
-    	}
-    	s.append("|\n");
-    	String bar = s.toString();
-    	for (int j = 0; j < getHeight(); j++) {
-    	    s.append('|');
-    		for (int i = 0; i < getWidth(); i++) {
-            	if (hasObject(OBSTACLE, i, j)) {
-            		s.append('X');
-            	} else if (hasObject(AGENT, i, j)) {
-            		s.append(String.valueOf(getAgAtPos(i,j)));
-            	} else if (hasObject(COW, i, j)) {
-            		s.append('c');
-            	} else if (hasObject(ENEMY, i, j)) {
-            		s.append('E');
+        for (int i = 0; i < getWidth(); i++) {
+            s.append('-');
+        }
+        s.append("|\n");
+        String bar = s.toString();
+        for (int j = 0; j < getHeight(); j++) {
+            s.append('|');
+            for (int i = 0; i < getWidth(); i++) {
+                if (hasObject(OBSTACLE, i, j)) {
+                    s.append('X');
+                } else if (hasObject(AGENT, i, j)) {
+                    s.append(String.valueOf(getAgAtPos(i,j)));
+                } else if (hasObject(COW, i, j)) {
+                    s.append('c');
+                } else if (hasObject(ENEMY, i, j)) {
+                    s.append('E');
                 } else if (hasObject(OPEN_FENCE, i, j)) {
                     s.append('f');
                 } else if (hasObject(CLOSED_FENCE, i, j)) {
                     s.append('F');
                 } else if (hasObject(SWITCH, i, j)) {
                     s.append('s');
-            	} else {
-            		s.append(' ');
-            	}
+                } else {
+                    s.append(' ');
+                }
             }
             s.append("|\n");
         }
-    	s.append(bar);
-    	
-    	return s.toString();
+        s.append(bar);
+        
+        return s.toString();
     }
 
     public static Location getNewLocationForAction(Location pos, WorldModel.Move action) {

@@ -8,21 +8,21 @@ import java.awt.Graphics;
 
 public class WorldView extends GridWorldView {
 
-	public WorldView(WorldModel model) {
+    public WorldView(WorldModel model) {
         super(model, "Blocks World", 600);
         setVisible(true);
         repaint();
     }
 
-	@Override
+    @Override
     public void draw(Graphics g, int x, int y, int object) {
         switch (object) {
-			case WorldModel.BLOCK:   drawBlock(g, x, y);  break;
-			case WorldModel.TABLE:   drawTable(g, x, y);  break;
+            case WorldModel.BLOCK:   drawBlock(g, x, y);  break;
+            case WorldModel.TABLE:   drawTable(g, x, y);  break;
         }
     }
-	
-	public void drawBlock(Graphics g, int x, int y) {
+    
+    public void drawBlock(Graphics g, int x, int y) {
         g.setColor(Color.red);
         g.fillRect(x * cellSizeW, y * cellSizeH, cellSizeW, cellSizeH);
         g.setColor(Color.black);
@@ -30,7 +30,7 @@ public class WorldView extends GridWorldView {
         drawString(g, x, y, defaultFont, ((WorldModel)getModel()).getName(x,y));
     }
 
-	public void drawTable(Graphics g, int x, int y) {
+    public void drawTable(Graphics g, int x, int y) {
         g.setColor(Color.green);
         g.fillRect(x * cellSizeW, y * cellSizeH, cellSizeW, cellSizeH);
     }

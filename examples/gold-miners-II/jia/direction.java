@@ -54,13 +54,13 @@ public class direction extends DefaultInternalAction {
                 actionsOrder[i1] = temp;
                 
                 if (actionsOrder[0] + actionsOrder[1] + actionsOrder[2] + actionsOrder[3] != 10) {
-                	ts.getLogger().warning("****** lost action!!!!!");
+                    ts.getLogger().warning("****** lost action!!!!!");
                 }
                 
                 Search astar    = new Search(model, from, to, actionsOrder, true);
                 Nodo   solution = astar.search();
                 if (solution != null) {
-                	String ac = astar.firstAction(solution);
+                    String ac = astar.firstAction(solution);
                     if (ac != null) {
                         sAction = ac;
                     }
@@ -70,7 +70,7 @@ public class direction extends DefaultInternalAction {
             }
             return un.unifies(terms[4], new Atom(sAction));
         } catch (Throwable e) {
-            ts.getLogger().log(Level.SEVERE, "direction error: "+e, e);    		
+            ts.getLogger().log(Level.SEVERE, "direction error: "+e, e);         
         }
         return false;
     }

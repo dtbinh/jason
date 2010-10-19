@@ -8,9 +8,9 @@
   <- -+a(X+1); // a is stored in a DB
      .print("Not first run, I already run ",X," times.");
      !show_book(X);
-	 .println; .print("All titles:");
-	 ?show_all_titles.
-	 
+     .println; .print("All titles:");
+     ?show_all_titles.
+     
 
 +!show_book(X) 
   :  Id = (X mod 3)+1 &

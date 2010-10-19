@@ -13,9 +13,9 @@ public class clone extends DefaultInternalAction {
 
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
-    	
-    	String agName = ((StringTerm)args[0]).getString();
-    	RuntimeServicesInfraTier services = ts.getUserAgArch().getArchInfraTier().getRuntimeServices();
+        
+        String agName = ((StringTerm)args[0]).getString();
+        RuntimeServicesInfraTier services = ts.getUserAgArch().getArchInfraTier().getRuntimeServices();
         services.clone(ts.getAg(), ts.getUserAgArch().getClass().getName(), agName);
 
         return true;

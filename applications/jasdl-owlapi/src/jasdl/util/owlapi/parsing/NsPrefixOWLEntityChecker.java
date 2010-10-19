@@ -39,83 +39,83 @@ import org.semanticweb.owl.model.OWLObjectProperty;
  */
 public class NsPrefixOWLEntityChecker extends XSDDatatypeChecker {
 
-	private JASDLOntologyManager jom;
+    private JASDLOntologyManager jom;
 
-	public NsPrefixOWLEntityChecker(JASDLOntologyManager jasdlOntologyManager) {
-		super(jasdlOntologyManager.getOntologyManager().getOWLDataFactory());
-		this.jom = jasdlOntologyManager;
-	}
+    public NsPrefixOWLEntityChecker(JASDLOntologyManager jasdlOntologyManager) {
+        super(jasdlOntologyManager.getOntologyManager().getOWLDataFactory());
+        this.jom = jasdlOntologyManager;
+    }
 
-	public OWLClass getOWLClass(String name) {
-		OWLEntity entity = convert(name);
-		if (entity == null) {
-			return null;
-		}
-		if (entity.isOWLClass()) {
-			return entity.asOWLClass();
-		} else {
-			return null;
-		}
-	}
+    public OWLClass getOWLClass(String name) {
+        OWLEntity entity = convert(name);
+        if (entity == null) {
+            return null;
+        }
+        if (entity.isOWLClass()) {
+            return entity.asOWLClass();
+        } else {
+            return null;
+        }
+    }
 
-	public OWLDataProperty getOWLDataProperty(String name) {
-		OWLEntity entity = convert(name);
-		if (entity == null) {
-			return null;
-		}
-		if (entity.isOWLDataProperty()) {
-			return entity.asOWLDataProperty();
-		} else {
-			return null;
-		}
-	}
+    public OWLDataProperty getOWLDataProperty(String name) {
+        OWLEntity entity = convert(name);
+        if (entity == null) {
+            return null;
+        }
+        if (entity.isOWLDataProperty()) {
+            return entity.asOWLDataProperty();
+        } else {
+            return null;
+        }
+    }
 
-	public OWLIndividual getOWLIndividual(String name) {
-		OWLEntity entity = convert(name);
-		if (entity == null) {
-			try {
-				// TODO: tidy this up
-				String[] tokens = name.split(":");
-				Atom functor = new Atom(tokens[1]);
-				Atom label = new Atom(tokens[0]);
-				Alias alias = AliasFactory.INSTANCE.create(functor, label);
-				return jom.getOWLIndividual(alias);
-			} catch (JASDLException e) {
-				throw new RuntimeException(e);
-			}
-		}
-		if (entity.isOWLIndividual()) {
-			return entity.asOWLIndividual();
-		} else {
-			return null;
-		}
-	}
+    public OWLIndividual getOWLIndividual(String name) {
+        OWLEntity entity = convert(name);
+        if (entity == null) {
+            try {
+                // TODO: tidy this up
+                String[] tokens = name.split(":");
+                Atom functor = new Atom(tokens[1]);
+                Atom label = new Atom(tokens[0]);
+                Alias alias = AliasFactory.INSTANCE.create(functor, label);
+                return jom.getOWLIndividual(alias);
+            } catch (JASDLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if (entity.isOWLIndividual()) {
+            return entity.asOWLIndividual();
+        } else {
+            return null;
+        }
+    }
 
-	public OWLObjectProperty getOWLObjectProperty(String name) {
-		OWLEntity entity = convert(name);
-		if (entity == null) {
-			return null;
-		}
-		if (entity.isOWLObjectProperty()) {
-			return entity.asOWLObjectProperty();
-		} else {
-			return null;
-		}
-	}
+    public OWLObjectProperty getOWLObjectProperty(String name) {
+        OWLEntity entity = convert(name);
+        if (entity == null) {
+            return null;
+        }
+        if (entity.isOWLObjectProperty()) {
+            return entity.asOWLObjectProperty();
+        } else {
+            return null;
+        }
+    }
 
-	private OWLEntity convert(String name) {
-		String[] tokens = name.split(":");
-		try {
-			Atom functor = new Atom(tokens[1]);
-			Atom label = new Atom(tokens[0]);
-			Alias alias = AliasFactory.INSTANCE.create(functor, label);
-			return (OWLEntity) jom.getAliasManager().getRight(alias); // guaranteed to be an entity? Not for anonymous classes!
-		} catch (ClassCastException e) {
-			// we are dealing with an anonymous class description
-			return null;
-		} catch (Exception e) {
-			return null;
-		}
-	}
+    private OWLEntity convert(String name) {
+        String[] tokens = name.split(":");
+        try {
+            Atom functor = new Atom(tokens[1]);
+            Atom label = new Atom(tokens[0]);
+            Alias alias = AliasFactory.INSTANCE.create(functor, label);
+            return (OWLEntity) jom.getAliasManager().getRight(alias); // guaranteed to be an entity? Not for anonymous classes!
+        } catch (ClassCastException e) {
+            // we are dealing with an anonymous class description
+            return null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
 }

@@ -38,7 +38,7 @@ public class VCWorld extends Environment {
 
     public VCWorld() {
         createPercept();
-		
+        
         // create a thread to add dirty
         new Thread() {
             public void run() {
@@ -54,7 +54,7 @@ public class VCWorld extends Environment {
                     }
                 } catch (Exception e) {} 
             }
-        }.start();	
+        }.start();  
     }
         
     /** create the agents perceptions based on the world model */
@@ -149,7 +149,7 @@ public class VCWorld extends Environment {
             setVisible(true);
             paint();
         }
-		
+        
         void paint() {
             synchronized (modelLock) { // do not allow changes in the robot location while painting
                 for (int i = 0; i < labels.length; i++) {

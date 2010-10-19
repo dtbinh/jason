@@ -93,7 +93,7 @@ public class direction extends DefaultInternalAction {
             }
             return un.unifies(terms[4], new Atom(sAction));
         } catch (Throwable e) {
-            ts.getLogger().log(Level.SEVERE, "direction error: "+e, e);    		
+            ts.getLogger().log(Level.SEVERE, "direction error: "+e, e);         
         }
         return false;
     }

@@ -18,46 +18,46 @@ import javax.swing.JLabel;
 /** internal action that creates a simple GUI with two buttons that trigger AS plans */
 public class create extends DefaultInternalAction {
 
-	int runCount = 0;
-	
-	@Override
-	public Object execute(final TransitionSystem ts, Unifier un, Term[] args) throws Exception {
-		
-		// get the window title
-		String title = ((StringTerm)args[0]).getString();
-		
-		// create the windows
-		final JButton run = new JButton("run");
-		final JButton stop = new JButton("stop");
-		stop.setEnabled(false);
-		JPanel buttons = new JPanel();
-		buttons.add(new JLabel("Use the following buttons to control the agent intentions: "));
-		buttons.add(run);
-		buttons.add(stop);
+    int runCount = 0;
+    
+    @Override
+    public Object execute(final TransitionSystem ts, Unifier un, Term[] args) throws Exception {
+        
+        // get the window title
+        String title = ((StringTerm)args[0]).getString();
+        
+        // create the windows
+        final JButton run = new JButton("run");
+        final JButton stop = new JButton("stop");
+        stop.setEnabled(false);
+        JPanel buttons = new JPanel();
+        buttons.add(new JLabel("Use the following buttons to control the agent intentions: "));
+        buttons.add(run);
+        buttons.add(stop);
 
-		JFrame frame = new JFrame(title);
-		frame.getContentPane().add(buttons);
-		frame.pack();
-		frame.setVisible(true);
-		
-		// add the event listeners
-		run.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				// creates a new event +!run so that the agent can react to the button
-				runCount++;
-				ts.getC().addAchvGoal(Literal.parseLiteral("run("+runCount+")"), null);
-				stop.setEnabled(true);
-				run.setEnabled(false);
-			}
-		});
-		stop.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				ts.getC().addAchvGoal(Literal.parseLiteral("stop("+runCount+")"), null);
-				stop.setEnabled(false);
-				run.setEnabled(true);
-			}
-		});
-		
-		return true;
-	}
+        JFrame frame = new JFrame(title);
+        frame.getContentPane().add(buttons);
+        frame.pack();
+        frame.setVisible(true);
+        
+        // add the event listeners
+        run.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // creates a new event +!run so that the agent can react to the button
+                runCount++;
+                ts.getC().addAchvGoal(Literal.parseLiteral("run("+runCount+")"), null);
+                stop.setEnabled(true);
+                run.setEnabled(false);
+            }
+        });
+        stop.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                ts.getC().addAchvGoal(Literal.parseLiteral("stop("+runCount+")"), null);
+                stop.setEnabled(false);
+                run.setEnabled(true);
+            }
+        });
+        
+        return true;
+    }
 }

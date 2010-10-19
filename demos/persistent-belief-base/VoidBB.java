@@ -79,6 +79,6 @@ public class VoidBB implements jason.bb.BeliefBase {
     }
     
     public BeliefBase clone()  {
-    	return new VoidBB();
+        return new VoidBB();
     }
 }

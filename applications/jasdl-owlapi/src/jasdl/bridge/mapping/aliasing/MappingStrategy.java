@@ -20,5 +20,5 @@
 package jasdl.bridge.mapping.aliasing;
 
 public interface MappingStrategy {
-	public String apply(String input);
+    public String apply(String input);
 }

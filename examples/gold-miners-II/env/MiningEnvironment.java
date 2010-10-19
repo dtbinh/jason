@@ -25,7 +25,7 @@ public class MiningEnvironment extends TimeSteppedEnvironment {
     private Logger          logger   = Logger.getLogger("jasonTeamSimLocal.mas2j." + MiningEnvironment.class.getName());
 
     WorldModel              model;
-    WorldView	            view;
+    WorldView               view;
     
     int                     simId    = 5; // type of environment
     int                     nbWorlds = 10;
@@ -48,7 +48,7 @@ public class MiningEnvironment extends TimeSteppedEnvironment {
     String                  redTeamName, blueTeamName;
     
     @Override
-	public void init(String[] args) {
+    public void init(String[] args) {
         setOverActionsPolicy(OverActionsPolicy.ignoreSecond);
 
         // get the parameters
@@ -67,9 +67,9 @@ public class MiningEnvironment extends TimeSteppedEnvironment {
     }
     
     @Override
-	public void stop() {
-		super.stop();
-	}
+    public void stop() {
+        super.stop();
+    }
 
     public int getSimId() {
         return simId;
@@ -78,7 +78,7 @@ public class MiningEnvironment extends TimeSteppedEnvironment {
     
     @Override
     public boolean executeAction(String ag, Structure action) {
-    	
+        
         @SuppressWarnings("unused")
         boolean result = false;
         int agId = -10;
@@ -88,7 +88,7 @@ public class MiningEnvironment extends TimeSteppedEnvironment {
             
             // check failure
             if (!action.equals(drop) && random.nextDouble() < model.getAgFatigue(agId)) {
-            	//logger.info("Action "+action+" from agent "+ag+" failed!");
+                //logger.info("Action "+action+" from agent "+ag+" failed!");
                 return true; // does nothing
             }
             
@@ -101,7 +101,7 @@ public class MiningEnvironment extends TimeSteppedEnvironment {
             } else if (action.equals(left)) {
                 result = model.move(WorldModel.Move.LEFT, agId);
             } else if (action.equals(skip)) {
-            	logger.info("agent "+ag+" skips!");
+                logger.info("agent "+ag+" skips!");
                 result = true;
             } else if (action.equals(pick)) {
                 result = model.pick(agId);
@@ -117,66 +117,66 @@ public class MiningEnvironment extends TimeSteppedEnvironment {
     }
 
     public int getAgNbFromName(String agName) {
-    	if (agName.startsWith(redTeamName)) {
-    		return (Integer.parseInt(agName.substring(redTeamName.length()))) - 1; 
-    	}
-    	if (agName.startsWith(blueTeamName)) {
-    		return (Integer.parseInt(agName.substring(blueTeamName.length()))) + (model.agsByTeam - 1); 
-    	}
-    	logger.warning("There is no ID for agent named "+agName);
-		return -1;    	
+        if (agName.startsWith(redTeamName)) {
+            return (Integer.parseInt(agName.substring(redTeamName.length()))) - 1; 
+        }
+        if (agName.startsWith(blueTeamName)) {
+            return (Integer.parseInt(agName.substring(blueTeamName.length()))) + (model.agsByTeam - 1); 
+        }
+        logger.warning("There is no ID for agent named "+agName);
+        return -1;      
     }
     
     public String getAgNameFromID(int id) {
-    	if (id < model.agsByTeam)
+        if (id < model.agsByTeam)
             return redTeamName + (id+1);
-    	else 
+        else 
             return blueTeamName + (id-(model.agsByTeam-1));
     }
 
     public void initWorld(int w) {
         simId = w;
-    	try {
-	        switch (w) {
-	        case 1:  model = WorldFactory.world1(); break;
-	        case 2:  model = WorldFactory.world2(); break;
-	        case 3:  model = WorldFactory.world3(); break;
-	        case 4:  model = WorldFactory.world4(); break;
-	        case 5:  model = WorldFactory.world5(); break;
-	        case 6:  model = WorldFactory.world6(); break;
-	        case 7:  model = WorldFactory.world7(); break;
-	        case 8:  model = WorldFactory.world8(); break;
-	        case 9:  model = WorldFactory.world9(); break;
-	        case 10: model = WorldFactory.world10(); break;
-	        case 11: model = WorldFactory.worldFromContest2007("Fence"); break;
-	        case 12: model = WorldFactory.worldFromContest2007("Semiramis"); break;
-	        case 13: model = WorldFactory.worldFromContest2007("Overkill"); break;
-	        default:
-	            logger.warning("Invalid index!");
-	            return;
-	        }
+        try {
+            switch (w) {
+            case 1:  model = WorldFactory.world1(); break;
+            case 2:  model = WorldFactory.world2(); break;
+            case 3:  model = WorldFactory.world3(); break;
+            case 4:  model = WorldFactory.world4(); break;
+            case 5:  model = WorldFactory.world5(); break;
+            case 6:  model = WorldFactory.world6(); break;
+            case 7:  model = WorldFactory.world7(); break;
+            case 8:  model = WorldFactory.world8(); break;
+            case 9:  model = WorldFactory.world9(); break;
+            case 10: model = WorldFactory.world10(); break;
+            case 11: model = WorldFactory.worldFromContest2007("Fence"); break;
+            case 12: model = WorldFactory.worldFromContest2007("Semiramis"); break;
+            case 13: model = WorldFactory.worldFromContest2007("Overkill"); break;
+            default:
+                logger.warning("Invalid index!");
+                return;
+            }
             
-	        super.init(new String[] { "1000" } ); // set step timeout
-	        updateNumberOfAgents();
+            super.init(new String[] { "1000" } ); // set step timeout
+            updateNumberOfAgents();
             
             // add perception for all agents
             clearPercepts();
-	        addPercept(Literal.parseLiteral("gsize(" + simId + "," + model.getWidth() + "," + model.getHeight() + ")"));
-	        addPercept(Literal.parseLiteral("depot(" + simId + "," + model.getDepot().x + "," + model.getDepot().y + ")"));
-			int msteps = model.getMaxSteps();
-			if (msteps == 0) msteps = 100000;
-	        addPercept(Literal.parseLiteral("steps(" + simId + "," + msteps + ")"));
+            addPercept(Literal.parseLiteral("gsize(" + simId + "," + model.getWidth() + "," + model.getHeight() + ")"));
+            addPercept(Literal.parseLiteral("depot(" + simId + "," + model.getDepot().x + "," + model.getDepot().y + ")"));
+            int msteps = model.getMaxSteps();
+            if (msteps == 0) msteps = 100000;
+            addPercept(Literal.parseLiteral("steps(" + simId + "," + msteps + ")"));
             
-	        updateAgsPercept();
+            updateAgsPercept();
             //informAgsEnvironmentChanged();
             
             if (hasGUI) {
                 view = new WorldView(model, windowSize);
                 view.setEnv(this);
             }
-    	} catch (Exception e) {
-    		logger.warning("Error creating world "+e);
-    	}
+        } catch (Exception e) {
+            logger.warning("Error creating world "+e);
+        }
     }
 
     public static Literal aCAP   = ASSyntax.createLiteral("container_has_space");
@@ -255,10 +255,10 @@ public class MiningEnvironment extends TimeSteppedEnvironment {
     }
     
     public static Literal createCellPerception(int x, int y, Atom obj) {
-    	return ASSyntax.createLiteral("cell",
-    	        ASSyntax.createNumber(x),
-    	        ASSyntax.createNumber(y),
-    	        obj); 
+        return ASSyntax.createLiteral("cell",
+                ASSyntax.createNumber(x),
+                ASSyntax.createNumber(y),
+                obj); 
     }
 
 

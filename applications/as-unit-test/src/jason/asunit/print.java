@@ -8,10 +8,10 @@ import jason.stdlib.println;
 
 public class print extends println {
     
-	public static InternalAction create() {
-		return new print();
-	}
-	
+    public static InternalAction create() {
+        return new print();
+    }
+    
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args)  throws Exception {
         TestArch arch = (TestArch)ts.getUserAgArch().getArchInfraTier();

@@ -22,14 +22,14 @@ import javax.swing.JPanel;
  */
 public class WorldView extends GridWorldView {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	JLabel     jCycle;
-	JLabel     jCowsC;
-	JLabel     jlMouseLoc;
+    JLabel     jCycle;
+    JLabel     jCowsC;
+    JLabel     jlMouseLoc;
 
     public void destroy() {
-    	setVisible(false);
+        setVisible(false);
     }
 
     public WorldView(WorldModel model, int windowSize) {
@@ -95,17 +95,17 @@ public class WorldView extends GridWorldView {
     }
     
     public void setCycle(int c) {
-    	if (jCycle != null) {
-    		WorldModel wm = (WorldModel)model;
-    		
-    		String steps = "";
-    		if (wm.getMaxSteps() > 0) {
-    			steps = "/" + wm.getMaxSteps();
-    		}
-    		jCycle.setText(c+steps);
+        if (jCycle != null) {
+            WorldModel wm = (WorldModel)model;
+            
+            String steps = "";
+            if (wm.getMaxSteps() > 0) {
+                steps = "/" + wm.getMaxSteps();
+            }
+            jCycle.setText(c+steps);
             
             jCowsC.setText(wm.getCowsBlue() + " x " + wm.getCowsRed()); // + "/" + wm.getInitialNbGolds());    
-    	}
+        }
     }
     
     @Override
@@ -149,7 +149,7 @@ public class WorldView extends GridWorldView {
     public void drawAgent(Graphics g, int x, int y, Color c, int id) {
         int gw = 1;
         if (id < 6) {
-        	// blue team
+            // blue team
             g.setColor(Color.blue);
             g.fillOval(x * cellSizeW + gw, y * cellSizeH + gw, cellSizeW - gw*2, cellSizeH - gw*2);
             if (id >= 0) {
@@ -157,7 +157,7 @@ public class WorldView extends GridWorldView {
                 drawString(g, x, y, defaultFont, String.valueOf(id+1));
             }
         } else {
-        	// red team
+            // red team
             g.setColor(Color.red);
             g.fillOval(x * cellSizeW + gw, y * cellSizeH + gw, cellSizeW - gw*2, cellSizeH - gw*2);
             if (id >= 0) {

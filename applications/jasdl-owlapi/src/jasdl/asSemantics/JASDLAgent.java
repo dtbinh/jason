@@ -81,270 +81,270 @@ import com.clarkparsia.explanation.BlackBoxExplanation;
  */
 public class JASDLAgent extends JmcaAgent{
 
-	private JASDLOntologyManager jom;
+    private JASDLOntologyManager jom;
 
 
 
 
-	private JASDLAgentConfigurator config;
+    private JASDLAgentConfigurator config;
 
-	public JASDLAgent() throws Exception {
-		super();
+    public JASDLAgent() throws Exception {
+        super();
 
-		// instantiate utility classes
-		jom = new JASDLOntologyManager(getLogger());
-		config = new JASDLAgentConfigurator(this);
+        // instantiate utility classes
+        jom = new JASDLOntologyManager(getLogger());
+        config = new JASDLAgentConfigurator(this);
 
 
-		// override plan library
-		setPL(new JASDLPlanLibrary(this));		
+        // override plan library
+        setPL(new JASDLPlanLibrary(this));      
 
-	}
+    }
 
-	@Override
-	public TransitionSystem initAg(AgArch arch, BeliefBase bb, String src, Settings stts) throws JasonException {
-		if (!(bb instanceof JASDLBeliefBase)) {
-			throw new JASDLException("JASDL must be used in combination with the jasdl.bb.OwlBeliefBase class");
-		}
-		((JASDLBeliefBase) bb).setAgent(this);
+    @Override
+    public TransitionSystem initAg(AgArch arch, BeliefBase bb, String src, Settings stts) throws JasonException {
+        if (!(bb instanceof JASDLBeliefBase)) {
+            throw new JASDLException("JASDL must be used in combination with the jasdl.bb.OwlBeliefBase class");
+        }
+        ((JASDLBeliefBase) bb).setAgent(this);
 
-		// load .mas2j JASDL configuration and initialise agent
-		config.preInitConfigure(stts);
-		TransitionSystem ts = super.initAg(arch, bb, src, stts);
-		config.postInitConfigure(stts);
-		
+        // load .mas2j JASDL configuration and initialise agent
+        config.preInitConfigure(stts);
+        TransitionSystem ts = super.initAg(arch, bb, src, stts);
+        config.postInitConfigure(stts);
+        
 
-		for(SEPlan se : ((JASDLPlanLibrary)getPL()).getSEPlans()){
-			getLogger().finest(se.getTrigger().toString());
-		}
-		
+        for(SEPlan se : ((JASDLPlanLibrary)getPL()).getSEPlans()){
+            getLogger().finest(se.getTrigger().toString());
+        }
+        
 
-		return ts;
-	}
+        return ts;
+    }
 
-	
-	
-	
-	@Override
-	public List<Literal>[] brf(Literal beliefToAdd, Literal beliefToDel, Intention i) throws RevisionFailedException {
-		
-		// if we are only removing brf need not be applied - OWL-DL is monotonic
-		if (beliefToDel != null) { 
-			return super.brf(beliefToAdd, beliefToDel, i);
-		}		
-				
-		
-		if(beliefToAdd != null){
-			
-			// temporarily disable contraction and annotation gathering
-			boolean prevAnnotationGathering = getConfig().isAnnotationGatheringEnabled();
-			boolean prevContraction = getConfig().isContractionEnabled();			
-			getConfig().setAnnotationGatheringEnabled(false);
-			getConfig().setContractionEnabled(false);	
-			
-			try {
-				
-				List<Literal> addList = new Vector<Literal>();
-				List<Literal> delList = new Vector<Literal>();
-				
-				SELiteral sl = getSELiteralFactory().construct(beliefToAdd);
-				OWLAxiom l = getSELiteralToAxiomConverter().create(sl);						
-				
-				// Add the belief
-				if (!getBB().add(beliefToAdd)) throw new RevisionFailedException("Addition of "+beliefToAdd+" failed");
-				addList.add(beliefToAdd);
-				
-				if(config.isBeliefRevisionEnabled()){
-					//DL BASED SEMI-REVISION	
-						
-					OWLDescription desc = new IndividualAxiomToDescriptionConverter(jom.getOntologyManager().getOWLDataFactory()).convert(l);				
-					while(!jom.areOntologiesConsistent()){
-											
-						getLogger().info("Attemping to accommodate "+beliefToAdd);
-						
-						BlackBoxExplanation bbgen = new BlackBoxExplanation(OWLManager.createOWLOntologyManager()); // need to use fresh ontology manager to avoid pollution from explanation process
-						bbgen.setOntology(sl.getOntology());
-						bbgen.setReasoner(jom.getReasoner());
-						bbgen.setReasonerFactory(new JASDLReasonerFactory());		
-						
-						Set<OWLAxiom> just = bbgen.getExplanation(desc);
-						
-						just.add(l); // SEMI-revision: can reject incoming belief
-						
-						TBoxAxiomKernelsetFilter filter = new TBoxAxiomKernelsetFilter();			
-						Set<OWLAxiom> filtered = filter.filterSingleKernel(just);					
-						JASDLIncisionFunction incisor = new JASDLIncisionFunction(this, sl);
-						Set<OWLAxiom> incised = incisor.applyToOne(filtered);
-						
-						getLogger().fine("Justification for "+sl+": "+just);
-						getLogger().fine("... Filtered: "+filtered);
-						getLogger().fine("... Incised: "+incised);
-						
-						if(incised.contains(l)){
-							// roll back changes
-							if (!getBB().remove(beliefToAdd)) throw new RevisionFailedException("Rollback  of "+beliefToAdd+" addition failed");						
-							for(Literal del : delList){
-								if (!getBB().add(del)) throw new RevisionFailedException("Rollback  of "+del+" removal failed");
-							}						
-							throw new RevisionFailedException("Rejected new belief "+l);
-						}else{						
-							for(OWLAxiom del : incised){							
-								SELiteral delsl = getAxiomToSELiteralConverter().convert((OWLIndividualAxiom)del);		
-								getLogger().info("... removing "+delsl+"   "+del);							
-								if (!getBB().remove(delsl.getLiteral())) throw new RevisionFailedException("Removal of "+delsl+" failed");							
-								delList.add(delsl.getLiteral());
-							}						
-						}
-					}							
+    
+    
+    
+    @Override
+    public List<Literal>[] brf(Literal beliefToAdd, Literal beliefToDel, Intention i) throws RevisionFailedException {
+        
+        // if we are only removing brf need not be applied - OWL-DL is monotonic
+        if (beliefToDel != null) { 
+            return super.brf(beliefToAdd, beliefToDel, i);
+        }       
+                
+        
+        if(beliefToAdd != null){
+            
+            // temporarily disable contraction and annotation gathering
+            boolean prevAnnotationGathering = getConfig().isAnnotationGatheringEnabled();
+            boolean prevContraction = getConfig().isContractionEnabled();           
+            getConfig().setAnnotationGatheringEnabled(false);
+            getConfig().setContractionEnabled(false);   
+            
+            try {
+                
+                List<Literal> addList = new Vector<Literal>();
+                List<Literal> delList = new Vector<Literal>();
+                
+                SELiteral sl = getSELiteralFactory().construct(beliefToAdd);
+                OWLAxiom l = getSELiteralToAxiomConverter().create(sl);                     
+                
+                // Add the belief
+                if (!getBB().add(beliefToAdd)) throw new RevisionFailedException("Addition of "+beliefToAdd+" failed");
+                addList.add(beliefToAdd);
+                
+                if(config.isBeliefRevisionEnabled()){
+                    //DL BASED SEMI-REVISION    
+                        
+                    OWLDescription desc = new IndividualAxiomToDescriptionConverter(jom.getOntologyManager().getOWLDataFactory()).convert(l);               
+                    while(!jom.areOntologiesConsistent()){
+                                            
+                        getLogger().info("Attemping to accommodate "+beliefToAdd);
+                        
+                        BlackBoxExplanation bbgen = new BlackBoxExplanation(OWLManager.createOWLOntologyManager()); // need to use fresh ontology manager to avoid pollution from explanation process
+                        bbgen.setOntology(sl.getOntology());
+                        bbgen.setReasoner(jom.getReasoner());
+                        bbgen.setReasonerFactory(new JASDLReasonerFactory());       
+                        
+                        Set<OWLAxiom> just = bbgen.getExplanation(desc);
+                        
+                        just.add(l); // SEMI-revision: can reject incoming belief
+                        
+                        TBoxAxiomKernelsetFilter filter = new TBoxAxiomKernelsetFilter();           
+                        Set<OWLAxiom> filtered = filter.filterSingleKernel(just);                   
+                        JASDLIncisionFunction incisor = new JASDLIncisionFunction(this, sl);
+                        Set<OWLAxiom> incised = incisor.applyToOne(filtered);
+                        
+                        getLogger().fine("Justification for "+sl+": "+just);
+                        getLogger().fine("... Filtered: "+filtered);
+                        getLogger().fine("... Incised: "+incised);
+                        
+                        if(incised.contains(l)){
+                            // roll back changes
+                            if (!getBB().remove(beliefToAdd)) throw new RevisionFailedException("Rollback  of "+beliefToAdd+" addition failed");                        
+                            for(Literal del : delList){
+                                if (!getBB().add(del)) throw new RevisionFailedException("Rollback  of "+del+" removal failed");
+                            }                       
+                            throw new RevisionFailedException("Rejected new belief "+l);
+                        }else{                      
+                            for(OWLAxiom del : incised){                            
+                                SELiteral delsl = getAxiomToSELiteralConverter().convert((OWLIndividualAxiom)del);      
+                                getLogger().info("... removing "+delsl+"   "+del);                          
+                                if (!getBB().remove(delsl.getLiteral())) throw new RevisionFailedException("Removal of "+delsl+" failed");                          
+                                delList.add(delsl.getLiteral());
+                            }                       
+                        }
+                    }                           
 
-				}else{
-					// CONTRADICTION REJECTION					
-					if (!getJom().areOntologiesConsistent()) {
-						getLogger().info("Contradiction rejection  " + beliefToAdd);
-						if (!getBB().remove(beliefToAdd)) throw new RevisionFailedException("Rollback  of "+beliefToAdd+" addition failed");
-						throw new RevisionFailedException("Rejected new belief "+l);
-					}
-						
-				}
-				
-				return new List[]{addList,delList};
-				
-			} catch (JASDLNotEnrichedException e){
-				return super.brf(beliefToAdd, beliefToDel, i);
-			} catch (Exception e) {
-				throw new RevisionFailedException("", e);
-			}finally{				
-				getLogger().fine("Restoring contraction and annotation gathering status");
-				getConfig().setAnnotationGatheringEnabled(prevAnnotationGathering);
-				getConfig().setContractionEnabled(prevContraction);
-			}	
-			
+                }else{
+                    // CONTRADICTION REJECTION                  
+                    if (!getJom().areOntologiesConsistent()) {
+                        getLogger().info("Contradiction rejection  " + beliefToAdd);
+                        if (!getBB().remove(beliefToAdd)) throw new RevisionFailedException("Rollback  of "+beliefToAdd+" addition failed");
+                        throw new RevisionFailedException("Rejected new belief "+l);
+                    }
+                        
+                }
+                
+                return new List[]{addList,delList};
+                
+            } catch (JASDLNotEnrichedException e){
+                return super.brf(beliefToAdd, beliefToDel, i);
+            } catch (Exception e) {
+                throw new RevisionFailedException("", e);
+            }finally{               
+                getLogger().fine("Restoring contraction and annotation gathering status");
+                getConfig().setAnnotationGatheringEnabled(prevAnnotationGathering);
+                getConfig().setContractionEnabled(prevContraction);
+            }   
+            
 
-		}
-		
-		throw new RuntimeException("Unexpected behaviour, both beliefToAdd and beliefToDel are non-null.");		
-	}
-	
-	
-	
+        }
+        
+        throw new RuntimeException("Unexpected behaviour, both beliefToAdd and beliefToDel are non-null.");     
+    }
+    
+    
+    
 
-	/**
-	 * *Must* be unique within society!
-	 * @return
-	 */
-	public String getAgentName() {
-		return getTS().getUserAgArch().getAgName();
-	}
+    /**
+     * *Must* be unique within society!
+     * @return
+     */
+    public String getAgentName() {
+        return getTS().getUserAgArch().getAgName();
+    }
 
-	public SELiteralFactory getSELiteralFactory(){
-		return getJom().getSELiteralFactory();
-	}
-	
-	public List<MappingStrategy> getDefaultMappingStrategies() {
-		return config.getDefaultMappingStrategies();
-	}
+    public SELiteralFactory getSELiteralFactory(){
+        return getJom().getSELiteralFactory();
+    }
+    
+    public List<MappingStrategy> getDefaultMappingStrategies() {
+        return config.getDefaultMappingStrategies();
+    }
 
-	public JASDLOntologyManager getJom() {
-		return jom;
-	}
+    public JASDLOntologyManager getJom() {
+        return jom;
+    }
 
-	public AliasManager getAliasManager() {
-		return getJom().getAliasManager();
-	}
+    public AliasManager getAliasManager() {
+        return getJom().getAliasManager();
+    }
 
-	public LabelManager getLabelManager() {
-		return getJom().getLabelManager();
-	}
+    public LabelManager getLabelManager() {
+        return getJom().getLabelManager();
+    }
 
-	public OWLOntologyManager getOntologyManager() {
-		return getJom().getOntologyManager();
-	}
+    public OWLOntologyManager getOntologyManager() {
+        return getJom().getOntologyManager();
+    }
 
-	public OntologyURIManager getPhysicalURIManager() {
-		return getJom().getPhysicalURIManager();
-	}
+    public OntologyURIManager getPhysicalURIManager() {
+        return getJom().getPhysicalURIManager();
+    }
 
-	public OntologyURIManager getLogicalURIManager() {
-		return getJom().getLogicalURIManager();
-	}
+    public OntologyURIManager getLogicalURIManager() {
+        return getJom().getLogicalURIManager();
+    }
 
-	public OWLReasoner getReasoner() throws JASDLException {
-		return getJom().getReasoner();
-	}
+    public OWLReasoner getReasoner() throws JASDLException {
+        return getJom().getReasoner();
+    }
 
-	public SELiteralToAxiomConverter getSELiteralToAxiomConverter() {
-		return getJom().getSELiteralToAxiomConverter();
-	}
+    public SELiteralToAxiomConverter getSELiteralToAxiomConverter() {
+        return getJom().getSELiteralToAxiomConverter();
+    }
 
-	public AxiomToSELiteralConverter getAxiomToSELiteralConverter() {
-		return getJom().getAxiomToSELiteralConverter();
-	}
+    public AxiomToSELiteralConverter getAxiomToSELiteralConverter() {
+        return getJom().getAxiomToSELiteralConverter();
+    }
 
-	public OWLDataFactory getOWLDataFactory() {
-		return getOntologyManager().getOWLDataFactory();
-	}
+    public OWLDataFactory getOWLDataFactory() {
+        return getOntologyManager().getOWLDataFactory();
+    }
 
-	public void setReasoner(OWLReasoner reasoner) {
-		getJom().setReasoner(reasoner);
-	}
+    public void setReasoner(OWLReasoner reasoner) {
+        getJom().setReasoner(reasoner);
+    }
 
-	public JASDLAgentConfigurator getConfig() {
-		return config;
-	}
+    public JASDLAgentConfigurator getConfig() {
+        return config;
+    }
 
 }
 /**
 private void applyPelletOnlyBeliefRevision(SELiteral sl) throws Exception {
-	OWLAxiom axiomToAdd = getSELiteralToAxiomConverter().create(sl);
-	Reasoner pellet = (org.mindswap.pellet.owlapi.Reasoner) getReasoner();
-	getOntologyManager().applyChange(new AddAxiom(sl.getOntology(), axiomToAdd));
-	getJom().refreshReasoner();
+    OWLAxiom axiomToAdd = getSELiteralToAxiomConverter().create(sl);
+    Reasoner pellet = (org.mindswap.pellet.owlapi.Reasoner) getReasoner();
+    getOntologyManager().applyChange(new AddAxiom(sl.getOntology(), axiomToAdd));
+    getJom().refreshReasoner();
 
-	while (!pellet.isConsistent()) {
-		getJom().refreshReasoner();
-		SatisfiabilityConverter con = new SatisfiabilityConverter(getOWLDataFactory());
-		OWLDescription desc = con.convert(axiomToAdd);
-		pellet.getKB().setDoExplanation(true);
-		pellet.isSatisfiable(desc);
-		Set<OWLAxiom> explanation = pellet.getExplanation();
+    while (!pellet.isConsistent()) {
+        getJom().refreshReasoner();
+        SatisfiabilityConverter con = new SatisfiabilityConverter(getOWLDataFactory());
+        OWLDescription desc = con.convert(axiomToAdd);
+        pellet.getKB().setDoExplanation(true);
+        pellet.isSatisfiable(desc);
+        Set<OWLAxiom> explanation = pellet.getExplanation();
 
-		explanation = new JASDLKernelsetFilter().filterSingleKernel(explanation);
-		getLogger().fine("Incremental explanation: " + explanation);
+        explanation = new JASDLKernelsetFilter().filterSingleKernel(explanation);
+        getLogger().fine("Incremental explanation: " + explanation);
 
-		explanation = new JASDLIncisionFunction(this, sl).applyToOne(explanation);
-		getLogger().fine("Remove: " + explanation);
+        explanation = new JASDLIncisionFunction(this, sl).applyToOne(explanation);
+        getLogger().fine("Remove: " + explanation);
 
-		if (explanation.equals(Collections.singleton(axiomToAdd))) {
-			// Axiom has been rejected,
-			getOntologyManager().applyChange(new RemoveAxiom(sl.getOntology(), axiomToAdd));
-			getJom().refreshReasoner();
-			throw new RevisionFailedException("" + sl);
-		} else {
-			for (OWLAxiom revision : explanation) {
-				for (OWLOntology ontology : getOntologyManager().getOntologies()) { // across all known ontologies
-					getOntologyManager().applyChange(new RemoveAxiom(ontology, revision));
-				}
-			}
-			getJom().refreshReasoner();
-		}
-	}
-	// Will only be reached if addition has been accepted
-	// remove the axiom added only for the purpose of explanation generation
-	getOntologyManager().applyChange(new RemoveAxiom(sl.getOntology(), axiomToAdd));
-	getJom().refreshReasoner();
+        if (explanation.equals(Collections.singleton(axiomToAdd))) {
+            // Axiom has been rejected,
+            getOntologyManager().applyChange(new RemoveAxiom(sl.getOntology(), axiomToAdd));
+            getJom().refreshReasoner();
+            throw new RevisionFailedException("" + sl);
+        } else {
+            for (OWLAxiom revision : explanation) {
+                for (OWLOntology ontology : getOntologyManager().getOntologies()) { // across all known ontologies
+                    getOntologyManager().applyChange(new RemoveAxiom(ontology, revision));
+                }
+            }
+            getJom().refreshReasoner();
+        }
+    }
+    // Will only be reached if addition has been accepted
+    // remove the axiom added only for the purpose of explanation generation
+    getOntologyManager().applyChange(new RemoveAxiom(sl.getOntology(), axiomToAdd));
+    getJom().refreshReasoner();
 }
 
 private void applyBebopsBeliefRevision(SELiteral sl) throws Exception {
-	OWLAxiom axiomToAdd = getSELiteralToAxiomConverter().create(sl);
-	BeliefBaseSemiRevisor bbrev = new BeliefBaseSemiRevisor(getOntologyManager(), new JASDLReasonerFactory(), getLogger());
-	Set<OWLAxiom> revisions = bbrev.revise(axiomToAdd, new JASDLKernelsetFilter(), new JASDLIncisionFunction(this, sl));
-	// *** this point is only reached if the addition is accepted ***
-	for (OWLAxiom revision : revisions) {
-		for (OWLOntology ontology : getOntologyManager().getOntologies()) { // across all known ontologies
-			getOntologyManager().applyChange(new RemoveAxiom(ontology, revision));
-			//TODO: Use Jason's standard mechanisms, avoid contraction though!
-		}
-	}
-	getJom().refreshReasoner();
+    OWLAxiom axiomToAdd = getSELiteralToAxiomConverter().create(sl);
+    BeliefBaseSemiRevisor bbrev = new BeliefBaseSemiRevisor(getOntologyManager(), new JASDLReasonerFactory(), getLogger());
+    Set<OWLAxiom> revisions = bbrev.revise(axiomToAdd, new JASDLKernelsetFilter(), new JASDLIncisionFunction(this, sl));
+    // *** this point is only reached if the addition is accepted ***
+    for (OWLAxiom revision : revisions) {
+        for (OWLOntology ontology : getOntologyManager().getOntologies()) { // across all known ontologies
+            getOntologyManager().applyChange(new RemoveAxiom(ontology, revision));
+            //TODO: Use Jason's standard mechanisms, avoid contraction though!
+        }
+    }
+    getJom().refreshReasoner();
 }
 **/

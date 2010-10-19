@@ -84,244 +84,244 @@ import uk.ac.manchester.cs.owl.mansyntaxrenderer.ManchesterOWLSyntaxOWLObjectRen
  */
 public class JASDLOntologyManager {
 
-	private Logger logger;
+    private Logger logger;
 
-	private OWLOntologyManager ontologyManager;
+    private OWLOntologyManager ontologyManager;
 
-	private AliasManager aliasManager;
+    private AliasManager aliasManager;
 
-	private LabelManager labelManager;
+    private LabelManager labelManager;
 
-	private OntologyURIManager logicalURIManager;
+    private OntologyURIManager logicalURIManager;
 
-	private OntologyURIManager physicalURIManager;
+    private OntologyURIManager physicalURIManager;
 
-	private OWLReasoner reasoner;
+    private OWLReasoner reasoner;
 
-	private URI personalOntologyURI;
+    private URI personalOntologyURI;
 
-	private DefinitionManager definitionManager;
+    private DefinitionManager definitionManager;
 
-	private ManchesterOWLSyntaxOWLObjectRendererImpl manchesterNsPrefixOWLObjectRenderer;
+    private ManchesterOWLSyntaxOWLObjectRendererImpl manchesterNsPrefixOWLObjectRenderer;
 
-	private ManchesterOWLSyntaxOWLObjectRendererImpl manchesterURIOWLObjectRenderer;
+    private ManchesterOWLSyntaxOWLObjectRendererImpl manchesterURIOWLObjectRenderer;
 
-	private ManchesterOWLSyntaxDescriptionParser manchesterNsPrefixDescriptionParser;
+    private ManchesterOWLSyntaxDescriptionParser manchesterNsPrefixDescriptionParser;
 
-	private ManchesterOWLSyntaxDescriptionParser manchesterURIDescriptionParser;	
+    private ManchesterOWLSyntaxDescriptionParser manchesterURIDescriptionParser;    
 
-	private SELiteralFactory seLiteralFactory;
-	
-	private AxiomToSELiteralConverter axiomToSELiteralConverter;
+    private SELiteralFactory seLiteralFactory;
+    
+    private AxiomToSELiteralConverter axiomToSELiteralConverter;
 
-	private SELiteralToAxiomConverter SELiteralToAxiomConverter;
-	
-	private boolean annotationGatheringEnabled;
-	
+    private SELiteralToAxiomConverter SELiteralToAxiomConverter;
+    
+    private boolean annotationGatheringEnabled;
+    
 
-	public JASDLOntologyManager(Logger logger) throws OWLException{
-		this.logger = logger;
-		this.personalOntologyURI = URI.create("http://self.ontology/default.owl");
-		aliasManager = new AliasManager();
-		labelManager = new LabelManager();
-		ontologyManager = OWLManager.createOWLOntologyManager();
-		physicalURIManager = new OntologyURIManager();
-		logicalURIManager = new OntologyURIManager();
-		
-		seLiteralFactory = new SELiteralFactory(this);
-		SELiteralToAxiomConverter = new SELiteralToAxiomConverter(this);
-		axiomToSELiteralConverter = new AxiomToSELiteralConverter(this);
+    public JASDLOntologyManager(Logger logger) throws OWLException{
+        this.logger = logger;
+        this.personalOntologyURI = URI.create("http://self.ontology/default.owl");
+        aliasManager = new AliasManager();
+        labelManager = new LabelManager();
+        ontologyManager = OWLManager.createOWLOntologyManager();
+        physicalURIManager = new OntologyURIManager();
+        logicalURIManager = new OntologyURIManager();
+        
+        seLiteralFactory = new SELiteralFactory(this);
+        SELiteralToAxiomConverter = new SELiteralToAxiomConverter(this);
+        axiomToSELiteralConverter = new AxiomToSELiteralConverter(this);
 
-		definitionManager = new DefinitionManager();
+        definitionManager = new DefinitionManager();
 
-		manchesterURIOWLObjectRenderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
-		manchesterURIOWLObjectRenderer.setShortFormProvider(new URIOWLObjectShortFormProvider(this));
+        manchesterURIOWLObjectRenderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
+        manchesterURIOWLObjectRenderer.setShortFormProvider(new URIOWLObjectShortFormProvider(this));
 
-		manchesterNsPrefixOWLObjectRenderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
-		manchesterNsPrefixOWLObjectRenderer.setShortFormProvider(new NsPrefixOWLObjectShortFormProvider(this));
+        manchesterNsPrefixOWLObjectRenderer = new ManchesterOWLSyntaxOWLObjectRendererImpl();
+        manchesterNsPrefixOWLObjectRenderer.setShortFormProvider(new NsPrefixOWLObjectShortFormProvider(this));
 
-		manchesterNsPrefixDescriptionParser = new ManchesterOWLSyntaxDescriptionParser(getOntologyManager().getOWLDataFactory(), new NsPrefixOWLEntityChecker(this));
-		manchesterURIDescriptionParser = new ManchesterOWLSyntaxDescriptionParser(getOntologyManager().getOWLDataFactory(), new URIOWLEntityChecker(this));
+        manchesterNsPrefixDescriptionParser = new ManchesterOWLSyntaxDescriptionParser(getOntologyManager().getOWLDataFactory(), new NsPrefixOWLEntityChecker(this));
+        manchesterURIDescriptionParser = new ManchesterOWLSyntaxDescriptionParser(getOntologyManager().getOWLDataFactory(), new URIOWLEntityChecker(this));
 
-		
-	}
-	
-	/**
-	 * Calls {@link JASDLOntologyManager#getOWLIndividual(URI)}} converting uri to an alias.
-	 * Default mapping strategies are applied.
-	 * 
-	 * @see JASDLOntologyManager#toAlias(URI,List)
-	 * @see JASDLParams#DEFAULT_MAPPING_STRATEGIES
-	 * @param uri
-	 * @return
-	 * @throws JASDLException
-	 */
-	public OWLIndividual getOWLIndividual(URI uri) throws JASDLException{
-		return getOWLIndividual(toAlias(uri, JASDLParams.DEFAULT_MAPPING_STRATEGIES));
-	}
-	
-	/**
-	 * Search across all known ontologies for an individual with the functor of alias (Individuals are global between ontology instances, wrt functor).
-	 * If not found, instantiate a new individual according to the functor and label of alias.
-	 * @param alias
-	 * @return
-	 */
-	public OWLIndividual getOWLIndividual(Alias alias) throws JASDLException{
-		OWLIndividual i = null;
-		
-		// search across all known ontologies for an individual by this name (functor only)		
-		for(OWLOntology tryOntology : getReasoner().getLoadedOntologies()){
-			try{
-				i = (OWLIndividual) getAliasManager().getRight(
-						AliasFactory.INSTANCE.create(
-								alias.getFunctor(),
-								getLabelManager().getLeft(tryOntology)));
-			}catch(JASDLUnknownMappingException e){				
-			}
-		}	
-		
-		
-		// we can't find one, define a new individual within the ontology referenced by this SE-Literal		
-		if(i == null){
-			// get the ontology of this SE-Literal
-			OWLOntology ontology = getLabelManager().getRight(alias.getLabel());
-			
-			// instantiate a new alias mapping for this individual
-			URI uri = URI.create(ontology.getURI() + "#" + alias.getFunctor());
-			
-			getLogger().finest("Instantiating individual ("+alias+") "+uri);
-			
-			i = getOntologyManager().getOWLDataFactory().getOWLIndividual(uri);
-			getAliasManager().put(alias, i);
-			
-			// create a semantically-meaningless empty annotation axiom so this individual is referenced within the ontology
-			OWLAnnotation a = new OWLLabelAnnotationImpl(getOWLDataFactory(), getOWLDataFactory().getOWLTypedConstant(""));
-			OWLAxiom axiom = getOWLDataFactory().getOWLEntityAnnotationAxiom(i, a);
-			try {
-				getOntologyManager().applyChange(new AddAxiom(ontology, axiom)); // <- add this "redundant" axiom to ensure we have a reference to this individuals in the ontology (for toEntity method and description parsing)
-				refreshReasoner();
-			} catch (Exception e) {
-				throw new JASDLException("Error instantiating owl individual from " + alias, e);
-			}
-		}
-		
-		return i;
-	}
-	
-	/**
-	 * Gets the alias corresponding to a URI. URI corresponds to a known entity, its alias is returned.
-	 * Otherwise, the label is taken from (scheme concat scheme specific part) and the functor from the fragment (minus the #).
-	 * Additionally, applied default mapping strategies to URI fragment to prevent invalid functors being generated.
-	 * 
-	 * Note: Ontology referenced by URI must be a known ontology!
-	 * @param uri
-	 * @return
-	 */
-	public Alias toAlias(URI uri, List<MappingStrategy> strategies) throws JASDLUnknownMappingException{
-		try {
-			OWLEntity entity = toEntity(uri);
-			return getAliasManager().getLeft(entity);
-		} catch (JASDLUnknownMappingException e) {
-			// unknown uri, create a new alias
-			OWLOntology ontology = getLogicalURIManager().getLeft(URI.create(uri.getScheme() + ":" + uri.getSchemeSpecificPart()));
-			Atom label = getLabelManager().getLeft(ontology);			
-			String _functor = uri.getFragment();
-			
-			// apply mapping strategies to fragment of URI to generate a valid functor
-			for (MappingStrategy strategy : strategies) {
-				_functor = strategy.apply(_functor);
-			}
-			return AliasFactory.INSTANCE.create(new Atom(_functor), label);
-			
-		}
-	}
-	
-	
-	public List<Literal> getAllSELiterals() throws JASDLException{
-		List<Literal> bels = new Vector<Literal>();
-		for (OWLOntology ontology : getOntologyManager().getOntologies()) {
-			for (OWLIndividualAxiom axiom : ontology.getIndividualAxioms()) {
-				Literal l = getAxiomToSELiteralConverter().convert(axiom).getLiteral();
-				bels.add(l);
-			}
-		}
-		return bels;
-	}
-	
-	public void setAnnotationGatheringEnabled(boolean b) {
-		this.annotationGatheringEnabled = b;
-	}
-	
-	public boolean isAnnotationGatheringEnabled() {
-		return annotationGatheringEnabled;
-	}
-	
-	public SELiteralFactory getSELiteralFactory(){
-		return seLiteralFactory;
-	}
+        
+    }
+    
+    /**
+     * Calls {@link JASDLOntologyManager#getOWLIndividual(URI)}} converting uri to an alias.
+     * Default mapping strategies are applied.
+     * 
+     * @see JASDLOntologyManager#toAlias(URI,List)
+     * @see JASDLParams#DEFAULT_MAPPING_STRATEGIES
+     * @param uri
+     * @return
+     * @throws JASDLException
+     */
+    public OWLIndividual getOWLIndividual(URI uri) throws JASDLException{
+        return getOWLIndividual(toAlias(uri, JASDLParams.DEFAULT_MAPPING_STRATEGIES));
+    }
+    
+    /**
+     * Search across all known ontologies for an individual with the functor of alias (Individuals are global between ontology instances, wrt functor).
+     * If not found, instantiate a new individual according to the functor and label of alias.
+     * @param alias
+     * @return
+     */
+    public OWLIndividual getOWLIndividual(Alias alias) throws JASDLException{
+        OWLIndividual i = null;
+        
+        // search across all known ontologies for an individual by this name (functor only)     
+        for(OWLOntology tryOntology : getReasoner().getLoadedOntologies()){
+            try{
+                i = (OWLIndividual) getAliasManager().getRight(
+                        AliasFactory.INSTANCE.create(
+                                alias.getFunctor(),
+                                getLabelManager().getLeft(tryOntology)));
+            }catch(JASDLUnknownMappingException e){             
+            }
+        }   
+        
+        
+        // we can't find one, define a new individual within the ontology referenced by this SE-Literal     
+        if(i == null){
+            // get the ontology of this SE-Literal
+            OWLOntology ontology = getLabelManager().getRight(alias.getLabel());
+            
+            // instantiate a new alias mapping for this individual
+            URI uri = URI.create(ontology.getURI() + "#" + alias.getFunctor());
+            
+            getLogger().finest("Instantiating individual ("+alias+") "+uri);
+            
+            i = getOntologyManager().getOWLDataFactory().getOWLIndividual(uri);
+            getAliasManager().put(alias, i);
+            
+            // create a semantically-meaningless empty annotation axiom so this individual is referenced within the ontology
+            OWLAnnotation a = new OWLLabelAnnotationImpl(getOWLDataFactory(), getOWLDataFactory().getOWLTypedConstant(""));
+            OWLAxiom axiom = getOWLDataFactory().getOWLEntityAnnotationAxiom(i, a);
+            try {
+                getOntologyManager().applyChange(new AddAxiom(ontology, axiom)); // <- add this "redundant" axiom to ensure we have a reference to this individuals in the ontology (for toEntity method and description parsing)
+                refreshReasoner();
+            } catch (Exception e) {
+                throw new JASDLException("Error instantiating owl individual from " + alias, e);
+            }
+        }
+        
+        return i;
+    }
+    
+    /**
+     * Gets the alias corresponding to a URI. URI corresponds to a known entity, its alias is returned.
+     * Otherwise, the label is taken from (scheme concat scheme specific part) and the functor from the fragment (minus the #).
+     * Additionally, applied default mapping strategies to URI fragment to prevent invalid functors being generated.
+     * 
+     * Note: Ontology referenced by URI must be a known ontology!
+     * @param uri
+     * @return
+     */
+    public Alias toAlias(URI uri, List<MappingStrategy> strategies) throws JASDLUnknownMappingException{
+        try {
+            OWLEntity entity = toEntity(uri);
+            return getAliasManager().getLeft(entity);
+        } catch (JASDLUnknownMappingException e) {
+            // unknown uri, create a new alias
+            OWLOntology ontology = getLogicalURIManager().getLeft(URI.create(uri.getScheme() + ":" + uri.getSchemeSpecificPart()));
+            Atom label = getLabelManager().getLeft(ontology);           
+            String _functor = uri.getFragment();
+            
+            // apply mapping strategies to fragment of URI to generate a valid functor
+            for (MappingStrategy strategy : strategies) {
+                _functor = strategy.apply(_functor);
+            }
+            return AliasFactory.INSTANCE.create(new Atom(_functor), label);
+            
+        }
+    }
+    
+    
+    public List<Literal> getAllSELiterals() throws JASDLException{
+        List<Literal> bels = new Vector<Literal>();
+        for (OWLOntology ontology : getOntologyManager().getOntologies()) {
+            for (OWLIndividualAxiom axiom : ontology.getIndividualAxioms()) {
+                Literal l = getAxiomToSELiteralConverter().convert(axiom).getLiteral();
+                bels.add(l);
+            }
+        }
+        return bels;
+    }
+    
+    public void setAnnotationGatheringEnabled(boolean b) {
+        this.annotationGatheringEnabled = b;
+    }
+    
+    public boolean isAnnotationGatheringEnabled() {
+        return annotationGatheringEnabled;
+    }
+    
+    public SELiteralFactory getSELiteralFactory(){
+        return seLiteralFactory;
+    }
 
-	public Atom getPersonalOntologyLabel() {
-		return new Atom("self");
-	}
+    public Atom getPersonalOntologyLabel() {
+        return new Atom("self");
+    }
 
-	public URI getPersonalOntologyURI() {
-		return personalOntologyURI;
-	}
+    public URI getPersonalOntologyURI() {
+        return personalOntologyURI;
+    }
 
-	public void setPersonalOntologyURI(URI personalOntologyURI) {
-		this.personalOntologyURI = personalOntologyURI;
-	}
-	
-	public SELiteralToAxiomConverter getSELiteralToAxiomConverter() {
-		return SELiteralToAxiomConverter;
-	}
+    public void setPersonalOntologyURI(URI personalOntologyURI) {
+        this.personalOntologyURI = personalOntologyURI;
+    }
+    
+    public SELiteralToAxiomConverter getSELiteralToAxiomConverter() {
+        return SELiteralToAxiomConverter;
+    }
 
-	public AxiomToSELiteralConverter getAxiomToSELiteralConverter() {
-		return axiomToSELiteralConverter;
-	}
+    public AxiomToSELiteralConverter getAxiomToSELiteralConverter() {
+        return axiomToSELiteralConverter;
+    }
 
-	/**
-	 * Convenience method to (polymorphically) create an entity from resource URI (if known).
-	 * TODO: where should this sit?
-	 * @param uri	URI of resource to create entity from
-	 * @return		entity identified by URI
-	 * @throws UnknownReferenceException	if OWLObject not known
-	 */
-	public OWLEntity toEntity(URI uri) throws JASDLUnknownMappingException {
-		URI ontURI;
-		try {
-			ontURI = new URI(uri.getScheme(), uri.getSchemeSpecificPart(), null);
-		} catch (URISyntaxException e) {
-			throw new JASDLUnknownMappingException("Invalid entity URI " + uri, e);
-		}
-		OWLOntology ontology = getLogicalURIManager().getLeft(ontURI);
-		// clumsy approach, but I can't find any way of achieving this polymorphically (i.e. retrieve an OWLEntity from a URI) using OWL-API
-		OWLEntity entity;
-		if (ontology.containsClassReference(uri)) {
-			entity = getOntologyManager().getOWLDataFactory().getOWLClass(uri);
-		} else if (ontology.containsObjectPropertyReference(uri)) {
-			entity = getOntologyManager().getOWLDataFactory().getOWLObjectProperty(uri);
-		} else if (ontology.containsDataPropertyReference(uri)) {
-			entity = getOntologyManager().getOWLDataFactory().getOWLDataProperty(uri);
-		} else if (ontology.containsIndividualReference(uri)) {
-			entity = getOntologyManager().getOWLDataFactory().getOWLIndividual(uri);
-		} else {
-			throw new JASDLUnknownMappingException("Unknown ontology resource URI: " + uri);
-		}
-		return entity;
-	}
+    /**
+     * Convenience method to (polymorphically) create an entity from resource URI (if known).
+     * TODO: where should this sit?
+     * @param uri   URI of resource to create entity from
+     * @return      entity identified by URI
+     * @throws UnknownReferenceException    if OWLObject not known
+     */
+    public OWLEntity toEntity(URI uri) throws JASDLUnknownMappingException {
+        URI ontURI;
+        try {
+            ontURI = new URI(uri.getScheme(), uri.getSchemeSpecificPart(), null);
+        } catch (URISyntaxException e) {
+            throw new JASDLUnknownMappingException("Invalid entity URI " + uri, e);
+        }
+        OWLOntology ontology = getLogicalURIManager().getLeft(ontURI);
+        // clumsy approach, but I can't find any way of achieving this polymorphically (i.e. retrieve an OWLEntity from a URI) using OWL-API
+        OWLEntity entity;
+        if (ontology.containsClassReference(uri)) {
+            entity = getOntologyManager().getOWLDataFactory().getOWLClass(uri);
+        } else if (ontology.containsObjectPropertyReference(uri)) {
+            entity = getOntologyManager().getOWLDataFactory().getOWLObjectProperty(uri);
+        } else if (ontology.containsDataPropertyReference(uri)) {
+            entity = getOntologyManager().getOWLDataFactory().getOWLDataProperty(uri);
+        } else if (ontology.containsIndividualReference(uri)) {
+            entity = getOntologyManager().getOWLDataFactory().getOWLIndividual(uri);
+        } else {
+            throw new JASDLUnknownMappingException("Unknown ontology resource URI: " + uri);
+        }
+        return entity;
+    }
 
-	/**
-	 * Convenience method to parse a string into a URI and return the associated ontology.
-	 * Ontology is instantiated and assigned a unique anonymous label if unknown.
-	 * @param uri
-	 * @return
-	 * @throws JASDLException
-	 */
-	public OWLOntology getOntology(String _uri) throws JASDLUnknownMappingException {
-		URI uri;
-		try {
-			uri = new URI(strip(_uri, "\"")); // quotes stripped
+    /**
+     * Convenience method to parse a string into a URI and return the associated ontology.
+     * Ontology is instantiated and assigned a unique anonymous label if unknown.
+     * @param uri
+     * @return
+     * @throws JASDLException
+     */
+    public OWLOntology getOntology(String _uri) throws JASDLUnknownMappingException {
+        URI uri;
+        try {
+            uri = new URI(strip(_uri, "\"")); // quotes stripped
 			return getOntology(uri);
 		} catch (URISyntaxException e) {
 			throw new JASDLUnknownMappingException("Invalid physical ontology URI " + _uri, e);
@@ -358,65 +358,65 @@ public class JASDLOntologyManager {
 		URI uri;
 		try {
 			uri = new URI(strip(_uri, "\"")); // quotes stripped
-			return loadOntology(uri, strategies);
-		} catch (URISyntaxException e) {
-			throw new JASDLInvalidSELiteralException("Invalid physical ontology URI " + _uri, e);
-		}
-	}
+            return loadOntology(uri, strategies);
+        } catch (URISyntaxException e) {
+            throw new JASDLInvalidSELiteralException("Invalid physical ontology URI " + _uri, e);
+        }
+    }
 
-	public OWLOntology loadOntology(URI uri, List<MappingStrategy> strategies) throws JASDLException {
-		return loadOntology(getAnonymousOntologyLabel(), uri, strategies);
-	}
+    public OWLOntology loadOntology(URI uri, List<MappingStrategy> strategies) throws JASDLException {
+        return loadOntology(getAnonymousOntologyLabel(), uri, strategies);
+    }
 
-	/**
-	 * Convenience method to instantiate an ontology, load it into reasoner and map it to a label.
-	 * Will not instantiate if ontology already known, either by physical or logical URI
-	 * Configured automapping strategies are applied here.
-	 * @param uri
-	 * @throws JASDLException
-	 */
-	public OWLOntology loadOntology(Atom label, URI uri, List<MappingStrategy> strategies) throws JASDLException {
-		//	simply return an already known (by PHYSICAL uri) ontology if available
-		// simply return an already known (by LOGICAL uri) ontology if available
-		try {
-			return getOntology(uri);
-		} catch (JASDLUnknownMappingException e) {
-		}
-		// not known by physical uri, load
+    /**
+     * Convenience method to instantiate an ontology, load it into reasoner and map it to a label.
+     * Will not instantiate if ontology already known, either by physical or logical URI
+     * Configured automapping strategies are applied here.
+     * @param uri
+     * @throws JASDLException
+     */
+    public OWLOntology loadOntology(Atom label, URI uri, List<MappingStrategy> strategies) throws JASDLException {
+        //  simply return an already known (by PHYSICAL uri) ontology if available
+        // simply return an already known (by LOGICAL uri) ontology if available
+        try {
+            return getOntology(uri);
+        } catch (JASDLUnknownMappingException e) {
+        }
+        // not known by physical uri, load
 
-		getLogger().fine("Loading ontology " + uri + " with label " + label);
-		try {
-			OWLOntology ontology = ontologyManager.loadOntologyFromPhysicalURI(uri);
+        getLogger().fine("Loading ontology " + uri + " with label " + label);
+        try {
+            OWLOntology ontology = ontologyManager.loadOntologyFromPhysicalURI(uri);
 
-			// simply return an already known (by LOGICAL uri) ontology if available
-			try {
-				return logicalURIManager.getLeft(ontology.getURI());
-			} catch (JASDLUnknownMappingException e) {
-			}
+            // simply return an already known (by LOGICAL uri) ontology if available
+            try {
+                return logicalURIManager.getLeft(ontology.getURI());
+            } catch (JASDLUnknownMappingException e) {
+            }
 
-			// not yet known, load
-			Set<OWLOntology> imports = ontologyManager.getImportsClosure(ontology);
-			try {
-				getReasoner().loadOntologies(imports);
-				getReasoner().classify();
-			} catch (OWLReasonerException e) {
-				throw new JASDLException("Unable to load " + uri, e);
-			}
-			initOntology(ontology, label, uri, ontology.getURI(), false); // (successfully) loaded ontologies never personal			
-			applyMappingStrategies(ontology, strategies);
-			getLogger().fine("Loaded ontology from " + uri + " and assigned label " + label);
-			
-			
-			return ontology;
-		} catch (OWLOntologyCreationException e) {
-			throw new JASDLException("Unable to load ontology", e);
-		}
-	}
+            // not yet known, load
+            Set<OWLOntology> imports = ontologyManager.getImportsClosure(ontology);
+            try {
+                getReasoner().loadOntologies(imports);
+                getReasoner().classify();
+            } catch (OWLReasonerException e) {
+                throw new JASDLException("Unable to load " + uri, e);
+            }
+            initOntology(ontology, label, uri, ontology.getURI(), false); // (successfully) loaded ontologies never personal            
+            applyMappingStrategies(ontology, strategies);
+            getLogger().fine("Loaded ontology from " + uri + " and assigned label " + label);
+            
+            
+            return ontology;
+        } catch (OWLOntologyCreationException e) {
+            throw new JASDLException("Unable to load ontology", e);
+        }
+    }
 
-	public OWLOntology createOntology(String _uri, boolean isPersonal) throws JASDLException {
-		URI uri;
-		try {
-			uri = new URI(strip(_uri, "\"")); // quotes stripped
+    public OWLOntology createOntology(String _uri, boolean isPersonal) throws JASDLException {
+        URI uri;
+        try {
+            uri = new URI(strip(_uri, "\"")); // quotes stripped
 			return createOntology(uri, isPersonal);
 		} catch (URISyntaxException e) {
 			throw new JASDLInvalidSELiteralException("Invalid physical ontology URI " + _uri, e);

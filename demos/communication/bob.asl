@@ -51,17 +51,17 @@
       .plan_label(Plan,hp); // get a plans based on a plan's label
       .println("Sending tell how: ",Plan);
       .send(maria,tellHow,Plan);
-	  
+      
       .println("Asking Maria to achieve 'hello'");
       .send(maria,achieve, hello(bob));
       .wait(2000);
       
       .println("Asking Maria to unachieve 'hello'");
       .send(maria,unachieve, hello(bob));
-	  
+      
       // send untell how to maria
       .send(maria,untellHow,hp).
-	  
+      
 
 +vl(X)[source(A)]
    <- .print("Received value ",X," from ",A).
@@ -70,4 +70,4 @@
 +!hello(Who) 
    <- .println("Hello ",Who); 
       .wait(100);
-	  !hello(Who).   
+      !hello(Who).   

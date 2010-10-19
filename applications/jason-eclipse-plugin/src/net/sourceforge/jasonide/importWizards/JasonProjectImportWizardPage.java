@@ -26,73 +26,73 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 public class JasonProjectImportWizardPage extends WizardPage {
-	
-	private Text externalProjectText;
-	private Text projectNameText;
-	
-	public JasonProjectImportWizardPage(String pageName) {
-		super(pageName);
-		setTitle(pageName);
-		setDescription("Import a external Jason project into the workspace");
-	}
+    
+    private Text externalProjectText;
+    private Text projectNameText;
+    
+    public JasonProjectImportWizardPage(String pageName) {
+        super(pageName);
+        setTitle(pageName);
+        setDescription("Import a external Jason project into the workspace");
+    }
 
-	public void createControl(Composite parent) {
-		Composite container = new Composite(parent, SWT.NULL);
-		GridLayout layout = new GridLayout();
-		container.setLayout(layout);
-		layout.numColumns = 3;
-		layout.verticalSpacing = 9;
-		
-		Label label = new Label(container, SWT.NULL);
-		label.setText("&Archive file:");
+    public void createControl(Composite parent) {
+        Composite container = new Composite(parent, SWT.NULL);
+        GridLayout layout = new GridLayout();
+        container.setLayout(layout);
+        layout.numColumns = 3;
+        layout.verticalSpacing = 9;
+        
+        Label label = new Label(container, SWT.NULL);
+        label.setText("&Archive file:");
 
-		externalProjectText = new Text(container, SWT.BORDER | SWT.SINGLE);
-		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
-		externalProjectText.setLayoutData(gd);
+        externalProjectText = new Text(container, SWT.BORDER | SWT.SINGLE);
+        GridData gd = new GridData(GridData.FILL_HORIZONTAL);
+        externalProjectText.setLayoutData(gd);
 
-		Button button = new Button(container, SWT.PUSH);
-		button.setText("Browse...");
-		button.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				handleBrowseExternalProject();
-			}
-		});
-		
-		label = new Label(container, SWT.NULL);
-		label.setText("&Project name:");
+        Button button = new Button(container, SWT.PUSH);
+        button.setText("Browse...");
+        button.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                handleBrowseExternalProject();
+            }
+        });
+        
+        label = new Label(container, SWT.NULL);
+        label.setText("&Project name:");
 
-		projectNameText = new Text(container, SWT.BORDER | SWT.SINGLE);
-		gd = new GridData(GridData.FILL_HORIZONTAL);
-		projectNameText.setLayoutData(gd);
-		
-		setControl(container);
-	}
-	
-	private void handleBrowseExternalProject() {
-		FileDialog dialog = new FileDialog(getShell(), SWT.OPEN);
-		dialog.setFilterExtensions(new String[] {"*.zip", "*.tar", "*.jar"});
-		
-		String result = dialog.open();
-		if (result != null) {
-			externalProjectText.setText(result);
-			
-			try {
-				String name = new ProjectCreation(getShell()).getMas2jFileNameInArchiveFile(result);
-				if (name.endsWith(MAS2JHandler.MAS2J_EXT)) {
-					name = name.replace(MAS2JHandler.MAS2J_EXT, "");
-				}
-				projectNameText.setText(name);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	public String getExternalProjectArchiveFilePath() {
-		return externalProjectText.getText();
-	}
-	
-	public String getProjectName() {
-		return projectNameText.getText();
-	}
+        projectNameText = new Text(container, SWT.BORDER | SWT.SINGLE);
+        gd = new GridData(GridData.FILL_HORIZONTAL);
+        projectNameText.setLayoutData(gd);
+        
+        setControl(container);
+    }
+    
+    private void handleBrowseExternalProject() {
+        FileDialog dialog = new FileDialog(getShell(), SWT.OPEN);
+        dialog.setFilterExtensions(new String[] {"*.zip", "*.tar", "*.jar"});
+        
+        String result = dialog.open();
+        if (result != null) {
+            externalProjectText.setText(result);
+            
+            try {
+                String name = new ProjectCreation(getShell()).getMas2jFileNameInArchiveFile(result);
+                if (name.endsWith(MAS2JHandler.MAS2J_EXT)) {
+                    name = name.replace(MAS2JHandler.MAS2J_EXT, "");
+                }
+                projectNameText.setText(name);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    public String getExternalProjectArchiveFilePath() {
+        return externalProjectText.getText();
+    }
+    
+    public String getProjectName() {
+        return projectNameText.getText();
+    }
 }

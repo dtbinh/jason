@@ -16,21 +16,21 @@ import java.util.Queue;
  */
 public class SelectEvent extends Agent {
 
-	private Trigger gold    = Trigger.parseTrigger("+cell(_,_,gold)");
-	private Trigger restart = Trigger.parseTrigger("+restart");
-	private Unifier un   = new Unifier();
-	
+    private Trigger gold    = Trigger.parseTrigger("+cell(_,_,gold)");
+    private Trigger restart = Trigger.parseTrigger("+restart");
+    private Unifier un   = new Unifier();
+    
     public Event selectEvent(Queue<Event> events) {
-    	Iterator<Event> ie = events.iterator();
-    	while (ie.hasNext()) {
-    		un.clear();
-    		Event e = ie.next();
-        	if (un.unifies(gold, e.getTrigger()) || un.unifies(restart, e.getTrigger())) {
-        		//getTS().getLogger().info("custom select event "+e);
-    			ie.remove();
-    			return e;
-    		}
-    	}
+        Iterator<Event> ie = events.iterator();
+        while (ie.hasNext()) {
+            un.clear();
+            Event e = ie.next();
+            if (un.unifies(gold, e.getTrigger()) || un.unifies(restart, e.getTrigger())) {
+                //getTS().getLogger().info("custom select event "+e);
+                ie.remove();
+                return e;
+            }
+        }
         return super.selectEvent(events);
     }
 

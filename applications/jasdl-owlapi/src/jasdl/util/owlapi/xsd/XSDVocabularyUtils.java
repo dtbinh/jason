@@ -32,44 +32,44 @@ import org.semanticweb.owl.vocab.XSDVocabulary;
  */
 public class XSDVocabularyUtils {
 
-	/**
-	 * Maps toString names of OWLTypeConstants to XSDVocabulary values. TODO: Request as built-in OWL-API feature.
-	 * toString representation is simply path of listed URI
-	 */
-	private static HashMap<String, XSDVocabulary> nameToEnumMap = new HashMap<String, XSDVocabulary>();
-	static {
-		for (XSDVocabulary typ : XSDVocabulary.values()) {
-			String name = typ.getURI().getFragment().toString();
-			nameToEnumMap.put(name, typ);
-		}
-	}
+    /**
+     * Maps toString names of OWLTypeConstants to XSDVocabulary values. TODO: Request as built-in OWL-API feature.
+     * toString representation is simply path of listed URI
+     */
+    private static HashMap<String, XSDVocabulary> nameToEnumMap = new HashMap<String, XSDVocabulary>();
+    static {
+        for (XSDVocabulary typ : XSDVocabulary.values()) {
+            String name = typ.getURI().getFragment().toString();
+            nameToEnumMap.put(name, typ);
+        }
+    }
 
-	/**
-	 * All XSD Datatypes requiring string term representations in AgentSpeak
-	 * TODO: Complete this list
-	 */
-	private static List<XSDVocabulary> requiresStringTermRepresentation = Arrays.asList(new XSDVocabulary[] { XSDVocabulary.TIME, XSDVocabulary.STRING, XSDVocabulary.DATE, XSDVocabulary.DATE_TIME });
+    /**
+     * All XSD Datatypes requiring string term representations in AgentSpeak
+     * TODO: Complete this list
+     */
+    private static List<XSDVocabulary> requiresStringTermRepresentation = Arrays.asList(new XSDVocabulary[] { XSDVocabulary.TIME, XSDVocabulary.STRING, XSDVocabulary.DATE, XSDVocabulary.DATE_TIME });
 
-	/**
-	 * Returns true if datatype literals of this type require packaging within a StringTerm for representation in Agentspeak
-	 * @param typ
-	 * @return
-	 */
-	public static boolean requiresStringTermRepresentation(XSDVocabulary typ) {
-		return requiresStringTermRepresentation.contains(typ);
-	}
+    /**
+     * Returns true if datatype literals of this type require packaging within a StringTerm for representation in Agentspeak
+     * @param typ
+     * @return
+     */
+    public static boolean requiresStringTermRepresentation(XSDVocabulary typ) {
+        return requiresStringTermRepresentation.contains(typ);
+    }
 
-	/**
-	 * Returns true if datatype literals of this type require representation as true or false in AgentSpeak
-	 * @param typ
-	 * @return
-	 */
-	public static boolean requiresBooleanRepresentation(XSDVocabulary typ) {
-		return typ == XSDVocabulary.BOOLEAN;
-	}
+    /**
+     * Returns true if datatype literals of this type require representation as true or false in AgentSpeak
+     * @param typ
+     * @return
+     */
+    public static boolean requiresBooleanRepresentation(XSDVocabulary typ) {
+        return typ == XSDVocabulary.BOOLEAN;
+    }
 
-	public static XSDVocabulary getByName(String name) {
-		return nameToEnumMap.get(name);
-	}
+    public static XSDVocabulary getByName(String name) {
+        return nameToEnumMap.get(name);
+    }
 
 }

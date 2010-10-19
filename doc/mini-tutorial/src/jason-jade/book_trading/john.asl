@@ -31,7 +31,7 @@ book("Jason", 75, 10).
   <- .send(Sender, refuse, "not-available", MsgId). // refuse otherwise
 
   
-// ACCEPT-PROPOSAL	 
+// ACCEPT-PROPOSAL   
 +!kqml_received(Sender, accept_proposal, Content, MsgId)
   :  book(Content, Price, Qtd) & Qtd > 0  // If I still have the book
   <- -+book(Content, Price, Qtd-1);       // change stock

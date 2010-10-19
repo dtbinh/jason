@@ -25,7 +25,7 @@ public class testOWEnv extends Environment {
      * Implementation of the agent's basic actions
      */
     public boolean executeAction(String ag, Structure act) {
-		clearPercepts();
+        clearPercepts();
         if (random.nextBoolean())
             addPercept(pa);
         if (random.nextBoolean())

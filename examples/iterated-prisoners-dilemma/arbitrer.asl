@@ -28,10 +28,10 @@ two_randoms(R1,R2,N)   :- my.random(R1,N) & my.random(R2,N) & R2 \== R1.
 +!arrest
   :  time(T) & num_rounds(R) & T < R
   <- ?select(P1,P2); // select two players randomly
-	 .print("I'm arresting ",P1," and ",P2," (time ",T,")");
-	 .send(P1,tell,arrested(T,P2));
-	 .send(P2,tell,arrested(T,P1));
-	 -+time(T+1).
+     .print("I'm arresting ",P1," and ",P2," (time ",T,")");
+     .send(P1,tell,arrested(T,P2));
+     .send(P2,tell,arrested(T,P1));
+     -+time(T+1).
 
 // otherwise, I've arrested enough pairs already.
 +!arrest
@@ -44,9 +44,9 @@ two_randoms(R1,R2,N)   :- my.random(R1,N) & my.random(R2,N) & R2 \== R1.
   <- ?payoffs(M1,M2,S1,S2);
      .print("Scores at time ",T,": ",S1," ",S2);
      .send(P1,tell,score(T,S1));
-	 .send(P2,tell,score(T,S2));
-	 .abolish(play(T,_));
-	 !!arrest.
+     .send(P2,tell,score(T,S2));
+     .abolish(play(T,_));
+     !!arrest.
 
 // ignore the first player to inform me of their move
 //+play(T,M1).

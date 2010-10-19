@@ -68,131 +68,131 @@ import jmca.util.JmcaException;
  *
  */
 public class JmcaAgent extends jason.asSemantics.Agent {
-	
-	private static String DEFAULT_MEDIATION_STRATEGY_CLASS = "jmca.mediation.OverrulingIntersection";	
-	private static String PARAM_DELIM = "_";
-	private static String PARAM_PREFIX = "jmca"+PARAM_DELIM;		
-	
-	/**
-	 * Maps aspect type to the list of selection strategies instantiated for it
-	 */
-	private HashMap<Class, List<SelectionStrategy>> aspectSelectionStrategyMap;
-	
-	/**
-	 * Maps aspect type to its mediation strategy
-	 */
-	private HashMap<Class, MediationStrategy> aspectMediationStrategyMap;
-	
-	
-	
-	
-	/**
-	 * Instantiates selection and mediation strategies for this JmcaAgent, then calls Jason's default initAg method
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public void initAg(String asSrc) throws JasonException{
-		aspectSelectionStrategyMap = new HashMap<Class, List<SelectionStrategy>>();
-		aspectMediationStrategyMap = new HashMap<Class, MediationStrategy>();
-		TransitionSystem ts = getTS();
-		for(Class aspect : JMCAParams.aspects){
-			aspectSelectionStrategyMap.put(aspect, getSelectionStrategyClasses(this, ts.getUserAgArch(), getBB(), asSrc, ts.getSettings(), aspect));
-			aspectMediationStrategyMap.put(aspect, getMediationStrategyClass(ts.getSettings(), aspect));
-		}
-		super.initAg(asSrc);
-	}
-	
+    
+    private static String DEFAULT_MEDIATION_STRATEGY_CLASS = "jmca.mediation.OverrulingIntersection";   
+    private static String PARAM_DELIM = "_";
+    private static String PARAM_PREFIX = "jmca"+PARAM_DELIM;        
+    
+    /**
+     * Maps aspect type to the list of selection strategies instantiated for it
+     */
+    private HashMap<Class, List<SelectionStrategy>> aspectSelectionStrategyMap;
+    
+    /**
+     * Maps aspect type to its mediation strategy
+     */
+    private HashMap<Class, MediationStrategy> aspectMediationStrategyMap;
+    
+    
+    
+    
+    /**
+     * Instantiates selection and mediation strategies for this JmcaAgent, then calls Jason's default initAg method
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public void initAg(String asSrc) throws JasonException{
+        aspectSelectionStrategyMap = new HashMap<Class, List<SelectionStrategy>>();
+        aspectMediationStrategyMap = new HashMap<Class, MediationStrategy>();
+        TransitionSystem ts = getTS();
+        for(Class aspect : JMCAParams.aspects){
+            aspectSelectionStrategyMap.put(aspect, getSelectionStrategyClasses(this, ts.getUserAgArch(), getBB(), asSrc, ts.getSettings(), aspect));
+            aspectMediationStrategyMap.put(aspect, getMediationStrategyClass(ts.getSettings(), aspect));
+        }
+        super.initAg(asSrc);
+    }
+    
 
-	/**
-	 * Apply module composition to the Option aspect
-	 * May be passed a null Option list if events=retrieve is set, if so, an empty list is instantiated to allow for generated Options
-	 */
-	public Option selectOption(List<Option> options){
-		if(options == null){ // if events=retrieve, option list may be null
-			options = new Vector<Option>();
-		}
-		getLogger().finest("Options: "+options);
-		return (Option)apply(Option.class, options);
-	}
-	
-	/**
-	 * Apply module composition to the ActionExec aspect
-	 */
-	public ActionExec selectAction(List<ActionExec> actions){
-		getLogger().finest("Actions: "+actions);
-		return (ActionExec)apply(ActionExec.class, actions);
-	}
+    /**
+     * Apply module composition to the Option aspect
+     * May be passed a null Option list if events=retrieve is set, if so, an empty list is instantiated to allow for generated Options
+     */
+    public Option selectOption(List<Option> options){
+        if(options == null){ // if events=retrieve, option list may be null
+            options = new Vector<Option>();
+        }
+        getLogger().finest("Options: "+options);
+        return (Option)apply(Option.class, options);
+    }
+    
+    /**
+     * Apply module composition to the ActionExec aspect
+     */
+    public ActionExec selectAction(List<ActionExec> actions){
+        getLogger().finest("Actions: "+actions);
+        return (ActionExec)apply(ActionExec.class, actions);
+    }
 
-	/**
-	 * Apply module composition to the Message aspect
-	 */
-	public Message selectMessage(Queue<Message> messages){
-		getLogger().finest("Messages: "+messages);
-		return (Message)apply(Message.class, messages);		
-	}
-	
-	/**
-	 * Apply module composition to the Event aspect
-	 */
-	public Event selectEvent(Queue<Event> events){
-		getLogger().finest("Events: "+events);
-		return (Event)apply(Event.class, events);	
-	}
-	
-	/**
-	 * Apply module composition to the Intention aspect
-	 */
-	public Intention selectIntention(Queue<Intention> intentions){
-		getLogger().finest("Intentions: "+intentions);
-		return (Intention)apply(Intention.class, intentions);
-	}
-	
-	/**
+    /**
+     * Apply module composition to the Message aspect
+     */
+    public Message selectMessage(Queue<Message> messages){
+        getLogger().finest("Messages: "+messages);
+        return (Message)apply(Message.class, messages);     
+    }
+    
+    /**
+     * Apply module composition to the Event aspect
+     */
+    public Event selectEvent(Queue<Event> events){
+        getLogger().finest("Events: "+events);
+        return (Event)apply(Event.class, events);   
+    }
+    
+    /**
+     * Apply module composition to the Intention aspect
+     */
+    public Intention selectIntention(Queue<Intention> intentions){
+        getLogger().finest("Intentions: "+intentions);
+        return (Intention)apply(Intention.class, intentions);
+    }
+    
+    /**
      * Applies mediation strategies for all selection strategies of this aspect and returns the first aspect from the "agreed" set
-	 * 
-	 * @param aspect		the aspect type we are applying a mediation strategy to
-	 * @param aspects		a collection of aspects we are applingy a mediation strategy to - collection allows lists and queues to be passed
-	 * @return				the first aspect present within the "agreed" set.
-	 */
-	@SuppressWarnings("unchecked")
-	private Object apply(Class aspect, Collection aspects){
-		MediationStrategy strategy = aspectMediationStrategyMap.get(aspect);
-		List<SelectionStrategy> modules = aspectSelectionStrategyMap.get(aspect);	
-		List asList = new Vector(); // auxilliary list required since aspects could be a queue or a list
-		asList.addAll(aspects);
-		try{
-			asList = strategy.apply(modules, asList);
-		}catch(JmcaException e){
-			getLogger().severe("Error in jmca "+getUCN(aspect)+" selection. Reason: ");
-			e.printStackTrace();
-			return null;
-		}
-		if(asList.isEmpty()){
-			return null;
-		}else{
-			Object selected = asList.remove(0);
-			aspects.remove(selected); // affect master queue
-			return selected;
-		}
-	}
+     * 
+     * @param aspect        the aspect type we are applying a mediation strategy to
+     * @param aspects       a collection of aspects we are applingy a mediation strategy to - collection allows lists and queues to be passed
+     * @return              the first aspect present within the "agreed" set.
+     */
+    @SuppressWarnings("unchecked")
+    private Object apply(Class aspect, Collection aspects){
+        MediationStrategy strategy = aspectMediationStrategyMap.get(aspect);
+        List<SelectionStrategy> modules = aspectSelectionStrategyMap.get(aspect);   
+        List asList = new Vector(); // auxilliary list required since aspects could be a queue or a list
+        asList.addAll(aspects);
+        try{
+            asList = strategy.apply(modules, asList);
+        }catch(JmcaException e){
+            getLogger().severe("Error in jmca "+getUCN(aspect)+" selection. Reason: ");
+            e.printStackTrace();
+            return null;
+        }
+        if(asList.isEmpty()){
+            return null;
+        }else{
+            Object selected = asList.remove(0);
+            aspects.remove(selected); // affect master queue
+            return selected;
+        }
+    }
 
-	/**
-	 * Instantiates (using Java Reflect) the mediation strategy implementation class speficied in the JmcaAgent's .mas2j file.
-	 * If none present, the defaultmediation strategy class is used.
-	 * 
-	 * @param stts				.mas2j settings of this JmcaAgent
-	 * @param aspect			the type of aspect we are instantiating this mediation strategy for
-	 * @return					the mediation strategy instance
-	 * @throws JmcaException	if instantiation fails
-	 */
-	private static MediationStrategy getMediationStrategyClass(Settings stts, Class aspect) throws JmcaException{
-		MediationStrategy strategy;
-		String paramName = PARAM_PREFIX+getUCN(aspect)+PARAM_DELIM+"mediation"+PARAM_DELIM+"strategy";
-		String param = stts.getUserParameter(paramName);
-		if(param == null){ // if none specified, use default
-			param = DEFAULT_MEDIATION_STRATEGY_CLASS;
-		}else{
-			param = strip(param, "\"");
+    /**
+     * Instantiates (using Java Reflect) the mediation strategy implementation class speficied in the JmcaAgent's .mas2j file.
+     * If none present, the defaultmediation strategy class is used.
+     * 
+     * @param stts              .mas2j settings of this JmcaAgent
+     * @param aspect            the type of aspect we are instantiating this mediation strategy for
+     * @return                  the mediation strategy instance
+     * @throws JmcaException    if instantiation fails
+     */
+    private static MediationStrategy getMediationStrategyClass(Settings stts, Class aspect) throws JmcaException{
+        MediationStrategy strategy;
+        String paramName = PARAM_PREFIX+getUCN(aspect)+PARAM_DELIM+"mediation"+PARAM_DELIM+"strategy";
+        String param = stts.getUserParameter(paramName);
+        if(param == null){ // if none specified, use default
+            param = DEFAULT_MEDIATION_STRATEGY_CLASS;
+        }else{
+            param = strip(param, "\"");
 		}
 		try {
 			Class cls = Class.forName(param);
@@ -225,34 +225,34 @@ public class JmcaAgent extends jason.asSemantics.Agent {
 		String param = stts.getUserParameter(paramName);
 		if(param != null){ // no AgentModules specific for this aspect
 			for(String strategyClassName : Common.strip(param, "\"").split(DELIM)){
-				strategyClassName = strategyClassName.trim();
-				SelectionStrategy strategy = null;
-				// use java reflect to instantiate agent module class
-				try {
-					Class cls = Class.forName(strategyClassName);
-					Constructor ct = cls.getConstructor(new Class[] {Agent.class});
-					strategy = (SelectionStrategy)ct.newInstance(new Object[] {agent});
-				}
-				catch (Throwable e) {
-					throw new JmcaException("Error instantiating "+getUCN(aspect)+" selection strategy class "+strategyClassName+". Reason: "+e);
-				}
-				strategies.add(strategy);
-			}
-		}
-		return strategies;
-	}
-	
-	/**
-	 * Gets the unqualified (bit after last .) class name of a class
-	 * @param aspect	the class to get the unqualified name of
-	 * @return			the unqualified name of the supplied class
-	 */
-	private static String getUCN(Class aspect){
-		String name =  aspect.getName();
-		if(name.contains(".")){
-			name = name.substring(name.lastIndexOf(".")+1);
-		}
-		return name;
-	}	
-	
+                strategyClassName = strategyClassName.trim();
+                SelectionStrategy strategy = null;
+                // use java reflect to instantiate agent module class
+                try {
+                    Class cls = Class.forName(strategyClassName);
+                    Constructor ct = cls.getConstructor(new Class[] {Agent.class});
+                    strategy = (SelectionStrategy)ct.newInstance(new Object[] {agent});
+                }
+                catch (Throwable e) {
+                    throw new JmcaException("Error instantiating "+getUCN(aspect)+" selection strategy class "+strategyClassName+". Reason: "+e);
+                }
+                strategies.add(strategy);
+            }
+        }
+        return strategies;
+    }
+    
+    /**
+     * Gets the unqualified (bit after last .) class name of a class
+     * @param aspect    the class to get the unqualified name of
+     * @return          the unqualified name of the supplied class
+     */
+    private static String getUCN(Class aspect){
+        String name =  aspect.getName();
+        if(name.contains(".")){
+            name = name.substring(name.lastIndexOf(".")+1);
+        }
+        return name;
+    }   
+    
 }

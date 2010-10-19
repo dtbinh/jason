@@ -16,8 +16,8 @@ public class TestLoop {
         
         // defines the agent's AgentSpeak code
         ag.parseAScode(
-        		"b(1). "+
-        		"p(1,a). p(2,a). p(3,b). p(4,b). p(6,a).\n "+
+                "b(1). "+
+                "p(1,a). p(2,a). p(3,b). p(4,b). p(6,a).\n "+
                 "+!test1 <- \n" +
                 "    while( .count(b(_),N) & N < 4) {" +
                 "        +b(N+1);" +

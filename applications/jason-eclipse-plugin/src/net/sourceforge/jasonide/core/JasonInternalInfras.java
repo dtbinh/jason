@@ -8,18 +8,18 @@ package net.sourceforge.jasonide.core;
  */
 public interface JasonInternalInfras {
 
-	/**
-	 * Infrastructure Centralised.
-	 */
-	public static final String CENTRALISED = "Centralised";
-	
-	/**
-	 * Infrastructure Saci based.
-	 */
-	public static final String SACI = "Saci";
-	
-	/**
-	 * Infrastructure JADE based.
-	 */
-	public static final String JADE = "Jade";	
+    /**
+     * Infrastructure Centralised.
+     */
+    public static final String CENTRALISED = "Centralised";
+    
+    /**
+     * Infrastructure Saci based.
+     */
+    public static final String SACI = "Saci";
+    
+    /**
+     * Infrastructure JADE based.
+     */
+    public static final String JADE = "Jade";   
 }

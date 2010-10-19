@@ -32,7 +32,7 @@ public class FoodEnvironment extends TimeSteppedEnvironment {
     /** Called before the MAS execution with the args informed in .mas2j */
     @Override
     public void init(String[] args) {
-		super.init(new String[] { "1000" } ); // set step timeout
+        super.init(new String[] { "1000" } ); // set step timeout
         setOverActionsPolicy(OverActionsPolicy.ignoreSecond);
 
         model = new FoodModel(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
@@ -42,62 +42,62 @@ public class FoodEnvironment extends TimeSteppedEnvironment {
 
     @Override
     public List<Literal> getPercepts(String agName) {
-    	// if the agent is not in the map, add it and update its perception
-    	if (ag2id.get(agName) == null) {
-    		updateAgPercept(addAg2IdMap(agName));
-    	}
-    	return super.getPercepts(agName);
+        // if the agent is not in the map, add it and update its perception
+        if (ag2id.get(agName) == null) {
+            updateAgPercept(addAg2IdMap(agName));
+        }
+        return super.getPercepts(agName);
     }
     
     private static int lastUsedId = -1;
     private synchronized int addAg2IdMap(String agName) {
-		lastUsedId++;
-		ag2id.put(agName,lastUsedId);
-		id2ag.put(lastUsedId, agName);
-		return lastUsedId;
+        lastUsedId++;
+        ag2id.put(agName,lastUsedId);
+        id2ag.put(lastUsedId, agName);
+        return lastUsedId;
     }
 
     // TODO: implement simultaneous attack
     
     @Override
     public boolean executeAction(String agName, Structure action) {
-    	String actId = action.getFunctor();
-    	if (actId.equals("pause"))
-    		return true;
-    	
-    	int agId = ag2id.get(agName);
-	try {
-    	if (actId.equals("eat")) {
-    		model.eat(agId);
-    	} else if (actId.equals("move")) {
-    		int x = (int)(((NumberTerm)(action.getTerm(0))).solve());
-    		int y = (int)(((NumberTerm)(action.getTerm(1))).solve());
-    		model.move(agId, x, y);
-    	} else if (actId.equals("attack")) {
-    		int x = (int)(((NumberTerm)(action.getTerm(0))).solve());
-    		int y = (int)(((NumberTerm)(action.getTerm(1))).solve());
-    		model.attack(agId, x, y);
-    	} else if (actId.equals("random_move")) {
-    		model.randomMove(agId);
-    	} else {
-    	    logger.warning("Unknown action: "+action);
-    	}
-	} catch (Exception e) {}
+        String actId = action.getFunctor();
+        if (actId.equals("pause"))
+            return true;
+        
+        int agId = ag2id.get(agName);
+    try {
+        if (actId.equals("eat")) {
+            model.eat(agId);
+        } else if (actId.equals("move")) {
+            int x = (int)(((NumberTerm)(action.getTerm(0))).solve());
+            int y = (int)(((NumberTerm)(action.getTerm(1))).solve());
+            model.move(agId, x, y);
+        } else if (actId.equals("attack")) {
+            int x = (int)(((NumberTerm)(action.getTerm(0))).solve());
+            int y = (int)(((NumberTerm)(action.getTerm(1))).solve());
+            model.attack(agId, x, y);
+        } else if (actId.equals("random_move")) {
+            model.randomMove(agId);
+        } else {
+            logger.warning("Unknown action: "+action);
+        }
+    } catch (Exception e) {}
         return true;
     }
 
     @Override
     protected int requiredStepsForAction(String agName, Structure action) {
-    	if (action.getFunctor().equals("eat")) {
-    		return 3; // eat takes 2 steps
-    	}    	
-    	return super.requiredStepsForAction(agName, action);
+        if (action.getFunctor().equals("eat")) {
+            return 3; // eat takes 2 steps
+        }       
+        return super.requiredStepsForAction(agName, action);
     }
     
     @Override
-	protected void stepStarted(int step) {
-    	//logger.info("start step "+step);
-    	lstep = ASSyntax.createLiteral("step", ASSyntax.createNumber(step+1));
+    protected void stepStarted(int step) {
+        //logger.info("start step "+step);
+        lstep = ASSyntax.createLiteral("step", ASSyntax.createNumber(step+1));
     }
     
     long sum = 0;
@@ -107,21 +107,21 @@ public class FoodEnvironment extends TimeSteppedEnvironment {
     
     @Override
     protected void stepFinished(int step, long time, boolean timeout) {
-    	if (step % 100 == 0) {
-    		long mean = (step > 0 ? sum / step : 0);
-    		logger.info(String.format("step %10d finished in %3d ms. Str/Var/Att %7.0f %7.0f %7d", step, mean, +model.getStrengthMean(),model.getVarianceOfStrength(),model.getAttackCounter() ));
+        if (step % 100 == 0) {
+            long mean = (step > 0 ? sum / step : 0);
+            logger.info(String.format("step %10d finished in %3d ms. Str/Var/Att %7.0f %7.0f %7d", step, mean, +model.getStrengthMean(),model.getVarianceOfStrength(),model.getAttackCounter() ));
             //logger.info(String.format("  Strategic Str/Var/Att %7.0f", getStrength("strategic") ));
-            //logger.info(String.format("  Normative Str/Var/Att %7.0f", getStrength("normative") ));    		
+            //logger.info(String.format("  Normative Str/Var/Att %7.0f", getStrength("normative") ));           
             //logger.info(String.format("  Reputation Str/Var/Att %7.0f", getStrength("reputation") ));
             
             if (view != null) {
                 view.addSerie("strategic", getData(strategicValues));
                 view.addSerie("reputation", getData(reputationValues));
             }
-    	}
-    	sum += time;
-    	strategicValues.add(getStrength("strategic"));
-    	reputationValues.add(getStrength("reputation"));
+        }
+        sum += time;
+        strategicValues.add(getStrength("strategic"));
+        reputationValues.add(getStrength("reputation"));
     }
     
 
@@ -153,8 +153,8 @@ public class FoodEnvironment extends TimeSteppedEnvironment {
     
     @Override
     protected void updateAgsPercept() {
-    	for (int i = 0; i < model.getNbOfAgs(); i++) {
-    	    updateAgPercept(i);
+        for (int i = 0; i < model.getNbOfAgs(); i++) {
+            updateAgPercept(i);
         }
     }
 
@@ -164,7 +164,7 @@ public class FoodEnvironment extends TimeSteppedEnvironment {
         if (name != null) {
             updateAgPercept(name, ag);
         } else {
-        	logger.warning("Can not give perception to "+ag+" because it is no registered!");
+            logger.warning("Can not give perception to "+ag+" because it is no registered!");
         }
     }
 
@@ -204,41 +204,41 @@ public class FoodEnvironment extends TimeSteppedEnvironment {
    
         addPercept(agName, lstep);
         
-    	int a = model.isAttacked(ag); 
+        int a = model.isAttacked(ag); 
         if (a >= 0) {
-        	addPercept(agName, Literal.parseLiteral("attacked("+a+","+id2ag.get(a)+")"));
+            addPercept(agName, Literal.parseLiteral("attacked("+a+","+id2ag.get(a)+")"));
         }
     }
     
     void testFood(String agName, int ag, Atom where, int x, int y) {
-    	if (model.hasObject(FoodModel.FOOD, x, y)) {
-    		Literal f = ASSyntax.createLiteral("food",
-    		                ASSyntax.createNumber(x),
-    		                ASSyntax.createNumber(y),
-    		                where,
-    		                ASSyntax.createNumber(model.getFoodOwner(x, y)));
-			addPercept(agName, f);
-    	}
+        if (model.hasObject(FoodModel.FOOD, x, y)) {
+            Literal f = ASSyntax.createLiteral("food",
+                            ASSyntax.createNumber(x),
+                            ASSyntax.createNumber(y),
+                            where,
+                            ASSyntax.createNumber(model.getFoodOwner(x, y)));
+            addPercept(agName, f);
+        }
     }
 
     private static Atom aEating = new Atom("eating");
     private static Atom aMoving = new Atom("moving");
     void testAg(String agName, int x, int y) {
-    	int other = model.getAgAtPos(x, y);
-    	if (other >= 0) {
-    		Literal f = ASSyntax.createLiteral("agent", // seeing
-    		                ASSyntax.createNumber(other),
-    		                ASSyntax.createNumber(x),
-    		                ASSyntax.createNumber(y),
-    		                ASSyntax.createNumber(model.getAgStrength(other)));    		
-    		
-    		if (isEating(agName)) {
-    		    f.addTerm(aEating);
-    		} else {
-    		    f.addTerm(aMoving);
-    		}
+        int other = model.getAgAtPos(x, y);
+        if (other >= 0) {
+            Literal f = ASSyntax.createLiteral("agent", // seeing
+                            ASSyntax.createNumber(other),
+                            ASSyntax.createNumber(x),
+                            ASSyntax.createNumber(y),
+                            ASSyntax.createNumber(model.getAgStrength(other)));         
+            
+            if (isEating(agName)) {
+                f.addTerm(aEating);
+            } else {
+                f.addTerm(aMoving);
+            }
             addPercept(agName, f);
-    	}
+        }
     }
     
     private boolean isEating(String agName) {

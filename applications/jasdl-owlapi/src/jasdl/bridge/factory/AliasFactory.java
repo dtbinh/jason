@@ -34,36 +34,36 @@ import jason.asSyntax.Atom;
  */
 public class AliasFactory {
 
-	/**
-	 * Singleton instance we should use.
-	 */
-	public static AliasFactory INSTANCE = new AliasFactory();
+    /**
+     * Singleton instance we should use.
+     */
+    public static AliasFactory INSTANCE = new AliasFactory();
 
-	private AliasFactory() {
-	}
+    private AliasFactory() {
+    }
 
-	/**
-	 * Create an alias to represent an SELiteral. Literal functor becomes alias functor.
-	 * Literal ontology label becomes alias label;
-	 * If l is negated (and a unary class assertion) then functor is prefixed with "~".
-	 * @param sl	the SELiteral the alias will represent
-	 * @return		an alias representing the supplied SELiteral
-	 */
-	public Alias create(SELiteral sl) throws JASDLInvalidSELiteralException, JASDLUnknownMappingException {
-		return new Alias((sl.getLiteral().negated() ? "~" : "") + sl.getLiteral().getFunctor(), sl.getOntologyLabel());
-	}
+    /**
+     * Create an alias to represent an SELiteral. Literal functor becomes alias functor.
+     * Literal ontology label becomes alias label;
+     * If l is negated (and a unary class assertion) then functor is prefixed with "~".
+     * @param sl    the SELiteral the alias will represent
+     * @return      an alias representing the supplied SELiteral
+     */
+    public Alias create(SELiteral sl) throws JASDLInvalidSELiteralException, JASDLUnknownMappingException {
+        return new Alias((sl.getLiteral().negated() ? "~" : "") + sl.getLiteral().getFunctor(), sl.getOntologyLabel());
+    }
 
-	/**
-	 * Create an alias from an atomic functor and label
-	 * @param functor
-	 * @param label
-	 * @return
-	 */
-	public Alias create(Atom functor, Atom label) {
-		return new Alias(functor, label);
-	}
+    /**
+     * Create an alias from an atomic functor and label
+     * @param functor
+     * @param label
+     * @return
+     */
+    public Alias create(Atom functor, Atom label) {
+        return new Alias(functor, label);
+    }
 
-	public Alias all_different(Atom label) {
-		return new Alias(JASDLParams.OWL_ALL_DIFFERENT_FUNCTOR, label);
-	}
+    public Alias all_different(Atom label) {
+        return new Alias(JASDLParams.OWL_ALL_DIFFERENT_FUNCTOR, label);
+    }
 }

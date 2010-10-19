@@ -28,10 +28,10 @@ public class scouter_pos extends DefaultInternalAction {
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
         try {
-        	CowboyArch arch       = (CowboyArch)ts.getUserAgArch();
+            CowboyArch arch       = (CowboyArch)ts.getUserAgArch();
             LocalWorldModel model = arch.getModel();
             if (model == null)
-            	return false;
+                return false;
             
             int lx = (int)((NumberTerm)args[0]).solve();
             int ly = (int)((NumberTerm)args[1]).solve();
@@ -42,22 +42,22 @@ public class scouter_pos extends DefaultInternalAction {
 
             Location agTarget = getScouterTarget(model, leaderPos, leaderTarget);
             if (agTarget != null) {
-            	return un.unifies(args[4], new NumberTermImpl(agTarget.x)) && 
-            	       un.unifies(args[5], new NumberTermImpl(agTarget.y));
-	        } else {
-	        	ts.getLogger().info("No target for scouter!");
-	        }
+                return un.unifies(args[4], new NumberTermImpl(agTarget.x)) && 
+                       un.unifies(args[5], new NumberTermImpl(agTarget.y));
+            } else {
+                ts.getLogger().info("No target for scouter!");
+            }
         } catch (Throwable e) {
-            ts.getLogger().log(Level.SEVERE, "scouter_pos error: "+e, e);    		
+            ts.getLogger().log(Level.SEVERE, "scouter_pos error: "+e, e);           
         }
         return false;
     }
     
     public Location getScouterTarget(LocalWorldModel model, Location leaderPos, Location leaderTarget) throws Exception {
-    	Vec leader = new Vec(model, leaderPos);
-    	Vec target = new Vec(model, leaderTarget).sub(leader);
-    	Vec me     = new Vec(WorldModel.agPerceptionRatio*2-3,0);
-    	return model.nearFree(herd_position.findFirstFreeLocTowardsTarget(target, me, leader, model), null);
+        Vec leader = new Vec(model, leaderPos);
+        Vec target = new Vec(model, leaderTarget).sub(leader);
+        Vec me     = new Vec(WorldModel.agPerceptionRatio*2-3,0);
+        return model.nearFree(herd_position.findFirstFreeLocTowardsTarget(target, me, leader, model), null);
     }
 }
 

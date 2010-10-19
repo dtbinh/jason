@@ -21,11 +21,11 @@ package jasdl.util.exception;
 
 public class JASDLMessageContentException extends JASDLException {
 
-	public JASDLMessageContentException(String msg, Exception cause) {
-		super(msg, cause);
-	}
+    public JASDLMessageContentException(String msg, Exception cause) {
+        super(msg, cause);
+    }
 
-	public JASDLMessageContentException(String message) {
-		super(message);
-	}
+    public JASDLMessageContentException(String message) {
+        super(message);
+    }
 }

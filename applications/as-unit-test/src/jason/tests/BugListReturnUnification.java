@@ -16,17 +16,17 @@ public class BugListReturnUnification {
         
         // defines the agent's AgentSpeak code
         ag.parseAScode(
-        		"+!test1 <- L=[A,B]; ?bundle(L); jason.asunit.print(L). "+
-        		"+?bundle([]). "+
-        		"+?bundle([a|T]) <- ?bundle(T). "+
+                "+!test1 <- L=[A,B]; ?bundle(L); jason.asunit.print(L). "+
+                "+?bundle([]). "+
+                "+?bundle([a|T]) <- ?bundle(T). "+
 
-        		"+!test2 <- L=[A,B,C,D]; !bundle(L); jason.asunit.print(L). "+
-        		"+!bundle([]). "+
-        		"+!bundle([a|T]) <- !bundle(T). "+
-        		
-        		"+!test3 <- !a(Y)[x(Z), y]; jason.asunit.print(Y, Z). "+
-        		"+!a(Y)[x(Z),kk]           <- Y=3; Z=4. "+  		
-        		"+!a(Y)[x(Z),source(self)] <- Y=1; Z=2. "  		
+                "+!test2 <- L=[A,B,C,D]; !bundle(L); jason.asunit.print(L). "+
+                "+!bundle([]). "+
+                "+!bundle([a|T]) <- !bundle(T). "+
+                
+                "+!test3 <- !a(Y)[x(Z), y]; jason.asunit.print(Y, Z). "+
+                "+!a(Y)[x(Z),kk]           <- Y=3; Z=4. "+          
+                "+!a(Y)[x(Z),source(self)] <- Y=1; Z=2. "       
         );
     }
     

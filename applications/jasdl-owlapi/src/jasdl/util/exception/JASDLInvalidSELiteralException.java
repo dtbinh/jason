@@ -21,12 +21,12 @@ package jasdl.util.exception;
 
 
 public class JASDLInvalidSELiteralException extends JASDLException {
-	public JASDLInvalidSELiteralException(String message) {
-		super(message);
-	}
+    public JASDLInvalidSELiteralException(String message) {
+        super(message);
+    }
 
-	public JASDLInvalidSELiteralException(String msg, Exception cause) {
-		super(msg, cause);
-	}
+    public JASDLInvalidSELiteralException(String msg, Exception cause) {
+        super(msg, cause);
+    }
 
 }

@@ -116,8 +116,8 @@ public class TestBasicHerding {
     
     @Test 
     public void testVecSort() {
-    	scenario1();
-    	
+        scenario1();
+        
         List<Vec> cowsl = new ArrayList<Vec>(model.getCows());
         Collections.sort(cowsl);
         assertEquals(new Vec(0,1), cowsl.get(0));
@@ -399,7 +399,7 @@ public class TestBasicHerding {
         Location byIA =  new herd_position().getAgTarget(model);
         assertEquals(byIA, agTarget.getLocation(model));
     }
-	*/
+    */
     
 
 }

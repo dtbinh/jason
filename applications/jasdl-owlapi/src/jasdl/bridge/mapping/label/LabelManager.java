@@ -36,26 +36,26 @@ import org.semanticweb.owl.model.OWLOntology;
  */
 public class LabelManager extends MappingManager<Atom, OWLOntology> {
 
-	/**
-	 * Members of this set are defined as "personal" ontology instances used for storing axioms
-	 * about run-time defined classes and individuals. This information is needed, for example, when preparing
-	 * outgoing message content (named or anon?).
-	 */
-	private Set<OWLOntology> personals;
+    /**
+     * Members of this set are defined as "personal" ontology instances used for storing axioms
+     * about run-time defined classes and individuals. This information is needed, for example, when preparing
+     * outgoing message content (named or anon?).
+     */
+    private Set<OWLOntology> personals;
 
-	public LabelManager() {
-		super();
-		personals = new HashSet<OWLOntology>();
-	}
+    public LabelManager() {
+        super();
+        personals = new HashSet<OWLOntology>();
+    }
 
-	public boolean isPersonal(OWLOntology y) {
-		return personals.contains(y);
-	}
+    public boolean isPersonal(OWLOntology y) {
+        return personals.contains(y);
+    }
 
-	public void put(Atom x, OWLOntology y, boolean isPersonal) throws JASDLDuplicateMappingException {
-		if (isPersonal)
-			personals.add(y);
-		super.put(x, y);
-	}
+    public void put(Atom x, OWLOntology y, boolean isPersonal) throws JASDLDuplicateMappingException {
+        if (isPersonal)
+            personals.add(y);
+        super.put(x, y);
+    }
 
 }

@@ -48,7 +48,7 @@ public class AuctioneerGUI extends AgArch {
             
             auction.setEnabled(true); // enable GUI button
         } else {
-			super.act(action,feedback); // send the action to the environment to be performed.
+            super.act(action,feedback); // send the action to the environment to be performed.
         }
     }
 

@@ -29,48 +29,48 @@ import busca.Nodo;
  */
 public class cluster extends DefaultInternalAction {
     
-	public static final int MAXCLUSTERSIZE = 15;
-	
+    public static final int MAXCLUSTERSIZE = 15;
+    
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
         try {
-        	CowboyArch arch = (CowboyArch)ts.getUserAgArch();
-        	LocalWorldModel model = arch.getModel();
+            CowboyArch arch = (CowboyArch)ts.getUserAgArch();
+            LocalWorldModel model = arch.getModel();
             if (model == null)
-            	return false;
+                return false;
 
-        	List<Location> locs = getCluster(model, 3, arch); //WorldModel.cowPerceptionRatio
-        	
-        	if (args.length == 1) {
-                return un.unifies(args[0], new ObjectTermImpl(locs));        	    
-        	} else {
-        		ListTerm r = new ListTermImpl();
-        		ListTerm tail = r;
-        		for (Location l: locs) {
-        			tail = tail.append(createStructure("pos", createNumber(l.x), createNumber(l.y)));
-        		}
+            List<Location> locs = getCluster(model, 3, arch); //WorldModel.cowPerceptionRatio
+            
+            if (args.length == 1) {
+                return un.unifies(args[0], new ObjectTermImpl(locs));               
+            } else {
+                ListTerm r = new ListTermImpl();
+                ListTerm tail = r;
+                for (Location l: locs) {
+                    tail = tail.append(createStructure("pos", createNumber(l.x), createNumber(l.y)));
+                }
                 return un.unifies(args[0], new ObjectTermImpl(locs)) && 
                        un.unifies(args[1], r);               
-        	}
+            }
         } catch (Throwable e) {
-            ts.getLogger().log(Level.SEVERE, "cluster error: "+e, e);    		
+            ts.getLogger().log(Level.SEVERE, "cluster error: "+e, e);           
         }
         return false;
     }
     
     public static List<Location> getClusterTest1(LocalWorldModel model, int maxDist, CowboyArch arch) throws Exception {
-    	/*
-			Vs = set of all seen cows
-			Cs  = { the cow near to the corral }
+        /*
+            Vs = set of all seen cows
+            Cs  = { the cow near to the corral }
 
-			add = true
-			while (add)
-  				add = false
-  				for all v in Vs
-    				if (some cow in Cs sees v)
-      					move v from Vs to Cs
-      					add = true
-    	*/
+            add = true
+            while (add)
+                add = false
+                for all v in Vs
+                    if (some cow in Cs sees v)
+                        move v from Vs to Cs
+                        add = true
+        */
         Collection<Vec> cows = model.getCows();
         
         // find cow near corral
@@ -94,29 +94,29 @@ public class cluster extends DefaultInternalAction {
             cows.remove(near);
         }
         
-    	boolean add = true;
-    	while (add) {
-    		add = false;
-    		Iterator<Vec> i = cows.iterator();
-    		while (i.hasNext()) {
-        		Vec v = i.next();
-        		
-        		Iterator<Vec> j = cs.iterator();
-        		while (j.hasNext() && cs.size() < MAXCLUSTERSIZE) {
-            		Vec c = j.next();
-        			if (c.sub(v).magnitude() < maxDist) {
-        				cs.add(v);
-        				i.remove();
-        				add = true;
-        				break;
-        			}
-        		}
-    		}
-    		
-    		// do not get too big clusters
-    		if (cs.size() > MAXCLUSTERSIZE)
-    			break;
-    	}
+        boolean add = true;
+        while (add) {
+            add = false;
+            Iterator<Vec> i = cows.iterator();
+            while (i.hasNext()) {
+                Vec v = i.next();
+                
+                Iterator<Vec> j = cs.iterator();
+                while (j.hasNext() && cs.size() < MAXCLUSTERSIZE) {
+                    Vec c = j.next();
+                    if (c.sub(v).magnitude() < maxDist) {
+                        cs.add(v);
+                        i.remove();
+                        add = true;
+                        break;
+                    }
+                }
+            }
+            
+            // do not get too big clusters
+            if (cs.size() > MAXCLUSTERSIZE)
+                break;
+        }
         List<Location> clusterLocs = new ArrayList<Location>();
         for (Vec v: cs) {
             // place all cows in ref to 0,0
@@ -126,60 +126,60 @@ public class cluster extends DefaultInternalAction {
     }
     
     public static List<Location> getCluster(LocalWorldModel model, int maxDist, CowboyArch arch) throws Exception {
-    	/*
-		Vs = set of all seen cows (sorted by distance to the centre of cluster)
-		Cs  = { the cow near to the center of Vs }
+        /*
+        Vs = set of all seen cows (sorted by distance to the centre of cluster)
+        Cs  = { the cow near to the center of Vs }
 
-		add = true
-		while (add)
-				add = false
-				for all v in Vs
-				if (some cow in Cs sees v)
-  					move v from Vs to Cs
-  					add = true
-    	*/
+        add = true
+        while (add)
+                add = false
+                for all v in Vs
+                if (some cow in Cs sees v)
+                    move v from Vs to Cs
+                    add = true
+        */
         Collection<Vec> cows = model.getCows();
         List<Vec> cs = new ArrayList<Vec>();
         Vec mean = Vec.mean( cows );
-    	List<Vec> vs = new ArrayList<Vec>();
-    	// place all cows in ref to mean
-    	for (Vec v: cows)
-    		vs.add(v.sub(mean));
-    	
+        List<Vec> vs = new ArrayList<Vec>();
+        // place all cows in ref to mean
+        for (Vec v: cows)
+            vs.add(v.sub(mean));
+        
         if (vs.size() > 4)
             Collections.sort(vs); // sort only big clusters (for small clusters, to sort causes a kind of oscillation)
         
         if (!vs.isEmpty()) 
             cs.add(vs.remove(0));
         
-    	
-    	boolean add = true;
-    	while (add) {
-    		add = false;
-    		Iterator<Vec> i = vs.iterator();
-    		while (i.hasNext()) {
-        		Vec v = i.next();
-        		
-        		Iterator<Vec> j = cs.iterator();
-        		while (j.hasNext() && cs.size() < MAXCLUSTERSIZE) {
-            		Vec c = j.next();
-        			if (c.sub(v).magnitude() < maxDist) {
-        				cs.add(v);
-        				i.remove();
-        				add = true;
-        				break;
-        			}
-        		}
-    		}
-    		
-    		// do not get too big clusters
-    		if (cs.size() > MAXCLUSTERSIZE)
-    			break;
-    	}
+        
+        boolean add = true;
+        while (add) {
+            add = false;
+            Iterator<Vec> i = vs.iterator();
+            while (i.hasNext()) {
+                Vec v = i.next();
+                
+                Iterator<Vec> j = cs.iterator();
+                while (j.hasNext() && cs.size() < MAXCLUSTERSIZE) {
+                    Vec c = j.next();
+                    if (c.sub(v).magnitude() < maxDist) {
+                        cs.add(v);
+                        i.remove();
+                        add = true;
+                        break;
+                    }
+                }
+            }
+            
+            // do not get too big clusters
+            if (cs.size() > MAXCLUSTERSIZE)
+                break;
+        }
         List<Location> clusterLocs = new ArrayList<Location>();
         for (Vec v: cs) {
             // place all cows in ref to 0,0
-        	clusterLocs.add(v.add(mean).getLocation(model));
+            clusterLocs.add(v.add(mean).getLocation(model));
         }
         return clusterLocs;
     }

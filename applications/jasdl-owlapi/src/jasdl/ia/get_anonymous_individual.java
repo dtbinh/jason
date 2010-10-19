@@ -40,7 +40,7 @@ import org.semanticweb.owl.model.OWLOntology;
  * Prefixed with agent name to guarantee uniqueness within entire agent society.
  * 
  * Usage:
- * 		jasdl.ia.get_individual(ID) unifies ID with an atomic unique individual name.
+ *      jasdl.ia.get_individual(ID) unifies ID with an atomic unique individual name.
  * 
  * @author Tom Klapiscak
  * 
@@ -48,40 +48,40 @@ import org.semanticweb.owl.model.OWLOntology;
  */
 public class get_anonymous_individual extends DefaultInternalAction {
 
-	private Logger logger = Logger.getLogger("jasdl." + get_anonymous_individual.class.getName());
+    private Logger logger = Logger.getLogger("jasdl." + get_anonymous_individual.class.getName());
 
-	@Override
-	public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
-		try {
+    @Override
+    public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
+        try {
 
-			if (args[0].isGround()) {
-				throw new Exception(get_anonymous_individual.class.getName() + " must be supplied a single unground variable argument");
-			}
+            if (args[0].isGround()) {
+                throw new Exception(get_anonymous_individual.class.getName() + " must be supplied a single unground variable argument");
+            }
 
-			JASDLAgent agent = (JASDLAgent) ts.getAg();
-			
-			String prefix = agent.getAgentName() + "_" + JASDLParams.ANONYMOUS_INDIVIDUAL_PREFIX;
+            JASDLAgent agent = (JASDLAgent) ts.getAg();
+            
+            String prefix = agent.getAgentName() + "_" + JASDLParams.ANONYMOUS_INDIVIDUAL_PREFIX;
 
-			// collate all known anonymous individuals
-			Set<Atom> anonymousIndividualFunctors = new HashSet<Atom>();
-			for (OWLOntology ontology : agent.getOntologyManager().getOntologies()) {
-				for (OWLIndividual i : ontology.getReferencedIndividuals()) {
-					Alias alias = agent.getAliasManager().getLeft(i);
-					Atom functor = alias.getFunctor();
-					if (functor.toString().startsWith(prefix)) {
-						anonymousIndividualFunctors.add(functor);
-					}
-				}
-			}
+            // collate all known anonymous individuals
+            Set<Atom> anonymousIndividualFunctors = new HashSet<Atom>();
+            for (OWLOntology ontology : agent.getOntologyManager().getOntologies()) {
+                for (OWLIndividual i : ontology.getReferencedIndividuals()) {
+                    Alias alias = agent.getAliasManager().getLeft(i);
+                    Atom functor = alias.getFunctor();
+                    if (functor.toString().startsWith(prefix)) {
+                        anonymousIndividualFunctors.add(functor);
+                    }
+                }
+            }
 
-			un.unifies(args[0], new Atom(prefix + anonymousIndividualFunctors.size()));
-			return true;
+            un.unifies(args[0], new Atom(prefix + anonymousIndividualFunctors.size()));
+            return true;
 
-		} catch (Exception e) {
-			logger.warning("Error in internal action '" + get_anonymous_individual.class.getName() + "'! Reason:");
-			e.printStackTrace();
-			return false;
-		}
-	}
+        } catch (Exception e) {
+            logger.warning("Error in internal action '" + get_anonymous_individual.class.getName() + "'! Reason:");
+            e.printStackTrace();
+            return false;
+        }
+    }
 
 }

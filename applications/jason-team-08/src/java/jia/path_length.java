@@ -27,7 +27,7 @@ public class path_length extends DefaultInternalAction {
             int itoy = (int)((NumberTerm)terms[3]).solve();
             
             if (model.inGrid(itox,itoy)) {
-            	
+                
                 // destination should be a free place
                 while (!model.isFreeOfObstacle(itox,itoy) && itox > 0) itox--;
                 while (!model.isFreeOfObstacle(itox,itoy) && itox < model.getWidth()) itox++;

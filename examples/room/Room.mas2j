@@ -13,15 +13,15 @@ A Prometheus specification is available in the doc folder.
 */
 
 MAS room {
-	infrastructure: Centralised
-	
-	environment: RoomEnv
-	
-	// synchronise the execution: an agent only
-	// starts its next reasoning cycle when all others
-	// have finished theirs.
-	executionControl: jason.control.ExecutionControl
-	
-	agents: porter; claustrophobe; paranoid;
+    infrastructure: Centralised
+    
+    environment: RoomEnv
+    
+    // synchronise the execution: an agent only
+    // starts its next reasoning cycle when all others
+    // have finished theirs.
+    executionControl: jason.control.ExecutionControl
+    
+    agents: porter; claustrophobe; paranoid;
 }
 

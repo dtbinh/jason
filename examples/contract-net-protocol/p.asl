@@ -22,7 +22,7 @@ plays(initiator,c).
    <- .print("My proposal '",Offer,"' won CNP ",CNPId,
              " for ",Task,"!").
       // do the task and report to initiator
-	  
+      
 @r2 +reject_proposal(CNPId)
    <- .print("I lost CNP ",CNPId, ".");
       -proposal(CNPId,_,_). // clear memory

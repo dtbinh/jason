@@ -15,24 +15,24 @@ dist_cow_near_corral(Dist) :-
 +!create_herding_gr(BoysCand)
    : not .intend(create_herding_gr(_))
   <- .print("ooo Creating herding group.");
-	 
+     
      // create the new  group
      ?group(team,TeamId);
      jmoise.create_group(herding_grp, TeamId, HG);
-	 .print("ooo Herding group ",HG," created.");
-	 
-	 // store the list of scouter in my group
+     .print("ooo Herding group ",HG," created.");
+     
+     // store the list of scouter in my group
      //.my_name(Me);
      //?play(Me,explorer,EG);
      //.findall(Scouter,play(Scouter,scouter,EG),LScouters);
-	 
+     
      !change_role(herder,HG);
 
      // ask scouters to change role
-	 .print("ooo Asking ",BoysCand," to adopt the herdboy role in ",HG);
-	 .send(BoysCand,achieve,change_role(herdboy,HG)).
-	 
-	 
+     .print("ooo Asking ",BoysCand," to adopt the herdboy role in ",HG);
+     .send(BoysCand,achieve,change_role(herdboy,HG)).
+     
+     
 // If I start playing explorer in a group that has no scheme, create the scheme
 +play(Me,herder,G)
    : .my_name(Me) &
@@ -40,21 +40,21 @@ dist_cow_near_corral(Dist) :-
   <- jmoise.create_scheme(herd_sch, [G]);
      +group_leader(G,Me);
      .broadcast(tell, group_leader(G,Me)).
-	 
+     
 // If I stop playing herder, destroy the herding groups I've created
 -play(Me,herder,_)
    : .my_name(Me)
   <- for( scheme(herd_sch,S)[owner(Me)] | scheme(pass_fence_sch,S)[owner(Me)]) {
-	    .print("ooo removing scheme ",S);
-	    jmoise.remove_scheme(S)
-	 };
-	 for( group(herding_grp,G)[owner(Me)] ) {
-	    -group_leader(G,Me);
+        .print("ooo removing scheme ",S);
+        jmoise.remove_scheme(S)
+     };
+     for( group(herding_grp,G)[owner(Me)] ) {
+        -group_leader(G,Me);
         .broadcast(untell, group_leader(G,Me));
         .print("ooo removing the group ",G);
-	    jmoise.remove_group(G)
-	 }.
-	 
+        jmoise.remove_group(G)
+     }.
+     
 // If I stop playing herdboy (because the group was destroied by the herder),
 // I should try yo create my new exploration group
 /* This plan does not work with merging!
@@ -76,17 +76,17 @@ dist_cow_near_corral(Dist) :-
 
 +!check_merge
     : .my_name(Me) &
-	  play(Me, herder, Gi) &
+      play(Me, herder, Gi) &
       //.count(play(_,_,Gi), N) & N < 3 & // only merge small group
-	  current_cluster(MyC)
+      current_cluster(MyC)
   <-  // for all other groups
       for(group_leader(Gj, L)  & Me < L & L \== Me & not play(L,herdboy,Gi)) { // 
-	     .print("ooo Checking merging with ",Gj);
+         .print("ooo Checking merging with ",Gj);
          // ask their clusters
          .send(L, askOne, current_cluster(_), current_cluster(TC));
-		 .intersection(MyC,TC,I);
-		 
-		 if (.length(I) > 0) {
+         .intersection(MyC,TC,I);
+         
+         if (.length(I) > 0) {
             //MyC = [pos(MyCX,MyCY)|_];
             //TC  = [pos(TCX,TCY)|_];
             //?corral_center(CorralX, CorralY);
@@ -97,13 +97,13 @@ dist_cow_near_corral(Dist) :-
                .print("ooo merging my herding group ",Gi," with ",Gj, " lead by ",L, " common cows are ",I);
                .send(L,achieve, change_role(herdboy,Gi))
             //}
-		 }{
-		    .print("ooo no common cows, so no merging, my cows \n",MyC,"\n",TC)
-		 }
-	  };
-	  .wait(2000). // give some time for them to adopt the roles before check merging again
+         }{
+            .print("ooo no common cows, so no merging, my cows \n",MyC,"\n",TC)
+         }
+      };
+      .wait(2000). // give some time for them to adopt the roles before check merging again
 +!check_merge.
-	 	 
+         
 { begin maintenance_goal("+pos(_,_,_)") }
 
 +!release_boys[scheme(Sch),mission(Mission),group(Gr)]
@@ -163,8 +163,8 @@ dist_cow_near_corral(Dist) :-
   <- !find_closest(Agents,pos(X,Y),HA);
      .print("ooo Allocating position ",pos(X,Y)," to agent ",HA);
      .send(HA,tell,target(X,Y));
-	 .delete(HA,Agents,TAg);
-	 if (boy_beyond_fence(X,Y,FX,FY)) {
+     .delete(HA,Agents,TAg);
+     if (boy_beyond_fence(X,Y,FX,FY)) {
         +has_boy_beyond_fence(FX,FY)
      };
      !alloc_all(TAg,TLoc).
@@ -173,10 +173,10 @@ dist_cow_near_corral(Dist) :-
   <- .my_name(Me);
      .findall(d(D,Ag),
               .member(Ag,Agents) & (ally_pos(Ag,AgX,AgY) | Ag == Me & pos(AgX,AgY,_)) & jia.path_length(FX,FY,AgX,AgY,D),
-			  Distances);
-	 //.print("Distances for ",pos(FX,FY)," are ",Distances);
-	 .min(Distances,d(_,NearAg)).
-	 
+              Distances);
+     //.print("Distances for ",pos(FX,FY)," are ",Distances);
+     .min(Distances,d(_,NearAg)).
+     
 /* 
 // version "near  place of the agent"
 +!alloc_all([],[]).
@@ -186,17 +186,17 @@ dist_cow_near_corral(Dist) :-
      .print("ooo Alocating position ",pos(X,Y)," to agent ",HA);
      //.send(HA,untell,target(_,_));
      .send(HA,tell,target(X,Y));
-	 //-+alloc_target(HA,Alloc);
+     //-+alloc_target(HA,Alloc);
      !alloc_all(TA,NLA).
 
 +!find_closest(Ag, ListPos, MinDist, Rest) // find the location in ListPos nearest to agent Ag
   <- ?ally_pos(Ag,X,Y);
      //.print("ooo try to alloc ",Ag," in ",X,Y," with ",ListPos);
      ?calc_distances(ListPos,Distances,pos(X,Y));
-	 .print("Distances for ",ag_pos(Ag,X,Y)," are ",Distances);
-	 .min(Distances,d(_,MinDist));
-	 .delete(MinDist,ListPos,Rest).
-	 //!closest(ListPos,[],[MinDist|Rest],pos(X,Y),9999).
+     .print("Distances for ",ag_pos(Ag,X,Y)," are ",Distances);
+     .min(Distances,d(_,MinDist));
+     .delete(MinDist,ListPos,Rest).
+     //!closest(ListPos,[],[MinDist|Rest],pos(X,Y),9999).
 
 calc_distances([],[],_) :- true.
 calc_distances([pos(Fx,Fy)|TP], [d(D,pos(Fx,Fy))|TD], pos(AgX,AgY))
@@ -307,25 +307,25 @@ calc_distances([pos(Fx,Fy)|TP], [d(D,pos(Fx,Fy))|TD], pos(AgX,AgY))
 
 //+!goto_switch(X,Y)[scheme(Sch)]
 //  <- !goto_switch(X,Y,Sch,goto_switch). // the basic implementation of goto switch (pass_fence.asl)
-     	
-     	
+        
+        
 /* -- Change to exploring -- */
-     	
+        
 { begin maintenance_goal("+pos(_,_,_)") }
 
 +!change_to_exploring[scheme(Sch),mission(Mission),group(Gr)]
    : not cow(_,_,_)  //| (current_cluster(CAsList) & .length(CAsList) <= 2)
   <- .print("ooo I see no cow anymore");
      // wait two cycles to decide to change the formation (due to fault perception we may not see the cows) -- FIXED in Arch
-	 //.wait({+pos(_,_,_)});
-	 //.wait({+pos(_,_,_)});
-	 //if (not cow(_,_,_)) {
-	 .my_name(Me);
+     //.wait({+pos(_,_,_)});
+     //.wait({+pos(_,_,_)});
+     //if (not cow(_,_,_)) {
+     .my_name(Me);
      .findall(P, play(P,_,Gr) & P \== Me, ListBoys);
      !!create_exploration_gr;
-	 // ask helpers in my group to change the role (or create a exploration group if we merged)
-	 .send(ListBoys, achieve, create_exploration_gr).
-	 //}.
+     // ask helpers in my group to change the role (or create a exploration group if we merged)
+     .send(ListBoys, achieve, create_exploration_gr).
+     //}.
 
 +!change_to_exploring[scheme(Sch),mission(Mission),group(Gr)].
 

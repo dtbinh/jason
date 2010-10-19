@@ -65,7 +65,7 @@ public class near_least_visited extends DefaultInternalAction {
                     //ts.getLogger().info("at "+agx+","+agy+" to "+n.x+","+n.y);
                     return true;
                 } else {
-                	ts.getLogger().info("*** No near visited found! agent at "+ag+" area, tl="+tl+" br="+br);
+                    ts.getLogger().info("*** No near visited found! agent at "+ag+" area, tl="+tl+" br="+br);
                 }
             }
         } catch (Throwable e) {

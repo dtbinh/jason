@@ -16,7 +16,7 @@ desired_mission(writePaperSch,mManager).
 +!create_group : true 
    <- //.send(orgManager, achieve, create_group(wpgroup)).
       jmoise.create_group(wpgroup,G);
-	  .print("Group ",G," created").
+      .print("Group ",G," created").
 -!create_group[error_msg(M),code(C),code_line(L)]
    <- .print("Error creating group, command: ",C,", line ",L,", message: ",M).
 

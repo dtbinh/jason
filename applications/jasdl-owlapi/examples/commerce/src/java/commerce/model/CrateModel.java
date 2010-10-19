@@ -20,98 +20,98 @@ import owl2mas.model.Model;
  *
  */
 public class CrateModel extends MobileAgentModel{
-	/**
-	 * The product contained within this crate.
-	 */
-	private Product product;
-	
-	/**
-	 * The quanity of product contained within this crate.
-	 */
-	private int qty;
-	
-	/**
-	 * The delivery van this crate is loaded onto, null if not loaded.
-	 */
-	private DeliveryVanModel loadedOn = null;
+    /**
+     * The product contained within this crate.
+     */
+    private Product product;
+    
+    /**
+     * The quanity of product contained within this crate.
+     */
+    private int qty;
+    
+    /**
+     * The delivery van this crate is loaded onto, null if not loaded.
+     */
+    private DeliveryVanModel loadedOn = null;
 
 
-	public CrateModel(Atom id, Model model, Environment env, Settings stts) {
-		super(id, model, env, stts);
-		throw new RuntimeException("Crates cannot be instantiated at run-time using OWL2MAS society model instantiation mechanism");
-	}
-	
-	
-	public CrateModel(Atom id, Model model, Environment env, Point position, Product p, int qty) {		
-		super(id, model, env, generateSettings(position));
-		this.product = p;
-		this.qty = qty;
-	}
-	
-	public static Settings generateSettings(Point position){
-		Settings stts = new Settings();
-		stts.addOption("x_position", ""+position.x);
-		stts.addOption("y_position", ""+position.y);
-		return stts;
-	}
+    public CrateModel(Atom id, Model model, Environment env, Settings stts) {
+        super(id, model, env, stts);
+        throw new RuntimeException("Crates cannot be instantiated at run-time using OWL2MAS society model instantiation mechanism");
+    }
+    
+    
+    public CrateModel(Atom id, Model model, Environment env, Point position, Product p, int qty) {      
+        super(id, model, env, generateSettings(position));
+        this.product = p;
+        this.qty = qty;
+    }
+    
+    public static Settings generateSettings(Point position){
+        Settings stts = new Settings();
+        stts.addOption("x_position", ""+position.x);
+        stts.addOption("y_position", ""+position.y);
+        return stts;
+    }
 
-	
-	
-	public void setLoadedOn(DeliveryVanModel van){
-		loadedOn = van;
-	}
+    
+    
+    public void setLoadedOn(DeliveryVanModel van){
+        loadedOn = van;
+    }
 
-	public DeliveryVanModel getLoadedOn() {
-		return loadedOn;
-	}
-	
-	public boolean isLoaded(){
-		return loadedOn != null;
-	}
-	protected float getOffset(){
-		return 0.9f;
-	}
-	
-	protected Color getColour(){
-		return new Color(80, 80, 0);
-	}
-	
-	@Override
-	public String getLabel(){
-		Set<EmbodiedAgentModel> os = cmodel.getAgentsAtPosition(getPosition());
-		int no = 0;
-		for(EmbodiedAgentModel o : os){
-			if(o instanceof CrateModel){
-				no++;
-			}
-		}
-		if(no==1){
-			return "crate";
-		}else{
-			return "crates ("+no+")";
-		}
-	}
-	
-
-
-	public void setProduct(Product product) {
-		this.product = product;
-	}
+    public DeliveryVanModel getLoadedOn() {
+        return loadedOn;
+    }
+    
+    public boolean isLoaded(){
+        return loadedOn != null;
+    }
+    protected float getOffset(){
+        return 0.9f;
+    }
+    
+    protected Color getColour(){
+        return new Color(80, 80, 0);
+    }
+    
+    @Override
+    public String getLabel(){
+        Set<EmbodiedAgentModel> os = cmodel.getAgentsAtPosition(getPosition());
+        int no = 0;
+        for(EmbodiedAgentModel o : os){
+            if(o instanceof CrateModel){
+                no++;
+            }
+        }
+        if(no==1){
+            return "crate";
+        }else{
+            return "crates ("+no+")";
+        }
+    }
+    
 
 
-	public void setQuantity(int qty) {
-		this.qty = qty;
-	}	
-	
-
-	public Product getProduct() {
-		return product;
-	}
+    public void setProduct(Product product) {
+        this.product = product;
+    }
 
 
-	public int getQty() {
-		return qty;
-	}
-	
-	
+    public void setQuantity(int qty) {
+        this.qty = qty;
+    }   
+    
+
+    public Product getProduct() {
+        return product;
+    }
+
+
+    public int getQty() {
+        return qty;
+    }
+    
+    
 }

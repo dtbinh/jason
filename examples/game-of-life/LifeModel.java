@@ -26,9 +26,9 @@ public class LifeModel extends GridWorldModel {
                     }
                 }
             }
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

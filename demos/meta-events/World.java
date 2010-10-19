@@ -31,10 +31,10 @@ public class World extends Environment {
     @Override
     public boolean executeAction(String agName, Structure action) {
         
-		if (action.toString().equals("move")) {
-		    logger.info("moving");
-		    try { Thread.sleep(200); } catch (Exception e) {}
-		} else if (action.toString().equals("plug")) {
+        if (action.toString().equals("move")) {
+            logger.info("moving");
+            try { Thread.sleep(200); } catch (Exception e) {}
+        } else if (action.toString().equals("plug")) {
             logger.info("plug. charging....");
             new Thread() {
                 public void run() {
@@ -45,7 +45,7 @@ public class World extends Environment {
             }.start();
         } else if (action.toString().equals("unplug")) {
             logger.info("unplug");
-		}
+        }
         return true;
     }
 

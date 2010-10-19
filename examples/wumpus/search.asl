@@ -16,8 +16,8 @@ search( [p(F,[State|Path],PrevActions)|Open], GoalState, Solution) :-
         p(NewF,[NewState,State|Path],[Action|PrevActions]), // new paths 
         ( next_state(State,Action,NewState) & 
           not .member(NewState, [State|Path]) & 
-		  NewF = search.h(NewState,GoalState) + .length(PrevActions) + 1
-		), 
+          NewF = search.h(NewState,GoalState) + .length(PrevActions) + 1
+        ), 
         Sucs) &
    .concat(Open,Sucs,LT) & 
    .sort(LT,NewOpen) &  // sort by F (H+G), so A*

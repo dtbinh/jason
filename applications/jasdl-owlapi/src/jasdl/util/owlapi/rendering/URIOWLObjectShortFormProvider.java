@@ -24,21 +24,21 @@ import jasdl.bridge.JASDLOntologyManager;
 import org.semanticweb.owl.model.OWLEntity;
 
 public class URIOWLObjectShortFormProvider extends NormalisingOWLObjectShortFormProvider {
-	
-	public URIOWLObjectShortFormProvider(JASDLOntologyManager jom) {
-		super(jom);		
-	}
+    
+    public URIOWLObjectShortFormProvider(JASDLOntologyManager jom) {
+        super(jom);     
+    }
 
-	public void dispose() {
-	}
+    public void dispose() {
+    }
 
-	public String getShortForm(OWLEntity entity) {
-		String shortForm = super.getShortForm(entity);
-		if(shortForm != null){
-			// run-time defined class, has been normalised
-			return shortForm;
-		}else{		
-			return entity.getURI().toString();
-		}
-	}
+    public String getShortForm(OWLEntity entity) {
+        String shortForm = super.getShortForm(entity);
+        if(shortForm != null){
+            // run-time defined class, has been normalised
+            return shortForm;
+        }else{      
+            return entity.getURI().toString();
+        }
+    }
 }

@@ -31,24 +31,24 @@ import java.util.logging.Level;
  */
 public class log extends jason.stdlib.print {
 
-	@Override
-	public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
-		Level level = Level.parse(args[0].toString().toUpperCase());
+    @Override
+    public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
+        Level level = Level.parse(args[0].toString().toUpperCase());
 
-		Term[] sargs = new Term[args.length - 1];
-		for (int i = 1; i < args.length; i++) {
-			sargs[i - 1] = args[i];
-		}
+        Term[] sargs = new Term[args.length - 1];
+        for (int i = 1; i < args.length; i++) {
+            sargs[i - 1] = args[i];
+        }
 
-		String sout = level.toString() + ": " + argsToString(sargs);
+        String sout = level.toString() + ": " + argsToString(sargs);
 
-		if (ts != null && level.intValue() <= ts.getSettings().logLevel().intValue()) {
-			ts.getLogger().log(level, sout);
-		} else {
-			System.out.print(sout + getNewLine());
-		}
+        if (ts != null && level.intValue() <= ts.getSettings().logLevel().intValue()) {
+            ts.getLogger().log(level, sout);
+        } else {
+            System.out.print(sout + getNewLine());
+        }
 
-		return true;
-	}
+        return true;
+    }
 
 }

@@ -29,24 +29,24 @@
  */
  
 possibleStockist(ID, Expression, PossibleStockist) :-
-	jasdl.ia.define_class(possibleStockist, Expression) &
-	possibleStockist(PossibleStockist)[o(self)] &
-	shopInSameCompany(PossibleStockist) &	// note: this constraint could be more flexible by using an expression such as '' in the above class definition
-	not exhausted(ID)[source(PossibleStockist)] &
-	not (PossibleStockist == Me).
-	
+    jasdl.ia.define_class(possibleStockist, Expression) &
+    possibleStockist(PossibleStockist)[o(self)] &
+    shopInSameCompany(PossibleStockist) &   // note: this constraint could be more flexible by using an expression such as '' in the above class definition
+    not exhausted(ID)[source(PossibleStockist)] &
+    not (PossibleStockist == Me).
+    
 
 /**
  * Unify with a shop, other than this one, that is owned by the same company as this one.
  */
 shopInSameCompany(Shop) :-
-	shop(Shop)[o(s)] &
-	.my_name(Me) &
-	ownedBy(Me, Company)[o(s)] &
-	owns(Company, Shop)[o(s)] &
-	(not Shop==Me).	
-	
-	
+    shop(Shop)[o(s)] &
+    .my_name(Me) &
+    ownedBy(Me, Company)[o(s)] &
+    owns(Company, Shop)[o(s)] &
+    (not Shop==Me). 
+    
+    
 /*
  * The single term of the jasdl_tg_cause annotation is unified with the original cause of this trigger generalisation.
  * This allows us to use a generalised plan, while still having access to the information given by the (more specific) event that
@@ -60,27 +60,27 @@ shopInSameCompany(Shop) :-
  */
 @found_product_for_PA
 +?product(Brand)[o(c), id(ID), stockist(Me)] : jasdl.ia.get_tg_cause(OriginalQuery, false) &
-	OriginalQuery	// the agent has found a suitable product within its belief base
-		<-
-		.print("Recieved request and is able to service it");
-		.my_name(Me);
-		jasdl.ia.get_individual(OriginalQuery, Brand).
-		
+    OriginalQuery   // the agent has found a suitable product within its belief base
+        <-
+        .print("Recieved request and is able to service it");
+        .my_name(Me);
+        jasdl.ia.get_individual(OriginalQuery, Brand).
+        
 /** TODO: Match other, more specific, types of product and opportunistically present special offers to the PA
  * i.e. "buy two get one free on all types of milk" using a plan such as:
  *
  * +?milk(Brand)[o(c), id(ID), stockist(Me)] : jasdl.ia.get_tg_cause(OriginalQuery, false) &
- * 		OriginalQuery
- *			<-
- *				...
+ *      OriginalQuery
+ *          <-
+ *              ...
  */ 
 
 +?milk(Brand)[o(c), id(ID), stockist(Me)] : jasdl.ia.get_tg_cause(OriginalQuery, false) &
-	OriginalQuery	// the agent has found a suitable product within its belief base
-		<-
-		.print("Recieved request and is able to service it");
-		.my_name(Me);
-		jasdl.ia.get_individual(OriginalQuery, Brand).
+    OriginalQuery   // the agent has found a suitable product within its belief base
+        <-
+        .print("Recieved request and is able to service it");
+        .my_name(Me);
+        jasdl.ia.get_individual(OriginalQuery, Brand).
 
 /**
  * We are unable to find a suitable product, moreover, we are unable to establish a possible stockist to try on behalf of the PA.
@@ -89,85 +89,85 @@ shopInSameCompany(Shop) :-
  * is irrelevant here since JASDL automatically assigns precence according to concept specificity for trigger generalisation
  */
 +?thing(Brand)[o(owl), id(ID), stockist(_)] :  jasdl.ia.get_tg_cause(OriginalQuery, false) &
-	not OriginalQuery	// the agent has not found a suitable product within its belief base
-	<-
-		!reset(ID);
-		.print("Recieved request and is UNABLE to service it");
-		.fail.	
-		
+    not OriginalQuery   // the agent has not found a suitable product within its belief base
+    <-
+        !reset(ID);
+        .print("Recieved request and is UNABLE to service it");
+        .fail.  
+        
 /**
  * Requested a type of product that this agent cannot supply, try asking any other shop.
  */
 +?product(Brand)[o(c), id(ID), stockist(Stockist)] : jasdl.ia.get_tg_cause(OriginalQuery, false) & .print(OriginalQuery) &
-	not OriginalQuery &	// the agent has not found a suitable product within its belief base
-	possibleStockist(ID, "s:shop", Try)
-		<-
-		.print("Unknown GENERAL PRODUCT requested");
-		!exhausted(ID);
-		?stocked_by_another_shop(Try, ID, OriginalQuery, Brand, Stockist).
+    not OriginalQuery & // the agent has not found a suitable product within its belief base
+    possibleStockist(ID, "s:shop", Try)
+        <-
+        .print("Unknown GENERAL PRODUCT requested");
+        !exhausted(ID);
+        ?stocked_by_another_shop(Try, ID, OriginalQuery, Brand, Stockist).
 
 /**
  * Requested a type of vegetable product that this agent cannot supply, try asking a greengrocer or a supermarket.
  */
 +?vegetable(Brand)[o(c), id(ID), stockist(Stockist)] : jasdl.ia.get_tg_cause(OriginalQuery, false) &
-	not OriginalQuery &	// the agent has not found a suitable product within its belief base
-	possibleStockist(ID, "s:greenGrocers or s:supermarket", Try)
-		<-
-		.print("Unknown VEGETABLE PRODUCT requested");
-		!exhausted(ID);
-		?stocked_by_another_shop(Try, ID, OriginalQuery, Brand, Stockist).
+    not OriginalQuery & // the agent has not found a suitable product within its belief base
+    possibleStockist(ID, "s:greenGrocers or s:supermarket", Try)
+        <-
+        .print("Unknown VEGETABLE PRODUCT requested");
+        !exhausted(ID);
+        ?stocked_by_another_shop(Try, ID, OriginalQuery, Brand, Stockist).
 
 /**
  * Requested a type of meat product that this agent cannot supply, try asking a butchers.
  */
 +?meatProduct(Brand)[o(c), id(ID), stockist(Stockist)] : jasdl.ia.get_tg_cause(OriginalQuery, false) &
-	not OriginalQuery &	// the agent has not found a suitable product within its belief base
-	possibleStockist(ID, "s:butchers", Try)
-		<-
-		.print("Unknown MEAT PRODUCT requested");
-		!exhausted(ID);
-		?stocked_by_another_shop(Try, ID, OriginalQuery, Brand, Stockist).
+    not OriginalQuery & // the agent has not found a suitable product within its belief base
+    possibleStockist(ID, "s:butchers", Try)
+        <-
+        .print("Unknown MEAT PRODUCT requested");
+        !exhausted(ID);
+        ?stocked_by_another_shop(Try, ID, OriginalQuery, Brand, Stockist).
 
 /**
  * Try the shop identified by PossibleStockist, preserving the necessary annotations.
  */
 +?stocked_by_another_shop(PossibleStockist, ID, Query, Answer, Stockist) :
-	shopInSameCompany(PossibleStockist)	// Must be a known shop in this company
-		<-
-		.print("Trying ", PossibleStockist);
-		.add_annot(Query, id(ID), Q1);
-		.add_annot(Q1, stockist(Stockist), Q2);
-		.send(PossibleStockist, askOne, Q2, Q2);	
-		jasdl.ia.get_individual(Q2, Answer).
-		
-	
+    shopInSameCompany(PossibleStockist) // Must be a known shop in this company
+        <-
+        .print("Trying ", PossibleStockist);
+        .add_annot(Query, id(ID), Q1);
+        .add_annot(Q1, stockist(Stockist), Q2);
+        .send(PossibleStockist, askOne, Q2, Q2);    
+        jasdl.ia.get_individual(Q2, Answer).
+        
+    
 /**
  * Inform all other known shops within this company that I have already been tried for this order and unable to service it
  * (so I am not asked again)
  */
 +!exhausted(ID)
-		<-
-		.print("Setting exhausted status for purchase ", ID);
-		.findall(Shop, shopInSameCompany(Shop), Shops);
-		.send(Shops, tell, exhausted(ID)).
+        <-
+        .print("Setting exhausted status for purchase ", ID);
+        .findall(Shop, shopInSameCompany(Shop), Shops);
+        .send(Shops, tell, exhausted(ID)).
 
 /**
  * Reset the exhausted status for a product for this shop and across all other known shops in this company.
  */
 +!reset(ID)
-		<-
-		.print("Resetting exhausted status for purchase ", ID);
-		.findall(Shop, shopInSameCompany(Shop), Shops);
-		.abolish(exhausted(ID)[source(_)]);
-		.send(Shops, untell, exhausted(ID)[source(_)]).
+        <-
+        .print("Resetting exhausted status for purchase ", ID);
+        .findall(Shop, shopInSameCompany(Shop), Shops);
+        .abolish(exhausted(ID)[source(_)]);
+        .send(Shops, untell, exhausted(ID)[source(_)]).
 
 /**
  * Another shop has "reset" the exhausted status for a product, ensure all exhausted beliefs for this purchase ID are abolished accordingly.
  */
 -exhausted(ID)[source(Shop)] :
-	shopInSameCompany(Shop)
-		<-
-		.abolish(exhausted(ID)).
+    shopInSameCompany(Shop)
+        <-
+        .abolish(exhausted(ID)).
    
   
    
@@ -181,26 +181,26 @@ shopInSameCompany(Shop) :-
  * An order request has been recieved from a PA, coordinate delivery of it
  */
 +order(Order)[o(c), source(PA)] :
-	hasCustomer(Order, Customer)[o(c)] &                      
-	employs(Customer, PA)[o(s)]
-		<-
-		// Delopy crates containing product
-		!deploy(Order);
-		// Obtain an available van (or suspend this intention until one it available)
-		!wait_available(Van);
-		// Instruct this van to move to shop's position
-		!recall(Van);
-		// Instruct the van to load the deployed products into its cargo hold
-		!load(Order, Van);
-		// Instruct the van to move to the customer's position
-		!dispatch(Order, Van);
-		// Instruct the van to unload its cargo at its current position (i.e. the customer's)
-		!unload(Order, Van);
-		// Abolish beliefs about this order (and all included purchases), we no longer need them
-		!abolish_order(Order);
-		// Make the van available again
-		+available[source(Van)].
-	
+    hasCustomer(Order, Customer)[o(c)] &                      
+    employs(Customer, PA)[o(s)]
+        <-
+        // Delopy crates containing product
+        !deploy(Order);
+        // Obtain an available van (or suspend this intention until one it available)
+        !wait_available(Van);
+        // Instruct this van to move to shop's position
+        !recall(Van);
+        // Instruct the van to load the deployed products into its cargo hold
+        !load(Order, Van);
+        // Instruct the van to move to the customer's position
+        !dispatch(Order, Van);
+        // Instruct the van to unload its cargo at its current position (i.e. the customer's)
+        !unload(Order, Van);
+        // Abolish beliefs about this order (and all included purchases), we no longer need them
+        !abolish_order(Order);
+        // Make the van available again
+        +available[source(Van)].
+    
 
  /*
  * The agent has attempted to find an available van (see above) within the belief base but has failed.
@@ -208,96 +208,96 @@ shopInSameCompany(Shop) :-
  */
 
 +!wait_available(Van) : not available[source(Van)]
-		<-
-		.wait(800);
-		!wait_available(Van).
+        <-
+        .wait(800);
+        !wait_available(Van).
 
 /**
  * This must remain atomic to prevent the same van being allocated more than once at any one time.
  */
  @allocate_available[atomic]
 +!wait_available(Van) : available[source(Van)]
-		<-
-		-available[source(Van)].
-		
+        <-
+        -available[source(Van)].
+        
 
 /**
  * Achieve the state of affairs such that a van has loaded an entire order into its cargo.
  * (Suspends the intention until this is so) 
  */
 +!load(Order, Van) : .my_name(Me) & inVicinityOf(Van)
-		<-
-		-hasPosition(Van, X, Y)[source(Van)];	
-		.findall(PID, includes(Order, PID)[o(c)], PIDs);
-		.send(Van, achieve, load(PIDs));
-		!wait_loading_complete(Van).
-		
+        <-
+        -hasPosition(Van, X, Y)[source(Van)];   
+        .findall(PID, includes(Order, PID)[o(c)], PIDs);
+        .send(Van, achieve, load(PIDs));
+        !wait_loading_complete(Van).
+        
 +!wait_loading_complete(Van) : not loading_complete[source(Van)]
-		<-
-		.wait(400);
-		!wait_loading_complete(Van).
-		
+        <-
+        .wait(400);
+        !wait_loading_complete(Van).
+        
 +!wait_loading_complete(Van) : loading_complete[source(Van)]
-		<-
-		-loading_complete[source(Van)].
-		
+        <-
+        -loading_complete[source(Van)].
+        
 /**
  * Achieve the state of affairs such that a van has unloaded its entire cargo at its current destination
  * (Suspends the intention until this is so) 
- */	
+ */ 
 +!unload(Order, Van)
-		<-
-		.findall(PID, includes(Order, PID)[o(c)], PIDs);
-		.send(Van, achieve, unload(PIDs));
-		!wait_unloading_complete(Van).
-		
+        <-
+        .findall(PID, includes(Order, PID)[o(c)], PIDs);
+        .send(Van, achieve, unload(PIDs));
+        !wait_unloading_complete(Van).
+        
 +!wait_unloading_complete(Van) : not unloading_complete[source(Van)]
-		<-
-		.wait(400);
-		!wait_unloading_complete(Van).
-		
+        <-
+        .wait(400);
+        !wait_unloading_complete(Van).
+        
 +!wait_unloading_complete(Van) : unloading_complete[source(Van)]
-		<-
-		-unloading_complete[source(Van)].
+        <-
+        -unloading_complete[source(Van)].
 
 /**
  * Instruct a van to go to the shop's position
  * (Suspends the intention until this is so) 
  */
 +!recall(Van)
-		<-
-		.my_name(Me);
-		?hasPosition(Me, MX, MY);
-		!hasPosition(Van, MX, MY).
+        <-
+        .my_name(Me);
+        ?hasPosition(Me, MX, MY);
+        !hasPosition(Van, MX, MY).
 
 /**
  * Instruct a van to go to the location of the customer assocaited with an order
  * (Suspends the intention until this is so) 
  */
 +!dispatch(Order, Van)
-		<-
-		?hasCustomer(Order, Customer)[o(c)];
-		.send(Customer, askOne, hasPosition(Customer, X, Y), hasPosition(Customer, X, Y));
-		.print("Dispatching ", Van, " to ", X,",",Y,"(",Customer,")");
-		!hasPosition(Van, X, Y).	
-	
+        <-
+        ?hasCustomer(Order, Customer)[o(c)];
+        .send(Customer, askOne, hasPosition(Customer, X, Y), hasPosition(Customer, X, Y));
+        .print("Dispatching ", Van, " to ", X,",",Y,"(",Customer,")");
+        !hasPosition(Van, X, Y).    
+    
 /**
  * Achieve the state of affairs such that a van is at a position on the grid.
  * (Suspends the intention until this is so)
  */
 +!hasPosition(Van, X, Y) : not hasPosition(Van, X, Y)
-		<-	
-		.send(Van, achieve, hasPosition(Van, X, Y));
-		!wait_hasPosition(Van, X, Y).
-		
+        <-  
+        .send(Van, achieve, hasPosition(Van, X, Y));
+        !wait_hasPosition(Van, X, Y).
+        
 +!wait_hasPosition(Van, X, Y) : not hasPosition(Van, X, Y)
-		<-
-		.wait(2000);
-		!wait_hasPosition(Van, X, Y).
+        <-
+        .wait(2000);
+        !wait_hasPosition(Van, X, Y).
 
 +!wait_hasPosition(Van, X, Y) : hasPosition(Van, X, Y)
-		<-
-		-hasPosition(Van, X, Y)[source(_)].
+        <-
+        -hasPosition(Van, X, Y)[source(_)].
 
 
 
@@ -307,41 +307,41 @@ shopInSameCompany(Shop) :-
  */
 +!deploy([]).
 +!deploy([Purchase|Purchases])
-		<-
-		?hasBrand(Purchase, Brand)[o(c)];
-		?hasQuantity(Purchase, Qty)[o(c)];
-	
-		// The "deploy" environmental action results in the creation of a ModelCrate object
-		// at the shop's current position and decreases it's stock for the supplied brand accordingly.
-		deploy(Purchase, Brand, Qty);
-		.print("Deploying crate", Purchase);
-		!deploy(Purchases).
-		
+        <-
+        ?hasBrand(Purchase, Brand)[o(c)];
+        ?hasQuantity(Purchase, Qty)[o(c)];
+    
+        // The "deploy" environmental action results in the creation of a ModelCrate object
+        // at the shop's current position and decreases it's stock for the supplied brand accordingly.
+        deploy(Purchase, Brand, Qty);
+        .print("Deploying crate", Purchase);
+        !deploy(Purchases).
+        
 /**
  * Convenience plan that finds all the purchases in an order and instantiates !deploy above.
  */
 +!deploy(Order)
-		<-
-		.findall(PID, includes(Order, PID)[o(c)], PIDs);
-		!deploy(PIDs).
+        <-
+        .findall(PID, includes(Order, PID)[o(c)], PIDs);
+        !deploy(PIDs).
 
-	
+    
 
 +?details(Brand, Details) : product(PID)[o(c)]
-		<-
-		?hasPrice(Brand, Price)[o(c)];
-		?hasInStock(Brand, StockLevel)[o(c)];
-		// Unifies Types with all asserted (since third parameter is "true") classifications of the individual Brand 
-		// in the ontology identified by c
-		jasdl.ia.get_types(Brand, c, true, Types);
-		.concat("Brand Name=", Brand, ", Stock level=", StockLevel, ", Price=", ", Classifications=", Types, Price, Details).
+        <-
+        ?hasPrice(Brand, Price)[o(c)];
+        ?hasInStock(Brand, StockLevel)[o(c)];
+        // Unifies Types with all asserted (since third parameter is "true") classifications of the individual Brand 
+        // in the ontology identified by c
+        jasdl.ia.get_types(Brand, c, true, Types);
+        .concat("Brand Name=", Brand, ", Stock level=", StockLevel, ", Price=", ", Classifications=", Types, Price, Details).
 
 /* Failed to get details. Reason: No price listed for product type */
 -?details(Brand, Details) : product(Brand)[o(c)] & not hasPrice(Brand, Price)
-		<-
-		.concat("No price listed for product ", Brand, Details).
-	
+        <-
+        .concat("No price listed for product ", Brand, Details).
+    
 +!print_details(Brand) : product(Brand)[o(c)]
-		<-
-		?details(Brand, Details);
-		.print(Details).
+        <-
+        ?details(Brand, Details);
+        .print(Details).

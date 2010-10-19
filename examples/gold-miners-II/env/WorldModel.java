@@ -28,9 +28,9 @@ public class WorldModel extends GridWorldModel {
 
     int                       goldsInDepotRed  = 0; // #golds the red team puts in the depot
     int                       goldsInDepotBlue = 0; // #golds the blue team puts in the depot
-    int 					  initialNbGolds = 0;
+    int                       initialNbGolds = 0;
     
-    int	                      maxSteps = 0; // number of steps of the simulation
+    int                       maxSteps = 0; // number of steps of the simulation
     
     private Logger            logger   = Logger.getLogger("jasonTeamSimLocal.mas2j." + WorldModel.class.getName());
 
@@ -42,7 +42,7 @@ public class WorldModel extends GridWorldModel {
 
 
     public static WorldModel create(int w, int h, int nbAg) {
-    	return new WorldModel(w,h,nbAg);
+        return new WorldModel(w,h,nbAg);
     }
     
     public WorldModel(int w, int h, int nbAg) {
@@ -53,7 +53,7 @@ public class WorldModel extends GridWorldModel {
     }
 
     public int getAgsByTeam() {
-    	return agsByTeam;
+        return agsByTeam;
     }
     
     @Override 
@@ -62,13 +62,13 @@ public class WorldModel extends GridWorldModel {
     }
 
     public WorldView getView() {
-    	return (WorldView)view;
+        return (WorldView)view;
     }
     
     public void setDepot(int x, int y) {
-    	if (depot != null) {
-    		data[depot.x][depot.y]    = CLEAN;
-    	}
+        if (depot != null) {
+            data[depot.x][depot.y]    = CLEAN;
+        }
         depot = new Location(x, y);
         data[x][y] = DEPOT;
     }
@@ -79,31 +79,31 @@ public class WorldModel extends GridWorldModel {
     }
     
     public int getGoldsInDepotBlue() {
-    	return goldsInDepotBlue;
+        return goldsInDepotBlue;
     }
 
     public int getGoldsInDepotRed() {
-    	return goldsInDepotRed;
+        return goldsInDepotRed;
     }
     
     public boolean hasGold() {
-    	return countObjects(GOLD) > 0;
+        return countObjects(GOLD) > 0;
     }
     
     public boolean isAllGoldsCollected() {
-    	return goldsInDepotRed + goldsInDepotBlue == initialNbGolds;
+        return goldsInDepotRed + goldsInDepotBlue == initialNbGolds;
     }
     
     public void setInitialNbGolds(int i) {
-    	initialNbGolds = i;
+        initialNbGolds = i;
     }
     
     public int getInitialNbGolds() {
-    	return initialNbGolds;
+        return initialNbGolds;
     }
 
     public boolean isCarryingGold(int ag) {
-    	return goldsWithAg[ag] > 0;
+        return goldsWithAg[ag] > 0;
     }
 
     public boolean mayCarryMoreGold(int ag) {
@@ -111,10 +111,10 @@ public class WorldModel extends GridWorldModel {
     }
     
     public int getGoldsWithAg(int ag) {
-    	return goldsWithAg[ag];
+        return goldsWithAg[ag];
     }
     public void setGoldsWithAg(int ag, int n) {
-    	goldsWithAg[ag] = n;
+        goldsWithAg[ag] = n;
     }
     
     public void setPSim(double psim) {
@@ -136,10 +136,10 @@ public class WorldModel extends GridWorldModel {
     }
     
     public void setMaxSteps(int s) {
-    	maxSteps = s;
+        maxSteps = s;
     }
     public int getMaxSteps() {
-    	return maxSteps;
+        return maxSteps;
     }
         
     
@@ -173,12 +173,12 @@ public class WorldModel extends GridWorldModel {
     }
 
     private boolean canMoveTo(int ag, Location l) {
-    	if (isFreeOfObstacle(l)) {
-    		if (!l.equals(getDepot()) || isCarryingGold(ag)) { // if depot, the must be carrying gold
-    			return true;
-    		}
-    	}
-    	return false;
+        if (isFreeOfObstacle(l)) {
+            if (!l.equals(getDepot()) || isCarryingGold(ag)) { // if depot, the must be carrying gold
+                return true;
+            }
+        }
+        return false;
     }
     
     public boolean pick(int ag) {
@@ -203,9 +203,9 @@ public class WorldModel extends GridWorldModel {
             if (l.equals(getDepot())) {
                 logger.info("Agent " + (ag + 1) + " carried "+goldsWithAg[ag]+" golds to depot!");
                 if (ag < agsByTeam)
-                	goldsInDepotRed += goldsWithAg[ag];
+                    goldsInDepotRed += goldsWithAg[ag];
                 else
-                	goldsInDepotBlue += goldsWithAg[ag];
+                    goldsInDepotBlue += goldsWithAg[ag];
                 goldsWithAg[ag] = 0;
             } else {
                 add(WorldModel.GOLD, l.x, l.y);
@@ -218,37 +218,37 @@ public class WorldModel extends GridWorldModel {
 
 
     public void wall(int x1, int y1, int x2, int y2) {
-    	for (int i=x1; i<=x2; i++) {
-    		for (int j=y1; j<=y2; j++) {
-    			data[i][j] = OBSTACLE;
-    		}
-    	}
+        for (int i=x1; i<=x2; i++) {
+            for (int j=y1; j<=y2; j++) {
+                data[i][j] = OBSTACLE;
+            }
+        }
     }
     
     public String toString() {
-    	StringBuilder s = new StringBuilder();
+        StringBuilder s = new StringBuilder();
 
-    	s.append("---------------------------------------------\n|");
-    	for (int j = 0; j < getHeight(); j++) {
-    		for (int i = 0; i < getWidth(); i++) {
-            	if (hasObject(OBSTACLE, i, j)) {
-            		s.append('X');
-            	} else if (hasObject(DEPOT, i, j)) {
-            		s.append('O');
-            	} else if (hasObject(AGENT, i, j)) {
-            		s.append((getAgAtPos(i, j)+1)+"");
-            	} else if (hasObject(GOLD, i, j)) {
-            		s.append('G');
-            	} else if (hasObject(ENEMY, i, j)) {
-            		s.append('E');
-            	} else {
-            		s.append(' ');
-            	}
+        s.append("---------------------------------------------\n|");
+        for (int j = 0; j < getHeight(); j++) {
+            for (int i = 0; i < getWidth(); i++) {
+                if (hasObject(OBSTACLE, i, j)) {
+                    s.append('X');
+                } else if (hasObject(DEPOT, i, j)) {
+                    s.append('O');
+                } else if (hasObject(AGENT, i, j)) {
+                    s.append((getAgAtPos(i, j)+1)+"");
+                } else if (hasObject(GOLD, i, j)) {
+                    s.append('G');
+                } else if (hasObject(ENEMY, i, j)) {
+                    s.append('E');
+                } else {
+                    s.append(' ');
+                }
             }
             s.append("|\n|");
         }
-    	s.append("---------------------------------------------\n");
-    	
-    	return s.toString();
+        s.append("---------------------------------------------\n");
+        
+        return s.toString();
     }
 }

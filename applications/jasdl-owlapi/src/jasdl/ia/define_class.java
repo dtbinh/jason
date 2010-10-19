@@ -42,30 +42,30 @@ import java.util.logging.Logger;
  * ?cheapBread(X)[o(self)], will unify X with such an individual (if known).
  * 
  * Usage jasdl.ia.define_class(classname, expr_1...expr_n), where:
- * 	- classname is an atomic name used to refer to this class in future. Must begin with a lowercase letter and not clash with any AgentSpeak keyword
+ *  - classname is an atomic name used to refer to this class in future. Must begin with a lowercase letter and not clash with any AgentSpeak keyword
  *  - the concatenation of expr_1...expr_n is a valid Manchester OWL syntax class expression (in JASDL's namespace prefix form)
  *  
  *
  */
 public class define_class extends DefaultInternalAction {
 
-	private Logger logger = Logger.getLogger("jasdl." + define_class.class.getName());
+    private Logger logger = Logger.getLogger("jasdl." + define_class.class.getName());
 
-	@Override
-	public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
-		try {
-			// class name ATOM
-			Term _classname = args[0];
-			if (!_classname.isAtom()) {
-				throw new JASDLException("first argument must be a Atom containing a valid class name");
-			}
-			Atom classname = (Atom) _classname;
+    @Override
+    public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
+        try {
+            // class name ATOM
+            Term _classname = args[0];
+            if (!_classname.isAtom()) {
+                throw new JASDLException("first argument must be a Atom containing a valid class name");
+            }
+            Atom classname = (Atom) _classname;
 
-			// concat expression strings / atoms, with limited validity checks
-			String expr = "";
-			for (int i = 1; i < args.length; i++) {
-				if (args[i].isString()) {
-					expr += strip(args[i].toString(), "\"");
+            // concat expression strings / atoms, with limited validity checks
+            String expr = "";
+            for (int i = 1; i < args.length; i++) {
+                if (args[i].isString()) {
+                    expr += strip(args[i].toString(), "\"");
 				} else {
 					expr += args[i].toString();
 				}

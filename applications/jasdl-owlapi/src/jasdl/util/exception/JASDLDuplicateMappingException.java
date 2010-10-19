@@ -21,12 +21,12 @@ package jasdl.util.exception;
 
 
 public class JASDLDuplicateMappingException extends JASDLException {
-	public JASDLDuplicateMappingException(String message) {
-		super(message);
-	}
+    public JASDLDuplicateMappingException(String message) {
+        super(message);
+    }
 
-	public JASDLDuplicateMappingException(String msg, Exception cause) {
-		super(msg, cause);
-	}
+    public JASDLDuplicateMappingException(String msg, Exception cause) {
+        super(msg, cause);
+    }
 
 }

@@ -81,23 +81,23 @@ public class WriteStatusThread extends Thread {
                     
                     StringBuilder s = new StringBuilder(String.format("Step %5d : ", owner.getSimStep()-1));
                     for (int agId=0; agId<WorldModel.agsByTeam; agId++) {
-                    	if (agents[agId] != null) {
-	                        Location agp = agents[agId].getLastLocation();
-	                        if (agp != null) {
-	                            // count how long the agent is in the same location
-	                            int c = 0;
-	                            Iterator<Location> il = locations.get(agId).iterator();
-	                            while (il.hasNext() && il.next().equals(agp) && c <= 11) {
-	                                c++;
-	                            }
-	                            String sc = "*";
-	                            if (c < 10) sc = ""+c;
-	                            
-	                            locations.get(agId).add(0,agp);
-	                            String lastAct = shortActionFormat(agents[agId].getLastAction());
-	                            s.append(String.format("%5d,%2d/%s %s", agp.x, agp.y, sc, lastAct));
-	                        }
-                    	}
+                        if (agents[agId] != null) {
+                            Location agp = agents[agId].getLastLocation();
+                            if (agp != null) {
+                                // count how long the agent is in the same location
+                                int c = 0;
+                                Iterator<Location> il = locations.get(agId).iterator();
+                                while (il.hasNext() && il.next().equals(agp) && c <= 11) {
+                                    c++;
+                                }
+                                String sc = "*";
+                                if (c < 10) sc = ""+c;
+                                
+                                locations.get(agId).add(0,agp);
+                                String lastAct = shortActionFormat(agents[agId].getLastAction());
+                                s.append(String.format("%5d,%2d/%s %s", agp.x, agp.y, sc, lastAct));
+                            }
+                        }
                     }
                     
                     s.append( String.format("%7d ms", cycletime));
@@ -108,7 +108,7 @@ public class WriteStatusThread extends Thread {
                     
                     // store the agents' mind
                     for (CowboyArch arch : agents) {
-			if (arch == null) break;
+            if (arch == null) break;
                         try {
                             File dirmind = new File("mind-ag/"+arch.getAgName());
                             if (!dirmind.exists())

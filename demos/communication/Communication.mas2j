@@ -9,10 +9,10 @@ that sends messages to another agent (maria)
 
 MAS communication {
    
-	infrastructure: Centralised 
+    infrastructure: Centralised 
 
-	agents:
-		bob;
-		maria [verbose=1]; // set verbose=2 to see more details
+    agents:
+        bob;
+        maria [verbose=1]; // set verbose=2 to see more details
 }
 

@@ -33,28 +33,28 @@ import org.semanticweb.owl.model.OWLIndividual;
 
 public class SELiteralAllDifferentAssertion extends SELiteral {
 
-	public SELiteralAllDifferentAssertion(Literal l, JASDLOntologyManager jasdlOntologyManager) {
-		super(l, jasdlOntologyManager);
-	}
+    public SELiteralAllDifferentAssertion(Literal l, JASDLOntologyManager jasdlOntologyManager) {
+        super(l, jasdlOntologyManager);
+    }
 
-	@Override
-	public OWLIndividual getOWLIndividual(int i) throws JASDLException {
-		throw new JASDLException("Cannot be used on all_different assertions");
-	}
+    @Override
+    public OWLIndividual getOWLIndividual(int i) throws JASDLException {
+        throw new JASDLException("Cannot be used on all_different assertions");
+    }
 
-	/**
-	 * Validates since terms are mutable
-	 * @return
-	 */
-	public Set<OWLIndividual> getOWLIndividuals() throws JASDLException {
-		if (!literal.getTerm(0).isList())
-			throw new JASDLInvalidSELiteralException("The first term of an all_different assertion must be a list");
-		ListTerm list = (ListTerm) literal.getTerm(0);
-		Set<OWLIndividual> is = new HashSet<OWLIndividual>();
-		for (Term i : list) {
-			is.add(getOWLIndividual(i));
-		}
-		return is;
-	}
+    /**
+     * Validates since terms are mutable
+     * @return
+     */
+    public Set<OWLIndividual> getOWLIndividuals() throws JASDLException {
+        if (!literal.getTerm(0).isList())
+            throw new JASDLInvalidSELiteralException("The first term of an all_different assertion must be a list");
+        ListTerm list = (ListTerm) literal.getTerm(0);
+        Set<OWLIndividual> is = new HashSet<OWLIndividual>();
+        for (Term i : list) {
+            is.add(getOWLIndividual(i));
+        }
+        return is;
+    }
 
 }

@@ -48,211 +48,211 @@ import org.eclipse.ui.ide.IDE;
  * @author Germano
  */
 public class NewEnvironmentWizard extends Wizard implements INewWizard {
-	private NewEnvironmentWizardPage page;
-	private ISelection selection;
+    private NewEnvironmentWizardPage page;
+    private ISelection selection;
 
-	/**
-	 * Constructor for NewInternalActionWizard.
-	 */
-	public NewEnvironmentWizard() {
-		super();
-		setNeedsProgressMonitor(true);
-	}
-	
-	/**
-	 * Adding the page to the wizard.
-	 */
+    /**
+     * Constructor for NewInternalActionWizard.
+     */
+    public NewEnvironmentWizard() {
+        super();
+        setNeedsProgressMonitor(true);
+    }
+    
+    /**
+     * Adding the page to the wizard.
+     */
 
-	public void addPages() {
-		page = new NewEnvironmentWizardPage(selection);
-		addPage(page);
-	}
+    public void addPages() {
+        page = new NewEnvironmentWizardPage(selection);
+        addPage(page);
+    }
 
-	/**
-	 * This method is called when 'Finish' button is pressed in
-	 * the wizard. We will create an operation and run it
-	 * using wizard as execution context.
-	 */
-	public boolean performFinish() {
-		String tmpContainerName = page.getContainerName();
-		String packageName = page.getPackageName();
-		
-		if (packageName != null) {
-			tmpContainerName += "/" + packageName.replace(".", "/");
-		}
-		
-		String containerName = tmpContainerName;
-		String fileName = page.getFileName();
-		try {
-			doFinish(containerName, packageName, fileName);
-		} catch (CoreException e) {
-			MessageDialog.openError(getShell(), "Error", e.getMessage());
-		}
-	
-		return true;
-	}
-	
-	/**
-	 * The worker method. It will find the container, create the
-	 * file if missing or just replace its contents, and open
-	 * the editor on the newly created file.
-	 */
+    /**
+     * This method is called when 'Finish' button is pressed in
+     * the wizard. We will create an operation and run it
+     * using wizard as execution context.
+     */
+    public boolean performFinish() {
+        String tmpContainerName = page.getContainerName();
+        String packageName = page.getPackageName();
+        
+        if (packageName != null) {
+            tmpContainerName += "/" + packageName.replace(".", "/");
+        }
+        
+        String containerName = tmpContainerName;
+        String fileName = page.getFileName();
+        try {
+            doFinish(containerName, packageName, fileName);
+        } catch (CoreException e) {
+            MessageDialog.openError(getShell(), "Error", e.getMessage());
+        }
+    
+        return true;
+    }
+    
+    /**
+     * The worker method. It will find the container, create the
+     * file if missing or just replace its contents, and open
+     * the editor on the newly created file.
+     */
 
-	private void doFinish(String containerName, String packageName, String fileName) throws CoreException {		
-		// create a sample file
-		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-		
-		// if necessary, create the packages.
-		containerName = createPackages(containerName, null, root);
-		
-		IResource resource = root.findMember(new Path(containerName));
-		if (!resource.exists() || !(resource instanceof IContainer)) {
-			throwCoreException("Container \"" + containerName + "\" does not exist.");
-		}
-		
-		IContainer container = (IContainer) resource;
-		final IFile file = container.getFile(new Path(fileName + ".java"));
-		try {
-			InputStream stream = openContentStream(containerName, packageName, fileName);
-			if (file.exists()) {
-				file.setContents(stream, true, true, null);
-			} else {
-				file.create(stream, true, null);
-				
-				String className = fileName;
-				if (packageName != null) {
-					className = packageName + "." + className;
-				}
-				registerNewEnvironmentMas2JProjectFile(resource, file, className);
-			}
-			stream.close();
-		} catch (IOException e) {
-			MessageDialog.openError(getShell(), "Error", e.getMessage());
-		}
+    private void doFinish(String containerName, String packageName, String fileName) throws CoreException {     
+        // create a sample file
+        IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+        
+        // if necessary, create the packages.
+        containerName = createPackages(containerName, null, root);
+        
+        IResource resource = root.findMember(new Path(containerName));
+        if (!resource.exists() || !(resource instanceof IContainer)) {
+            throwCoreException("Container \"" + containerName + "\" does not exist.");
+        }
+        
+        IContainer container = (IContainer) resource;
+        final IFile file = container.getFile(new Path(fileName + ".java"));
+        try {
+            InputStream stream = openContentStream(containerName, packageName, fileName);
+            if (file.exists()) {
+                file.setContents(stream, true, true, null);
+            } else {
+                file.create(stream, true, null);
+                
+                String className = fileName;
+                if (packageName != null) {
+                    className = packageName + "." + className;
+                }
+                registerNewEnvironmentMas2JProjectFile(resource, file, className);
+            }
+            stream.close();
+        } catch (IOException e) {
+            MessageDialog.openError(getShell(), "Error", e.getMessage());
+        }
 
-		getShell().getDisplay().asyncExec(new Runnable() {
-			public void run() {
-				IWorkbenchPage page =
-					PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-				try {
-					IDE.openEditor(page, file, true);
-				} catch (PartInitException e) {
-					MessageDialog.openError(getShell(), "Error", e.getMessage());
-				}
-			}
-		});
-	}
-	
-	private String createPackages(String containerName, IProgressMonitor monitor, IWorkspaceRoot root) throws CoreException {
-		String rootLocation = root.getLocation().toString();
-		
-		if (!containerName.startsWith("/")) {
-			containerName = "/" + containerName;
-		}
-		new File(rootLocation + containerName).mkdirs();
-		root.refreshLocal(IWorkspaceRoot.DEPTH_INFINITE, monitor);
-		return containerName;
-	}
-	
-	private void registerNewEnvironmentMas2JProjectFile(IResource resource, IFile file, String className) throws CoreException {			
-		IDocument document = null;
-		
-		String projectName = file.getProject().getName();
-		
-		IWorkbenchWindow[] windows = PlatformUI.getWorkbench().getWorkbenchWindows();
-		for (int i = 0; i < windows.length; i++) {
-			IWorkbenchPage[] pages = windows[i].getPages();
-			for (int j = 0; j < pages.length; j++) {
-				IEditorReference[] editors = pages[j].getEditorReferences();
-				for (int k = 0; k < editors.length; k++) {
-					IEditorPart part = editors[k].getEditor(false); 
-					if (part != null) {
-						if (part instanceof MAS2JEditor) {
-							String projectNameToCompare = ((IFileEditorInput)part.getEditorInput()).getFile().getProject().getName();
-							if (projectName.equals(projectNameToCompare)) {
-								document = ((MAS2JEditor)part).getEditor().getDocumentProvider().getDocument(part.getEditorInput());
-							}
-						}
-					}
-				}
-			}
-		} 
-		
-		try {	
-			// mas2j editor is open? yes: then modify contents of editor, no: then modify contents of file.
-			if (document == null) {
-				
-				// get the mas2j file path, if null then mas2j is not located in project directory.
-				String mas2jFilePath = MAS2JHandler.getMas2JFilePath(file.getProject().getLocation().toString());
-				if (mas2jFilePath != null) {
-					// parse the mas2j file project.
-					MAS2JProject project2 = MAS2JHandler.parse(mas2jFilePath);
-					project2.setEnvClass(new ClassParameters(className));
-					
-					String mas2jContents = MAS2JHandler.mas2jProjectToString(project2);
-					MAS2JHandler.persistMas2JFile(file.getProject(), mas2jContents);
-				}
-			}
-			else {
-				String tempFileName = MAS2JHandler.persistTempMas2JFile(file.getProject(), document.get());
-				try {
-					MAS2JProject project2 = MAS2JHandler.parse(tempFileName);
-					project2.setEnvClass(new ClassParameters(className));
-					
-					String mas2jContents = MAS2JHandler.mas2jProjectToString(project2);
-					document.set(mas2jContents);
-				}
-				finally {
-					MAS2JHandler.deleteMas2JTempFile(tempFileName);
-				}
-			}
-		} catch (ParseException e1) {
-			MessageDialog.openError(getShell(), "Error", e1.getMessage());
-		} catch (FileNotFoundException e1) {
-			MessageDialog.openError(getShell(), "Error", e1.getMessage());
-		} catch (JasonPluginException e1) {
-			MessageDialog.openError(getShell(), "Error", e1.getMessage());
-		}
-	}
+        getShell().getDisplay().asyncExec(new Runnable() {
+            public void run() {
+                IWorkbenchPage page =
+                    PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+                try {
+                    IDE.openEditor(page, file, true);
+                } catch (PartInitException e) {
+                    MessageDialog.openError(getShell(), "Error", e.getMessage());
+                }
+            }
+        });
+    }
+    
+    private String createPackages(String containerName, IProgressMonitor monitor, IWorkspaceRoot root) throws CoreException {
+        String rootLocation = root.getLocation().toString();
+        
+        if (!containerName.startsWith("/")) {
+            containerName = "/" + containerName;
+        }
+        new File(rootLocation + containerName).mkdirs();
+        root.refreshLocal(IWorkspaceRoot.DEPTH_INFINITE, monitor);
+        return containerName;
+    }
+    
+    private void registerNewEnvironmentMas2JProjectFile(IResource resource, IFile file, String className) throws CoreException {            
+        IDocument document = null;
+        
+        String projectName = file.getProject().getName();
+        
+        IWorkbenchWindow[] windows = PlatformUI.getWorkbench().getWorkbenchWindows();
+        for (int i = 0; i < windows.length; i++) {
+            IWorkbenchPage[] pages = windows[i].getPages();
+            for (int j = 0; j < pages.length; j++) {
+                IEditorReference[] editors = pages[j].getEditorReferences();
+                for (int k = 0; k < editors.length; k++) {
+                    IEditorPart part = editors[k].getEditor(false); 
+                    if (part != null) {
+                        if (part instanceof MAS2JEditor) {
+                            String projectNameToCompare = ((IFileEditorInput)part.getEditorInput()).getFile().getProject().getName();
+                            if (projectName.equals(projectNameToCompare)) {
+                                document = ((MAS2JEditor)part).getEditor().getDocumentProvider().getDocument(part.getEditorInput());
+                            }
+                        }
+                    }
+                }
+            }
+        } 
+        
+        try {   
+            // mas2j editor is open? yes: then modify contents of editor, no: then modify contents of file.
+            if (document == null) {
+                
+                // get the mas2j file path, if null then mas2j is not located in project directory.
+                String mas2jFilePath = MAS2JHandler.getMas2JFilePath(file.getProject().getLocation().toString());
+                if (mas2jFilePath != null) {
+                    // parse the mas2j file project.
+                    MAS2JProject project2 = MAS2JHandler.parse(mas2jFilePath);
+                    project2.setEnvClass(new ClassParameters(className));
+                    
+                    String mas2jContents = MAS2JHandler.mas2jProjectToString(project2);
+                    MAS2JHandler.persistMas2JFile(file.getProject(), mas2jContents);
+                }
+            }
+            else {
+                String tempFileName = MAS2JHandler.persistTempMas2JFile(file.getProject(), document.get());
+                try {
+                    MAS2JProject project2 = MAS2JHandler.parse(tempFileName);
+                    project2.setEnvClass(new ClassParameters(className));
+                    
+                    String mas2jContents = MAS2JHandler.mas2jProjectToString(project2);
+                    document.set(mas2jContents);
+                }
+                finally {
+                    MAS2JHandler.deleteMas2JTempFile(tempFileName);
+                }
+            }
+        } catch (ParseException e1) {
+            MessageDialog.openError(getShell(), "Error", e1.getMessage());
+        } catch (FileNotFoundException e1) {
+            MessageDialog.openError(getShell(), "Error", e1.getMessage());
+        } catch (JasonPluginException e1) {
+            MessageDialog.openError(getShell(), "Error", e1.getMessage());
+        }
+    }
 
-	/**
-	 * We will initialize file contents with a sample text.
-	 */
+    /**
+     * We will initialize file contents with a sample text.
+     */
 
-	private InputStream openContentStream(String containerName, String packageName, String fileName) {
-		try {
-			String environmentContents = Config.get().getTemplate("environment"); //buffer.toString();
-			
-			String iaName = fileName;
-			String projectName = containerName.split("/")[1];
-			
-			environmentContents = environmentContents.replace("<ENV_NAME>", iaName);
-			environmentContents = environmentContents.replace("<PROJECT_NAME>", projectName);
-			
-			if (packageName != null) {
-				environmentContents = "package ".concat(packageName).concat(";\r\n\r\n").concat(environmentContents);
-			}
-			
-			return new ByteArrayInputStream(environmentContents.getBytes());
-		} catch (Exception e) {
-		    e.printStackTrace();
-			MessageDialog.openError(getShell(), "Error", e.getMessage());
-			return null;
-		}
-	}
+    private InputStream openContentStream(String containerName, String packageName, String fileName) {
+        try {
+            String environmentContents = Config.get().getTemplate("environment"); //buffer.toString();
+            
+            String iaName = fileName;
+            String projectName = containerName.split("/")[1];
+            
+            environmentContents = environmentContents.replace("<ENV_NAME>", iaName);
+            environmentContents = environmentContents.replace("<PROJECT_NAME>", projectName);
+            
+            if (packageName != null) {
+                environmentContents = "package ".concat(packageName).concat(";\r\n\r\n").concat(environmentContents);
+            }
+            
+            return new ByteArrayInputStream(environmentContents.getBytes());
+        } catch (Exception e) {
+            e.printStackTrace();
+            MessageDialog.openError(getShell(), "Error", e.getMessage());
+            return null;
+        }
+    }
 
-	private void throwCoreException(String message) throws CoreException {
-		IStatus status =
-			new Status(IStatus.ERROR, Activator.getPluginId(), IStatus.OK, message, null);
-		throw new CoreException(status);
-	}
+    private void throwCoreException(String message) throws CoreException {
+        IStatus status =
+            new Status(IStatus.ERROR, Activator.getPluginId(), IStatus.OK, message, null);
+        throw new CoreException(status);
+    }
 
-	/**
-	 * We will accept the selection in the workbench to see if
-	 * we can initialize from it.
-	 * @see IWorkbenchWizard#init(IWorkbench, IStructuredSelection)
-	 */
-	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		this.selection = selection;
-	}
+    /**
+     * We will accept the selection in the workbench to see if
+     * we can initialize from it.
+     * @see IWorkbenchWizard#init(IWorkbench, IStructuredSelection)
+     */
+    public void init(IWorkbench workbench, IStructuredSelection selection) {
+        this.selection = selection;
+    }
 }

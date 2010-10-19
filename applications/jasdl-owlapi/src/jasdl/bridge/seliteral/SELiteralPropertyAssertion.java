@@ -28,12 +28,12 @@ import org.semanticweb.owl.model.OWLIndividual;
 
 public abstract class SELiteralPropertyAssertion extends SELiteral {
 
-	public SELiteralPropertyAssertion(Literal l, JASDLOntologyManager jasdlOntologyManager) {
-		super(l, jasdlOntologyManager);
-	}
+    public SELiteralPropertyAssertion(Literal l, JASDLOntologyManager jasdlOntologyManager) {
+        super(l, jasdlOntologyManager);
+    }
 
-	public OWLIndividual getSubject() throws JASDLException {
-		return getOWLIndividual(JASDLParams.DOMAIN);
-	}
+    public OWLIndividual getSubject() throws JASDLException {
+        return getOWLIndividual(JASDLParams.DOMAIN);
+    }
 
 }

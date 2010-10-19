@@ -19,11 +19,11 @@ public class show_counter extends DefaultInternalAction {
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
         try {
-        	if (pos < 0) {
-        		pos = Counters.get().getPlace(ts.getUserAgArch().getAgName());
-        		//logger.info("position of "+ts.getUserAgArch().getAgName()+" is "+pos);
-        	}
-        	Counters.get().setVl(pos, (int)((NumberTerm)args[0]).solve());
+            if (pos < 0) {
+                pos = Counters.get().getPlace(ts.getUserAgArch().getAgName());
+                //logger.info("position of "+ts.getUserAgArch().getAgName()+" is "+pos);
+            }
+            Counters.get().setVl(pos, (int)((NumberTerm)args[0]).solve());
             return true;
         } catch (Exception e) {
             logger.warning("Error in internal action 'show_counter'! "+e);

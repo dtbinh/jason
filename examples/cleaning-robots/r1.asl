@@ -23,10 +23,10 @@ at(P) :- pos(P,X,Y) & pos(r1,X,Y).
    <- // remember where to go back
       ?pos(r1,X,Y); 
       -+pos(last,X,Y);
-	  
+      
       // carry garbage to r2
       !take(garb,R);
-	  
+      
       // goes back and continue to check
       !at(last); 
       !!check(slots).

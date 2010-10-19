@@ -10,10 +10,10 @@
   <- .print("Error ", ErrorId, " '",Msg,"' by ",CodeBody," in ",CodeSrc,":",CodeLine);
      .current_intention(I);
      .print("current intention is: ",I);
-	 I = intention(Id,[_|IntendedMeans]);
-	 .println;
-	 .println("*  Intention #",Id, ", IM stack:");
-	 !print_im(IntendedMeans).
+     I = intention(Id,[_|IntendedMeans]);
+     .println;
+     .println("*  Intention #",Id, ", IM stack:");
+     !print_im(IntendedMeans).
 
 +!print_im([]).
 +!print_im([im(PlanLabel,Body,Unif)|R])

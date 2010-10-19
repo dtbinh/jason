@@ -18,20 +18,20 @@ import java.util.Queue;
  */
 public class SelectEvent extends Agent {
 
-	private Trigger cow  = Trigger.parseTrigger("+cow(_,_,_)");
-	private Unifier un   = new Unifier();
-	private boolean cleanCows = false;
+    private Trigger cow  = Trigger.parseTrigger("+cow(_,_,_)");
+    private Unifier un   = new Unifier();
+    private boolean cleanCows = false;
 
     public Event selectEvent(Queue<Event> events) {
-    	Iterator<Event> ie = events.iterator();
-    	while (ie.hasNext()) {
-    		un.clear();
-    		Event e = ie.next();
-        	if (un.unifies(cow, e.getTrigger())) {
-    			ie.remove();
-    			return e;
-    		}
-    	}
+        Iterator<Event> ie = events.iterator();
+        while (ie.hasNext()) {
+            un.clear();
+            Event e = ie.next();
+            if (un.unifies(cow, e.getTrigger())) {
+                ie.remove();
+                return e;
+            }
+        }
         return super.selectEvent(events);
     }
     

@@ -104,24 +104,24 @@ public class ColoringDocumentProvider extends FileDocumentProvider {
             textFileDocumentProvider.removeElementStateListener(listener);
     }
 
-    //	protected IDocument createDocument(Object element) throws CoreException {
-    //		IDocument doc = super.createDocument(element);
-    //		String filename = null;
-    //		if(element instanceof IPathEditorInput) {
-    //			filename = ((IPathEditorInput)element).getName();
+    //  protected IDocument createDocument(Object element) throws CoreException {
+    //      IDocument doc = super.createDocument(element);
+    //      String filename = null;
+    //      if(element instanceof IPathEditorInput) {
+    //          filename = ((IPathEditorInput)element).getName();
     //            IDocument document= createEmptyDocument();
     //            setDocumentContent(document, (IPathEditorInput)element, null);
     //            doc = document;
-    //		} else if(element instanceof IEditorInput) {
+    //      } else if(element instanceof IEditorInput) {
     //            filename = ((IEditorInput)element).getName();
     //            IDocument document= createEmptyDocument();
     //            setDocumentContent(document, (IEditorInput)element, null);
     //            doc = document;
     //        }
     //        Assert.isNotNull(doc);
-    //		initializeDocument(doc, filename);
-    //		return doc;
-    //	}
+    //      initializeDocument(doc, filename);
+    //      return doc;
+    //  }
 
     private String getFileName(Object element) {
         if (element instanceof IPathEditorInput) {

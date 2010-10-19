@@ -17,30 +17,30 @@ import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
  */
 public class NewAgentWizardPage extends WizardNewFileCreationPage {
 
-	/**
-	 * Constructor for SampleNewWizardPage.
-	 * @param pageName
-	 */
-	public NewAgentWizardPage(ISelection selection) {
-		super("New AgentSpeak File", StructuredSelection.EMPTY);
-		if (selection instanceof ITreeSelection) {
-			ITreeSelection ts = (ITreeSelection)selection;
-			
-			Object firstElement = ts.getFirstElement();
-			if (firstElement != null) {
-				if (firstElement instanceof IPackageFragmentRoot) {
-					IPackageFragmentRoot pfr = (IPackageFragmentRoot)firstElement;
-					setContainerFullPath(ResourcesPlugin.getWorkspace().getRoot().findMember(new Path(pfr.getPath().toFile().getPath())).getFullPath());
-				}
-			}
-		}
-		
-		setTitle("New AgentSpeak File");
-		setDescription("This wizard creates a new AgentSpeak file.");
-		this.setFileName("new_agent" + MAS2JHandler.AS_EXT);
-	}
+    /**
+     * Constructor for SampleNewWizardPage.
+     * @param pageName
+     */
+    public NewAgentWizardPage(ISelection selection) {
+        super("New AgentSpeak File", StructuredSelection.EMPTY);
+        if (selection instanceof ITreeSelection) {
+            ITreeSelection ts = (ITreeSelection)selection;
+            
+            Object firstElement = ts.getFirstElement();
+            if (firstElement != null) {
+                if (firstElement instanceof IPackageFragmentRoot) {
+                    IPackageFragmentRoot pfr = (IPackageFragmentRoot)firstElement;
+                    setContainerFullPath(ResourcesPlugin.getWorkspace().getRoot().findMember(new Path(pfr.getPath().toFile().getPath())).getFullPath());
+                }
+            }
+        }
+        
+        setTitle("New AgentSpeak File");
+        setDescription("This wizard creates a new AgentSpeak file.");
+        this.setFileName("new_agent" + MAS2JHandler.AS_EXT);
+    }
 
-	public String getContainerName() {
-		return this.getContainerFullPath().toString();
-	}
+    public String getContainerName() {
+        return this.getContainerFullPath().toString();
+    }
 }
