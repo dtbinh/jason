@@ -17,7 +17,7 @@
 
 
 \html{\begin{rawhtml}<h0><b><i>Jason</i></b> FAQ
-      <br><font size="-1">(for version 1.3)</font></h0>
+      <br><font size="-1">(for version 1.3.4)</font></h0>
       \end{rawhtml}}
 \latex{\begin{center}{\Huge\jason FAQ}\end{center}}
 
@@ -451,6 +451,112 @@ You should have a look at the \code{ExecutionControlGUI} class for an example
 of how to do this, and the API documentation for further available methods
 inherited from \code{ExecutionControl}.
 
+\subsection{Is it possible to use only the \jason BDI engine?}
+
+If you want to use only the \jason interpreter for a variant of
+AgentSpeak, you can implement your own agent class where the \jason
+available infrastructures are not used.  This class must function as
+an "overall agent architecture" for the AgentSpeak interpreter, i.e.,
+it has to send percepts to the interpreter and get the agent actions
+(which result from the AgentSpeak "reasoning cycles").
+
+Suppose you need a simple agent that interprets and reasons according
+to the following AgentSpeak source:
+\begin{verbatim}
++x(N) : N < 3  <- do(0).
+
++x(N) : N >= 3 <- do(50).
+\end{verbatim}
+
+The following class implements the required architecture (the complete
+code is available in the `demos' directory in the \jason distribution).  This
+code simply adds \code{x(10)} into the agent's belief base through
+perception and get the output action, in this case \code{do(50)}.
+
+\begin{verbatim}
+public class SimpleJasonAgent extends AgArch {
+    public static void main(String[] a) {
+       ...
+       SimpleJasonAgent ag = new SimpleJasonAgent();
+       ag.run();
+    }
+
+    public SimpleJasonAgent() {
+         // set up the Jason agent and the 
+         // TransitionSystem (the BDI Engine where the AgentSpeak 
+         // Semantics is implemented)
+
+         Agent ag = new Agent();
+         new TransitionSystem(ag, new Circumstance(), new Settings(), this);
+         ag.initAg("demo.asl"); // demo.asl is the file containing the code of the agent
+    }
+    
+    public String getAgName() {
+        return "bob";
+    }
+
+    public void run() {
+        while (isRunning()) {
+          // calls the Jason engine to perform one reasoning cycle
+          getTS().reasoningCycle();
+        }
+    }
+
+    // this method just add some perception for the agent
+    public List<Literal> perceive() {
+        List<Literal> l = new ArrayList<Literal>();
+        l.add(Literal.parseLiteral("x(10)"));
+        return l;
+    }
+
+    // this method gets the agent actions
+    public void act(ActionExec action, List<ActionExec> feedback) {
+        getTS().getLogger().info("Agent " + getAgName() + 
+                             " is doing: " + action.getActionTerm());
+        // return confirming the action execution was OK
+        action.setResult(true);
+        feedback.add(action);
+    }
+
+    public boolean canSleep() {
+        return true;
+    }
+
+    public boolean isRunning() {
+        return true;
+    }
+
+    public void sleep() {
+    	try {   Thread.sleep(1000); } catch (InterruptedException e) {}
+    }
+    
+    public void sendMsg(jason.asSemantics.Message m) throws Exception {
+    }
+
+    public void broadcast(jason.asSemantics.Message m) throws Exception {
+    }
+
+    public void checkMail() {
+    }
+}
+\end{verbatim}
+
+To run this agent:
+\begin{verbatim}
+export CLASSPATH= ../../lib/jason.jar:.
+javac SimpleJasonAgent.java
+java  SimpleJasonAgent
+\end{verbatim}
+
+The output will be 
+\begin{verbatim}
+[bob] Agent bob is doing: do(50)
+\end{verbatim}
+
+Of course, the AgentSpeak code in this example cannot use communicative
+actions, since the specific architecture given above does not implement
+communication.
+
 % ---------------------------------------------------------------------
 \section{\jason Infrastructures}
 
@@ -557,6 +663,9 @@ communication between \jason and \saci agents (implemented in Java) is
 available at \htlink{Source
   Force}{https://sourceforge.net/project/showfiles.php?group_id=98417}.
 
+
+\section{\jade}
+
 \subsection{How to customise the \jade container?}
 
 All parameters normally used to start a \jade container can be set in
@@ -629,7 +738,7 @@ machines there are two mechanisms.
 \subsubsection{Defining a container for each agent}
 
 In the project file, you have to setup the host's name where the main
-container will run and the container of where agents will run, as in
+container will run and the container where agents will run, as in
 the following example (this example is available in the demos
 directory):
 \begin{verbatim}
@@ -652,12 +761,12 @@ Steps to run the system:
   the jEdit plugin or typing
 \begin{verbatim}
    $ cd <your project directory>
-   $ <jason dir>/bin/mas2j.sh <the .mas2h file>
+   $ <jason dir>/bin/mas2j.sh <the .mas2j file>
 \end{verbatim}
 
   The script has the task \texttt{Main-Container} to run the JADE main
-  container and one task to start each container defined in the
-  project (\texttt{c1} and \texttt{c2}, in the above example).
+  container and tasks to start each container defined in the
+  project (\texttt{c1} and \texttt{c2}, in the example above).
 
 \item Go to host X and run the main container there by starting the
   main container task of the script:
@@ -678,11 +787,11 @@ Steps to run the system:
 \end{enumerate}
 
 
-\subsubsection{Defining a class that allocate the agents}
+\subsubsection{Defining a class that allocates the agents to containers}
 
 In the second mechanism the \texttt{at} primitive of the project isn't
 used, in its place a Java class is provided to indicate which
-containers have to be created and how agents are distributed on them.
+containers have to be created and how agents are distributed on to them.
 The project definition is thus like the following
 (\texttt{myAllocator} is the name of the Java class and
 \texttt{[c1,c2]} is the list of containers).
@@ -706,17 +815,17 @@ MAS demo_distributed_jade {
 
 In the above example (available in the demos/distributed-jade/case2
 directory), the class \texttt{myAllocator} allocates the same number
-of agents to each container. You might see the code of this class for
+of agents to each container. You can see the code of this class for
 details.
 
 To run this system, replace the commands of step 1 of the previous
-section as follows (the other steps remains the same).
+section as follows (the other steps remain the same).
 
 For Unix:
 \begin{verbatim}
    $ cd <your project directory>
    $ ant -f bin/build.xml compile
-   $ <jason dir>/bin/mas2j.sh <the .mas2h file>
+   $ <jason dir>/bin/mas2j.sh <the .mas2j file>
 \end{verbatim}
 
 For Windows and other plaforms:
@@ -724,115 +833,10 @@ For Windows and other plaforms:
    > cd <your project directory>
    > ant -f bin/build.xml compile
    > set JASONLIB=<the Jason lib directory>
-   > java -classpath bin\classes;%JASONLIB%\jason.jar jason.mas2j.parser.mas2j  <the .mas2h file>
+   > java -classpath bin\classes;%JASONLIB%\jason.jar jason.mas2j.parser.mas2j  <the .mas2j file>
 \end{verbatim}
 
 
-\subsection{Is it possible to use only the \jason BDI engine?}
-
-If you want to use only the \jason interpreter for a variant of
-AgentSpeak, you can implement your own agent class where the \jason
-available infrastructures are not used.  This class must function as
-an "overall agent architecture" for the AgentSpeak interpreter, i.e.,
-it has to send percepts to the interpreter and get the agent actions
-(which result from the AgentSpeak "reasoning cycles").
-
-Suppose you need a simple agent that interprets and reasons according
-to the following AgentSpeak source:
-\begin{verbatim}
-+x(N) : N < 3  <- do(0).
-
-+x(N) : N >= 3 <- do(50).
-\end{verbatim}
-
-The following class implements the required architecture (the complete
-code is available in the `demos' directory in the \jason distribution).  This
-code simply adds \code{x(10)} into the agent's belief base through
-perception and get the output action, in this case \code{do(50)}.
-
-\begin{verbatim}
-public class SimpleJasonAgent extends AgArch {
-    public static void main(String[] a) {
-       ...
-       SimpleJasonAgent ag = new SimpleJasonAgent();
-       ag.run();
-    }
-
-    public SimpleJasonAgent() {
-         // set up the Jason agent and the 
-         // TransitionSystem (the BDI Engine where the AgentSpeak 
-         // Semantics is implemented)
-
-         Agent ag = new Agent();
-         new TransitionSystem(ag, new Circumstance(), new Settings(), this);
-         ag.initAg("demo.asl"); // demo.asl is the file containing the code of the agent
-    }
-    
-    public String getAgName() {
-        return "bob";
-    }
-
-    public void run() {
-        while (isRunning()) {
-          // calls the Jason engine to perform one reasoning cycle
-          getTS().reasoningCycle();
-        }
-    }
-
-    // this method just add some perception for the agent
-    public List<Literal> perceive() {
-        List<Literal> l = new ArrayList<Literal>();
-        l.add(Literal.parseLiteral("x(10)"));
-        return l;
-    }
-
-    // this method gets the agent actions
-    public void act(ActionExec action, List<ActionExec> feedback) {
-        getTS().getLogger().info("Agent " + getAgName() + 
-                             " is doing: " + action.getActionTerm());
-        // return confirming the action execution was OK
-        action.setResult(true);
-        feedback.add(action);
-    }
-
-    public boolean canSleep() {
-        return true;
-    }
-
-    public boolean isRunning() {
-        return true;
-    }
-
-    public void sleep() {
-    	try {   Thread.sleep(1000); } catch (InterruptedException e) {}
-    }
-    
-    public void sendMsg(jason.asSemantics.Message m) throws Exception {
-    }
-
-    public void broadcast(jason.asSemantics.Message m) throws Exception {
-    }
-
-    public void checkMail() {
-    }
-}
-\end{verbatim}
-
-To run this agent:
-\begin{verbatim}
-export CLASSPATH= ../../lib/jason.jar:.
-javac SimpleJasonAgent.java
-java  SimpleJasonAgent
-\end{verbatim}
-
-The output will be 
-\begin{verbatim}
-[bob] Agent bob is doing: do(50)
-\end{verbatim}
-
-Of course, the AgentSpeak code in this example cannot use communicative
-actions, since the specific architecture given above does not implement
-communication.
 
 \section{AgentSpeak Language}
 

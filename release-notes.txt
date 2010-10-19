@@ -8,7 +8,7 @@ New example
 - wumpus (inspired by Russel & Norvig book)
 
 New features
-- creation of ant scripts to help the running of jade agents 
+- creation of Ant scripts to help the running of JADE agents 
   in a distributed configuration. See demos/distributed-jade
   for examples and the FAQ for more details.
 - possibility to customize the sniffer.properties of JADE
@@ -20,7 +20,7 @@ Bugs fixed
 - backtrack on annotations doesn't work with tail as in p[A|R]
 
 Other changes
-- jade is updated to 4.0.1
+- JADE is updated to 4.0.1
 
 
 ---------------------------
