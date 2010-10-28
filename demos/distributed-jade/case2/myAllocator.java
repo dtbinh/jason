@@ -24,7 +24,7 @@ public class myAllocator implements ContainerAllocation {
     public void init(String[] args, MAS2JProject project)  {
         // args[0] is the list of containners
         try {
-            containers.add("Main-Container");
+            //containers.add("Main-Container");
             for (Term t: ASSyntax.parseList(args[0])) {
                 containers.add( t.toString() );
             }

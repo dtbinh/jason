@@ -748,9 +748,9 @@ MAS demo_distributed_jade {
 	// replace localhost by the name or IP of the host where the main container will run
 
     agents:
-        a at "Main-Container"; // agent a will run the same host as the main container
-        b at "c1";             // agent c will run on the host where container c1 will run
-        c at "c2" #3;          // ....
+        a at "c1";    // agent a will run on the hots where container c1 will run
+        b at "c1";    // agent b will run on the host where container c1 will run
+        c at "c2" #3; // ....
         d at "c1";
 }
 \end{verbatim}
