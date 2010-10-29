@@ -13,6 +13,7 @@ New features
   for examples and the FAQ for more details.
 - possibility to customize the sniffer.properties of JADE
 - new function to compute standard deviation
+- new internal action setof
 
 Bugs fixed
 - atomic plans that fail aren't removed from the intention set.
