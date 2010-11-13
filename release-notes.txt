@@ -14,6 +14,16 @@ New features
 - possibility to customize the sniffer.properties of JADE
 - new function to compute standard deviation
 - new internal action setof
+- two new arguments in options to create agents in the .masj2
+  project: initial beliefs and goals. For example, in the project
+    ...
+    agents:
+        bob   ag.asl [beliefs="b(20),rec(alice)",goals="g(1),g(2)"];
+        alice ag.asl [beliefs="b(20),rec(bob)"];
+    ...
+  both agents has the same source code. They differ in the initial
+  beliefs and goals, which are defined in the projects instead of the
+  agent's code (ag.asl).
 
 Bugs fixed
 - atomic plans that fail aren't removed from the intention set.

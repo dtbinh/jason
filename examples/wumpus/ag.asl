@@ -88,7 +88,7 @@ borders(1, 1, 4, 4). // for R&N
       ?orientation(O);
       
       if (bump) {
-         +wall(X,Y);
+         +wall(X,Y)
       } else {
          !update(pos(X,Y),O);
          !update(breeze);
