@@ -67,7 +67,7 @@ public class TestPlanbodyAsTerm {
     @Test(timeout=2000)
     public void test5() {
         ag.addGoal("test5");
-        ag.assertPrint("body_var_ungroundstringcode:1: Variable 'C' must be ground.",10);
+        ag.assertPrint("body_var_without_valuestringcode:1: Variable 'C' must be ground.",10);
         ag.assertPrint("ok", 10);
     }
 

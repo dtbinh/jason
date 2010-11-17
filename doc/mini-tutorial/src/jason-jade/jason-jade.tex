@@ -18,7 +18,7 @@
 \end{rawhtml}}
 
 This document aims to show how to create \Jason agents that
-participate in an multi-agent system (MAS) formed by ``normal'' JADE
+participate in a multi-agent system (MAS) formed by ``normal'' JADE
 agents (by normal we mean being not developed considering
 interoperability with \Jason, i.e., any existing JADE agent). We will
 develop a \Jason book-seller agent that joints the system of the
@@ -243,7 +243,7 @@ Follow the steps below to run the system with JADE and \Jason agents:
 \item Start the buyer, called \texttt{bob}, in a new container using
   the command
 \begin{verbatim}
-jade.Boot -container -host localhost bob:examples.bookTrading.BookBuyerAgent(Harry)
+java jade.Boot -container -host localhost "bob:examples.bookTrading.BookBuyerAgent(Harry)"
 \end{verbatim}
 
 It will try to buy a book entitled ``Harry''.
@@ -266,7 +266,7 @@ You can also run the whole system without jEdit:
 \begin{enumerate}
 \item First start the buyer in the main container:
 \begin{verbatim}
-jade.Boot -gui "bob:examples.bookTrading.BookBuyerAgent(Harry)"
+java jade.Boot -gui "bob:examples.bookTrading.BookBuyerAgent(Harry)"
 
 \end{verbatim}
 \item Start the \Jason seller as follows (ensure that all JADE jars
