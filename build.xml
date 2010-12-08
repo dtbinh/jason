@@ -13,7 +13,7 @@
 
     <property name="dist.properties" value="${basedir}/bin/dist.properties" />
     <property name="version" value="1" />
-    <property name="release" value="3.4" />
+    <property name="release" value="3.5" />
     <property name="distDir" value="${env.HOME}/tmp/x/Jason-${version}.${release}" />
     <property name="distFile" value="${env.HOME}/Jason-${version}.${release}" />
 
@@ -45,6 +45,8 @@ TARGETS:
         <pathelement location="${basedir}/lib/junit.jar" />
         <pathelement location="${basedir}/lib/ant-launcher.jar" />
         <pathelement location="${basedir}/lib/ant.jar" />
+        <pathelement location="${basedir}/lib/cartago.jar" />
+        <pathelement location="${basedir}/lib/c4jason.jar" />
         <pathelement location="${basedir}/demos/persistent-belief-base/lib/hsqldb.jar" />
         <pathelement location="${basedir}/lib/jedit/ErrorList.jar" />
         <pathelement location="${basedir}/lib/jedit/SideKick.jar" />

@@ -1,7 +1,17 @@
 ---------------------------
+version 1.3.5
+
+revision XXX on SVN
+---------------------------
+
+Bugs fixed
+- cartage + jade does not work
+
+
+---------------------------
 version 1.3.4
 
-revision XXXX on SVN
+revision 1628 on SVN
 ---------------------------
 
 New example
