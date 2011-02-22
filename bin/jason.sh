@@ -34,7 +34,7 @@ if [ $OS == Darwin ] ; then
 fi
 
 # run jIDE
-java -classpath "$JASON_HOME/lib/jason.jar":"$JASON_HOME/bin/jedit/jedit.jar":"$JASON_HOME/lib/saci.jar":"$JASON_HOME/lib/jade.jar":"$JASON_HOME/bin/jedit/jars/ErrorList.jar":"$JASON_HOME/bin/jedit/jars/SideKick.jar" \
+java -classpath "$JASON_HOME/lib/jason.jar":"$JASON_HOME/bin/jedit/jedit.jar":"$JASON_HOME/lib/saci.jar":"$JASON_HOME/lib/jade.jar":"$JASON_HOME/bin/jedit/jars/ErrorList.jar":"$JASON_HOME/bin/jedit/jars/SideKick.jar":$JASON_HOME/lib/cartago.jar:$JASON_HOME/lib/c4jason.jar \
    $DPAR \
    org.gjt.sp.jedit.jEdit $1
    
