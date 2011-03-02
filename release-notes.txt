@@ -4,8 +4,16 @@ version 1.3.5
 revision XXX on SVN
 ---------------------------
 
+New features
+- new option to start up mind inspector for agents in non-debug mode.
+- new option to store mind samples in files
+  (see debug section in FAQ for more information)
+
+
+
 Bugs fixed
 - cartage + jade does not work
+- execution control deadlock
 
 
 ---------------------------

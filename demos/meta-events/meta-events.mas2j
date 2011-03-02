@@ -7,7 +7,7 @@ MAS meta_events {
     environment: World
 
     agents:
-        robot;
+        robot [mindinspector="gui(cycle,html,history)"];
 
 }
 

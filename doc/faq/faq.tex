@@ -273,25 +273,6 @@ Note that if you're using the \saci infrastructure, new
 agents (possibly not \jason agents, see \ref{sec:whysaci}) can
 enter the MAS using \saci features for open MAS.
 
-\subsection{How to log the execution?}
-
-\jason uses the \htlink{Java logging
-  API}{http://java.sun.com/j2se/1.5.0/docs/guide/logging/overview.html}
-% \htlink{Log4J}{http://logging.apache.org/log4j/}
-to output messages into the console (the default console is called
-MASConsole). To change the log level or device, select the menu
-``Plugins -> Jason -> Edit Log properties''. The default configuration
-file has comments that helps you customise your log. For instance,
-to output messages both into an XML file and in the console, you only
-need to set the log handler as in the following line:
-\begin{verbatim}
-handlers = java.util.logging.FileHandler, java.util.logging.ConsoleHandler
-\end{verbatim}
-To get only console output (without the MASConsole GUI):
-\begin{verbatim}
-handlers = java.util.logging.ConsoleHandler
-\end{verbatim}
-
 \subsection{How to set the classpath for running a system?}
 
 There are three ways to set the classpath of a project:
@@ -556,6 +537,82 @@ The output will be
 Of course, the AgentSpeak code in this example cannot use communicative
 actions, since the specific architecture given above does not implement
 communication.
+
+% ---------------------------------------------------------------------
+\section{Debug tools}
+
+\subsection{How to setup verbosity of an agent?}
+
+The verbosity is set in the options defined for the agent in the project file. For instance
+
+\begin{verbatim}
+   ... 
+   agents: ag1 [verbose=2];
+   ...
+\end{verbatim}
+
+A number between 0 and 2 should be specified. The higher the number,
+the more information about that agent is printed out in the Jason
+console. The default is in fact 1, not 0; verbose 1 prints out only
+the actions that agents perform in the environment and the messages
+exchanged between them. Verbose 2 is for debugging (it corresponds to
+the java log level FINE).
+
+\subsection{How to log the overall execution?}
+
+\jason uses the \htlink{Java logging
+  API}{http://java.sun.com/j2se/1.5.0/docs/guide/logging/overview.html}
+% \htlink{Log4J}{http://logging.apache.org/log4j/}
+to output messages into the console (the default console is called
+MASConsole). To change the log level or device, select the menu
+``Plugins -> Jason -> Edit Log properties''. The default configuration
+file has comments that helps you customise your log. For instance,
+to output messages both into an XML file and in the console, you only
+need to set the log handler as in the following line:
+\begin{verbatim}
+handlers = java.util.logging.FileHandler, java.util.logging.ConsoleHandler
+\end{verbatim}
+To get only console output (without the MASConsole GUI):
+\begin{verbatim}
+handlers = java.util.logging.ConsoleHandler
+\end{verbatim}
+
+\subsection{How to log agents' mind states?}
+
+Besides running the system in debug mode, we can define options for an
+agent such that the current state of its mind is shown or stored in
+files.
+
+To show the current mind state in the screen, add the following option
+in the project:
+\begin{verbatim}
+agents:
+       bob [mindinspector="gui(cycle,html)"];
+\end{verbatim}
+
+In this case the screen is updated each reasoning cycle. If you want
+to store all the states in a kind of ``history'', add a third argument
+as in the example below.
+
+\begin{verbatim}
+      bob [mindinspector="gui(cycle,html,history)"];
+\end{verbatim}
+
+In the place of ``cycle'', you can write the refresh interval in
+mili-seconds:
+
+\begin{verbatim}
+      bob [mindinspector="gui(2000,html,history)"];
+\end{verbatim}
+
+To store the history of minds in files, use the following configuration:
+\begin{verbatim}
+      bob [mindinspector="file(cycle,xml,log)"];
+\end{verbatim}
+The last parameter is the name of the directory where files will be
+stored. Each file corresponds to a sample of the mind. They are XML
+files with suitable style sheets to be viewed in browsers.
+
 
 % ---------------------------------------------------------------------
 \section{\jason Infrastructures}
