@@ -95,7 +95,7 @@ public class TestKQML {
         bob.addGoal("send_askAll1");
         bob.assertIdle(10); 
         maria.assertIdle(15); 
-        bob.assertPrint("[vl(10),vl(1),vl(2)]", 5);
+        bob.assertPrint("[vl(10)[source(maria)],vl(1)[source(maria)],vl(2)[source(maria)]]", 5);
         
         bob.addGoal("send_askAll2");
         bob.assertIdle(10); 
