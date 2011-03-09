@@ -8,7 +8,8 @@ New features
 - new option to start up mind inspector for agents in non-debug mode.
 - new option to store mind samples in files
   (see debug section in FAQ for more information)
-
+- synchronous ask can have several receivers, the answers in 
+  this case is a list of all replies.
 
 
 Bugs fixed
