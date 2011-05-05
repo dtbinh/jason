@@ -149,7 +149,7 @@ TARGETS:
                 <include name="dist.properties" />
             </fileset>
             <manifest>
-                  <attribute name="Main-Class" value="jason.infra.centralised.RunCentralisedMAS"/>
+                  <attribute name="Main-Class" value="jason.util.ConfigGUI"/>
             </manifest>
         </jar>
         <copy file="${jasonJar}" todir="applications/jason-eclipse-plugin/lib" />
