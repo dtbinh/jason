@@ -28,7 +28,7 @@ TARGETS:
     plugin  -- generates and configure jEdit plugin for Jason
     test    -- runs jUnit tests
     apidoc  -- generates javadoc
-    dist    -- genetares distribution file
+    dist    -- genetares the distribution file
     clean   -- cleans the project
     run     -- runs Jason
         </echo>
@@ -120,7 +120,7 @@ TARGETS:
 
 
     <target name="compile" depends="init,parsers">
-        <javac srcdir="src" destdir="${build.dir}" debug="true" deprecation="true" optimize="true" nowarn="true" source="1.5" target="1.5">
+        <javac srcdir="src" destdir="${build.dir}" debug="true" deprecation="true" optimize="true" nowarn="true" source="1.5" target="1.5" includeantruntime="false">
             <classpath refid="project.classpath" />
         </javac>
     </target>
