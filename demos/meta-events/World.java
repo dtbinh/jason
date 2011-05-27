@@ -38,7 +38,7 @@ public class World extends Environment {
             logger.info("plug. charging....");
             new Thread() {
                 public void run() {
-                    try { Thread.sleep(1000); } catch (Exception e) {}
+                    try { Thread.sleep(2000); } catch (Exception e) {}
                     logger.info("charged");
                     removePercept(lb);                    
                 };
