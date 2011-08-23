@@ -10,6 +10,7 @@ New features
   (see debug section in FAQ for more information)
 - synchronous ask can have several receivers, the answers in 
   this case is a list of all replies.
+- backtracking for .intend and .desire
 
 
 Bugs fixed
