@@ -1,10 +1,7 @@
 package comm;
 
-import jason.JasonException;
 import jason.architecture.AgArch;
 import jason.infra.saci.SaciAgArch;
-import jason.mas2j.ClassParameters;
-import jason.runtime.Settings;
 
 import java.rmi.RemoteException;
 
@@ -18,9 +15,8 @@ public class SnifferSaci extends AgArch {
 
     SaciAgArch arch = null;
     
-    public void initAg(String agClass, ClassParameters bbPars, String asSrc, Settings stts) throws JasonException {
-        super.initAg(agClass, bbPars, asSrc, stts);
-    
+    @Override
+    public void init() {
         // becomes a SACI monitor if infrastructure is Saci
         if (getArchInfraTier() instanceof SaciAgArch) {
             arch = (SaciAgArch)getArchInfraTier();
@@ -34,9 +30,10 @@ public class SnifferSaci extends AgArch {
             } catch (Exception e) {
                 getTS().getLogger().warning("Error starting monitor! "+e);
             } 
-    }
+        }
     }
     
+    @Override
     public void checkMail() {
         if (arch != null) {
             // remove all messages from saci's mail box

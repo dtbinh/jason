@@ -41,10 +41,8 @@ public class TestAgent extends Agent {
                 arch = new TestArch();
             else
                 arch = new TestArch(agName);
-            
-            TransitionSystem ts = new TransitionSystem(this, new Circumstance(), new Settings(), arch.getUserAgArch());
-            setTS(ts);
-            arch.getUserAgArch().setTS(ts);
+            new TransitionSystem(this, new Circumstance(), new Settings(), arch);
+            arch.insertAgArch(arch);
             initAg(); 
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error creating TestArch", e);
@@ -71,7 +69,7 @@ public class TestAgent extends Agent {
     }
 
     public TestArch getArch() {
-        return (TestArch)getTS().getUserAgArch().getArchInfraTier();
+        return (TestArch)getTS().getUserAgArch();
     }
     
     public void setDebugMode(boolean on) {

@@ -1,6 +1,5 @@
 package comm;
 
-import jason.JasonException;
 import jason.RevisionFailedException;
 import jason.architecture.AgArch;
 import jason.asSemantics.Message;
@@ -11,8 +10,6 @@ import jason.asSyntax.StringTermImpl;
 import jason.asSyntax.Structure;
 import jason.infra.centralised.CentralisedAgArch;
 import jason.infra.centralised.MsgListener;
-import jason.mas2j.ClassParameters;
-import jason.runtime.Settings;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -25,12 +22,10 @@ import java.util.GregorianCalendar;
  */
 public class SnifferCentralised extends AgArch implements MsgListener {
 
-    public void initAg(String agClass, ClassParameters bbPars, String asSrc, Settings stts) throws JasonException {
-        super.initAg(agClass, bbPars, asSrc, stts);
-    
-        if (getArchInfraTier() instanceof CentralisedAgArch) {
+    @Override
+    public void init() {
+        if (getArchInfraTier() instanceof CentralisedAgArch)
             CentralisedAgArch.addMsgListener(this);
-        }
     }
     
     // method called-back when some message is exchanged

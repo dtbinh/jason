@@ -1,7 +1,19 @@
 ---------------------------
-version 1.3.5
+version 1.3.6
 
 revision XXX on SVN
+---------------------------
+
+New features
+- several architectures can be defined for an agent 
+ (e.g. Cartago and FailurePerception)
+
+
+
+---------------------------
+version 1.3.5
+
+revision 1656 on SVN
 ---------------------------
 
 New features
@@ -14,7 +26,7 @@ New features
 
 
 Bugs fixed
-- cartage + jade does not work
+- cartago + jade does not work together
 - execution control deadlock
 
 
@@ -78,7 +90,7 @@ New features
   these events can than be handled by plans such as
 	^!goto(X,Y)[state(S)] <- .print("goto state is ",S).
   for the state suspended, another annotation contains the 
-  suspension reason (.wait, .suspend, É)
+  suspension reason (.wait, .suspend, Ã‰)
 	^!goto(X,Y)[state(S)[reason(R)]] 
            <- .print("goto state is ",S," due to ",R).
  

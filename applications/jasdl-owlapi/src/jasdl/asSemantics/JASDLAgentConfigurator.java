@@ -379,7 +379,7 @@ public class JASDLAgentConfigurator {
     }
 
     public Set<String> getKnownAgentNames(){
-        return agent.getTS().getUserAgArch().getArchInfraTier().getRuntimeServices().getAgentsNames();
+        return agent.getTS().getUserAgArch().getRuntimeServices().getAgentsNames();
     }
 
     public float getTrustRating(Atom name) {        

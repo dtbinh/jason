@@ -39,6 +39,7 @@ public class AuctioneerGUI extends AgArch {
         f.setVisible(true);
     }
 
+    @Override
     public void act(ActionExec action, List<ActionExec> feedback) {
         if (action.getActionTerm().getFunctor().startsWith("show_winner")) {
             jt.append("Winner of auction  " + action.getActionTerm().getTerm(0));
@@ -52,8 +53,9 @@ public class AuctioneerGUI extends AgArch {
         }
     }
 
-    public void stopAg() {
+    @Override
+    public void stop() {
         f.dispose();
-        super.stopAg();
+        super.stop();
     }
 }

@@ -41,9 +41,7 @@ public class JASDLAgArch extends AgArch {
     private ProtocolProcessor processor;
 
     @Override
-    public void initAg(String agClass, ClassParameters bbPars, String asSrc, Settings stts) throws JasonException {
-        super.initAg(agClass, bbPars, asSrc, stts);
-
+    public void init() {
         processor = new ProtocolProcessor(getAgent().getJom(), getAgent().getDefaultMappingStrategies());
     }
 

@@ -1,6 +1,5 @@
 package arch;
 
-import jason.JasonException;
 import jason.RevisionFailedException;
 import jason.architecture.AgArch;
 import jason.asSemantics.Message;
@@ -9,8 +8,6 @@ import jason.asSyntax.LiteralImpl;
 import jason.asSyntax.NumberTerm;
 import jason.asSyntax.PredicateIndicator;
 import jason.environment.grid.Location;
-import jason.mas2j.ClassParameters;
-import jason.runtime.Settings;
 
 import java.io.PrintWriter;
 import java.util.Iterator;
@@ -39,22 +36,21 @@ public class MinerArch extends AgArch {
 
     
     @Override
-    public void initAg(String agClass, ClassParameters bbPars, String asSrc, Settings stts) throws JasonException {
-        super.initAg(agClass, bbPars, asSrc, stts);
-        gui = "yes".equals(stts.getUserParameter("gui"));
-        if ("yes".equals(stts.getUserParameter("write_model"))) {
+    public void init() {
+        gui = "yes".equals(getTS().getSettings().getUserParameter("gui"));
+        if ("yes".equals(getTS().getSettings().getUserParameter("write_model"))) {
             writeModelT = new WriteModelThread();
             writeModelT.start();
         }
     }
     
     @Override
-    public void stopAg() {
+    public void stop() {
         running = false;
         if (view != null) {
             view.dispose();
         }
-        super.stopAg();
+        super.stop();
     }
     
     void setSimId(String id) {

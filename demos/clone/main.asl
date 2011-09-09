@@ -12,7 +12,7 @@ test(1).
 
 +!start 
    <- +a(40); 
-      myia.clone("bob");
+      .clone("bob");
       .send(bob,tell,p(10)).
       
 +p(X) : a(V) <- .print(X," : ",V).

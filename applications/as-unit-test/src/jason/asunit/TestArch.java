@@ -1,7 +1,6 @@
 package jason.asunit;
 
 import jason.JasonException;
-import jason.architecture.AgArch;
 import jason.asSemantics.ActionExec;
 import jason.asSyntax.Literal;
 import jason.environment.Environment;
@@ -29,9 +28,6 @@ public class TestArch extends CentralisedAgArch implements Runnable {
 
     public TestArch(String agName) {
         setAgName(agName);
-        AgArch a = new AgArch();
-        a.setArchInfraTier(this);
-        setUserAgArch(a);
         RunCentralisedMAS.getRunner().addAg(this);
     }
     
@@ -55,7 +51,7 @@ public class TestArch extends CentralisedAgArch implements Runnable {
         synchronized (condition) {
             while (condition.test(this)) {
                 cycle++;
-                getUserAgArch().getTS().reasoningCycle();
+                getTS().reasoningCycle();
             }
             condition.notifyAll();
         }
