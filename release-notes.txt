@@ -8,6 +8,10 @@ New features
 - several architectures can be defined for an agent 
  (e.g. Cartago and FailurePerception)
 
+Bugs fixed
+- .send ask with multiple receivers (in a variable ground to a list) 
+   doesn't work
+
 
 
 ---------------------------
