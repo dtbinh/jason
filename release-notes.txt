@@ -11,6 +11,8 @@ New features
 Bugs fixed
 - .send ask with multiple receivers (in a variable ground to a list) 
    doesn't work
+- JADE infrastructure does not start the agents when used with
+   jEdit plugin
 
 
 

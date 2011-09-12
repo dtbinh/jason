@@ -163,10 +163,7 @@ public class AddEditAgentShell {
                                 }
                                 
                                 if (!tArchitectureClass.getText().equals("")) {
-                                    ag.archClass = new ClassParameters(tArchitectureClass.getText());
-                                }
-                                else {
-                                    ag.archClass = null;
+                                    ag.addArchClass(tArchitectureClass.getText());
                                 }
                                 
                                 if (!tBBClass.getText().equals("")) {
@@ -234,10 +231,7 @@ public class AddEditAgentShell {
                                         }
                                         
                                         if (!tArchitectureClass.getText().equals("")) {
-                                            xAgent.archClass = new ClassParameters(tArchitectureClass.getText());
-                                        }
-                                        else {
-                                            xAgent.archClass = null;
+                                            xAgent.addArchClass(tArchitectureClass.getText());
                                         }
                                         
                                         if (!tBBClass.getText().equals("")) {
@@ -461,8 +455,8 @@ public class AddEditAgentShell {
                         tAgentClass.setText(agentInfo.agClass.toString());
                     }
                     
-                    if (agentInfo.archClass != null) {
-                        tArchitectureClass.setText(agentInfo.archClass.toString());
+                    if (!agentInfo.getAgArchClasses().isEmpty()) {
+                        tArchitectureClass.setText(agentInfo.getAgArchClasses().get(0));
                     }
                     
                     if (agentInfo.asSource != null) {

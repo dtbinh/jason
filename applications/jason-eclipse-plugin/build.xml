@@ -12,7 +12,7 @@
 
     <property name="dist.properties" value="${basedir}/bin/dist.properties" />
     <property name="version" value="1" />
-    <property name="release" value="3.5" />
+    <property name="release" value="3.6" />
     <property name="distDir" value="${basedir}/dist" />
     <property name="distDirPlugins" value="${distDir}/plugins" />
     
@@ -27,6 +27,9 @@
 
     <target name="init">
         <mkdir dir="${build.dir}" />
+        <copy file="../../lib/cartago.jar" todir="lib" />
+        <copy file="../../lib/c4jason.jar" todir="lib" />
+
     </target>
     
     <target name="compile" depends="init">
