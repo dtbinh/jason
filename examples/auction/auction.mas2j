@@ -5,8 +5,8 @@ MAS auction {
     infrastructure: Centralised
 
     agents: ag1; 
-	        ag2; 
-	        ag3; 
+            ag2; 
+            ag3; 
             auctioneer //[mindinspector="gui(cycle,html,history)"] 
-			           agentArchClass AuctioneerGUI;
+                       agentArchClass AuctioneerGUI;
 }
