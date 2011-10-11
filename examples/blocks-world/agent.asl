@@ -13,12 +13,12 @@ tower([X,Y|T]) :- on(X,Y) & tower([Y|T]).
 
 /* Plans */
 // Achieve one tower at a time
-+!state([]).
++!state([])    <- .print("Finished!").
 +!state([H|T]) <- !tower(H); !state(T).
 
 // Achieve a state where a tower is built
 +!tower(T) : tower(T). // already achieved, nothing else to do
-+!tower([T]) <- !on(T,table). // easy to do a singleton tower
++!tower([T])     <- !on(T,table). // easy to do a singleton tower
 +!tower([X,Y|T]) <- !tower([Y|T]); !on(X,Y). // break my problem into smaller ones
 
 // Achieve a state of affairs where I believe a block is on top of another
