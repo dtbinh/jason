@@ -10,7 +10,7 @@ import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.StringTerm;
 import jason.asSyntax.Term;
-import jason.infra.jade.JadeAgArch;
+import jason.infra.jade.*;
 
 import java.util.logging.Logger;
 
@@ -31,9 +31,9 @@ public class register extends DefaultInternalAction {
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
         try {
-            if (ts.getUserAgArch().getArchInfraTier() instanceof JadeAgArch) {
+            if (ts.getUserAgArch().getArchInfraTier() instanceof JasonBridgeArch) {
                 // get a reference to the jade agent that represents this Jason agent
-                JadeAgArch infra = (JadeAgArch)ts.getUserAgArch().getArchInfraTier();
+                JadeAgArch infra = ((JasonBridgeArch)ts.getUserAgArch().getArchInfraTier()).getJadeAg();
 
                 // 0. get arguments from the AgentSpeak code (type and name of the new service)
                 StringTerm type = (StringTerm)args[0];
@@ -62,7 +62,7 @@ public class register extends DefaultInternalAction {
                 
                 return true;
             } else {
-                logger.warning("jadefd.register can be used only with JADE infrastructure.");
+                logger.warning("jadefd.register can be used only with JADE infrastructure. Current arch is "+ts.getUserAgArch().getArchInfraTier().getClass().getName());
             }
         } catch (Exception e) {
             logger.warning("Error in internal action 'jadedf.register'! "+e);

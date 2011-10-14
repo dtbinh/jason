@@ -114,9 +114,10 @@ public class register extends DefaultInternalAction {
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
         try {
-            if (ts.getUserAgArch().getArchInfraTier() instanceof JadeAgArch) {
-                // get a reference to the JADE agent that represents this Jason agent
-                JadeAgArch infra = (JadeAgArch)ts.getUserAgArch().getArchInfraTier();
+            if (ts.getUserAgArch().getArchInfraTier() instanceof JasonBridgeArch) {
+                // get a reference to the jade agent that represents this Jason agent
+                JadeAgArch infra = ((JasonBridgeArch)ts.getUserAgArch().getArchInfraTier()).getJadeAg();
+
 
                 // 0. get arguments from the AgentSpeak code (type and name of the new service)
                 StringTerm type = (StringTerm)args[0];
