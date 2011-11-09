@@ -758,14 +758,14 @@ To start up also a simulated environment
 (implemented, for instance, in the \texttt{Env} class):
 
 \begin{verbatim}
-java jade.Boot "\
+java jade.Boot -agents "\
  environment:jason.infra.jade.JadeEnvironment(Env) \
  bob:jason.infra.jade.JadeAgArch(auctionner.asl)"
 \end{verbatim}
 
 The arguments for the environment have to follow the class name, for example:
 \begin{verbatim}
-java jade.Boot "environment:jason.infra.jade.JadeEnvironment(Env,arg1,arg2)"
+java jade.Boot -agents "environment:jason.infra.jade.JadeEnvironment(Env,arg1,arg2)"
 \end{verbatim}
 
 
@@ -773,7 +773,7 @@ In the case you need to start a more customised agent (architecture,
 belief base, ...), you can write (or reuse) a \jason project file with all the
 usual agent's parameters and then start the agent from this file. E.g.
 \begin{verbatim}
-jade.Boot "bob:jason.infra.jade.JadeAgArch(j-project,test.mas2j,bob)" 
+jade.Boot -agents "bob:jason.infra.jade.JadeAgArch(j-project,test.mas2j,bob)" 
 \end{verbatim}
 The parameter \texttt{j-project} indicates that the following
 parameter (\texttt{test.mas2j} in the above example) is the \jason
@@ -782,7 +782,7 @@ the .mas2j file.
 
 The same approach can be used for the environment:
 \begin{verbatim}
-jade.Boot "j_environment:jason.infra.jade.JadeEnvironment(j-project,test.mas2j)" 
+jade.Boot -agents "j_environment:jason.infra.jade.JadeEnvironment(j-project,test.mas2j)" 
 \end{verbatim}
 
 \subsection{How can I customise the Jade sniffer?}

@@ -240,6 +240,12 @@ Follow the steps below to run the system with JADE and \Jason agents:
   \htlink{here}{jade-example.zip}. (It is distributed as an exemple of
   JADE)
 
+\item Compile the JADE examples 
+\begin{verbatim}
+export CLASSPTH=~/Jason/lib/jade.jar:.
+cd jade-example
+javac examples/bookTrading/Book*
+\end{verbatim}
 
 \item Start the buyer, called \texttt{bob}, in a new container using
   the command
