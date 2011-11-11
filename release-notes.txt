@@ -1,7 +1,7 @@
 ---------------------------
 version 1.3.6a
 
-revision XXX on SVN
+revision 1668 on SVN
 ---------------------------
 
 New features
