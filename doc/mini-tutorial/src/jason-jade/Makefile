@@ -9,4 +9,4 @@ all:
 
 publish:
 	zip -r ../../jason-jade/jade-example.zip jade-example/examples/bookTrading/*.java
-	scp ../../jason-jade/* jomifred@ssh.sf.net:/home/groups/j/ja/jason/htdocs/mini-tutorial/jason-jade
+	scp ../../jason-jade/* jomifred,jason@web.sf.net:/home/groups/j/ja/jason/htdocs/mini-tutorial/jason-jade
