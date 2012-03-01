@@ -150,15 +150,25 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
         if (value == null) {
             Term vl = u.get(this);
             //System.out.println("applying "+this+"="+vl+" un="+u);
-            if (vl != null) { // && !(vl instanceof VarsCluster)) {
-                if (!vl.hasVar(this)) {
-                    setValue(vl);
-                    value.apply(u); // in case t has var args
-                    return true;
-                } else {
-                    logger.warning("Value of variable contains itself, variable "+super.getFunctor()+" "+super.getSrcInfo()+", value="+value);                    
-                    return false;
+            if (vl != null) {
+                if (vl.hasVar(this, u)) {
+                    //logger.warning("The value of a variable contains itself, variable "+super.getFunctor()+" "+super.getSrcInfo()+", value="+vl+", unifier="+u);
+                    
+                    u.remove(this); // remove this var to avoid loops
+                    Term tempVl = vl.clone(); 
+                    tempVl.apply(u);
+                    u.bind(this, vl);
+                    
+                    CyclicTerm ct = new CyclicTerm((Literal)tempVl, this);
+                    Unifier renamedVars = new Unifier(); // remove "this" from the value to avoid loops in apply
+                    ct.makeVarsAnnon(renamedVars);
+                    renamedVars.remove(this);
+                    u.compose(renamedVars);
+                    vl = ct;
                 }
+                setValue(vl);
+                value.apply(u); // in case t has var args
+                return true;
             }
         } else {
             return getValue().apply(u);
@@ -398,11 +408,39 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
     }
 
     @Override
-    public boolean hasVar(VarTerm t) {
-        if (value == null)
-            return equals(t);
+    public boolean isCyclicTerm() {
+        return value != null && value.isCyclicTerm();
+    }
+    
+    @Override
+    public VarTerm getCyclicVar() {
+        if (value != null) 
+            return value.getCyclicVar();
         else
-            return value.hasVar(t);
+            return super.getCyclicVar();
+    }
+    
+    @Override
+    public boolean hasVar(VarTerm t, Unifier u) {
+        if (value != null)
+            return value.hasVar(t, u);
+        if (equals(t))
+            return true;
+
+        if (u != null) { // if the var has a value in the unifier, search in that value
+            Term vl = u.get(this);
+            if (vl != null) {
+                try {
+                    u.remove(this); // remove this var from the unifier to avoid going to seach inside it again
+                    return vl.hasVar(t, u);
+                } finally {
+                    u.bind(this, vl);
+                }
+            }
+                
+        }
+              
+        return false;
     }
     
     @Override

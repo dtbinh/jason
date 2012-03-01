@@ -97,7 +97,7 @@ public class VarTermTest extends TestCase {
         u.unifies(v1, lt); // L = [a,B,a(B)]
         v1.apply(u);      
         ListTerm vlt = (ListTerm) v1.getValue();
-        assertFalse(vlt.equals(lt)); // the apply in var should not change the orginal list
+        assertFalse(vlt.equals(lt)); // the apply in var should not change the original list
         Iterator<Term> i = vlt.iterator();
         i.next();
         i.next();

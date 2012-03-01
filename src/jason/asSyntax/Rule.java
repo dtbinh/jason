@@ -102,9 +102,9 @@ public class Rule extends LiteralImpl {
     }
 
     @Override
-    public boolean hasVar(VarTerm t) {
-        if (super.hasVar(t)) return true;
-        return body.hasVar(t);
+    public boolean hasVar(VarTerm t, Unifier u) {
+        if (super.hasVar(t, u)) return true;
+        return body.hasVar(t, u);
     }
     
     public void countVars(Map<VarTerm, Integer> c) {

@@ -27,8 +27,11 @@ public interface Term extends Cloneable, Comparable<Term>, Serializable, ToDOM {
     public boolean isStructure();
     public boolean isAtom();
     public boolean isPlanBody();
+    public boolean isCyclicTerm();
 
-    public boolean hasVar(VarTerm t);
+    public boolean hasVar(VarTerm t, Unifier u);
+    public VarTerm getCyclicVar();
+    
     public void countVars(Map<VarTerm, Integer> c);
 
     public Term clone();

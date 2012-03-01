@@ -185,12 +185,15 @@ public class ListTermTest extends TestCase {
         VarTerm l6 = new VarTerm("L6");
         u.unifies(l5, l6);
         l6.apply(u);
+        assertEquals(l6.toString(), "[c,b,a,x,y]");
         l6.concat(ListTermImpl.parseList("[d]"));
+        assertEquals(l6.toString(), "[c,b,a,x,y,d]");
 
         ListTerm lf = ListTermImpl.parseList("[c,b,a,x,y,d]");
         assertTrue(u.unifies(l6,lf));
 
         lf = ListTermImpl.parseList("[c,b,a,x,y]");
+        l5.apply(u);
         assertTrue(u.unifies(l5,lf));
         
         ListTerm ll = lf.cloneLT();

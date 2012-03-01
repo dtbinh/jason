@@ -872,10 +872,20 @@ public class TermTest extends TestCase {
 
     public void testHasVar() throws ParseException {
         Literal l = parseLiteral("a(Test,X,Y,b(g([V1,X,V2,V1]),c))[b,source(Y),B,kk(_),oo(oo(OO))]");
-        assertTrue(l.hasVar(new VarTerm("X")));
-        assertTrue(l.hasVar(new VarTerm("V2")));
-        assertTrue(l.hasVar(new VarTerm("OO")));
-        assertFalse(l.hasVar(new VarTerm("O")));
+        assertTrue(l.hasVar(new VarTerm("X"), null));
+        assertTrue(l.hasVar(new VarTerm("V2"), null));
+        assertTrue(l.hasVar(new VarTerm("OO"), null));
+        assertFalse(l.hasVar(new VarTerm("O"), null));
+        
+        Unifier u = new Unifier();
+        u.unifies(parseTerm("X"), parseTerm("f(Y)"));        
+        u.unifies(parseTerm("Y"), parseTerm("g(X)"));
+        u.unifies(parseTerm("T"), parseTerm("X"));
+        VarTerm t = new VarTerm("T");
+        assertFalse(t.hasVar(new VarTerm("X"), null));
+        assertTrue(t.hasVar(new VarTerm("X"), u));
+        assertFalse(t.hasVar(new VarTerm("Y"), null));
+        assertTrue(t.hasVar(new VarTerm("Y"), u));
     }
     
     public void testSingletonVars() {
@@ -974,4 +984,85 @@ public class TermTest extends TestCase {
         assertTrue(variable.equals(term));
         assertTrue(variable.equals(new ObjectTermImpl("test")));
     }    
+    
+    public void testCyclicTerm1() throws ParseException {
+        Term t1 = parseTerm("f(f(g(X)))");
+        Term v1 = new VarTerm("X");
+        Unifier u = new Unifier();
+        
+        assertTrue(u.unifies(t1, v1));
+        
+        assertTrue(u.unifies(v1, parseTerm("f(f(g(f(f(g(_))))))")));
+        assertTrue(u.unifies(v1, parseTerm("f(f(g(f(f(g(f(f(g(_)))))))))")));
+        assertFalse(u.unifies(v1, parseTerm("f(f(g(f(f(g(f(g(_))))))))")));
+        assertFalse(u.unifies(v1, parseTerm("f(f(g(f(f(p(_))))))")));
+        
+        assertTrue(v1.apply(u));
+        assertTrue(new Unifier().unifies(v1, parseTerm("f(f(g(f(f(g(_))))))")));
+        assertTrue(new Unifier().unifies(v1, parseTerm("f(f(g(f(f(g(f(f(g(_)))))))))")));
+        assertTrue(new Unifier().unifies(v1, parseTerm("f(f(g(f(f(g(f(f(_))))))))")));
+        assertFalse(new Unifier().unifies(v1, parseTerm("f(f(g(f(f(g(f(g(_))))))))")));
+        assertFalse(new Unifier().unifies(v1, parseTerm("f(_,_)")));
+        assertFalse(new Unifier().unifies(v1, parseTerm("f(f(g(f(f(p(K))))))")));
+
+        u = new Unifier();
+        assertTrue(u.unifies(v1, parseTerm("f(f(g(f(f(g(K))))))")));   
+        assertTrue(u.get("K").isCyclicTerm());
+        VarTerm k = new VarTerm("K");
+        k.apply(u);
+        assertTrue(k.isCyclicTerm());
+
+        u = new Unifier();
+        assertTrue(u.unifies(v1, parseTerm("f(f(g(f(f(H)))))")));   
+        VarTerm h = new VarTerm("H");
+        h.apply(u);
+        assertTrue(h.getTerm(0).isCyclicTerm());
+    }
+    
+    public void testCyclicTerm2() throws ParseException {
+        Term t1 = parseTerm("f(f(g(X,H)))");
+        VarTerm v1 = new VarTerm("X");
+        Unifier u = new Unifier();
+        
+        assertTrue(u.unifies(t1, v1));
+        assertTrue(u.unifies(v1, parseTerm("f(f(g(_,_)))")));
+        assertTrue(u.unifies(v1, parseTerm("f(f(g(f(f(g(_,_))),_)))")));
+
+        assertTrue(u.unifies(new VarTerm("H"), parseTerm("100")));
+        assertTrue(v1.apply(u));
+        assertTrue(v1.toString().indexOf("100") > 0);        
+    }
+
+    public void testCyclicTerm3() throws ParseException {
+        Unifier u = new Unifier();
+
+        assertTrue(u.unifies(new VarTerm("Merge"), parseTerm("choice([Off,Fork])")));
+        assertTrue(u.unifies(new VarTerm("Off"),   parseTerm("seq(tell(b,c,offer),seq(tell(c,b,counter),Merge))")));
+        assertTrue(u.unifies(new VarTerm("Fork"),  parseTerm("fork(seq(tell(b,s,final),end),seq(tell(b,c,result),end))")));
+        assertTrue(u.unifies(new VarTerm("Glob"),  parseTerm("seq(tell(s,b,item),Merge)")));
+                
+        //assertTrue(u.unifies(new VarTerm("X"), parseTerm("f(Y)")));
+        //assertTrue(u.unifies(new VarTerm("Y"), parseTerm("g(X)")));
+        
+        //System.out.println(u);
+        VarTerm m = new VarTerm("Glob");
+        m.apply(u);
+        assertTrue(m.getTerm(1).isCyclicTerm());
+    }
+    
+    public void testCyclicTerm4() throws ParseException {
+        Unifier u = new Unifier();
+
+        assertTrue(u.unifies(new VarTerm("X"), parseTerm("f(Y)")));
+        assertTrue(u.unifies(new VarTerm("Y"), parseTerm("g(X)")));
+        
+        //System.out.println(u);
+        VarTerm x = new VarTerm("X");
+        x.apply(u);
+        assertTrue(x.isCyclicTerm());
+        VarTerm y = new VarTerm("Y");
+        y.apply(u);
+        assertTrue(y.isCyclicTerm());
+    }
+
 }

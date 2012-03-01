@@ -24,6 +24,7 @@
 package jason.asSemantics;
 
 import jason.asSyntax.ASSyntax;
+import jason.asSyntax.CyclicTerm;
 import jason.asSyntax.ListTerm;
 import jason.asSyntax.ListTermImpl;
 import jason.asSyntax.Literal;
@@ -69,6 +70,10 @@ public class Unifier implements Cloneable {
         return get(new VarTerm(var));
     }
 
+    public Term remove(VarTerm v) {
+        return function.remove(v);
+    }
+    
     /**
      * gets the value for a Var, if it is unified with another var, gets this
      * other's value
@@ -132,6 +137,11 @@ public class Unifier implements Cloneable {
             }
         }
         
+        if (t1g.isCyclicTerm()) // reintroduce cycles in the unifier
+            bind(t1g.getCyclicVar(), t1g);
+        if (t2g.isCyclicTerm()) 
+            bind(t2g.getCyclicVar(), t2g);
+        
         // unify as Term
         boolean ok = unifyTerms(t1g, t2g);
 
@@ -161,6 +171,12 @@ public class Unifier implements Cloneable {
                 }
             }
         }
+        
+        /*if (t1g.isCyclicTerm())
+            remove(t1g.getCyclicVar());
+        if (t2g.isCyclicTerm()) 
+            remove(t2g.getCyclicVar());
+        */
         return ok;
     }
 
@@ -274,7 +290,7 @@ public class Unifier implements Cloneable {
         } // if they are the same (comp == 0), do not bind
     }
     
-    private void bind(VarTerm vt, Term vl) {
+    public void bind(VarTerm vt, Term vl) {
         function.put((VarTerm) vt.clone(), vl);
     }
         
@@ -305,8 +321,15 @@ public class Unifier implements Cloneable {
 
     /** add all unifications from u */
     public void compose(Unifier u) {
-        for (VarTerm k: u.function.keySet())
-            function.put( (VarTerm)k.clone(), u.function.get(k).clone());
+        for (VarTerm k: u.function.keySet()) {
+            Term current = get(k);
+            Term kValue = u.function.get(k);
+            if (current != null && (current.isVar() || kValue.isVar())) { // current unifier has the new var
+                unifies(kValue, current);
+            } else {
+                function.put( (VarTerm)k.clone(), kValue.clone());
+            }
+        }
     }
 
     @SuppressWarnings("unchecked")

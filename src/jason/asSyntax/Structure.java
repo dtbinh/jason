@@ -344,10 +344,10 @@ public class Structure extends Atom {
     }
 
     @Override
-    public boolean hasVar(VarTerm t) {
+    public boolean hasVar(VarTerm t, Unifier u) {
         final int size = getArity();
         for (int i=0; i<size; i++)
-            if (getTerm(i).hasVar(t))
+            if (getTerm(i).hasVar(t, u))
                 return true;
         return false;
     }

@@ -525,6 +525,9 @@
         <xsl:if test="@negated = 'true'">
             <b><xsl:text>~</xsl:text></b>
         </xsl:if>
+        <xsl:if test="count(@cyclic-var) > 0">
+            <b><xsl:text>...</xsl:text></b>
+        </xsl:if>
         <xsl:apply-templates  />
     </xsl:template>
     

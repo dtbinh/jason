@@ -76,7 +76,10 @@ public abstract class DefaultTerm implements Term, Serializable {
     public boolean isAtom()           { return false; }
     public boolean isPlanBody()       { return false; }
     public boolean isGround()         { return true; }
-    public boolean hasVar(VarTerm t)  { return false; }
+    public boolean isCyclicTerm()     { return false; }
+    public VarTerm getCyclicVar()     { return null; }
+
+    public boolean hasVar(VarTerm t, Unifier u)    { return false; }
     
     public void countVars(Map<VarTerm, Integer> c) {}
     

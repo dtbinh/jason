@@ -138,9 +138,9 @@ public class RuleTest extends TestCase {
         assertEquals(1, r.getSingletonVars().size());
         assertEquals("[R]", r.getSingletonVars().toString());
         
-        assertTrue(r.hasVar(new VarTerm("X")));
-        assertTrue(r.hasVar(new VarTerm("W")));
-        assertFalse(r.hasVar(new VarTerm("III")));        
+        assertTrue(r.hasVar(new VarTerm("X"), null));
+        assertTrue(r.hasVar(new VarTerm("W"), null));
+        assertFalse(r.hasVar(new VarTerm("III"), null));        
     }
     
     

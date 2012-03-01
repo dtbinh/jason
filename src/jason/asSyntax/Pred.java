@@ -217,12 +217,12 @@ public class Pred extends Structure {
     }
 
     @Override
-    public boolean hasVar(VarTerm t) {
-        if (super.hasVar(t)) 
+    public boolean hasVar(VarTerm t, Unifier u) {
+        if (super.hasVar(t, u)) 
             return true;
         if (annots != null)
             for (Term v: annots)
-                if (v.hasVar(t)) 
+                if (v.hasVar(t, u)) 
                     return true;
         return false;
     }
