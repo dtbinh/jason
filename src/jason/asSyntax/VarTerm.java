@@ -151,10 +151,10 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
             Term vl = u.get(this);
             //System.out.println("applying "+this+"="+vl+" un="+u);
             if (vl != null) {
-                if (vl.hasVar(this, u)) {
+                if (!vl.isCyclicTerm() && vl.hasVar(this, u)) {
                     //logger.warning("The value of a variable contains itself, variable "+super.getFunctor()+" "+super.getSrcInfo()+", value="+vl+", unifier="+u);
                     
-                    u.remove(this); // remove this var to avoid loops
+                    u.remove(this); // remove this var to avoid loops in the apply below
                     Term tempVl = vl.clone(); 
                     tempVl.apply(u);
                     u.bind(this, vl);

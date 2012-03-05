@@ -1065,4 +1065,19 @@ public class TermTest extends TestCase {
         assertTrue(y.isCyclicTerm());
     }
 
+    public void testCyclicTerm5() throws ParseException {
+        Term t1 = parseTerm("f(f(g(X)))");
+        VarTerm v1 = new VarTerm("X");
+
+        Term t2 = parseTerm("f(f(g(Y)))");
+        VarTerm v2 = new VarTerm("Y");
+        
+        Unifier u = new Unifier();
+        
+        assertTrue(u.unifies(t1, v1));
+        assertTrue(u.get(v1).isCyclicTerm());
+        assertTrue(u.unifies(t2, v2));
+        assertTrue(new Unifier().unifies(t1, t2));
+        assertTrue(u.unifies(v1, v2));
+    }
 }

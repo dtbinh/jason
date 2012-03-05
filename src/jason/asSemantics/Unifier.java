@@ -28,6 +28,7 @@ import jason.asSyntax.CyclicTerm;
 import jason.asSyntax.ListTerm;
 import jason.asSyntax.ListTermImpl;
 import jason.asSyntax.Literal;
+import jason.asSyntax.LiteralImpl;
 import jason.asSyntax.Pred;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
@@ -137,10 +138,26 @@ public class Unifier implements Cloneable {
             }
         }
         
-        if (t1g.isCyclicTerm()) // reintroduce cycles in the unifier
-            bind(t1g.getCyclicVar(), t1g);
-        if (t2g.isCyclicTerm()) 
-            bind(t2g.getCyclicVar(), t2g);
+        if (t1g.isCyclicTerm() && t2g.isCyclicTerm()) { // both are cycled terms
+            // unification of cyclic terms:
+            // remove the vars (to avoid loops) and test just the structure, then reintroduce the vars
+            VarTerm v1 = t1g.getCyclicVar();
+            VarTerm v2 = t2g.getCyclicVar();
+            remove(v1);
+            remove(v2);
+            try {
+                return unifiesNoUndo(new LiteralImpl((Literal)t1g), new LiteralImpl((Literal)t2g));
+            } finally {
+                function.put(v1, t1g);
+                function.put(v2, t1g);
+            }
+            
+        } else {
+            if (t1g.isCyclicTerm() && get(t1g.getCyclicVar()) == null) // reintroduce cycles in the unifier
+                function.put(t1g.getCyclicVar(), t1g);
+            if (t2g.isCyclicTerm() && get(t2g.getCyclicVar()) == null) 
+                function.put(t2g.getCyclicVar(), t2g);            
+        }
         
         // unify as Term
         boolean ok = unifyTerms(t1g, t2g);
@@ -291,6 +308,10 @@ public class Unifier implements Cloneable {
     }
     
     public void bind(VarTerm vt, Term vl) {
+        if (!vl.isCyclicTerm() && vl.hasVar(vt, this)) { 
+            vl = new CyclicTerm((Literal)vl, (VarTerm)vt.clone());
+            //System.out.println("changing "+vt+" <- "+vl+" in "+this);
+        }
         function.put((VarTerm) vt.clone(), vl);
     }
         
