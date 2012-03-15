@@ -703,40 +703,40 @@ Object rel_expr() :
 
 
 /* arithmetic expression */
-Object arithm_expr() :        { Object t1, t2; ArithmeticOp op;}
+Object arithm_expr() :        { Object t1, t2; ArithmeticOp op; }
 {
    t1 = arithm_expr_trm()     { op = ArithmeticOp.none; }
-[  ( "+"                      { op = ArithmeticOp.plus;} 
-   | "-"                      { op = ArithmeticOp.minus;}
-   )
-   t2 = arithm_expr()         { if (!(t1 instanceof NumberTerm)) {
-                                   throw new ParseException(getSourceRef(t1)+" ArithExpr: first operand '"+t1+"' is not numeric or variable.");
+   (  ( "+"                      { op = ArithmeticOp.plus;} 
+      | "-"                      { op = ArithmeticOp.minus;}   
+      )
+      t2 = arithm_expr_trm()     { if (!(t1 instanceof NumberTerm)) {
+                                      throw new ParseException(getSourceRef(t1)+" ArithExpr: first operand '"+t1+"' is not numeric or variable.");
+                                   }
+                                   if (!(t2 instanceof NumberTerm)) {
+                                      throw new ParseException(getSourceRef(t2)+" ArithExpr: second operand '"+t2+"' is not numeric or variable.");
+                                   }
+                                   t1 = new ArithExpr((NumberTerm)t1, op, (NumberTerm)t2); 
                                 }
-                                if (!(t2 instanceof NumberTerm)) {
-                                   throw new ParseException(getSourceRef(t2)+" ArithExpr: second operand '"+t2+"' is not numeric or variable.");
-                                }
-                                return new ArithExpr((NumberTerm)t1, op, (NumberTerm)t2); 
-                              }
-]                             { return t1; }
+   )*                           { return t1; }
 }
 
-Object arithm_expr_trm() :      { Object t1, t2; ArithmeticOp op;}
+Object arithm_expr_trm() :      { Object t1, t2; ArithmeticOp op; }
 {
    t1 = arithm_expr_factor()    { op = ArithmeticOp.none; }
-[  ( "*"                        { op = ArithmeticOp.times; } 
+(  ( "*"                        { op = ArithmeticOp.times; } 
    | "/"                        { op = ArithmeticOp.div; }
    | <TK_INTDIV>                { op = ArithmeticOp.intdiv; }
    | <TK_INTMOD>                { op = ArithmeticOp.mod; }
    )
-   t2 = arithm_expr_trm()       { if (!(t1 instanceof NumberTerm)) {
+   t2 = arithm_expr_factor()    { if (!(t1 instanceof NumberTerm)) {
                                     throw new ParseException(getSourceRef(t1)+" ArithTerm: first operand '"+t1+"' is not numeric or variable.");
                                   }
                                   if (!(t2 instanceof NumberTerm)) {
                                     throw new ParseException(getSourceRef(t2)+" ArithTerm: second operand '"+t2+"' is not numeric or variable.");
                                   }
-                                  return new ArithExpr((NumberTerm)t1, op, (NumberTerm)t2); 
+                                  t1 = new ArithExpr((NumberTerm)t1, op, (NumberTerm)t2); 
                                 }
-]                               { return t1; }
+)*                              { return t1; }
 }
 
 Object arithm_expr_factor():   

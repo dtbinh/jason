@@ -127,6 +127,20 @@ public class ASParserTest extends TestCase {
         assertTrue(t1 instanceof ArithExpr);
     }
 
+    public void testArithExpr() throws Exception {
+        NumberTerm t1 = ArithExpr.parseExpr("1 - 1 - 1");
+        assertTrue(t1 != null);
+        assertEquals(t1.solve(), -1.0);
+
+        t1 = ArithExpr.parseExpr("1 - 1 - 1 -1");
+        assertTrue(t1 != null);
+        assertEquals(t1.solve(), -2.0);
+
+        t1 = ArithExpr.parseExpr("8 / 4 / 2");
+        assertTrue(t1 != null);
+        assertEquals(t1.solve(), 1.0);    
+    }
+    
     public void testDirectives() throws Exception {
         String 
         source =  " b(10). ";
