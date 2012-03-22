@@ -107,12 +107,17 @@ public class create_agent extends DefaultInternalAction {
             name = ((StringTerm)args[0]).getString();
         else
             name = args[0].toString();
+
+
         
         StringTerm source = (StringTerm)args[1];
 
         File fSource = new File(source.getString());
         if (!fSource.exists()) {
-            throw new JasonException("The source file " + source + " was not found!");
+            fSource = new File("src/asl/"+source.getString());
+            if (!fSource.exists()) {
+                throw new JasonException("The source file " + source + " was not found!");
+            }
         }
         String agClass = null;
         List<String> agArchClasses = new ArrayList<String>();

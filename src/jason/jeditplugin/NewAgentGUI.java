@@ -55,7 +55,7 @@ public class NewAgentGUI extends StartNewAgentGUI {
         Buffer nb = org.gjt.sp.jedit.jEdit.openFile(view, agDecl.asSource.getAbsolutePath());
         if (newFile) {
             try {
-                String agcode = Config.get().getTemplate("agent.asl");
+                String agcode = Config.get().getTemplate("agent");
                 agcode = agcode.replace("<AG_NAME>",agName.getText());
                 agcode = agcode.replace("<PROJECT_NAME>", buffer.getName());
                 nb.writeLock();

@@ -177,7 +177,7 @@ public class NewProjectGUI extends NewAgentGUI {
             return null;
         }
 
-        String projDecl = Config.get().getTemplate("project.mas2j");
+        String projDecl = Config.get().getTemplate("project");
         projDecl = projDecl.replace("<PROJECT_NAME>", name);
         projDecl = projDecl.replace("<INFRA>", projInfra.getSelectedItem().toString());
         return projDecl;

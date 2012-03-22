@@ -6,7 +6,7 @@ import jason.*;
 import jason.asSemantics.*;
 import jason.asSyntax.*;
 
-public class <IA_NAME> extends DefaultInternalAction {
+public class <IA_NAME> extends <SUPER_CLASS> {
 
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {

@@ -286,7 +286,7 @@ public class JasonID extends JPanel implements EBComponent, RunProjectListener {
             if (newFile) {
                 try {
                     ap.asSource = new File(projectb.getDirectory() + ap.name + "." + MAS2JProject.AS_EXT);
-                    String agcode = Config.get().getTemplate("agent.asl");
+                    String agcode = Config.get().getTemplate("agent");
                     agcode = agcode.replace("<AG_NAME>", ap.getAgName());
                     agcode = agcode.replace("<PROJECT_NAME>", projectb.getName());
                     nb.writeLock();

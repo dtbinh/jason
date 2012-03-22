@@ -208,7 +208,7 @@ public class ProjectCreation {
         try {
             File f = new File(projectRootDir + File.separator + JasonPluginConstants.AGENT_DEFAULT_REPOS + File.separator + "sample.asl");
             f.createNewFile();
-            String templateContent = Config.get().getTemplate("agent.asl");
+            String templateContent = Config.get().getTemplate("agent");
             
             templateContent = templateContent.replace("<AG_NAME>", "sample");
             templateContent = templateContent.replace("<PROJECT_NAME>", projectName);

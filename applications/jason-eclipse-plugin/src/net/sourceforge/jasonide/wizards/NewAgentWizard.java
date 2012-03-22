@@ -203,7 +203,7 @@ public class NewAgentWizard extends Wizard implements INewWizard {
      */
     private InputStream openContentStream(String containerName, String fileName) {
         try {
-            String agentFileContents = Config.get().getTemplate("agent.asl");
+            String agentFileContents = Config.get().getTemplate("agent");
 
             fileName = fileName.replace(".", ">");
             String agentName = fileName.split(">")[0];

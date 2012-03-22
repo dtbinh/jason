@@ -500,6 +500,11 @@ public class Config extends Properties {
     
     public String getTemplate(String templateName) {
         try {
+            if (templateName.equals("agent.asl"))
+                templateName = "agent";
+            if (templateName.equals("project.mas2j"))
+                templateName = "project";
+            
             String nl = System.getProperty("line.separator");
             // get template
             BufferedReader in;

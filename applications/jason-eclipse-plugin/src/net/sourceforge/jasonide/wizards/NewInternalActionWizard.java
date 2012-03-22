@@ -170,6 +170,7 @@ public class NewInternalActionWizard extends Wizard implements INewWizard {
             
             iaCode = iaCode.replace("<IA_NAME>", iaName);
             iaCode = iaCode.replace("<PROJECT_NAME>", projectName);
+            iaCode = iaCode.replace("<SUPER_CLASS>", "DefaultInternalAction");        
             
             if (packageName != null) {
                 iaCode = iaCode.replace("<PCK>", packageName);
