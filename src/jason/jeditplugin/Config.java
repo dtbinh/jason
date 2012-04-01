@@ -59,6 +59,8 @@ public class Config extends Properties {
 
     /** path to jade.jar */
     public static final String JADE_JAR      = "jadeJar";
+    public static final String MOISE_JAR     = "moiseJar";
+    public static final String JACAMO_JAR    = "jacamoJar";
     
     /** runtime jade arguments (the same used in jade.Boot) */
     public static final String JADE_ARGS     = "jadeArgs";
@@ -77,6 +79,8 @@ public class Config extends Properties {
     public static final String CLOSEALL      = "closeAllBeforeOpenMAS2J";
     public static final String CHECK_VERSION = "checkLatestVersion";
     public static final String WARN_SING_VAR = "warnSingletonVars";
+
+    public static final String jacamoHomeProp = "JaCaMoHome";
 
     private static Config      singleton     = null;
 
@@ -205,9 +209,11 @@ public class Config extends Properties {
 
     /** Set most important parameters with default values */
     public void fix() {
-        tryToFixJarFileConf(JASON_JAR, "jason.jar", 700000);
-        tryToFixJarFileConf(SACI_JAR, "saci.jar", 300000);
-        tryToFixJarFileConf(JADE_JAR, "jade.jar", 2000000);
+        tryToFixJarFileConf(JASON_JAR,  "jason.jar",  700000);
+        tryToFixJarFileConf(SACI_JAR,   "saci.jar",   300000);
+        tryToFixJarFileConf(JADE_JAR,   "jade.jar",  2000000);
+        tryToFixJarFileConf(MOISE_JAR,  "moise.jar",  300000);
+        tryToFixJarFileConf(JACAMO_JAR, "jacamo.jar",  10000);
 
         // fix java home
         if (get(JAVA_HOME) == null || !checkJavaHomePath(getProperty(JAVA_HOME))) {
@@ -276,6 +282,8 @@ public class Config extends Properties {
         put("infrastructure.Centralised", CentralisedFactory.class.getName());
         put("infrastructure.Saci", SaciFactory.class.getName());
         put("infrastructure.Jade", JadeFactory.class.getName());
+        put("infrastructure.JaCaMo", "jacamo.infra.JaCaMoInfrastructureFactory");
+
     }
 
     public void store() {

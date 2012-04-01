@@ -53,8 +53,6 @@ import javax.swing.filechooser.FileFilter;
 
 public class ConfigGUI {
     
-    private static final long serialVersionUID = 1L;
-
     protected JTextField jasonTF;
     protected JTextField javaTF;
     protected JTextField antTF;
@@ -64,7 +62,7 @@ public class ConfigGUI {
     protected JCheckBox  checkVersionCBox;
     protected JCheckBox  warnSingVarsCBox;
 
-    protected JTextField saciTF;
+    //protected JTextField saciTF;
     protected JTextField jadeJarTF;
     protected JTextField jadeArgsTF;
     protected JCheckBox  jadeSnifferCB;
@@ -269,6 +267,7 @@ public class ConfigGUI {
         pop.add(jadeHomePanel);
 
         // saci home
+        /*
         JPanel saciHomePanel = new JPanel();
         saciHomePanel.setBorder(BorderFactory.createTitledBorder(BorderFactory
                 .createEtchedBorder(), "Saci", TitledBorder.LEFT, TitledBorder.TOP));
@@ -278,7 +277,7 @@ public class ConfigGUI {
         saciHomePanel.add(saciTF);
         saciHomePanel.add(createBrowseButton("saci.jar", saciTF));
         pop.add(saciHomePanel);
-
+        */
 
         // shell command
         /*
@@ -310,7 +309,7 @@ public class ConfigGUI {
         closeAllPanel.add(closeAllCBox);
         pop.add(closeAllPanel);
 
-        saciTF.setText(userProperties.getSaciJar());
+        //saciTF.setText(userProperties.getSaciJar());
         jadeJarTF.setText(userProperties.getJadeJar());
         jadeArgsTF.setText(userProperties.getJadeArgs());
         jasonTF.setText(userProperties.getJasonJar());
@@ -355,9 +354,9 @@ public class ConfigGUI {
     }
 
     public void save() {
-        if (Config.checkJar(saciTF.getText())) {
-            userProperties.put(Config.SACI_JAR, saciTF.getText().trim());
-        }
+        //if (Config.checkJar(saciTF.getText())) {
+        //    userProperties.put(Config.SACI_JAR, saciTF.getText().trim());
+        //}
 
         if (Config.checkJar(jadeJarTF.getText())) {
             userProperties.put(Config.JADE_JAR, jadeJarTF.getText().trim());
