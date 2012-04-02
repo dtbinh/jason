@@ -47,6 +47,8 @@ TARGETS:
         <pathelement location="${basedir}/lib/ant.jar" />
         <pathelement location="${basedir}/lib/cartago.jar" />
         <pathelement location="${basedir}/lib/c4jason.jar" />
+        <pathelement location="${basedir}/lib/moise.jar" />
+        <pathelement location="${basedir}/lib/jacamo.jar" />
         <pathelement location="${basedir}/demos/persistent-belief-base/lib/hsqldb.jar" />
         <pathelement location="${basedir}/lib/jedit/ErrorList.jar" />
         <pathelement location="${basedir}/lib/jedit/SideKick.jar" />
@@ -193,6 +195,11 @@ TARGETS:
         <copy todir="${jedit.install.dir}/properties">
             <fileset dir="${basedir}/src/jeditPlugin">
                 <include name="jedit-initial.props" />
+            </fileset>
+        </copy>
+        <copy todir="${jedit.install.dir}/jars">
+            <fileset dir="${basedir}/lib">
+                <include name="jacamo.jar" />
             </fileset>
         </copy>
     </target>
