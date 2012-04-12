@@ -42,6 +42,26 @@ public class Utils {
 		}
 	}
 	
+	public static String getDirectoryOfFile(String s){
+		int index = s.lastIndexOf(File.separatorChar);
+		
+		if (index > -1 && index < s.length()){
+			return s.substring(0,index);
+		} else {
+			index = s.lastIndexOf("/");
+			if (index > -1 && index < s.length()){
+				return s.substring(0,index);
+			} else {
+				index = s.lastIndexOf("\\");
+				if (index > -1 && index < s.length()){
+					return s.substring(0,index);
+				} else {
+					return "";
+				}
+			}
+		}
+	}
+	
 	public static void selectAndReveal(Shell shell, final IResource resource) {
 		shell.getDisplay().asyncExec(new Runnable() {
             public void run() {

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/jasonide_feature_1.0.3.201204042203.jar" id="jasonide_feature" version="1.0.3.201204042203">
+   <feature url="features/jasonide_feature_1.0.4.201204112005.jar" id="jasonide_feature" version="1.0.4.201204112005">
       <category name="jasonide"/>
    </feature>
    <category-def name="jasonide" label="jasonide"/>
