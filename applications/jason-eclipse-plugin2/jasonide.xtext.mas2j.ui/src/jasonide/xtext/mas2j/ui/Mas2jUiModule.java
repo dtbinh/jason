@@ -6,6 +6,7 @@ package jasonide.xtext.mas2j.ui;
 import jasonide.xtext.mas2j.ui.outline.Mas2jOutlineTreeProvider;
 
 
+
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.xtext.ui.editor.outline.IOutlineTreeProvider;
 import org.eclipse.xtext.ui.editor.syntaxcoloring.IHighlightingConfiguration;

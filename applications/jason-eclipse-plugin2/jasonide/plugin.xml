@@ -302,6 +302,7 @@
       </builder>
    </extension>
    
+   
    <extension
          point="org.eclipse.ui.popupMenus">
       <objectContribution
@@ -317,6 +318,20 @@
                menubarPath="additions"/>
       </objectContribution>
    </extension>
+   
+	<extension point="org.eclipse.ui.popupMenus"> 
+	   <viewerContribution 
+	      id="jasonRun"
+	      targetID="jasonide.xtext.mas2j.Mas2j.EditorContext"> 
+	      <action
+	         id="jasonide.popup.actions.NewAction" 
+	         label="Run Jason Application"
+	         icon="icons/run.gif"
+	         menubarPath="additions" 
+	         class="jasonide.commands.RunJasonFileEditor"> 
+	      </action> 
+	   </viewerContribution> 
+	</extension>
 
    <extension point="org.eclipse.ui.menus">
       <menuContribution

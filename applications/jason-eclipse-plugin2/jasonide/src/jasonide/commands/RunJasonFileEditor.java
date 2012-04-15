@@ -13,19 +13,19 @@ import java.io.StringReader;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.ui.IObjectActionDelegate;
-import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IEditorActionDelegate;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
 
-public class RunJasonFile implements IObjectActionDelegate {
+public class RunJasonFileEditor implements IEditorActionDelegate {
 	private IFile jasonFile = null; 
 	
-	public RunJasonFile() {
+	public RunJasonFileEditor() {
 		super();
 		
 		MessageConsole console = findConsole("Console");
@@ -103,16 +103,13 @@ public class RunJasonFile implements IObjectActionDelegate {
     }
 
 	@Override
-	public void selectionChanged(IAction action, ISelection selection) {
-        if (selection != null && selection instanceof ISelection) {
-            IStructuredSelection strucSel = (IStructuredSelection) selection;
-            
-            jasonFile = (IFile)strucSel.getFirstElement();
-        }
+	public void setActiveEditor(IAction action, IEditorPart targetEditor) {
+		if (targetEditor != null && targetEditor.getEditorInput() instanceof IFileEditorInput)
+			jasonFile = ((IFileEditorInput)targetEditor.getEditorInput()).getFile();
 	}
 
 	@Override
-	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
+	public void selectionChanged(IAction action, ISelection selection) {
 		
 	}
 }

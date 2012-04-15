@@ -61,7 +61,7 @@ public class Mas2jHighlightingConfiguration implements IHighlightingConfiguratio
 		ALL_RESERVED_WORDS.add("agentClass");
 		
 		ALL_PREDEFINED_PARAMS.add("Jade");
-		ALL_PREDEFINED_PARAMS.add("Saci");
+		//ALL_PREDEFINED_PARAMS.add("Saci");
 		ALL_PREDEFINED_PARAMS.add("Centralised");
 		ALL_PREDEFINED_PARAMS.add("Jacamo");
 	}
