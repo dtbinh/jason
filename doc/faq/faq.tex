@@ -8,7 +8,6 @@
 \usepackage{xspace}
 
 \newcommand{\jason}[0]{\htlink{\textit{Jason}}{http://jason.sf.net}\xspace}
-\newcommand{\saci}[0]{\htlink{\textsc{Saci}}{http://www.lti.pcs.usp.br/saci}\xspace}
 \newcommand{\jade}[0]{\htlink{\textsc{Jade}}{http://jade.tilab.com/}\xspace}
 \newcommand{\code}[1]{\texttt{#1}}
 
@@ -17,7 +16,7 @@
 
 
 \html{\begin{rawhtml}<h0><b><i>Jason</i></b> FAQ
-      <br><font size="-1">(for version 1.3.6)</font></h0>
+      <br><font size="-1">(for version 1.3.7)</font></h0>
       \end{rawhtml}}
 \latex{\begin{center}{\Huge\jason FAQ}\end{center}}
 
@@ -273,14 +272,14 @@ public class myEnv extends Environment {
 The
 \htlink{RuntimeServices}{http://jason.sourceforge.net/api/jason/runtime/RuntimeServicesInfraTier.html}
 interface, used in the code above, provides useful services
-transparently from the underlying infrastructure (Centralised, Saci,
+transparently from the underlying infrastructure (Centralised, Jade,
 ...). The interface's methods include agent creation, agent killing,
 and halting the system (see the API documentation for more
 information).
 
-Note that if you're using the \saci infrastructure, new
-agents (possibly not \jason agents, see \ref{sec:whysaci}) can
-enter the MAS using \saci features for open MAS.
+Note that if you're using the \jade infrastructure, new
+agents (possibly not \jason agents, see \ref{sec:whyjade}) can
+enter the MAS using \jade features for open MAS.
 
 \subsection{How to set the classpath for running a system?}
 
@@ -379,7 +378,7 @@ MAS test {
   "Jason controller" with a GUI for debugging. This graphical tool is
   called "\jason's Mind Inspector", as it allows users to observe all
   changes in agents' mental attitudes after a (number of) reasoning
-  cycle(s). This also applies to distributed agents (using \saci).
+  cycle(s). This also applies to distributed agents (using \jade).
 
 \end{itemize}
 
@@ -631,7 +630,7 @@ files with suitable style sheets to be viewed in browsers.
 
 An infrastructure provides the following services for the MAS:
 \begin{itemize}
-\item communication (e.g., the \saci infrastructure implements
+\item communication (e.g., the centralised infrastructure implements
   communication based on KQML whilst \jade implements it using
   FIPA-ACL),
 \item control of the agent life cycle (creation, running,
@@ -646,13 +645,6 @@ The current distribution of \jason has the following infrastructures:
   same host. It provides fast startup and high performance for systems
   that can be executed in a single computer. It is also useful to test
   and develop (prototype) systems. Centralised is the default infrastructure.
-
-\item[Saci:] provides distribution and communication based on KQML;
-  click 
-\begin{rawhtml}
-  <a href="http://www.lti.pcs.usp.br/saci">here</a>
-\end{rawhtml}
-  for more details.
 
 \item[Jade:] provides distribution and communication using 
 \begin{rawhtml}
@@ -694,13 +686,6 @@ MAS auction {
     agents: ag1; ag2; ag3; 
 }
 \end{verbatim}
-to use Saci:
-\begin{verbatim}
-MAS auction {
-    infrastructure: Saci
-    agents: ag1; ag2; ag3; 
-}
-\end{verbatim}
 and to use Jade:
 \begin{verbatim}
 MAS auction {
@@ -713,7 +698,7 @@ Note that the agents do not need to be changed for different
 infrastructures. The \jason Agent Architecture binds them to the
 available infrastructure.
 
-\subsection{When should I use the \saci or \jade infrastructures?}\label{sec:whysaci}
+\subsection{When should I use the \jade infrastructures?}\label{sec:whyjade}
 
 The centralised infrastructure does not support:
 \begin{itemize}
@@ -721,14 +706,10 @@ The centralised infrastructure does not support:
 \item interoperability with non-\jason agents.
 \end{itemize}
 
-If you need any of these features, you should choose the \saci or
-\jade infrastructures (or implement/plug a new infrastructure for/into
+If you need any of these features, you should choose the \jade
+infrastructure (or implement/plug a new infrastructure for/into
 \jason yourself).  The interoperability with non-\jason agents is
-achieved by \saci through KQML communication. An example of
-communication between \jason and \saci agents (implemented in Java) is
-available at \htlink{Source
-  Force}{https://sourceforge.net/project/showfiles.php?group_id=98417}.
-
+achieved by \jade through FIPA-ACL communication. 
 
 \section{\jade}
 

@@ -25,13 +25,10 @@ MAS sniffer {
             "", // password
             "[msgSent(7,log)]");
 
-        // Monitor for SACI
-        //monitor agentArchClass comm.SnifferSaci;
-
         // Ordinary agents
         bob;
         maria;
 
-    classpath: "../../lib/saci.jar"; "../../demos/persistent-belief-base/lib/hsqldb.jar";
+    classpath: "../../demos/persistent-belief-base/lib/hsqldb.jar";
 }
 

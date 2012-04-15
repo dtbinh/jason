@@ -1,14 +1,19 @@
 ---------------------------
-version XXX
+version 1.3.7
 
 revision YYY on SVN
 ---------------------------
 
 New features
 - Initial implementation of Cycled Terms
+- JaCaMo infrastructure (in beta)
 
 Bugs fixed
 - the expression "1 - 1 - 1" is evaluated as 1 instead of -1
+
+Other changes
+- support for SACI is removed, users that still use this platform
+  should not upgrade to this version
 
 ---------------------------
 version 1.3.6a

@@ -26,7 +26,6 @@ package jason.jeditplugin;
 import jason.asSemantics.TransitionSystem;
 import jason.infra.centralised.CentralisedFactory;
 import jason.infra.jade.JadeFactory;
-import jason.infra.saci.SaciFactory;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -50,9 +49,6 @@ public class Config extends Properties {
 
     /** path to jason.jar */
     public static final String JASON_JAR     = "jasonJar";
-    
-    /** path to saci.jar */
-    public static final String SACI_JAR      = "saciJar";
     
     /** path to ant home (jar directory) */
     public static final String ANT_LIB       = "antLib";
@@ -142,11 +138,6 @@ public class Config extends Properties {
         return "";
     }
 
-    /** Returns the full path to the saci.jar file */
-    public String getSaciJar() {
-        return getProperty(SACI_JAR);
-    }
-
     /** Returns the full path to the jade.jar file */
     public String getJadeJar() {
         return getProperty(JADE_JAR);
@@ -210,7 +201,6 @@ public class Config extends Properties {
     /** Set most important parameters with default values */
     public void fix() {
         tryToFixJarFileConf(JASON_JAR,  "jason.jar",  700000);
-        tryToFixJarFileConf(SACI_JAR,   "saci.jar",   300000);
         tryToFixJarFileConf(JADE_JAR,   "jade.jar",  2000000);
         tryToFixJarFileConf(MOISE_JAR,  "moise.jar",  300000);
         tryToFixJarFileConf(JACAMO_JAR, "jacamo.jar",  10000);
@@ -280,7 +270,6 @@ public class Config extends Properties {
         
         // Default infrastructures
         put("infrastructure.Centralised", CentralisedFactory.class.getName());
-        put("infrastructure.Saci", SaciFactory.class.getName());
         put("infrastructure.Jade", JadeFactory.class.getName());
         put("infrastructure.JaCaMo", "jacamo.infra.JaCaMoInfrastructureFactory");
 
@@ -325,7 +314,7 @@ public class Config extends Properties {
         } catch (Exception e) {
             System.err.println("Error getting user infrastructures.");          
         }
-        return new String[] {"Centralised","Jade","Saci"};
+        return new String[] {"Centralised","Jade","JaCaMo"};
     }
     
     public String getInfrastructureFactoryClass(String infraId) {

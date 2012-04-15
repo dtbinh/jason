@@ -62,7 +62,6 @@ public class ConfigGUI {
     protected JCheckBox  checkVersionCBox;
     protected JCheckBox  warnSingVarsCBox;
 
-    //protected JTextField saciTF;
     protected JTextField jadeJarTF;
     protected JTextField jadeArgsTF;
     protected JCheckBox  jadeSnifferCB;
@@ -81,7 +80,6 @@ public class ConfigGUI {
                 // new version, set all values to default
                 System.out.println("This is a new version of Jason, reseting configuration...");
                 //userProperties.clear();
-                userProperties.remove(Config.SACI_JAR);
                 userProperties.remove(Config.JADE_JAR);
                 userProperties.remove(Config.JASON_JAR);
                 userProperties.remove(Config.ANT_LIB);
@@ -266,19 +264,6 @@ public class ConfigGUI {
         
         pop.add(jadeHomePanel);
 
-        // saci home
-        /*
-        JPanel saciHomePanel = new JPanel();
-        saciHomePanel.setBorder(BorderFactory.createTitledBorder(BorderFactory
-                .createEtchedBorder(), "Saci", TitledBorder.LEFT, TitledBorder.TOP));
-        saciHomePanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-        saciHomePanel.add(new JLabel("saci.jar location"));
-        saciTF = new JTextField(25);
-        saciHomePanel.add(saciTF);
-        saciHomePanel.add(createBrowseButton("saci.jar", saciTF));
-        pop.add(saciHomePanel);
-        */
-
         // shell command
         /*
         JPanel shellPanel = new JPanel();
@@ -309,7 +294,6 @@ public class ConfigGUI {
         closeAllPanel.add(closeAllCBox);
         pop.add(closeAllPanel);
 
-        //saciTF.setText(userProperties.getSaciJar());
         jadeJarTF.setText(userProperties.getJadeJar());
         jadeArgsTF.setText(userProperties.getJadeArgs());
         jasonTF.setText(userProperties.getJasonJar());
@@ -354,10 +338,6 @@ public class ConfigGUI {
     }
 
     public void save() {
-        //if (Config.checkJar(saciTF.getText())) {
-        //    userProperties.put(Config.SACI_JAR, saciTF.getText().trim());
-        //}
-
         if (Config.checkJar(jadeJarTF.getText())) {
             userProperties.put(Config.JADE_JAR, jadeJarTF.getText().trim());
         }

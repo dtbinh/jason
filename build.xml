@@ -4,7 +4,6 @@
 
     <property environment="env" />
 
-    <property name="saciJar"      value="${basedir}/lib/saci.jar" />
     <property name="jasonJar"     value="${basedir}/lib/jason.jar" />
     <property name="jadeJar"      value="${basedir}/lib/jade.jar" />
     <property name="jasonSJar"    value="${basedir}/lib/s-jason.jar" />
@@ -13,7 +12,7 @@
 
     <property name="dist.properties" value="${basedir}/bin/dist.properties" />
     <property name="version" value="1" />
-    <property name="release" value="3.6b" />
+    <property name="release" value="3.7" />
     <property name="distDir" value="${env.HOME}/tmp/x/Jason-${version}.${release}" />
     <property name="distFile" value="${env.HOME}/Jason-${version}.${release}" />
 
@@ -36,7 +35,6 @@ TARGETS:
 
     <path id="run.classpath">
         <pathelement location="${jedit.install.dir}/jedit.jar" />
-        <pathelement location="${saciJar}" />
         <pathelement location="${jadeJar}" />
     </path>
 
@@ -408,7 +406,6 @@ TARGETS:
             <fileset dir="${basedir}" includes="bin/*.old" />
             <fileset dir="${basedir}" includes="**/.err" />
             <fileset dir="${basedir}" includes="bookstore.*" />
-            <fileset dir="${basedir}/lib/saci/bin" includes="work" />
         </delete>
         <delete dir="${build.dir}" />
     </target>
