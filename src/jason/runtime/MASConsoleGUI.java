@@ -116,6 +116,10 @@ public class MASConsoleGUI {
         }
     }
     
+    public void cleanConsole() {
+        output.setText("");
+    }
+    
     protected void initButtonPanel() {
         pBt = new JPanel();
         pBt.setLayout(new FlowLayout(FlowLayout.CENTER));
@@ -125,7 +129,7 @@ public class MASConsoleGUI {
         JButton btClean = new JButton("Clean", new ImageIcon(RunCentralisedMAS.class.getResource("/images/clear.gif")));
         btClean.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                output.setText("");
+                cleanConsole();
             }
         });
 
@@ -201,7 +205,7 @@ public class MASConsoleGUI {
             // print in output
             int l = output.getDocument().getLength();
             if (l > 60000) {
-                output.setText("");
+                cleanConsole();
                 // l = output.getDocument().getLength();
             }
             synchronized (this) {

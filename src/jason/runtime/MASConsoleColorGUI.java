@@ -37,6 +37,11 @@ public class MASConsoleColorGUI extends MASConsoleGUI {
     }
 
     @Override
+    public void cleanConsole() {
+        output.setText("");
+    }
+    
+    @Override
     protected void initOutput() {
         output = new MASColorTextPane(Color.black);
         output.setEditable(false);
@@ -88,7 +93,7 @@ public class MASConsoleColorGUI extends MASConsoleGUI {
             // print in output
             int l = output.getDocument().getLength();
             if (l > 60000) {
-                output.setText("");
+                cleanConsole();
                 // l = output.getDocument().getLength();
             }
             synchronized (this) {
