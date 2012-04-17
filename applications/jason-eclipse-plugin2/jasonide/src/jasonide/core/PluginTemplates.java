@@ -15,7 +15,7 @@ public class PluginTemplates {
 	
 	public static String getProjectClasspathContents(String projectName, boolean cartagoEnvironment, String infrastructure) {
 		String cartagoLib = "";
-		if (cartagoEnvironment || infrastructure.equals("Jacamo")) {
+		if (cartagoEnvironment || infrastructure.equals("JaCaMo")) {
 			cartagoLib = "\t<classpathentry kind=\"lib\" path=\""+ Config.get().getJasonHome() + "/lib/cartago.jar" +"\"/>\n";
 		}
 		
@@ -31,7 +31,7 @@ public class PluginTemplates {
 		
 		String moiseLib = "";
 		String jacamoLib = "";
-		if (infrastructure.equals("Jacamo")) {
+		if (infrastructure.equals("JaCaMo")) {
 			moiseLib = "\t<classpathentry kind=\"lib\" path=\""+ Config.get().getJasonHome() + "/lib/moise.jar" +"\"/>\n";
 			jacamoLib = "\t<classpathentry kind=\"lib\" path=\""+ Config.get().getJasonHome() + "/lib/jacamo.jar" +"\"/>\n";
 		}

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Jasonide
 Bundle-SymbolicName: jasonide;singleton:=true
-Bundle-Version: 1.0.5
+Bundle-Version: 1.0.6
 Bundle-Activator: jasonide.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
@@ -25,5 +25,5 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.xtext.common.types;bundle-version="2.0.1"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Bundle-ClassPath: .,lib/jason.jar,lib/jade.jar,lib/cartago.jar,lib/c4jason.jar
+Bundle-ClassPath: .,lib/jason.jar,lib/jade.jar,lib/cartago.jar,lib/c4jason.jar,lib/jacamo.jar
 Bundle-Vendor: Jason team

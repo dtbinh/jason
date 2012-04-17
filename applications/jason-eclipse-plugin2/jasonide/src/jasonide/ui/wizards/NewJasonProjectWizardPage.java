@@ -74,7 +74,7 @@ public class NewJasonProjectWizardPage extends WizardPage implements Listener {
 		projectInfrastructureCombo.add("Centralised");
 		//projectInfrastructureCombo.add("Saci");
 		projectInfrastructureCombo.add("Jade");
-		projectInfrastructureCombo.add("Jacamo");
+		projectInfrastructureCombo.add("JaCaMo");
 		projectInfrastructureCombo.setText("Centralised");
 		
 		//Project environment
