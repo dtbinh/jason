@@ -14,8 +14,8 @@ public class NewArtifactWizardPage extends NewTypeWizardPage {
 	
 	public NewArtifactWizardPage(boolean isClass, String pageName, ISelection selection) {
 		super(isClass, pageName);
-		setTitle("New Jason Artifact");
-		setDescription("This wizard creates a new Jason Artifact");
+		setTitle("New CArtAgO Artifact");
+		setDescription("This wizard creates a new CArtAgO Artifact");
 	}
 
 	@Override

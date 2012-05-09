@@ -76,6 +76,7 @@ public class NewJasonProjectWizardPage extends WizardPage implements Listener {
 		projectInfrastructureCombo.add("Jade");
 		projectInfrastructureCombo.add("JaCaMo");
 		projectInfrastructureCombo.setText("Centralised");
+		projectInfrastructureCombo.addListener(SWT.Modify, this);
 		
 		//Project environment
 		projectEnvironmentLabel = new Label(composite, SWT.NONE);
@@ -133,6 +134,14 @@ public class NewJasonProjectWizardPage extends WizardPage implements Listener {
 				projectEnvironmentHostText.setVisible(false);
 				projectEnvironmentClassNameLabel.setVisible(false);
 				projectEnvironmentClassNameText.setVisible(false);
+			}
+		} else if (source == projectInfrastructureCombo) {
+			if (projectInfrastructureCombo.getText().equals("JaCaMo")) {
+				projectEnvironmentLabel.setVisible(false);
+				projectEnvironmentCombo.setVisible(false);
+			} else {
+				projectEnvironmentLabel.setVisible(true);
+				projectEnvironmentCombo.setVisible(true);				
 			}
 		}
 		showStatus(findMostSevere());

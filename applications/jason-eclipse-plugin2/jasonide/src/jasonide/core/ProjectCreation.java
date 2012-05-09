@@ -30,7 +30,7 @@ public class ProjectCreation {
 		return this.shell;
 	}
  
-	public void createProjectDirs(String projectRootDir, String projectName, boolean createEnvironment) {
+	public void createProjectDirs(String projectRootDir) {
 		new File(projectRootDir + File.separator + "src").mkdir();
 		new File(projectRootDir + File.separator + "src" + File.separator + "asl").mkdir();
 		new File(projectRootDir + File.separator + "src" + File.separator + "java").mkdir();

@@ -22,7 +22,7 @@ public class NewArtifactWizard extends Wizard implements INewWizard {
 	
 	public NewArtifactWizard() {
 		super();
-		setWindowTitle("New Jason Artifact");
+		setWindowTitle("New CArtAgO Artifact");
 	}
 
 	@Override

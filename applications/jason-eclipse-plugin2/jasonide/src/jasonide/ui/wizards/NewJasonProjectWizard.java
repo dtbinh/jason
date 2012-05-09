@@ -91,7 +91,7 @@ public class NewJasonProjectWizard extends BasicNewProjectResourceWizard impleme
 			String projectRootDir = newProject.getLocation().toString();
 			
 			// create the project directories for sources.
-			projectCreation.createProjectDirs(projectRootDir, projectName, !environment.equals("Without environment"));
+			projectCreation.createProjectDirs(projectRootDir);
 			
 			projectCreation.importJasonLibraries(monitor);
 			
@@ -103,7 +103,7 @@ public class NewJasonProjectWizard extends BasicNewProjectResourceWizard impleme
 			
 			projectCreation.createSampleAgentFile(projectRootDir, projectName);
 			
-			if (environment.equals("Jason"))
+			if (environment.equals("Jason") && !infrastructure.equals("JaCaMo"))
 				projectCreation.createJasonEnvironmentFile(projectRootDir, projectName, environmentClass);
 			
             projectCreation.createJasonFile(projectRootDir, projectName, infrastructure, environment, environmentClass, environmentHost);
