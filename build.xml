@@ -317,9 +317,9 @@ TARGETS:
 
         <echo message="Generating Jason ${version}.${release}" />
 
-        <fixcrlf eol="crlf" includes="**/*.txt,**/*.bat,**/*.mas2j,**/*.asl" srcdir="${basedir}" />
+        <fixcrlf eol="crlf" includes="**/*.txt,**/*.bat,**/*.mas2j,**/*.asl" excludes="applications/**" srcdir="${basedir}" />
 
-        <fixcrlf tab="remove" tablength="4" javafiles="true" includes="**/*.java,**/*.xml,**/*.mas2j,**/*.asl" srcdir="${basedir}" />
+        <fixcrlf tab="remove" tablength="4" javafiles="true" includes="**/*.java,**/*.xml,**/*.mas2j,**/*.asl" excludes="applications/**" srcdir="${basedir}" />
 
         <delete failonerror="no" includeEmptyDirs="true">
             <fileset dir="${distDir}" />

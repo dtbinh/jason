@@ -77,6 +77,8 @@ public class FoodEnvironment extends TimeSteppedEnvironment {
             int x = (int)(((NumberTerm)(action.getTerm(0))).solve());
             int y = (int)(((NumberTerm)(action.getTerm(1))).solve());
             model.attack(agId, x, y);
+            //int o = model.getAgAtPos(x, y);
+            //System.out.println("Attac "+agName+"->" +o+id2ag.get(o)+ " "+isEating(id2ag.get(o)));
         } else if (actId.equals("random_move")) {
             model.randomMove(agId);
         } else {
@@ -89,7 +91,7 @@ public class FoodEnvironment extends TimeSteppedEnvironment {
     @Override
     protected int requiredStepsForAction(String agName, Structure action) {
         if (action.getFunctor().equals("eat")) {
-            return 3; // eat takes 2 steps
+            return 3; // eat takes 3 steps
         }       
         return super.requiredStepsForAction(agName, action);
     }

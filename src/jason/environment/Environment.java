@@ -270,7 +270,7 @@ public class Environment {
     }
     
     /** Adds a perception for a specific agent */
-    public void addPercept(String agName, Literal per) {
+    public void addPercept(String agName, Literal... per) {
         if (per != null && agName != null) {
             List<Literal> agl = agPercepts.get(agName);
             if (agl == null) {
@@ -279,7 +279,8 @@ public class Environment {
             } 
             if (! agl.contains(per)) {
                 uptodateAgs.remove(agName);
-                agl.add(per);
+                for (Literal p: per)
+                    agl.add(p);
             }
         }
     }

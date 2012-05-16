@@ -57,6 +57,9 @@
             <fileset dir="${build.dir}">
                 <include name="**/*.class" />
             </fileset>
+            <manifest>
+                  <attribute name="Main-Class" value="jason.infra.centralised.RunCentralisedMAS"/>
+            </manifest>
         </jar>
         <delete file="default.mas2j" />
     </target>

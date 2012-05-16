@@ -130,8 +130,8 @@ public class AgArch implements AgArchInfraTier {
                     AgArch a = (AgArch) Class.forName(agArchClass).newInstance();
                     a.setTS(ts); // so a.init() can use TS
                     a.initAg(null, null, null, null); // for compatibility reasons
-                    a.init();
                     insertAgArch(a);                    
+                    a.init();
                 } catch (Exception e) {
                     System.out.println("Error creating custom agent aarchitecture."+e);
                     e.printStackTrace();

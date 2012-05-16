@@ -84,6 +84,8 @@ public class FoodModel extends GridWorldModel {
 
     private boolean eat(int ag, int x, int y) {
         if (hasObject(FOOD, x, y)) {
+            //if (ag != owner[x][y] && owner[x][y] != -1)
+            //    System.out.println(ag+" eating "+x+","+y+" "+owner[x][y]);
             remove(FOOD, x, y);
             owner[x][y] = -1;
             strengths[ag] += FOOD_NUTRITIVE_VALUE;
