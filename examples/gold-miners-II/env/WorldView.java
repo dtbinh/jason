@@ -212,7 +212,8 @@ public class WorldView extends GridWorldView {
     @Override
     public void drawAgent(Graphics g, int x, int y, Color c, int id) {
         int golds = ((WorldModel)model).getGoldsWithAg(id);
-        if (id < 6) {
+        int nbAgByTeam = ((WorldModel)model).getAgsByTeam();
+        if (id < nbAgByTeam) {
             // red team
             int gw = (WorldModel.AG_CAPACITY - golds) + 1;
             g.setColor(Color.red);
@@ -228,7 +229,7 @@ public class WorldView extends GridWorldView {
             g.fillOval(x * cellSizeW + gw, y * cellSizeH + gw, cellSizeW - gw*2, cellSizeH - gw*2);
             if (id >= 0) {
                 g.setColor(Color.white);
-                drawString(g, x, y, defaultFont, String.valueOf(id-5));
+                drawString(g, x, y, defaultFont, String.valueOf(id-(nbAgByTeam-1)));
             }
         }
         if (golds > 0) {

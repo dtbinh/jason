@@ -30,6 +30,7 @@ public class MinerArch extends AgArch {
     boolean    playing = false;
     
     int        cycle  = 0;
+    int        teamSize = 6;
     
     WriteModelThread writeModelT = null;
     protected Logger logger = Logger.getLogger(MinerArch.class.getName());
@@ -41,6 +42,9 @@ public class MinerArch extends AgArch {
         if ("yes".equals(getTS().getSettings().getUserParameter("write_model"))) {
             writeModelT = new WriteModelThread();
             writeModelT.start();
+        }
+        if (getTS().getSettings().getUserParameter("teamSize") != null) {
+            teamSize = Integer.parseInt(getTS().getSettings().getUserParameter("teamSize"));
         }
     }
     
@@ -74,7 +78,7 @@ public class MinerArch extends AgArch {
         if (view != null) {
             view.dispose();
         }
-        model = new LocalWorldModel(w, h);
+        model = new LocalWorldModel(w, h, teamSize);
         if (gui) {
             view = new WorldView("Mining (view of miner "+(getMyId()+1)+")",model);
         }

@@ -152,7 +152,7 @@ TARGETS:
                   <attribute name="Main-Class" value="jason.util.ConfigGUI"/>
             </manifest>
         </jar>
-        <copy file="${jasonJar}" todir="applications/jason-eclipse-plugin/lib" />
+        <!-- copy file="${jasonJar}" todir="applications/jason-eclipse-plugin/lib" /-->
     </target>
 
     <target name="signjar" depends="jar">

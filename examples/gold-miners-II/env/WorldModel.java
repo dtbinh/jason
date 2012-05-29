@@ -48,6 +48,8 @@ public class WorldModel extends GridWorldModel {
     public WorldModel(int w, int h, int nbAg) {
         super(w, h, nbAg);
         
+        agsByTeam = nbAg/2;
+        
         goldsWithAg = new int[nbAg];
         for (int i=0; i< goldsWithAg.length; i++) goldsWithAg[i] = 0;
     }

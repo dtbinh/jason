@@ -63,6 +63,7 @@ public class MarsEnv extends Environment {
         try {
             Thread.sleep(200);
         } catch (Exception e) {}
+        informAgsEnvironmentChanged();
         return true;
     }
     

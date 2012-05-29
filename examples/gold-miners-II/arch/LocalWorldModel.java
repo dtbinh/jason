@@ -25,10 +25,6 @@ public class LocalWorldModel extends WorldModel {
         return new LocalWorldModel(w,h,nbAg);
     }
     
-    public LocalWorldModel(int w, int h) {
-        this(w, h, 6);
-    }
-    
     public LocalWorldModel(int w, int h, int nbAg) {
         super(w, h, nbAg);
         
