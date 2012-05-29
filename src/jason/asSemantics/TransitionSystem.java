@@ -328,8 +328,7 @@ public class TransitionSystem {
             confP.step = State.ProcAct; // need to go to ProcAct to see if an atomic intention received a feedback action
             return;            
         }
-        
-        
+
         if (conf.C.hasEvent()) {
             // Rule for atomic, events from atomic intention has priority
             confP.C.SE = C.removeAtomicEvent();
@@ -408,6 +407,7 @@ public class TransitionSystem {
     private void applySelAppl() throws JasonException {
         // Rule SelAppl
         confP.C.SO = conf.ag.selectOption(confP.C.AP);
+
         if (confP.C.SO != null) {
             confP.step = State.AddIM;
             if (logger.isLoggable(Level.FINE)) logger.fine("Selected option "+confP.C.SO+" for event "+confP.C.SE);
@@ -499,9 +499,8 @@ public class TransitionSystem {
                         ListTerm annots = JasonException.createBasicErrorAnnots("action_failed", reason);
                         if (a.getFailureReason() != null) 
                             annots.append(a.getFailureReason());
-                        if (!generateGoalDeletion(conf.C.SI, annots)) {
-                            C.removeAtomicIntention(); // if (potential) atomic intention is not removed, it will be selected in selInt and runs again
-                        }
+                        generateGoalDeletion(conf.C.SI, annots);
+                        C.removeAtomicIntention(); // if (potential) atomic intention is not removed, it will be selected in selInt or selEv and runs again
                     }
                 } else {
                     applyProcAct(); // get next action
@@ -840,6 +839,7 @@ public class TransitionSystem {
                     im = i.pop();
                 }
             }
+
             if (!i.isFinished()) {
                 im = i.peek(); // +!s or +?s
                 if (!im.isFinished()) {
