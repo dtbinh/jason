@@ -564,6 +564,13 @@ public class Agent {
         return true;
     }
 
+    /** Returns true if this agent accepts to be killed by another agent called <i>agName</i>.
+     *  This method can be overridden to customize this option. */
+    public boolean killAcc(String agName) {
+        //System.out.println("I am being killed by "+agName+", but that is ok...");
+        return true;
+    }
+    
     public Event selectEvent(Queue<Event> events) {
         // make sure the selected Event is removed from 'events' queue
         return events.poll();

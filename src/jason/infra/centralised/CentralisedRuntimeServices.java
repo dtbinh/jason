@@ -84,15 +84,14 @@ public class CentralisedRuntimeServices implements RuntimeServicesInfraTier {
         return masRunner.getAgs().keySet().size();
     }
 
-    public boolean killAgent(String agName) {
+    public boolean killAgent(String agName, String byAg) {
         logger.fine("Killing centralised agent " + agName);
         CentralisedAgArch ag = masRunner.getAg(agName);
-        if (ag != null) {
+        if (ag != null && ag.getTS().getAg().killAcc(byAg)) {
             ag.stopAg();
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     public void stopMAS() throws Exception {

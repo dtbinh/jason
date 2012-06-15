@@ -45,10 +45,11 @@ public interface RuntimeServicesInfraTier {
     public AgArch clone(Agent source, List<String> archClasses, String agName) throws JasonException;
 
     /**
-     * Kills the agent named <i>agName</i>. The stopAg() method, in
+     * Kills the agent named <i>agName</i> as a requested by <i>byAg</i>. 
+     * The stopAg() method, in
      * the agent architecture is called before the agent is removed.
      */
-    public boolean killAgent(String agName);
+    public boolean killAgent(String agName, String byAg);
 
     /** Returns a set of all agents' name */
     public Set<String> getAgentsNames();

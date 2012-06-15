@@ -48,7 +48,7 @@ public class KillAgentGUI extends BaseDialogGUI {
                 Object[] sls = lAgs.getSelectedValues();
                 for (int i = 0; i < sls.length; i++) {
                     String agName = sls[i].toString();
-                    services.killAgent(agName);
+                    services.killAgent(agName, "KillAgGUI");
                 }
             }
         }.start();

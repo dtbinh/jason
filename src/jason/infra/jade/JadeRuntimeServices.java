@@ -111,13 +111,14 @@ public class JadeRuntimeServices implements RuntimeServicesInfraTier {
         }
     }
 
-    public boolean killAgent(String agName) {
+    public boolean killAgent(String agName, String byAg) {
         try {
             AgentController ac = cc.getAgent(agName);
             if (ac == null) {
                 logger.warning("Agent "+agName+" does not exist!");
             } else {
-                ac.kill();
+                // TODO: if (ag.getTS().getAg().canBeKilledBy(byAg)) 
+                ac.kill();    
                 return true;
             }
         } catch (Exception e) {
