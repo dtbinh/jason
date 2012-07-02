@@ -88,6 +88,13 @@ public class IndexedBB extends ChainBBAdapter {
                 remove(linbb);
             }
         }
-        return nextBB.add(bel);
+        return super.add(bel);
+    }
+    
+    @Override
+    public BeliefBase clone() {
+        IndexedBB nbb = new IndexedBB(nextBB.clone());
+        nbb.indexedBels = new HashMap<String,Structure>(this.indexedBels);
+        return nbb;
     }
 }

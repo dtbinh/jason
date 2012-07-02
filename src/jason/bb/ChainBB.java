@@ -19,7 +19,7 @@ import java.util.logging.Logger;
  * 
  * jason.bb.ChainBB( bb1, bb2, bb3, ... )
  * 
- * where each BB is bbclass(bb paramters)
+ * where each BB is bbclass(bb parameters)
  *  
  *  e.g.: 
  *  <pre>
@@ -76,7 +76,7 @@ public class ChainBB extends ChainBBAdapter {
         }
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public List<Class> getChainClasses() {
         List<Class> r = new ArrayList<Class>();
         ChainBBAdapter c = getNextAdapter();

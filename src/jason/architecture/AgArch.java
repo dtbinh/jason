@@ -50,7 +50,7 @@ import java.util.logging.Level;
  * Each member of the chain is a subclass of AgArch. The last arch in the chain is the infrastructure tier (Centralised, JADE, Saci, ...).
  * The getUserAgArch method returns the first arch in the chain.
  *  
- * Users can customise the architecture by overriding some this class methods.
+ * Users can customise the architecture by overriding some methods of this class.
  */
 public class AgArch implements AgArchInfraTier {
 
@@ -250,7 +250,7 @@ public class AgArch implements AgArchInfraTier {
         return successor == null || successor.isRunning();
     }
 
-    /** sets the number of the current cycle in the sync execution mode */
+    /** sets the number of the current cycle */
     public void setCycleNumber(int cycle) {
         cycleNumber = cycle;
         if (successor != null)
@@ -261,7 +261,7 @@ public class AgArch implements AgArchInfraTier {
         setCycleNumber(cycleNumber+1);
     }
     
-    /** gets the current cycle number in case of running in sync execution mode */
+    /** gets the current cycle number */
     public int getCycleNumber() {
         return cycleNumber;
     }

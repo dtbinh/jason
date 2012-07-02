@@ -52,7 +52,7 @@ import org.w3c.dom.Element;
  
  */
 @SuppressWarnings("deprecation")
-public class ChainBBAdapter implements BeliefBase {
+public abstract class ChainBBAdapter implements BeliefBase {
 
     protected BeliefBase nextBB = null; // the next BB in the chain
     
