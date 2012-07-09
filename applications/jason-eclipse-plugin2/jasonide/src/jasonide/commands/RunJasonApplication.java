@@ -14,6 +14,7 @@ import jasonide.ui.ErrorDialog;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -59,6 +60,8 @@ public class RunJasonApplication extends AbstractHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		ISelection selection = HandlerUtil.getActiveWorkbenchWindow(event).getActivePage().getSelection();
 		
+		boolean debug = event.getCommand().getId().equals("jasonide.debugJasonApplication");
+		
 		if (selection instanceof ITreeSelection) {
 			ITreeSelection ts = (ITreeSelection)selection;
 			Object firstElement = ts.getFirstElement();
@@ -77,7 +80,7 @@ public class RunJasonApplication extends AbstractHandler {
 			
 			try {
 				if (project != null && project.isNatureEnabled("jasonide.jasonNature")) {
-					run(project);
+					run(debug, project);
 					return null;
 				}
 			} catch (CoreException e) {
@@ -91,7 +94,7 @@ public class RunJasonApplication extends AbstractHandler {
 			
 			if (resource != null){
 				IProject project = resource.getProject();
-				run(project);
+				run(debug, project);
 				return null;
 			}
 		}
@@ -99,7 +102,7 @@ public class RunJasonApplication extends AbstractHandler {
 		return null;
 	}
 
-	private void run(IProject project) {
+	private void run(boolean debug, IProject project) {
 		if (!Utils.checkErrorsInProject(project, "run")){
 			return;
 		}
@@ -113,7 +116,7 @@ public class RunJasonApplication extends AbstractHandler {
 		}
 //		System.out.println("Running Jason application " + project.getName());
 		
-		runProject(false, project);
+		runProject(debug, project);
 	}
 
     public void runProject(final boolean debug, final IProject projectEclipse) {

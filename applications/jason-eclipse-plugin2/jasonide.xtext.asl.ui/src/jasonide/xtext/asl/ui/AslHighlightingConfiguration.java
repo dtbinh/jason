@@ -111,7 +111,7 @@ public class AslHighlightingConfiguration implements IHighlightingConfiguration 
 	
 	public void addType( IHighlightingConfigurationAcceptor acceptor, String s, int r, int g, int b, int style) {
 		TextStyle textStyle = new TextStyle();
-		textStyle.setBackgroundColor(new RGB(255, 255, 255));
+		//textStyle.setBackgroundColor(new RGB(255, 255, 255));
 		textStyle.setColor(new RGB(r, g, b));
 		textStyle.setStyle(style);
 		acceptor.acceptDefaultHighlighting(s, s, textStyle);

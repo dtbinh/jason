@@ -15,8 +15,10 @@ public class PluginTemplates {
 	
 	public static String getProjectClasspathContents(String projectName, boolean cartagoEnvironment, String infrastructure) {
 		String cartagoLib = "";
+		String c4jasonLib = "";
 		if (cartagoEnvironment || infrastructure.equals("JaCaMo")) {
 			cartagoLib = "\t<classpathentry kind=\"lib\" path=\""+ Config.get().getJasonHome() + "/lib/cartago.jar" +"\"/>\n";
+			c4jasonLib = "\t<classpathentry kind=\"lib\" path=\""+ Config.get().getJasonHome() + "/lib/c4jason.jar" +"\"/>\n";
 		}
 		
 		String jadeLib = "";
@@ -44,10 +46,12 @@ public class PluginTemplates {
         	"\t<classpathentry kind=\"src\" path=\"src/java\" />\n" +
         	"\t<classpathentry kind=\"lib\" path=\""+ Config.get().getJasonJar() +"\"/>\n" +
         	cartagoLib +
+        	c4jasonLib +
         	jadeLib +
         	saciLib +
         	moiseLib +
         	jacamoLib +
+        	"<classpathentry kind=\"output\" path=\"bin/classes\"/>" +
         "</classpath>\n";
     } 
 	

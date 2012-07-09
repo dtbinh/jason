@@ -53,6 +53,18 @@
             Create a Jason Internal Action
          </description>
       </wizard>
+      <wizard
+            category="jasonide.newJasonCategory"
+            class="jasonide.ui.wizards.NewAslFileWizard"
+            hasPages="true"
+            icon="icons/new_agent.gif"
+            id="jasonide.newAslFileWizard"
+            name="Asl File"
+            project="false">
+         <description>
+            Create a Jason Asl File
+         </description>
+      </wizard>
    </extension>
 
 
@@ -244,6 +256,19 @@
                   </test>
                </adapt></enablement>
          </commonWizard>
+         <commonWizard
+               type="new"
+               wizardId="jasonide.newAslFileWizard">
+            <enablement>
+               <adapt
+                     type="org.eclipse.core.runtime.IAdaptable">
+                  <test
+                        property="jasonide.checkFullPath"
+                        value="src/asl">
+                  </test>
+               </adapt>
+            </enablement>
+         </commonWizard>
       </navigatorContent>
       <commonFilter
             activeByDefault="true"
@@ -302,6 +327,21 @@
       </builder>
    </extension>
    
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            id="jasonDebug"
+            nameFilter="*.mas2j"
+            objectClass="org.eclipse.core.resources.IFile">
+         <action
+               class="jasonide.commands.RunJasonFile"
+               definitionId="debug"
+               icon="icons/debug.gif"
+               id="jasonide.popup.actions.NewAction"
+               label="Debug Jason Application"
+               menubarPath="additions"/>
+      </objectContribution>
+   </extension>
    
    <extension
          point="org.eclipse.ui.popupMenus">
@@ -318,6 +358,21 @@
                menubarPath="additions"/>
       </objectContribution>
    </extension>
+
+	<extension point="org.eclipse.ui.popupMenus"> 
+	   <viewerContribution 
+	      id="jasonDebug"
+	      targetID="jasonide.xtext.mas2j.Mas2j.EditorContext"> 
+	      <action
+	         id="jasonide.popup.actions.NewAction" 
+	         label="Debug Jason Application"
+	         icon="icons/debug.gif"
+	         menubarPath="additions" 
+	         definitionId="debug"
+	         class="jasonide.commands.RunJasonFileEditor"> 
+	      </action> 
+	   </viewerContribution> 
+	</extension>
    
 	<extension point="org.eclipse.ui.popupMenus"> 
 	   <viewerContribution 
@@ -328,6 +383,7 @@
 	         label="Run Jason Application"
 	         icon="icons/run.gif"
 	         menubarPath="additions" 
+	         definitionId="run"
 	         class="jasonide.commands.RunJasonFileEditor"> 
 	      </action> 
 	   </viewerContribution> 
@@ -354,16 +410,37 @@
                   </with>
                </visibleWhen>
             </command>
+            
+            <command
+                  commandId="jasonide.debugJasonApplication"
+                  icon="icons/debug.gif"
+                  id="jasonide.toolbar.debugJasonApplication"
+                  style="push">
+               <visibleWhen
+                     checkEnabled="false">
+                  <with
+                        variable="activeWorkbenchWindow.activePerspective">
+                     <equals
+                           value="jasonide.jasonPerspective">
+                     </equals>
+                  </with>
+               </visibleWhen>
+            </command>
          </toolbar>
       </menuContribution>
    </extension>
-
 
    <extension point="org.eclipse.ui.commands">
       <command
             defaultHandler="jasonide.commands.RunJasonApplication"
             id="jasonide.runJasonApplication"
             name="Run Jason Application">
+      </command>
+      
+      <command
+            defaultHandler="jasonide.commands.RunJasonApplication"
+            id="jasonide.debugJasonApplication"
+            name="Debug Jason Application">
       </command>
    </extension>
    

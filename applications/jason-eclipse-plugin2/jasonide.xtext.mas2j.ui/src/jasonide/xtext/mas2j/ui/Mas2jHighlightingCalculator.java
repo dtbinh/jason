@@ -1,8 +1,6 @@
 package jasonide.xtext.mas2j.ui;
 
 import jasonide.xtext.mas2j.mas2j.ClsDef;
-
-
 import org.eclipse.xtext.Keyword;
 import org.eclipse.xtext.RuleCall;
 import org.eclipse.xtext.impl.TerminalRuleImpl;

@@ -51,7 +51,8 @@ public class RunJasonFile implements IObjectActionDelegate {
 	
 	@Override
 	public void run(IAction action) {
-		runProject(false);
+		boolean debug = action.getActionDefinitionId().equals("debug"); 
+		runProject(debug);
 	}
 	
     private void runProject(final boolean debug) {

@@ -73,7 +73,7 @@ public class JasonPropertyTester extends PropertyTester {
 					try {
 						String sourceMainFile = Utils.loadFile(mainFile.getLocation().toString());
 						
-						if (sourceMainFile.indexOf("c4jason.CartagoEnvironment") > -1) {
+						if (sourceMainFile.indexOf("c4jason.CartagoEnvironment") > -1 || sourceMainFile.indexOf("JaCaMo") > -1) {
 							return true;
 						}
 						

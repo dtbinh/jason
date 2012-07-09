@@ -54,6 +54,7 @@ public class JasonPerspective implements IPerspectiveFactory {
 		layout.addNewWizardShortcut("jasonide.newAgentWizard");
 		layout.addNewWizardShortcut("jasonide.newArtifactWizard");
 		layout.addNewWizardShortcut("jasonide.newInternalActionWizard");
+		layout.addNewWizardShortcut("jasonide.newAslFileWizard");
 		
 		layout.addNewWizardShortcut("org.eclipse.jdt.ui.wizards.NewPackageCreationWizard");
 		layout.addNewWizardShortcut("org.eclipse.jdt.ui.wizards.NewClassCreationWizard");
