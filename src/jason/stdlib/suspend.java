@@ -72,7 +72,7 @@ public class suspend extends DefaultInternalAction {
     
     boolean suspendIntention = false;
     public static final String SUSPENDED_INT      = "suspended-";
-    public static final String SELF_SUSPENDED_INT = SUSPENDED_INT+"self";
+    public static final String SELF_SUSPENDED_INT = SUSPENDED_INT+"self-";
 
     @Override public int getMinArgs() { return 0; }
     @Override public int getMaxArgs() { return 1; }
@@ -103,8 +103,7 @@ public class suspend extends DefaultInternalAction {
         // use the argument to select the intention to suspend.
         
         Trigger      g = new Trigger(TEOperator.add, TEType.achieve, (Literal)args[0]);
-        String       k = SUSPENDED_INT+g.getLiteral();
-        
+
         // ** Must test in PA/PI first since some actions (as .suspend) put intention in PI
         
         // suspending from Pending Actions
@@ -112,7 +111,7 @@ public class suspend extends DefaultInternalAction {
             Intention i = a.getIntention();
             if (i.hasTrigger(g, un)) {
                 i.setSuspended(true);
-                C.addPendingIntention(k, i);
+                C.addPendingIntention(SUSPENDED_INT+i.getId(), i);
             }
         }
         
@@ -127,7 +126,8 @@ public class suspend extends DefaultInternalAction {
             if (i.hasTrigger(g, un)) {
                 i.setSuspended(true);
                 C.removeIntention(i);
-                C.addPendingIntention(k, i);
+                C.addPendingIntention(SUSPENDED_INT+i.getId(), i);
+                //System.out.println("sus "+g+" from I "+i.getId()+" #"+C.getPendingIntentions().size());
             }
         }
         
@@ -136,19 +136,22 @@ public class suspend extends DefaultInternalAction {
         if (i.hasTrigger(g, un)) {
             suspendIntention = true;
             i.setSuspended(true);
-            C.addPendingIntention(SELF_SUSPENDED_INT, i);
+            C.addPendingIntention(SELF_SUSPENDED_INT+i.getId(), i);
         }
             
         // suspending G in Events
+        int c = 0;
         for (Event e: C.getEvents()) {
             i = e.getIntention();
             if (un.unifies(g, e.getTrigger()) || (i != null && i.hasTrigger(g, un))) {
                 C.removeEvent(e);
-                C.addPendingEvent(k, e);
+                C.addPendingEvent(SUSPENDED_INT+e.getTrigger()+(c++), e);
                 if (i != null)
                     i.setSuspended(true);                
+                //System.out.println("sus "+g+" from E "+e.getTrigger());
             }
             
+
             /*
             if ( i != null && 
                     (i.hasTrigger(g, un) ||       // the goal is in the i's stack of IM

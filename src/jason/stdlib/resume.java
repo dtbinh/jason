@@ -42,11 +42,11 @@ import java.util.Iterator;
   <p>Internal action:
   <b><code>.resume(<i>G</i>)</code></b>.
   
-  <p>Description: resume goals <i>G</i> that was suspended by <code>.suspend</code>.
+  <p>Description: resume goals <i>G</i> that were suspended by <code>.suspend</code>.
 
   <p>Example:<ul> 
 
-  <li> <code>.resume(go(1,3))</code>: resume the goal of go to location 1,3.
+  <li> <code>.resume(go(1,3))</code>: resume the goal of going to location 1,3.
 
   </ul>
 
@@ -93,12 +93,14 @@ public class resume extends DefaultInternalAction {
                     ik.remove();
                     
                     // remove the IA .suspend in case of self-suspend
-                    if (k.equals(suspend.SELF_SUSPENDED_INT))
+                    if (k.startsWith(suspend.SELF_SUSPENDED_INT))
                         i.peek().removeCurrentStep();
                     
                     // add it back in I if not in PA
                     if (! C.getPendingActions().containsKey(i.getId()))
                         C.resumeIntention(i);
+                    
+                    //System.out.println("res "+g+" from I "+i.getId());
                 }
             }
         }
@@ -113,8 +115,9 @@ public class resume extends DefaultInternalAction {
                 if (un.unifies(g, e.getTrigger()) || (i != null && i.hasTrigger(g, un))) {
                     ik.remove();
                     C.addEvent(e);                    
-                    if (i != null)
+                    if (i != null) 
                         i.setSuspended(false);                
+                    //System.out.println("res "+g+" from E "+e.getTrigger());
                 }
             }
         }
