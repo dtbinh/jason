@@ -46,12 +46,13 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -438,7 +439,7 @@ public class RunCentralisedMAS {
         }
     }
     
-    /** creates on thread per agent */
+    /** creates one thread per agent */
     private void createAgsThreads() {
         for (CentralisedAgArch ag : ags.values()) {
             ag.setControlInfraTier(control);
@@ -450,98 +451,95 @@ public class RunCentralisedMAS {
         }        
     }
     
-    private BlockingQueue<Runnable> myAgTasks;
-    private BlockingQueue<Runnable> mySleepAgs;
+    private Set<CentralisedAgArch> sleepingAgs;
+    private ExecutorService executor;
     
     /** creates a pool of threads shared by all agents */
     private void createThreadPool() {
-        myAgTasks  = new LinkedBlockingQueue<Runnable>();
-        mySleepAgs = new LinkedBlockingQueue<Runnable>();
-        
-        // create a thread that
-        // 1. creates the pool
-        // 2. feeds the pool with agent reasoning cycles 
-        new Thread("feed-pool") {
-            public void run() {
-                // initially, add all agents in the tasks
-                for (CentralisedAgArch ag : ags.values()) {
-                    myAgTasks.offer(ag);
-                }
-                
-                // get the max number of threads in the pool
-                int maxthreads = 10;
-                try {
-                    if (project.getInfrastructure().hasParameters()) {
-                        maxthreads = Integer.parseInt(project.getInfrastructure().getParameter(1));
-                        logger.info("Creating a thread pool with "+maxthreads+" thread(s).");
-                    }
-                } catch (Exception e) {
-                    logger.warning("Error getting the number of thread for the pool.");
-                }
+        sleepingAgs = Collections.synchronizedSet(new HashSet<CentralisedAgArch>());
 
-                // define pool size
-                int poolSize = ags.size();
-                if (poolSize > maxthreads) {
-                    poolSize = maxthreads;
-                }
-                
-                // create the pool
-                ExecutorService executor = Executors.newFixedThreadPool(poolSize);
-                
-                // include tasks in the pool
-                while (runner != null) {
-                    try {
-                        executor.execute(myAgTasks.take());
-                        // note that the agent, when finished the cycle,
-                        // add themselves in the myAgTasks queue
-                    } catch (InterruptedException e) { }
-                }
-                executor.shutdownNow();
+        int maxthreads = 10;
+        try {
+            if (project.getInfrastructure().hasParameters()) {
+                maxthreads = Integer.parseInt(project.getInfrastructure().getParameter(1));
+                logger.info("Creating a thread pool with "+maxthreads+" thread(s).");
             }
-        }.start();
+        } catch (Exception e) {
+            logger.warning("Error getting the number of thread for the pool.");
+        }
+
+        // define pool size
+        int poolSize = ags.size();
+        if (poolSize > maxthreads) {
+            poolSize = maxthreads;
+        }
         
-        // create a thread that wakeup the sleeping agents
-        new Thread("wake-sleep-ag") {
+        // create the pool
+        // executor = Executors.newCachedThreadPool(); 
+        executor = Executors.newFixedThreadPool(poolSize);
+
+        // initially, add all agents in the tasks
+        for (CentralisedAgArch ag : ags.values()) {
+            //myAgTasks.offer(ag);
+            executor.execute(ag);
+        }
+
+        /*new Thread("monitor") {
             public void run() {
                 while (runner != null) {
                     try {
-                        Runnable ag = mySleepAgs.poll();
-                        while (ag != null) {
-                            myAgTasks.offer(ag);
-                            ag = mySleepAgs.poll();
-                        }
-                        sleep(2000);
+                        System.out.println("#ag:"+ags.size());
+                        System.out.println("#slepping ags:"+mySleepAgs.size());
+                        try {
+                            ThreadPoolExecutor tp = (ThreadPoolExecutor)executor;
+                            System.out.println("#queue:"+tp.getQueue().size());
+                            System.out.println("#active:"+tp.getActiveCount());
+                        } catch (Exception e) { }
+                        sleep(3000);
                     } catch (InterruptedException e) { }
                 }
             }            
-        }.start();
+        }.start();*/
     }
     
     /** an agent architecture for the infra based on thread pool */
     private final class CentralisedAgArchForPool extends CentralisedAgArch {
-        boolean inSleep;
         
         @Override
-        public void sleep() { 
-            mySleepAgs.offer(this);
-            inSleep = true;
+        public void sleep() {
+            //if (sleepingAgs.contains(this))
+            //    System.out.println("*** ops already slepping "+this);
+            sleepingAgs.add(this);     
         }
 
         @Override
         public void wake() {
-            if (mySleepAgs.remove(this))
-                myAgTasks.offer(this);
+            if (sleepingAgs.remove(this)) {
+                /*try {
+                    ThreadPoolExecutor tp = (ThreadPoolExecutor)executor;
+                    if (tp.getQueue().contains(this)) {
+                        System.out.println("ops... ading ag that is already in the pool "+this);
+                    }
+                } catch (Exception e) { }*/
+                executor.execute(this);
+            }
         }
         
         @Override
+        //synchronized 
         public void run() {
             if (isRunning()) { 
-                inSleep = false;
-                getTS().reasoningCycle();
-                if (!inSleep) 
-                    myAgTasks.offer(this);
+                if (getTS().reasoningCycle()) { // the agent run a cycle (did not enter in sleep)
+                    /*try {
+                        ThreadPoolExecutor tp = (ThreadPoolExecutor)executor;
+                        if (tp.getQueue().contains(this)) {
+                            System.out.println("*** ops... ading ag that is already in the pool "+this);
+                        }
+                    } catch (Exception e) { }*/
+                    executor.execute(this);
+                }
             }
-        }
+        }        
     }
     
     protected void stopAgs() {

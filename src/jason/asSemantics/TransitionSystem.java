@@ -1103,7 +1103,7 @@ public class TransitionSystem {
     /* plus the other parts of the agent architecture besides             */
     /* the actual transition system of the AS interpreter                 */
     /**********************************************************************/
-    public void reasoningCycle() {
+    public boolean reasoningCycle() {
         if (logger.isLoggable(Level.FINE)) logger.fine("Start new reasoning cycle");
         getUserAgArch().reasoningCycleStarting();
         
@@ -1130,13 +1130,13 @@ public class TransitionSystem {
                     C.addExternalEv(PlanLibrary.TE_IDLE);
                 } else {
                     getUserAgArch().sleep();
-                    return;
+                    return false;
                 }
             }
             
             step = State.StartRC;
             do {
-                if (!getUserAgArch().isRunning()) return;
+                if (!getUserAgArch().isRunning()) return false;
                 applySemanticRule();
             } while (step != State.StartRC);
 
@@ -1151,6 +1151,8 @@ public class TransitionSystem {
             logger.log(Level.SEVERE, "*** ERROR in the transition system. "+conf.C+"\nCreating a new C!", e);
             conf.C.create();
         }
+        
+        return true;
     }
 
     // Auxiliary functions

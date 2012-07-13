@@ -321,9 +321,9 @@ public class Environment {
         return c;
     }
     
-    @SuppressWarnings("unchecked")
     public boolean containsPercept(String agName, Literal per) {
         if (per != null && agName != null) {
+            @SuppressWarnings("rawtypes")
             List agl = (List)agPercepts.get(agName);
             if (agl != null) {
                 return agl.contains(per);

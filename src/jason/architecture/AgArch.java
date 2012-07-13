@@ -52,7 +52,7 @@ import java.util.logging.Level;
  *  
  * Users can customise the architecture by overriding some methods of this class.
  */
-public class AgArch implements AgArchInfraTier {
+public class AgArch implements AgArchInfraTier, Comparable<AgArch> {
 
     private TransitionSystem ts = null;
 
@@ -265,5 +265,26 @@ public class AgArch implements AgArchInfraTier {
     public int getCycleNumber() {
         return cycleNumber;
     }
+
+    @Override
+    public String toString() {
+        return "arch-"+getAgName();
+    }
     
+    @Override
+    public int hashCode() {
+        return getAgName().hashCode();
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) return false;
+        if (obj == this) return true;
+        if (obj instanceof AgArch) return this.getAgName().equals(((AgArch)obj).getAgName());
+        return false;
+    }
+
+    public int compareTo(AgArch o) {
+        return getAgName().compareTo(o.getAgName());
+    }
 }

@@ -11,7 +11,7 @@ Change run task to allocate more memory.
                     June 24, 2011 - 10:32:24
 -->
 
-<project name   ="game_of_life"
+<project name   ="game_of_life-custom"
          basedir=".."
          default="run">
 
