@@ -4,22 +4,23 @@
       label="Jasonide_feature"
       version="1.0.7.qualifier">
 
-   <description url="http://www.example.com/description">
+   <description url="http://jason.sf.net">
       Jason is an interpreter for an extended version of AgentSpeak
 First release: December 2003.
-Jason is distributed under LGPL (see file LICENSE in the Jason directory).
-
-For more information, please read doc/index.html in the Jason directory.
-
+Jason is distributed under LGPL (see file LICENSE in the Jason
+directory).
+For more information, please read doc/index.html in the Jason
+directory.
 Thank you for your interest in Jason!
    </description>
 
-   <copyright url="http://www.example.com/copyright">
+   <copyright>
       Copyright (C) 2003  Rafael H. Bordini, Jomi F. Hubner, et al.
-Jason is distributed under LGPL. See file LGPL.txt in the Jason directory.
+Jason is distributed under LGPL. See file LGPL.txt in the Jason
+directory.
    </copyright>
 
-   <license url="http://www.example.com/license">
+   <license url="">
       Copyright (C) 2003  Rafael H. Bordini, Jomi F. Hubner, et al.
 Jason is distributed under LGPL. See file LGPL.txt in the Jason directory.
 
