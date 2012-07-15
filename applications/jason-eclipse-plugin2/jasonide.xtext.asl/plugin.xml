@@ -11,10 +11,4 @@
 	
   </extension>
 
-
-   <requires>
-      <import plugin="org.eclipse.xtext"/>
-   </requires>
-
-
 </plugin>

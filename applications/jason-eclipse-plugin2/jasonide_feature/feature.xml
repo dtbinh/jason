@@ -48,7 +48,6 @@ http://www.das.ufsc.br/~jomi
       <import plugin="org.eclipse.xtext.util"/>
       <import plugin="org.eclipse.xtext.common.types"/>
       <import plugin="org.eclipse.xtext.xbase.lib"/>
-      <import plugin="org.eclipse.xtext.xtend2.lib"/>
       <import plugin="org.eclipse.xtext.ui"/>
       <import plugin="org.eclipse.xtext.ui.shared"/>
       <import plugin="org.eclipse.xtext.builder"/>
@@ -116,6 +115,14 @@ http://www.das.ufsc.br/~jomi
          download-size="0"
          install-size="0"
          version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.xtext.logging"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
          unpack="false"/>
 
 </feature>
