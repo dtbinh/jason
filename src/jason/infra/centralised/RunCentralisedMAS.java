@@ -526,7 +526,6 @@ public class RunCentralisedMAS {
         }
         
         @Override
-        //synchronized 
         public void run() {
             if (isRunning()) { 
                 if (getTS().reasoningCycle()) { // the agent run a cycle (did not enter in sleep)

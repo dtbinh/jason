@@ -42,6 +42,8 @@ import java.awt.event.WindowEvent;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -291,7 +293,8 @@ public class ExecutionControlGUI extends ExecutionControl {
 
     void setListOfAgsFromInfra() {
         try {
-            for (String ag: getExecutionControlInfraTier().getRuntimeServices().getAgentsNames()) {
+            Set<String> ags = new TreeSet<String>(getExecutionControlInfraTier().getRuntimeServices().getAgentsNames());
+            for (String ag: ags) { //getExecutionControlInfraTier().getRuntimeServices().getAgentsNames()) {
                 listModel.addElement(ag);
             }
         } catch (Exception e) {

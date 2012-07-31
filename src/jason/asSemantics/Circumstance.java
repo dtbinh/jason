@@ -33,7 +33,6 @@ import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -51,7 +50,7 @@ public class Circumstance implements Serializable {
     private Queue<Event>               E;
     private Queue<Intention>           I;
     protected ActionExec               A;
-    protected Queue<Message>           MB;
+    private Queue<Message>             MB;
     protected List<Option>             RP;
     protected List<Option>             AP;
     protected Event                    SE;
@@ -78,7 +77,7 @@ public class Circumstance implements Serializable {
         // use LinkedList since we use a lot of remove(0) in selectEvent
         E  = new ConcurrentLinkedQueue<Event>();
         I  = new ConcurrentLinkedQueue<Intention>();
-        MB = new LinkedList<Message>();
+        MB = new ConcurrentLinkedQueue<Message>();
         PA = new ConcurrentHashMap<Integer, ActionExec>();
         PI = new ConcurrentHashMap<String, Intention>();
         PE = new ConcurrentHashMap<String, Event>();
@@ -200,6 +199,14 @@ public class Circumstance implements Serializable {
 
     public Queue<Message> getMailBox() {
         return MB;
+    }
+    
+    public void addMsg(Message m) {
+        MB.offer(m);
+    }
+    
+    public boolean hasMsg() {
+        return !MB.isEmpty();
     }
 
     /** Intentions */
@@ -553,9 +560,9 @@ public class Circumstance implements Serializable {
         Element e;
 
         // MB
-        if (getMailBox() != null && !getMailBox().isEmpty()) {
+        if (MB != null && hasMsg()) {
             Element ms = (Element) document.createElement("mailbox");
-            for (Message m: getMailBox()) {
+            for (Message m: MB) {
                 e = (Element) document.createElement("message");
                 e.appendChild(document.createTextNode(m.toString()));
                 ms.appendChild(e);

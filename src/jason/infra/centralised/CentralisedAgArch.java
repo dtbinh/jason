@@ -29,6 +29,7 @@ import jason.architecture.AgArch;
 import jason.architecture.MindInspectorAgArch;
 import jason.asSemantics.ActionExec;
 import jason.asSemantics.Agent;
+import jason.asSemantics.Circumstance;
 import jason.asSemantics.Message;
 import jason.asSemantics.TransitionSystem;
 import jason.asSyntax.Literal;
@@ -245,7 +246,7 @@ public class CentralisedAgArch extends AgArch implements Runnable {
         if (m.getSender() == null)  m.setSender(getAgName());
         
         CentralisedAgArch rec = masRunner.getAg(m.getReceiver());
-        
+            
         if (rec == null) {
             if (isRunning())
                 throw new ReceiverNotFoundException("Receiver '" + m.getReceiver() + "' does not exists! Could not send " + m);
@@ -276,11 +277,12 @@ public class CentralisedAgArch extends AgArch implements Runnable {
 
     // Default procedure for checking messages, move message from local mbox to C.mbox
     public void checkMail() {
-        Queue<Message> tsmb = getTS().getC().getMailBox();
-        while (!mbox.isEmpty()) {
-            Message im = mbox.poll();
-            tsmb.offer(im);
+        Circumstance C = getTS().getC();
+        Message im = mbox.poll();
+        while (im != null) {
+            C.addMsg(im);
             if (logger.isLoggable(Level.FINE)) logger.fine("received message: " + im);
+            im = mbox.poll();
         }
     }
 

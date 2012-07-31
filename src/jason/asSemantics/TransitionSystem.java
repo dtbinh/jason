@@ -219,8 +219,8 @@ public class TransitionSystem {
 
     private void applyProcMsg() throws JasonException {
         confP.step = State.SelEv;
-        if (!conf.C.MB.isEmpty()) {
-            Message m = conf.ag.selectMessage(conf.C.MB);
+        if (conf.C.hasMsg()) {
+            Message m = conf.ag.selectMessage(conf.C.getMailBox());
             if (m == null) return;
             
             // get the content, it can be any term (literal, list, number, ...; see ask)
@@ -296,6 +296,9 @@ public class TransitionSystem {
                     String sender = m.getSender();
                     if (sender.equals(getUserAgArch().getAgName()))
                         sender = "self";
+                    if (m.getIlForce().equals("achieve") && content.isLiteral()) {
+                        updateEvents(new Event(new Trigger(TEOperator.add, TEType.achieve, (Literal)content), Intention.EmptyInt));
+                    } else {
                     Literal received = new LiteralImpl("kqml_received").addTerms(
                             new Atom(sender),
                             new Atom(m.getIlForce()),
@@ -303,6 +306,7 @@ public class TransitionSystem {
                             new Atom(m.getMsgId()));
     
                     updateEvents(new Event(new Trigger(TEOperator.add, TEType.achieve, received), Intention.EmptyInt));
+                    }
                 } else {
                     logger.fine("Ignoring message "+m+" because it is received after the timeout.");
                 }
@@ -1080,10 +1084,10 @@ public class TransitionSystem {
     }
         
     public boolean canSleep() {
-        return    (C.isAtomicIntentionSuspended() && conf.C.MB.isEmpty())               
+        return    (C.isAtomicIntentionSuspended() && !conf.C.hasMsg())               
                || (!conf.C.hasEvent() && !conf.C.hasIntention() && 
                    !conf.C.hasFeedbackAction() &&
-                   conf.C.MB.isEmpty() && 
+                   !conf.C.hasMsg() && 
                    //taskForBeginOfCycle.isEmpty() &&
                    getUserAgArch().canSleep());
     }
