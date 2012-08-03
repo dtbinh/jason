@@ -14,9 +14,9 @@
 +!kqml_received(Sender, tell, Content, _) 
    :  .literal(Content) & 
       .ground(Content) &
-      not .list(Content)
-   <- .add_nested_source(Content, Sender, CA); 
-      +CA.
+      not .list(Content) & 
+      .add_nested_source(Content, Sender, CA)
+   <- +CA.
 @kqmlReceivedTellList
 +!kqml_received(Sender, tell, Content, _) 
    :  .list(Content)
@@ -47,9 +47,8 @@
 
 @kqmlReceivedAchieve
 +!kqml_received(Sender, achieve, Content, _)
-    : not .list(Content)
-   <- .add_nested_source(Content, Sender, CA); 
-      !!CA.
+    : not .list(Content) & .add_nested_source(Content, Sender, CA)
+   <- !!CA.
 @kqmlReceivedAchieveList
 +!kqml_received(Sender, achieve, Content, _)
     : .list(Content)

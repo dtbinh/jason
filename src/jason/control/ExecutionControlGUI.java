@@ -178,6 +178,21 @@ public class ExecutionControlGUI extends ExecutionControl {
                 showAgState();
             }            
         });
+        
+        /*
+        JButton jBtRefresh = new JButton("Show extra info");
+        jBtRefresh.setEnabled(true);
+        jBtRefresh.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                agsHistory.clear();
+                showAgState();
+                System.out.println("***"+RunCentralisedMAS.getRunner().sleepingAgs);
+                for (CentralisedAgArch ar: RunCentralisedMAS.getRunner().sleepingAgs) {
+                    System.out.println(ar+":"+ar.canSleep());
+                }
+            }
+        });*/
+        
 
         jTA = new JTextPane();
         jTA.setEditable(false);
@@ -251,6 +266,7 @@ public class ExecutionControlGUI extends ExecutionControl {
         pButtons.add(jCbWho);
         pButtons.add(new JLabel("        view as:"));
         pButtons.add(jCbViewAs);
+        //pButtons.add(jBtRefresh);
 
         JSplitPane splitPaneHor = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         splitPaneHor.setTopComponent(spList);

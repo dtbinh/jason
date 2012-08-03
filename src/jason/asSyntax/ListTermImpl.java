@@ -609,7 +609,7 @@ public class ListTermImpl extends Structure implements ListTerm {
         return getLast().append(o) != null;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public boolean addAll(Collection c) {
         if (c == null) return false;
         ListTerm lt = this; // where to add
@@ -620,7 +620,7 @@ public class ListTermImpl extends Structure implements ListTerm {
         return true;
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public boolean addAll(int index, Collection c) {
         Iterator<Term> i = c.iterator();
         int p = index;
@@ -644,7 +644,7 @@ public class ListTermImpl extends Structure implements ListTerm {
         return false;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public boolean containsAll(Collection c) {
         boolean r = true;
         Iterator<Term> i = c.iterator();
@@ -762,7 +762,7 @@ public class ListTermImpl extends Structure implements ListTerm {
         return false;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes" })
     public boolean removeAll(Collection c) {
         boolean r = true;
         Iterator i = c.iterator();
@@ -772,7 +772,7 @@ public class ListTermImpl extends Structure implements ListTerm {
         return r;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes" })
     public boolean retainAll(Collection c) {
         boolean r = true;
         Iterator i = iterator();

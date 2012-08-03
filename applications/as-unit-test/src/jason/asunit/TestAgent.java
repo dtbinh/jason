@@ -4,7 +4,6 @@ import static org.junit.Assert.fail;
 import jason.JasonException;
 import jason.RevisionFailedException;
 import jason.asSemantics.Agent;
-import jason.asSemantics.Circumstance;
 import jason.asSemantics.Event;
 import jason.asSemantics.Intention;
 import jason.asSemantics.TransitionSystem;
@@ -17,7 +16,6 @@ import jason.asSyntax.Trigger;
 import jason.asSyntax.parser.ParseException;
 import jason.bb.BeliefBase;
 import jason.infra.centralised.RunCentralisedMAS;
-import jason.runtime.Settings;
 
 import java.io.StringReader;
 import java.util.logging.Level;
@@ -41,7 +39,7 @@ public class TestAgent extends Agent {
                 arch = new TestArch();
             else
                 arch = new TestArch(agName);
-            new TransitionSystem(this, new Circumstance(), new Settings(), arch);
+            new TransitionSystem(this, null, null, arch);
             arch.insertAgArch(arch);
             initAg(); 
         } catch (Exception e) {

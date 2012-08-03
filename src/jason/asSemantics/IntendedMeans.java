@@ -118,8 +118,10 @@ public class IntendedMeans implements Serializable {
     public Object clone() {
         IntendedMeans c = new IntendedMeans();
         c.unif     = this.unif.clone();
-        c.planBody = this.planBody.clonePB();
+        if (this.planBody != null)
+            c.planBody = this.planBody.clonePB();
         c.trigger  = this.trigger.clone(); 
+        c.plan     = this.plan;
         return c;
     }
     

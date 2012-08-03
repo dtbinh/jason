@@ -475,12 +475,10 @@ public class RunCentralisedMAS {
         }
         
         // create the pool
-        // executor = Executors.newCachedThreadPool(); 
         executor = Executors.newFixedThreadPool(poolSize);
 
         // initially, add all agents in the tasks
         for (CentralisedAgArch ag : ags.values()) {
-            //myAgTasks.offer(ag);
             executor.execute(ag);
         }
 
@@ -500,10 +498,29 @@ public class RunCentralisedMAS {
                 }
             }            
         }.start();*/
+        
+        /*
+        new Thread("wakeup") {
+            public void run() {
+                while (runner != null) {
+                    try {
+                        sleep(1000);
+                        for (CentralisedAgArch ar: sleepingAgs) {
+                            if (!ar.getTS().canSleep())
+                                ar.wake();
+                        }
+                    } catch (Exception e) { 
+                        System.out.println("**");
+                    }
+                }
+            }            
+        }.start();*/
     }
     
     /** an agent architecture for the infra based on thread pool */
     private final class CentralisedAgArchForPool extends CentralisedAgArch {
+
+        boolean runWakeAfterTS = false;
         
         @Override
         public void sleep() {
@@ -513,21 +530,33 @@ public class RunCentralisedMAS {
         }
 
         @Override
-        public void wake() {
+        public void wake() {                
             if (sleepingAgs.remove(this)) {
                 /*try {
                     ThreadPoolExecutor tp = (ThreadPoolExecutor)executor;
                     if (tp.getQueue().contains(this)) {
                         System.out.println("ops... ading ag that is already in the pool "+this);
                     }
-                } catch (Exception e) { }*/
+                } catch (Exception e) { }*/                
                 executor.execute(this);
+            } else {
+                runWakeAfterTS = true;
             }
         }
+        
+        /*@Override
+        public void receiveMsg(final Message m) {
+            executor.execute(new Runnable() {                
+                public void run() {
+                    CentralisedAgArchForPool.super.receiveMsg(m);
+                }
+            });
+        }*/
         
         @Override
         public void run() {
             if (isRunning()) { 
+                runWakeAfterTS = false;
                 if (getTS().reasoningCycle()) { // the agent run a cycle (did not enter in sleep)
                     /*try {
                         ThreadPoolExecutor tp = (ThreadPoolExecutor)executor;
@@ -536,6 +565,8 @@ public class RunCentralisedMAS {
                         }
                     } catch (Exception e) { }*/
                     executor.execute(this);
+                } else if (runWakeAfterTS) {
+                    wake();
                 }
             }
         }        

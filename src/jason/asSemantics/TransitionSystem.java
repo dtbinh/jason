@@ -38,25 +38,25 @@ import jason.asSyntax.LogicalFormula;
 import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Plan;
 import jason.asSyntax.PlanBody;
+import jason.asSyntax.PlanBody.BodyType;
 import jason.asSyntax.PlanLibrary;
 import jason.asSyntax.StringTermImpl;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 import jason.asSyntax.Trigger;
-import jason.asSyntax.VarTerm;
-import jason.asSyntax.PlanBody.BodyType;
 import jason.asSyntax.Trigger.TEOperator;
 import jason.asSyntax.Trigger.TEType;
+import jason.asSyntax.VarTerm;
 import jason.asSyntax.parser.ParseException;
 import jason.bb.BeliefBase;
 import jason.runtime.Settings;
+import jason.stdlib.add_nested_source;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -87,16 +87,18 @@ public class TransitionSystem {
     
     public TransitionSystem(Agent a, Circumstance c, Settings s, AgArch ar) {
         ag     = a;
-        C      = c;
         agArch = ar;
-
+        
         if (s == null)
             setts = new Settings();
         else
             setts = s;
 
-        if (C == null)
+        if (c == null)
             C = new Circumstance();
+        else
+            C = c;
+        C.setTS(this);
         
         // we need to initialise this "aliases"
         conf = confP = this;
@@ -145,19 +147,19 @@ public class TransitionSystem {
         CircumstanceListener cl = new CircumstanceListener() {
             
             public void intentionDropped(Intention i) {
-                for (IntendedMeans im: i.getIMs()) 
+                for (IntendedMeans im: i) //.getIMs()) 
                     if (im.getTrigger().isAddition() && im.getTrigger().isGoal()) 
                         gl.goalFinished(im.getTrigger());                         
             }
             
             public void intentionSuspended(Intention i, String reason) {
-                for (IntendedMeans im: i.getIMs()) 
+                for (IntendedMeans im: i) //.getIMs()) 
                     if (im.getTrigger().isAddition() && im.getTrigger().isGoal()) 
                         gl.goalSuspended(im.getTrigger(), reason);                         
             }
             
             public void intentionResumed(Intention i) {
-                for (IntendedMeans im: i.getIMs()) 
+                for (IntendedMeans im: i) //.getIMs()) 
                     if (im.getTrigger().isAddition() && im.getTrigger().isGoal()) 
                         gl.goalResumed(im.getTrigger());                         
             }
@@ -296,16 +298,28 @@ public class TransitionSystem {
                     String sender = m.getSender();
                     if (sender.equals(getUserAgArch().getAgName()))
                         sender = "self";
-                    if (m.getIlForce().equals("achieve") && content.isLiteral()) {
-                        updateEvents(new Event(new Trigger(TEOperator.add, TEType.achieve, (Literal)content), Intention.EmptyInt));
-                    } else {
-                    Literal received = new LiteralImpl("kqml_received").addTerms(
-                            new Atom(sender),
-                            new Atom(m.getIlForce()),
-                            content,
-                            new Atom(m.getMsgId()));
-    
-                    updateEvents(new Event(new Trigger(TEOperator.add, TEType.achieve, received), Intention.EmptyInt));
+                    
+                    boolean added = false;
+                    if (!setts.isSync() && !ag.getPL().hasUserKqmlReceivedPlans() && content.isLiteral() && !content.isList()) { // optimisation to jump kqmlPlans
+                        if (m.getIlForce().equals("achieve") ) {                             
+                            content = add_nested_source.addAnnotToList(content, new Atom(sender));
+                            updateEvents(new Event(new Trigger(TEOperator.add, TEType.achieve, (Literal)content), Intention.EmptyInt));
+                            added = true;                            
+                        } else if (m.getIlForce().equals("tell") ) {
+                            content = add_nested_source.addAnnotToList(content, new Atom(sender));
+                            getAg().addBel((Literal)content);
+                            added = true;
+                        }
+                    } 
+                    
+                    if (!added) {
+                        Literal received = new LiteralImpl(Message.kqmlReceivedFunctor).addTerms(
+                                new Atom(sender),
+                                new Atom(m.getIlForce()),
+                                content,
+                                new Atom(m.getMsgId()));
+                        
+                        updateEvents(new Event(new Trigger(TEOperator.add, TEType.achieve, received), Intention.EmptyInt));
                     }
                 } else {
                     logger.fine("Ignoring message "+m+" because it is received after the timeout.");
@@ -495,7 +509,7 @@ public class TransitionSystem {
                         
                         if (hasGoalListener())
                             for (GoalListener gl: getGoalListeners())
-                                for (IntendedMeans im: confP.C.SI.getIMs())
+                                for (IntendedMeans im: confP.C.SI) //.getIMs())
                                     gl.goalResumed(im.getTrigger());
                     } else {
                         String reason = a.getFailureMsg();
@@ -664,14 +678,14 @@ public class TransitionSystem {
         // Rule Achieve
         case achieve:
             body = prepareBodyForEvent(body, u);
-            Event evt = conf.C.addAchvGoal(body, conf.C.SI);
+            conf.C.addAchvGoal(body, conf.C.SI);
             confP.step = State.StartRC;
             break;
 
         // Rule Achieve as a New Focus (the !! operator)
         case achieveNF:
             body = prepareBodyForEvent(body, u);
-            evt  = conf.C.addAchvGoal(body, Intention.EmptyInt);
+            conf.C.addAchvGoal(body, Intention.EmptyInt);
             updateIntention();
             break;
 
@@ -687,7 +701,7 @@ public class TransitionSystem {
                     body = prepareBodyForEvent(body, u);
                     if (body.isLiteral()) { // in case body is a var with content that is not a literal (note the VarTerm pass in the instanceof Literal)
                         Trigger te = new Trigger(TEOperator.add, TEType.test, body);
-                        evt = new Event(te, conf.C.SI);
+                        Event evt = new Event(te, conf.C.SI);
                         if (ag.getPL().hasCandidatePlan(te)) {
                             if (logger.isLoggable(Level.FINE)) logger.fine("Test Goal '" + h + "' failed as simple query. Generating internal event for it: "+te);
                             conf.C.addEvent(evt);
@@ -823,7 +837,7 @@ public class TransitionSystem {
             }
             
             // if has finished a failure handling IM ...
-            if (im.getTrigger().isGoal() && !im.getTrigger().isAddition() && i.size() > 0) {
+            if (im.getTrigger().isGoal() && !im.getTrigger().isAddition() && !i.isFinished()) {//i.size() > 0) {
                 // needs to get rid of the IM until a goal that
                 // has failure handling. E.g,
                 //   -!b
@@ -837,7 +851,7 @@ public class TransitionSystem {
                 if (im.isFinished() || !im.unif.unifies(im.getCurrentStep().getBodyTerm(), topLiteral) || im.getCurrentStep().getBodyTerm() instanceof VarTerm) {
                     im = i.pop(); // +!c above
                 }
-                while (i.size() > 0 &&
+                while (!i.isFinished() && //i.size() > 0 &&
                        !im.unif.unifies(im.getTrigger().getLiteral(), topLiteral) &&
                        !im.unif.unifies(im.getCurrentStep().getBodyTerm(), topLiteral)) {
                     im = i.pop();
@@ -938,8 +952,7 @@ public class TransitionSystem {
     /** remove the top action and requeue the current intention */
     private void updateIntention() {
         if (!conf.C.SI.isFinished()) {
-            IntendedMeans im = conf.C.SI.peek();
-            im.removeCurrentStep();
+            conf.C.SI.peek().removeCurrentStep();
             confP.C.addIntention(conf.C.SI);
         } else {
             logger.fine("trying to update a finished intention!");
@@ -979,7 +992,7 @@ public class TransitionSystem {
         else if (setts.requeue()) {
             // get the external event (or the one that started
             // the whole focus of attention) and requeue it
-            im = i.get(0);
+            im = i.peek(); //get(0);
             confP.C.addExternalEv(im.getTrigger());
         } else {
             logger.warning("Could not finish intention: " + i + "\tTrigger: " + failEvent.getTrigger());
@@ -1029,12 +1042,12 @@ public class TransitionSystem {
     public Event findEventForFailure(Intention i, Trigger tevent) {
         Trigger failTrigger = new Trigger(TEOperator.del, tevent.getType(), tevent.getLiteral());
         if (i != Intention.EmptyInt) {
-            ListIterator<IntendedMeans> ii = i.iterator();
-            while (!getAg().getPL().hasCandidatePlan(failTrigger) && ii.hasPrevious()) {
+            Iterator<IntendedMeans> ii = i.iterator();
+            while (!getAg().getPL().hasCandidatePlan(failTrigger) && ii.hasNext()) {
                 // TODO: pop IM until +!g or *!g (this TODO is valid only if meta events are pushed on top of the intention)
                 // If *!g is found first, no failure event
                 // - while popping, if some meta event (* > !) is in the stack, stop and simple pop instead of producing an failure event
-                IntendedMeans im = ii.previous();
+                IntendedMeans im = ii.next();
                 tevent = im.getTrigger();
                 failTrigger = new Trigger(TEOperator.del, tevent.getType(), tevent.getLiteral());
             }
@@ -1107,9 +1120,38 @@ public class TransitionSystem {
     /* plus the other parts of the agent architecture besides             */
     /* the actual transition system of the AS interpreter                 */
     /**********************************************************************/
+    //Circumstance pc1, pc2, pc3, pc4;
+    
     public boolean reasoningCycle() {
         if (logger.isLoggable(Level.FINE)) logger.fine("Start new reasoning cycle");
         getUserAgArch().reasoningCycleStarting();
+        
+        /* used to find bugs (ignore)
+        int is = C.getIntentions().size();
+        int es = C.getEvents().size();
+        if (is+es != 4) {
+            logger.info("1****"+is+" "+es);
+            logger.info(C.toString());
+            try {
+                logger.info("======"+applyClrInt(C.SI));
+                logger.info("======"+C.SI.isFinished());
+                logger.info("======"+C.SI.getB());
+                //logger.info(""+getAg().getPL());
+            } catch (JasonException e) {
+                e.printStackTrace();
+            }
+            logger.info("old 1"+pc1.toString());
+            logger.info("old 2"+pc2.toString());
+            logger.info("old 3"+pc3.toString());
+            logger.info("old 4"+pc4.toString());
+            System.exit(0);
+            return false;
+        }
+
+        pc4 = pc3;
+        pc3 = pc2;
+        pc2 = pc1;
+        pc1 = C.clone();*/
         
         try {
             C.reset();

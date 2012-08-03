@@ -26,6 +26,7 @@ package jason.asSyntax;
 
 
 import jason.JasonException;
+import jason.asSemantics.Message;
 import jason.asSyntax.Trigger.TEOperator;
 import jason.asSyntax.Trigger.TEType;
 import jason.asSyntax.parser.ParseException;
@@ -36,6 +37,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -62,8 +64,10 @@ public class PlanLibrary implements Iterable<Plan> {
     
     private boolean hasMetaEventPlans = false; 
     
-    private static int lastPlanLabel = 0;
+    private static AtomicInteger lastPlanLabel = new AtomicInteger(0);
 
+    private boolean hasUserKqmlReceived = false;
+    
     //private Logger logger = Logger.getLogger(PlanLibrary.class.getName());  
     
     /** 
@@ -168,6 +172,12 @@ public class PlanLibrary implements Iterable<Plan> {
         // add self source
         if (!p.getLabel().hasSource()) 
             p.getLabel().addAnnot(BeliefBase.TSelf);
+        
+        if (p.getTrigger().getLiteral().getFunctor().equals(Message.kqmlReceivedFunctor)) {
+            if (! (p.getSrcInfo() != null && "kqmlPlans.asl".equals(p.getSrcInfo().getSrcFile()))) {
+                hasUserKqmlReceived = true;
+            }
+        }
 
         p.setAsPlanTerm(false); // it is not a term anymore
 
@@ -226,12 +236,16 @@ public class PlanLibrary implements Iterable<Plan> {
     public boolean hasMetaEventPlans() {
         return hasMetaEventPlans; 
     }
+    
+    public boolean hasUserKqmlReceivedPlans() {
+        return hasUserKqmlReceived;
+    }
 
     /** add a label to the plan */
     private Pred getUniqueLabel() {
         String l;
         do {
-            l = "l__" + (lastPlanLabel++);
+            l = "l__" + (lastPlanLabel.incrementAndGet());
         } while (planLabels.keySet().contains(l));
         return new Pred(l);
     }

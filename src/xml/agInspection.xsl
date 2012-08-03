@@ -265,6 +265,9 @@
             <td valign="top">
                 <table cellspacing="0" cellpadding="2">
                     <xsl:apply-templates />
+                    <xsl:if test="@finished = 'true'">
+                        <b> (finished)</b>
+                    </xsl:if>
                 </table>
                 <hr/>
             </td>

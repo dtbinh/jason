@@ -37,6 +37,7 @@ import jason.asSyntax.Trigger;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
   <p>Internal action: <b><code>.at</code></b>.
@@ -128,7 +129,7 @@ public class at extends DefaultInternalAction {
         return true;
     }
     
-    private static int idCount = 0;
+    private static AtomicInteger idCount = new AtomicInteger(0);
     private Map<Integer,CheckDeadline> ats = new ConcurrentHashMap<Integer,CheckDeadline>();
     
     public void cancelAts() {
@@ -143,8 +144,7 @@ public class at extends DefaultInternalAction {
         private boolean cancelled = false;
         
         public CheckDeadline(Trigger te, TransitionSystem ts) {
-            idCount++;
-            this.id = idCount;
+            this.id = idCount.incrementAndGet();
             this.event = new Event(te, Intention.EmptyInt);
             this.ts = ts;
             ats.put(id, this);

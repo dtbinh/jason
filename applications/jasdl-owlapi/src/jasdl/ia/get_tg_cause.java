@@ -48,7 +48,7 @@ public class get_tg_cause extends DefaultInternalAction {
             
             Trigger te;
             try{
-                IntendedMeans cause = ts.getC().getSelectedIntention().getIMs().peek();     
+                IntendedMeans cause = ts.getC().getSelectedIntention().peek();     
                 te = cause.getPlan().getTrigger();  // Test within plan body, use intended means
             }catch(NullPointerException noIM){
                 te = ts.getC().getSelectedEvent().getTrigger(); // Test within context, no intended means, use event instead

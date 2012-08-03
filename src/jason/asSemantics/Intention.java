@@ -31,8 +31,10 @@ import jason.asSyntax.Term;
 import jason.asSyntax.Trigger;
 
 import java.io.Serializable;
-import java.util.ListIterator;
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -45,22 +47,24 @@ import org.w3c.dom.Element;
  * 
  * @author Jomi & Rafael
  */
-public class Intention implements Serializable, Comparable<Intention> {
+public class Intention implements Serializable, Comparable<Intention>, Iterable<IntendedMeans> {
 
     private static final long serialVersionUID = 1L;
     public  static final Intention EmptyInt = null;
-    private static       int idCount = 0;
+    private static AtomicInteger idCount = new AtomicInteger(0);
 
     private int     id;
     private int     atomicCount    = 0; // how many atomic intended means there are in the intention
     private boolean isSuspended = false;
     
-    private Stack<IntendedMeans> intendedMeans = new Stack<IntendedMeans>();
-
+    private Deque<IntendedMeans> intendedMeans = new ArrayDeque<IntendedMeans>();
+    
+    //private Trigger initialTrigger = null; // just for adicional information/debug (not really necessary)
+    
     //static private Logger logger = Logger.getLogger(Intention.class.getName());
 
     public Intention() {
-        id = ++idCount;
+        id = idCount.incrementAndGet();
     }
 
     public int getId() {
@@ -71,14 +75,12 @@ public class Intention implements Serializable, Comparable<Intention> {
         intendedMeans.push(im);
         if (im.isAtomic()) 
             atomicCount++;
+        //if (initialTrigger == null)
+        //    initialTrigger = im.getTrigger();
     }
-
+    
     public IntendedMeans peek() {
         return intendedMeans.peek();
-    }
-
-    public IntendedMeans get(int index) {
-        return intendedMeans.get(index);
     }
 
     public IntendedMeans pop() {
@@ -100,13 +102,13 @@ public class Intention implements Serializable, Comparable<Intention> {
         return atomicCount > 0;
     }
     
-    public void setAtomic(int a) { // used for test
+    public void setAtomic(int a) { // used for testing
         atomicCount = a;
     }
     
 
-    public ListIterator<IntendedMeans> iterator() {
-        return intendedMeans.listIterator(intendedMeans.size());
+    public Iterator<IntendedMeans> iterator() {
+        return intendedMeans.iterator(); 
     }
 
     public boolean isFinished() {
@@ -123,10 +125,6 @@ public class Intention implements Serializable, Comparable<Intention> {
     
     public boolean isSuspended() {
         return isSuspended;
-    }
-    
-    public Stack<IntendedMeans> getIMs() {
-        return intendedMeans;
     }
     
     /** returns the IntendedMeans with TE = g, returns null if there isn't one */
@@ -163,8 +161,6 @@ public class Intention implements Serializable, Comparable<Intention> {
     
     /** implements atomic intentions > not atomic intentions */
     public int compareTo(Intention o) {
-        //if (o.isAtomic() && !this.isAtomic()) return 1;
-        //if (this.isAtomic() && !o.isAtomic()) return -1;
         if (o.atomicCount > this.atomicCount) return 1;
         if (this.atomicCount > o.atomicCount) return -1;
         return 0;
@@ -185,7 +181,7 @@ public class Intention implements Serializable, Comparable<Intention> {
         Intention i = new Intention();
         i.id = id;
         i.atomicCount = atomicCount;
-        i.intendedMeans = new Stack<IntendedMeans>();
+        i.intendedMeans = new ArrayDeque<IntendedMeans>();
         for (IntendedMeans im: intendedMeans) {
             i.intendedMeans.add((IntendedMeans)im.clone());
         }
@@ -193,11 +189,11 @@ public class Intention implements Serializable, Comparable<Intention> {
     }
         
     public String toString() {
-        StringBuilder s = new StringBuilder();
-        ListIterator<IntendedMeans> i = intendedMeans.listIterator(intendedMeans.size());
-        while (i.hasPrevious()) {
-            s.append("    " + i.previous() + "\n");
-        }
+        StringBuilder s = new StringBuilder("intention "+id+": ");
+        for (IntendedMeans im: intendedMeans)
+            s.append("    " + im + "\n");
+        if (isFinished())
+            s.append("<finished intention>");
         return s.toString();
     }
 
@@ -205,10 +201,8 @@ public class Intention implements Serializable, Comparable<Intention> {
         Structure intention = new Structure("intention");
         intention.addTerm(new NumberTermImpl(getId()));
         ListTerm lt = new ListTermImpl();
-        ListIterator<IntendedMeans> i = intendedMeans.listIterator(intendedMeans.size());
-        while (i.hasPrevious()) {
-            lt.add(i.previous().getAsTerm());            
-        }
+        for (IntendedMeans im: intendedMeans)
+            lt.add(im.getAsTerm());
         intention.addTerm(lt);
         return intention;        
     }
@@ -217,10 +211,12 @@ public class Intention implements Serializable, Comparable<Intention> {
     public Element getAsDOM(Document document) {
         Element eint = (Element) document.createElement("intention");
         eint.setAttribute("id", id + "");
-        for (int i = intendedMeans.size() - 1; i >= 0; i--) {
-            IntendedMeans im = (IntendedMeans) intendedMeans.get(i);
+        for (IntendedMeans im: intendedMeans)
             eint.appendChild(im.getAsDOM(document));
-        }
+        //if (intendedMeans.isEmpty())
+        //    eint.appendChild( initialTrigger.getAsDOM(document));        
+        eint.setAttribute("finished", ""+isFinished());
+
         return eint;
     }
 

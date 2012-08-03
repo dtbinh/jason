@@ -103,7 +103,7 @@ public class Unifier implements Cloneable {
           u.unifier( a(X,10), a(1,1) );
         does not change u, i.e., u = {}
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public boolean unifies(Term t1, Term t2) {
         HashMap cfunction = (HashMap)function.clone();
         if (unifiesNoUndo(t1,t2)) {
@@ -353,7 +353,7 @@ public class Unifier implements Cloneable {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public Unifier clone() {
         try {
             Unifier newUn = new Unifier();

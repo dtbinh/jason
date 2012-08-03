@@ -85,15 +85,15 @@ public class add_nested_source extends DefaultInternalAction {
 
     @Override public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
         checkArguments(args);
-        Term result = addAnnotToList(un, args[0], args[1].clone());
+        Term result = addAnnotToList(args[0], args[1]);
         return un.unifies(result,args[2]);
     }
 
-    public Term addAnnotToList(Unifier unif, Term l, Term source) {
+    public static Term addAnnotToList(Term l, Term source) {
         if (l.isList()) {
             ListTerm result = new ListTermImpl();
             for (Term lTerm: (ListTerm)l) {
-                Term t = addAnnotToList( unif, lTerm, source);
+                Term t = addAnnotToList( lTerm, source);
                 if (t != null) {
                     result.add(t);
                 }

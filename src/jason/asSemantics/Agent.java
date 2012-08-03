@@ -119,7 +119,7 @@ public class Agent {
         try {
             Agent ag = (Agent) Class.forName(agClass).newInstance();
             
-            new TransitionSystem(ag, new Circumstance(), stts, arch);
+            new TransitionSystem(ag, null, stts, arch);
 
             BeliefBase bb = (BeliefBase) Class.forName(bbPars.getClassName()).newInstance();
             ag.setBB(bb);     // the agent's BB have to be already set for the BB initialisation
@@ -146,7 +146,7 @@ public class Agent {
         if (internalActions == null) internalActions = new HashMap<String, InternalAction>();
         initDefaultFunctions();
         
-        if (ts == null) ts = new TransitionSystem(this, new Circumstance(), new Settings(), new AgArch());
+        if (ts == null) ts = new TransitionSystem(this, null, null, new AgArch());
     }
     
     
@@ -222,7 +222,7 @@ public class Agent {
         try {
             if (bb != null) 
                 setBB(bb);
-            new TransitionSystem(this, new Circumstance(), stts, arch);
+            new TransitionSystem(this, null, stts, arch);
             initAg(asSrc);
             return ts;
         } catch (Exception e) {
@@ -890,7 +890,7 @@ public class Agent {
     
     static DocumentBuilder builder = null;
 
-    /** Gets the agent "mind" (Beliefs, plans and circumstance) as XML */
+    /** Gets the agent "mind" (beliefs, plans, and circumstance) as XML */
     public Document getAgState() {
         if (builder == null) {
             try {

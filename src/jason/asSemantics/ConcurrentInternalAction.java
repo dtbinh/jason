@@ -6,6 +6,7 @@ import jason.asSyntax.Term;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
 /** 
@@ -54,7 +55,7 @@ import java.util.logging.Level;
 */
 public abstract class ConcurrentInternalAction implements InternalAction {
 
-    private static int actcount  = 0;
+    private static AtomicInteger actcount  = new AtomicInteger(0);
     
     public boolean canBeUsedInContext() {
         return false;
@@ -86,7 +87,7 @@ public abstract class ConcurrentInternalAction implements InternalAction {
      * @return the final key used to store the intention in PI, this key is used the resume the intention
      */
     public String suspendInt(final TransitionSystem ts, String basekey, int timeout) {
-        final String key = basekey + "/" + (actcount++); 
+        final String key = basekey + "/" + (actcount.incrementAndGet()); 
         final Circumstance C = ts.getC();
         Intention i = C.getSelectedIntention();
         i.setSuspended(true);

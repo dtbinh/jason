@@ -28,6 +28,7 @@ import jason.asSyntax.ASSyntax;
 import jason.asSyntax.parser.ParseException;
 
 import java.io.Serializable;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class Message implements Serializable {
@@ -39,18 +40,20 @@ public class Message implements Serializable {
     private String msgId    = null;
     private String inReplyTo = null;
     
-    private static int idCount = 1;
+    private static AtomicInteger idCount = new AtomicInteger(0);
     
     public final static String[] knownPerformatives = {"tell","untell","achieve","unachieve","askOne","askAll","tellHow", "untellHow","askHow"};
     
     public final static String msgIdPrefix        = "mid";
     public final static String msgIdSyncAskPrefix = "samid";
     
+    public final static String kqmlReceivedFunctor = "kqml_received";
+    
     public Message() {
     }
 
     public Message(String ilf, String s, String r, Object c) {
-        this(ilf, s, r, c, msgIdPrefix+(idCount++));
+        this(ilf, s, r, c, msgIdPrefix+(idCount.incrementAndGet()));
     }
     
     public Message(String ilf, String s, String r, Object c, String id) {
@@ -71,7 +74,7 @@ public class Message implements Serializable {
     }
 
     public void setSyncAskMsgId() {
-        msgId = msgIdSyncAskPrefix+(idCount++);
+        msgId = msgIdSyncAskPrefix+(idCount.incrementAndGet());
     }
     
     public String getIlForce() {

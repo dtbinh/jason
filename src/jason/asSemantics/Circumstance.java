@@ -27,6 +27,7 @@ import jason.asSyntax.Literal;
 import jason.asSyntax.Trigger;
 import jason.asSyntax.Trigger.TEOperator;
 import jason.asSyntax.Trigger.TEType;
+import jason.infra.centralised.CentralisedAgArch;
 
 import java.io.Serializable;
 import java.util.AbstractList;
@@ -47,10 +48,10 @@ public class Circumstance implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Queue<Event>               E;
-    private Queue<Intention>           I;
+    private   Queue<Event>             E;
+    private   Queue<Intention>         I;
     protected ActionExec               A;
-    private Queue<Message>             MB;
+    private   Queue<Message>           MB;
     protected List<Option>             RP;
     protected List<Option>             AP;
     protected Event                    SE;
@@ -67,11 +68,17 @@ public class Circumstance implements Serializable {
 
     private List<CircumstanceListener> listeners = new CopyOnWriteArrayList<CircumstanceListener>(); 
 
+    private TransitionSystem ts = null;
+    
     public Circumstance() {
         create();
         reset();
     }
-
+    
+    public void setTS(TransitionSystem ts) {
+        this.ts = ts;
+    }
+    
     /** creates new collections for E, I, MB, PA, PI, and FA */
     public void create() {
         // use LinkedList since we use a lot of remove(0) in selectEvent
@@ -558,21 +565,36 @@ public class Circumstance implements Serializable {
     public Element getAsDOM(Document document) {
         Element c = (Element) document.createElement("circumstance");
         Element e;
+        boolean add;
 
         // MB
+        add = false;
+        Element ms = (Element) document.createElement("mailbox");
         if (MB != null && hasMsg()) {
-            Element ms = (Element) document.createElement("mailbox");
             for (Message m: MB) {
+                add = true;
                 e = (Element) document.createElement("message");
                 e.appendChild(document.createTextNode(m.toString()));
                 ms.appendChild(e);
             }
-            c.appendChild(ms);
         }
+        if (ts != null) {
+            try {
+                for (Message m: ((CentralisedAgArch)ts.getUserAgArch().getArchInfraTier()).getMBox()) {
+                    add = true;
+                    e = (Element) document.createElement("message");
+                    e.appendChild(document.createTextNode(m.toString() + " in arch inbox."));
+                    ms.appendChild(e);
+                }            
+                
+            } catch (Exception ex) { }
+        }
+        if (add)
+            c.appendChild(ms);
 
         // events
         Element events = (Element) document.createElement("events");
-        boolean add = false;
+        add = false;
         if (E != null && !E.isEmpty()) {
             for (Event evt: E) {
                 add = true;
@@ -644,13 +666,13 @@ public class Circumstance implements Serializable {
         Element ints = (Element) document.createElement("intentions");
         Element selIntEle = null;
         Intention ci = getSelectedIntention();
-        if (ci != null && !ci.isFinished()) {
+        if (ci != null) { 
             selIntEle = ci.getAsDOM(document);
             selIntEle.setAttribute("selected", "true");
             ints.appendChild(selIntEle);
         }
         for (Intention in : getIntentions()) {
-            if (getSelectedIntention() != in && !in.isFinished()) {
+            if (getSelectedIntention() != in) {
                 ints.appendChild(in.getAsDOM(document));
             }
         }

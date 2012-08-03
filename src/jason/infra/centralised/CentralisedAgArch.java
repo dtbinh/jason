@@ -38,6 +38,7 @@ import jason.runtime.RuntimeServicesInfraTier;
 import jason.runtime.Settings;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -63,9 +64,6 @@ public class CentralisedAgArch extends AgArch implements Runnable {
     protected CentralisedEnvironment    infraEnv     = null;
     private CentralisedExecutionControl infraControl = null;
     private RunCentralisedMAS           masRunner    = RunCentralisedMAS.getRunner();
-
-    /** The user implementation of the architecture */
-    //protected AgArch        userAgArch;
 
     private String          agName  = "";
     private boolean         running = true;
@@ -284,6 +282,10 @@ public class CentralisedAgArch extends AgArch implements Runnable {
             if (logger.isLoggable(Level.FINE)) logger.fine("received message: " + im);
             im = mbox.poll();
         }
+    }
+    
+    public Collection<Message> getMBox() {
+        return mbox;
     }
 
     /** called by the TS to ask the execution of an action in the environment */

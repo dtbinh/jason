@@ -24,11 +24,8 @@ public class MDSAgent extends Agent {
             // sub-goal that generates other events (+!<sub-goal>), in this case
             // the +unattended_luggage event is in the bottom of the stack
             if (e.getIntention() != null) {
-                Iterator<IntendedMeans> j = e.getIntention().iterator();
-                while (j.hasNext()) {
-                    IntendedMeans im = j.next();
-                    Trigger it = (Trigger) im.getPlan().getTrigger();
-                    if (it.getLiteral().getFunctor().equals("unattended_luggage")) {
+                for (IntendedMeans im: e.getIntention()) {
+                    if (im.getPlan().getTrigger().getLiteral().getFunctor().equals("unattended_luggage")) {
                         i.remove();
                         return e;
                     }

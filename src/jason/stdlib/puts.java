@@ -63,9 +63,6 @@ import java.util.regex.Pattern;
 
 public class puts extends DefaultInternalAction {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
     private static InternalAction singleton = null;
 

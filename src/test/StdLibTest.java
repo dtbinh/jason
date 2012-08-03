@@ -2,7 +2,6 @@ package test;
 
 import jason.RevisionFailedException;
 import jason.asSemantics.Agent;
-import jason.asSemantics.Circumstance;
 import jason.asSemantics.IntendedMeans;
 import jason.asSemantics.Intention;
 import jason.asSemantics.Option;
@@ -229,7 +228,7 @@ public class StdLibTest extends TestCase {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void testSubString() throws Exception {
         StringTerm s1 = new StringTermImpl("a");
         StringTerm s2 = new StringTermImpl("bbacca");
@@ -263,11 +262,10 @@ public class StdLibTest extends TestCase {
     }
 
     public void testDropGoal2() throws Exception {
-        Circumstance c = new Circumstance();
         Agent ag = new Agent();
         ag.initAg();
-        c.addIntention(intention1);
-        TransitionSystem ts = new TransitionSystem(ag, c, null, null);
+        TransitionSystem ts = new TransitionSystem(ag, null, null, null);
+        ts.getC().addIntention(intention1);
         assertFalse(ts.hasGoalListener());
         new succeed_goal().drop(ts, Literal.parseLiteral("g2"), new Unifier());
         assertEquals(intention1.size(), 1);
@@ -277,12 +275,12 @@ public class StdLibTest extends TestCase {
     }
 
     public void testDropGoal3() throws Exception {
-        Circumstance c = new Circumstance();
-        c.addIntention(intention1);
-        TransitionSystem ts = new TransitionSystem(ag, c, null, null);
+        //Circumstance c = new Circumstance();
+        TransitionSystem ts = new TransitionSystem(ag, null, null, null);
+        ts.getC().addIntention(intention1);
         new fail_goal().drop(ts, Literal.parseLiteral("g2"), new Unifier());
         assertEquals(intention1.size(),2);
-        assertEquals(c.getEvents().size(),1);
+        assertEquals(ts.getC().getEvents().size(),1);
     }
     
     @SuppressWarnings("unchecked")
@@ -571,7 +569,7 @@ public class StdLibTest extends TestCase {
         assertEquals("\"bc\"",u.get("X").toString());
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes" })
     private int iteratorSize(Iterator i) {
         int c = 0;
         while (i.hasNext()) {
