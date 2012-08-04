@@ -65,10 +65,10 @@ public class CentralisedAgArch extends AgArch implements Runnable {
     private CentralisedExecutionControl infraControl = null;
     private RunCentralisedMAS           masRunner    = RunCentralisedMAS.getRunner();
 
-    private String          agName  = "";
-    private boolean         running = true;
-    private Queue<Message>  mbox    = new ConcurrentLinkedQueue<Message>(); 
-    protected Logger        logger  = Logger.getLogger(CentralisedAgArch.class.getName());
+    private String           agName  = "";
+    private volatile boolean running = true;
+    private Queue<Message>   mbox    = new ConcurrentLinkedQueue<Message>(); 
+    protected Logger         logger  = Logger.getLogger(CentralisedAgArch.class.getName());
     
     private static List<MsgListener> msgListeners = null;
     public static void addMsgListener(MsgListener l) {
@@ -305,8 +305,8 @@ public class CentralisedAgArch extends AgArch implements Runnable {
         return mbox.isEmpty() && isRunning();
     }
 
-    private Object  syncMonitor       = new Object(); 
-    private boolean inWaitSyncMonitor = false;
+    private Object  syncMonitor                = new Object(); 
+    private volatile boolean inWaitSyncMonitor = false;
 
     /**
      * waits for a signal to continue the execution (used in synchronised

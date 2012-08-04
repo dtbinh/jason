@@ -54,9 +54,9 @@ public class ExecutionControl {
     protected ExecutionControlInfraTier infraControl = null;
     
     private Set<String> finished = new HashSet<String>(); // the agents that have finished its reasoning cycle
-    private int     cycleNumber = 0;
-    private boolean runningCycle = true;
-    private boolean isRunning    = true;
+    private volatile int     cycleNumber = 0;
+    private volatile boolean runningCycle = true;
+    private volatile boolean isRunning    = true;
 
     private int nbAgs = -1;
     

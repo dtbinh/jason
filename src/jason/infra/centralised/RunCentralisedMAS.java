@@ -520,7 +520,7 @@ public class RunCentralisedMAS {
     /** an agent architecture for the infra based on thread pool */
     private final class CentralisedAgArchForPool extends CentralisedAgArch {
 
-        boolean runWakeAfterTS = false;
+        private volatile boolean runWakeAfterTS = false;
         
         @Override
         public void sleep() {
