@@ -206,7 +206,7 @@ public class CentralisedAgArch extends AgArch implements Runnable {
                 }
             }
         }
-        logger.info("I finished!");
+        logger.fine("I finished!");
     }
 
     private Object sleepSync = new Object();
