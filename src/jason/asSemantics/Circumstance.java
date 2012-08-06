@@ -59,6 +59,7 @@ public class Circumstance implements Serializable {
     protected Intention                SI;
     private   Intention                AI; // Atomic Intention
     private   boolean                  atomicIntSuspended = false; // whether the current atomic intention is suspended in PA or PI
+    private   boolean                  hasAtomicEvent = false;         
 
     private Map<Integer, ActionExec>   PA; // Pending actions, waiting action execution (key is the intention id)
     private List<ActionExec>           FA; // Feedback actions, those that are already executed
@@ -116,6 +117,9 @@ public class Circumstance implements Serializable {
     public void addEvent(Event ev) {
         E.add(ev);        
 
+        if (ev.isAtomic())
+            hasAtomicEvent = true;
+        
         // notify listeners
         if (listeners != null)
             for (CircumstanceListener el : listeners) 
@@ -143,7 +147,14 @@ public class Circumstance implements Serializable {
     }
 
     public boolean removeEvent(Event ev) {
-        return E.remove(ev);
+        if (E.remove(ev)) {
+            if (hasAtomicEvent && !ev.isAtomic()) {
+                hasAtomicEvent = false;
+            }
+            return true;
+        } else {
+            return false;
+        }
     }
     
     public void clearEvents() {
@@ -154,6 +165,7 @@ public class Circumstance implements Serializable {
                     el.intentionDropped(ev.getIntention());
         
         E.clear();        
+        hasAtomicEvent = false;
     }
 
     public Queue<Event> getEvents() {
@@ -166,10 +178,13 @@ public class Circumstance implements Serializable {
 
     /** remove and returns the event with atomic intention, null if none */
     public Event removeAtomicEvent() {
+        if (!hasAtomicEvent)
+            return null;
+        
         Iterator<Event> i = E.iterator();
         while (i.hasNext()) {
             Event e = i.next();
-            if (e.getIntention() != null && e.getIntention().isAtomic()) {
+            if (e.isAtomic()) {
                 i.remove();
                 return e;
             }
@@ -536,6 +551,9 @@ public class Circumstance implements Serializable {
     /** clone E, I, MB, PA, PI, FA, and AI */
     public Circumstance clone() {
         Circumstance c = new Circumstance();
+        c.hasAtomicEvent     = this.hasAtomicEvent;
+        c.atomicIntSuspended = this.atomicIntSuspended;
+        
         for (Event e: this.E) {
             c.E.add((Event)e.clone());
         }

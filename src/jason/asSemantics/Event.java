@@ -64,6 +64,10 @@ public class Event implements Serializable {
     public boolean isInternal() {
         return intention != Intention.EmptyInt;
     }
+    public boolean isAtomic() {
+        return intention != null && intention.isAtomic();
+    }
+    
     
     @Override
     public boolean equals(Object o) {

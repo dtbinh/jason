@@ -9,6 +9,12 @@ New features
 - new method in Agent class (killAcc) to customise
   whether an agent accepts to be killed by another.
   (implemented only in Centralised infrastructure)
+- performance improvement for pool of threads
+
+
+Bugs fixed
+- unique id of Intention wan't thread safe
+- indexedBB doesn't work on pool of threads
 
 ---------------------------
 version 1.3.7
