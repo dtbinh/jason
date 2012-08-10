@@ -12,7 +12,7 @@
 
     <property name="dist.properties" value="${basedir}/bin/dist.properties" />
     <property name="version" value="1" />
-    <property name="release" value="3.8beta" />
+    <property name="release" value="3.8" />
     <property name="distDir" value="${env.HOME}/tmp/x/Jason-${version}.${release}" />
     <property name="distFile" value="${env.HOME}/Jason-${version}.${release}" />
 
@@ -372,7 +372,7 @@ TARGETS:
 
     <target name="cleanExamples">
         <delete failonerror="no" includeEmptyDirs="true" verbose="true">
-            <fileset dir="${basedir}/examples" includes="**/bin/**" />
+            <fileset dir="${basedir}/examples" includes="**/bin/**" excludes="**/game-of-life/bin/c-build.xml"/>
             <fileset dir="${basedir}/demos"    includes="**/bin/**" />
             
             <fileset dir="${basedir}/examples" includes="**/work" />

@@ -1,34 +1,16 @@
-// this agent starts the auction and identify the winner
+// this agent manages the auction and identify the winner
 
-/* beliefs and rules */ 
++!start_auction(N)   // this goal is created by the GUI of the agent 
+    <- .broadcast(tell, auction(N)).
 
-all_bids_received(N) :- .count(place_bid(N,_),3). 
 
-/* plans */
-
-+!start_auction(N) : true      // this goal is created by the GUI of the agent 
-    <- -+auction(N);
-       -+winner(N, noone, 0);
-       .broadcast(tell, auction(N)).
-
-// receive bid and check for new winner
 @pb1[atomic]
-+place_bid(N,V)[source(S)] 
-   :  auction(N) & winner(N,CurWin,CurVl) & V > CurVl
-   <- -winner(N,CurWin,CurVl); 
-      +winner(N,S,V); .print("New winner is ",S, " with value ",V);
-      !check_end(N).
-
-@pb2[atomic]
-+place_bid(N,_) : true
-   <- !check_end(N).
-
-+!check_end(N) 
-   :  all_bids_received(N) & 
-      winner(N,W,Vl)
-   <- .print("Winner is ",W," with ", Vl);
++place_bid(N,_)     // receives bids and checks for new winner
+   :  .findall(b(V,A),place_bid(N,V)[source(A)],L) & 
+      .length(L,3)  // all 3 expected bids was received
+   <- .max(L,b(V,W));
+      .print("Winner is ",W," with ", V);
       show_winner(N,W); // show it in the GUI
       .broadcast(tell, winner(W));
       .abolish(place_bid(N,_)).
-+!check_end(_).
 

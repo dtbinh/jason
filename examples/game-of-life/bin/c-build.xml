@@ -16,9 +16,9 @@ Change run task to allocate more memory.
          default="run">
 
     <import file="build.xml"/>
-	
-	
-	
+    
+    
+    
     <target name="run" depends="compile" >
         <echo message="Running project ${ant.project.name}" />
         <java classname="jason.infra.centralised.RunCentralisedMAS"
