@@ -353,11 +353,8 @@ public class PlanLibrary implements Iterable<Plan> {
         return l; // if no rel plan, have to return null instead of empty list
     }
 
-    public static final Trigger TE_IDLE = new Trigger(TEOperator.add, TEType.achieve, new Atom("idle"));
-
-    public List<Plan> getIdlePlans() {
-        return relPlans.get(TE_IDLE.getPredicateIndicator());
-    }
+    public static final Trigger TE_JAG_SLEEPING  = new Trigger(TEOperator.add, TEType.achieve, new Atom("jag_sleeping"));
+    public static final Trigger TE_JAG_AWAKING   = new Trigger(TEOperator.add, TEType.achieve, new Atom("jag_awaking"));
 
     public PlanLibrary clone() {
         PlanLibrary pl = new PlanLibrary();

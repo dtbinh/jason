@@ -1,4 +1,27 @@
 ---------------------------
+version 1.3.9
+
+revision XXX on SVN
+---------------------------
+
+New features
+- new special achievement goal events 
+	+!jag_sleeping 
+	+!jag_awaking
+  that are created when the agent is going to sleep (is becoming idle) and
+  becoming busy after sleeping, respectively. 
+
+  see demos/idle for an example of how to use this feature.
+   
+  **NB: The +!idle event is deprecated, you must use +!jag_sleeping instead!
+  Note however that the +!jag_sleeping event is only generated when the agent
+  starts an idle period, rather than being generated again at every reasoning
+  cycle as with +!idle in previous releases. 
+
+
+
+
+---------------------------
 version 1.3.8
 
 revision 1709 on SVN

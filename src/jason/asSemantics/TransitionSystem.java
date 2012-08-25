@@ -74,7 +74,9 @@ public class TransitionSystem {
     private Circumstance  C          = null;
     private Settings      setts      = null;
     private State         step       = State.StartRC; // first step of the SOS                                                                                                
-    private int           nrcslbr    = Settings.ODefaultNRC; // number of reasoning cycles since last belief revision                                                                                                             
+    private int           nrcslbr    = Settings.ODefaultNRC; // number of reasoning cycles since last belief revision    
+    
+    private boolean       sleepingEvt    = false;
     
     private List<GoalListener>  goalListeners = null;
     
@@ -1122,6 +1124,8 @@ public class TransitionSystem {
     /**********************************************************************/
     //Circumstance pc1, pc2, pc3, pc4;
     
+    
+    
     public boolean reasoningCycle() {
         if (logger.isLoggable(Level.FINE)) logger.fine("Start new reasoning cycle");
         getUserAgArch().reasoningCycleStarting();
@@ -1171,12 +1175,32 @@ public class TransitionSystem {
             nrcslbr++; // counting number of cycles since last belief revision
 
             if (canSleep()) {
-                if (ag.pl.getIdlePlans() != null) {
-                    logger.fine("generating idle event");
-                    C.addExternalEv(PlanLibrary.TE_IDLE);
+                if (!sleepingEvt) {
+                    sleepingEvt = true;
+                    if (ag.pl.getCandidatePlans(PlanLibrary.TE_JAG_SLEEPING) != null)
+                        C.addExternalEv(PlanLibrary.TE_JAG_SLEEPING);
                 } else {
                     getUserAgArch().sleep();
                     return false;
+                }
+            } else if (sleepingEvt) { // code to turn idleEvt false again
+                if (C.hasMsg()) { // the agent has messages
+                    sleepingEvt = false;
+                } else if (C.hasEvent()) {
+                    // check if there is an event in C.E not produced by idle intention
+                    for (Event e: C.getEvents()) {
+                        Intention i = e.getIntention();
+                        if ( !e.getTrigger().equals(PlanLibrary.TE_JAG_SLEEPING)
+                             ||
+                             (i != null && i.hasTrigger(PlanLibrary.TE_JAG_SLEEPING, new Unifier()))
+                           ) {
+                            sleepingEvt = false;
+                            break;
+                        }
+                    }    
+                }
+                if (!sleepingEvt && ag.pl.getCandidatePlans(PlanLibrary.TE_JAG_AWAKING) != null) {
+                    C.addExternalEv(PlanLibrary.TE_JAG_AWAKING);
                 }
             }
             
