@@ -95,6 +95,10 @@ public class delete extends DefaultInternalAction {
         if (args[0].isString() && args[1].isString()) {
             return un.unifies(args[2], deleteFromString((StringTerm)args[0],(StringTerm)args[1]));
         }
+        if (args[0].isString()) { // consider arg[1] as string
+            return un.unifies(args[2], deleteFromString((StringTerm)args[0], new StringTermImpl(args[1].toString())));
+        }
+        
         
         // first element as term
         if (args[1].isList()) {
