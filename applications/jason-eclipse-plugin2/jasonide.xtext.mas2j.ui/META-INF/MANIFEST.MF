@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: jasonide.xtext.mas2j.ui
 Bundle-Vendor: Jason team
-Bundle-Version: 1.0.7
+Bundle-Version: 1.0.8
 Bundle-SymbolicName: jasonide.xtext.mas2j.ui; singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: jasonide.xtext.mas2j;visibility:=reexport,

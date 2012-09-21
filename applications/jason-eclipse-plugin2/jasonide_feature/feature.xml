@@ -2,7 +2,7 @@
 <feature
       id="jasonide_feature"
       label="Jasonide_feature"
-      version="1.0.7.qualifier">
+      version="1.0.8.qualifier">
 
    <description url="http://jason.sf.net">
       Jason is an interpreter for an extended version of AgentSpeak
