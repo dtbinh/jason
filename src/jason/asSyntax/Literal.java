@@ -26,8 +26,10 @@ package jason.asSyntax;
 import jason.JasonException;
 import jason.architecture.AgArch;
 import jason.asSemantics.Agent;
+import jason.asSemantics.QueryCacheSimple;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.parser.as2j;
+import jason.profiling.QueryProfiling;
 
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -191,6 +193,7 @@ public abstract class Literal extends DefaultTerm implements LogicalFormula {
 
     public boolean equalsAsStructure(Object p) { return false;  }
     
+    
 	/* Not implemented methods */
 	
     // structure
@@ -247,7 +250,6 @@ public abstract class Literal extends DefaultTerm implements LogicalFormula {
     /** changes the negation of the literal and return this */
     public Literal setNegated(boolean b)     { logger.log(Level.SEVERE, "setNegated is not implemented in the class "+this.getClass().getSimpleName(), new Exception()); return null; }
     
-    
     /** 
      * logicalConsequence checks whether one particular predicate
      * is a logical consequence of the belief base.
@@ -255,13 +257,23 @@ public abstract class Literal extends DefaultTerm implements LogicalFormula {
      * Returns an iterator for all unifiers that are logCons.
      */
     public Iterator<Unifier> logicalConsequence(final Agent ag, final Unifier un) {
-        /*final long startTime;
-        if (logger.isLoggable(Level.FINE)) {
-            logger.fine("Starting logicalConsequence for "+this+" unifier= "+un);
-            startTime = System.nanoTime();
+        final QueryProfiling   qProfiling;
+        final QueryCacheSimple qCache;
+        final long startTime;
+        if (ag != null) {
+            qCache     = ag.getQueryCache();
+            qProfiling = ag.getQueryProfiling();
+            if (qProfiling != null) {
+                qProfiling.queryStared(this);
+                startTime = System.nanoTime();
+            } else {
+                startTime = 0;
+            }
         } else {
-            startTime = 0;
-        }*/
+            qCache     = null;
+            qProfiling = null;
+            startTime  = 0;
+        }
         
         final Iterator<Literal> il   = ag.getBB().getCandidateBeliefs(this, un);
         if (il == null) // no relevant bels
@@ -280,23 +292,32 @@ public abstract class Literal extends DefaultTerm implements LogicalFormula {
             Iterator<List<Term>>  annotsOptions = null;
             Literal               belInBB = null;
             
+            Literal kForChache = null;
+            Iterator<Unifier> cacheIt = null;
+            //Literal cacheLit = null;
+            //Unifier cacheUn = null;
+            List<Unifier> cacheResults = null; 
+            
             public boolean hasNext() {
                 if (needsUpdate)
                     get();
-                //if (logger.isLoggable(Level.FINE))                    
-                //    logger.fine("hasNext logicalConsequence for "+Literal.this+" answer is "+(current != null)+" in "+(System.nanoTime()-startTime)+" ns");
+                
+                if (current == null) { // end of query
+                    if (qCache != null && cacheResults != null) 
+                        qCache.queryFinished(kForChache, cacheResults);
+                    if (qProfiling != null)
+                        qProfiling.queryFinished(Literal.this, System.nanoTime() - startTime);
+                }
+
                 return current != null;
             }
 
             public Unifier next() {
                 if (needsUpdate)
                     get();
-                Unifier a = current;
                 if (current != null)
                     needsUpdate = true;
-                //if (logger.isLoggable(Level.FINE))                     
-                //    logger.fine("next logicalConsequence for "+Literal.this+" answer is "+a+" in "+(System.nanoTime()-startTime)+" ns");
-                return a;
+                return current;
             }
 
             private void get() {
@@ -304,33 +325,66 @@ public abstract class Literal extends DefaultTerm implements LogicalFormula {
                 current     = null;
                 if (arch != null && !arch.isRunning()) return;
                 
+                // try cache iterator
+                if (cacheIt != null) {
+                    while (cacheIt.hasNext()) {
+                        Literal ltmp = Literal.this.copy();
+                        ltmp.apply( cacheIt.next() );
+                        Unifier u = un.clone();
+                        //System.out.println("   try "+ltmp);
+                        if (u.unifiesNoUndo(Literal.this, ltmp)) {
+                            //System.out.println("           - ans from cache "+Literal.this+": "+u);
+                            current = u;
+                            return;
+                        }
+                    }
+                    cacheIt = null;
+                    return; // do not try others after cache
+                }
+
+                
                 // try annots iterator
-                while (annotsOptions != null && annotsOptions.hasNext()) {
-                    Literal belToTry = belInBB.copy().setAnnots(null).addAnnots( annotsOptions.next() );
-                    
-                    Unifier u = un.clone();
-                    if (u.unifiesNoUndo(Literal.this, belToTry)) {
-                        current = u;
-                        return;
-                    }                    
+                if (annotsOptions != null) {
+                    while (annotsOptions.hasNext()) {
+                        Literal belToTry = belInBB.copy().setAnnots(null).addAnnots( annotsOptions.next() );
+                        
+                        Unifier u = un.clone();
+                        if (u.unifiesNoUndo(Literal.this, belToTry)) {
+                            current = u;
+                            return;
+                        }                    
+                    }
+                    annotsOptions = null;
                 }
                 
                 // try rule iterator
-                while (ruleIt != null && ruleIt.hasNext()) {
-                    // unifies the rule head with the result of rule evaluation
-                    Unifier ruleUn = ruleIt.next(); // evaluation result
-                    Literal rhead  = rule.headClone();
-                    rhead.apply(ruleUn);
-                    useDerefVars(rhead, ruleUn); // replace vars by the bottom in the var clusters (e.g. X=_2; Y=_2, a(X,Y) ===> A(_2,_2))
-                    rhead.makeVarsAnnon(); // to remove vars in head with original names
-                    
-                    Unifier unC = un.clone();
-                    if (unC.unifiesNoUndo(Literal.this, rhead)) {
-                        current = unC;
-                        return;
+                if (ruleIt != null) {
+                    while (ruleIt.hasNext()) {
+                        // unifies the rule head with the result of rule evaluation
+                        Unifier ruleUn = ruleIt.next(); // evaluation result
+                        Literal rhead  = rule.headClone();
+                        rhead.apply(ruleUn);
+                        useDerefVars(rhead, ruleUn); // replace vars by the bottom in the var clusters (e.g. X=_2; Y=_2, a(X,Y) ===> A(_2,_2))
+                        rhead.makeVarsAnnon(); // to remove vars in head with original names
+                        
+                        Unifier unC = un.clone();
+                        if (unC.unifiesNoUndo(Literal.this, rhead)) {
+                            current = unC;
+                            /*if (kForChache != null) {
+                                Unifier uforC = new Unifier();
+                                if (uforC.unifiesNoUndo(kForChache, rhead))
+                                    qCache.addAnswer(kForChache, uforC);
+                                    cacheResults.add(uforC);
+                            }*/
+                            //System.out.println("   sol:"+unC+ " "+cacheResults);
+                            if (cacheResults != null)
+                                cacheResults.add(unC);
+                            return;
+                        }
                     }
+                    ruleIt = null;
                 }
-                
+
                 // try literal iterator
                 while (il.hasNext()) {
                     belInBB = il.next(); // b is the relevant entry in BB
@@ -346,6 +400,35 @@ public abstract class Literal extends DefaultTerm implements LogicalFormula {
                             cloneAnnon.apply(un);
                             cloneAnnon.makeVarsAnnon();
                         }
+                        
+                        // try cache
+                        if (ag != null && qCache != null) {
+                        /*if (ag != null && qCache != null && kForChache == null) { // try cache only for the first rule (do not use cache for itself)
+                            kForChache = cloneAnnon;
+                            Pair<Literal,Iterator<Unifier>> pair = qCache.getCache(kForChache);
+                            if (pair != null) {
+                                cacheIt = pair.getSecond();
+                                cacheLit = pair.getFirst();
+                                //cacheUn = new Unifier();
+                                //cacheUn.unifies(cacheLit, Literal.this);
+                                //System.out.println("use un "+cacheUn+"/"+cacheLit+" for "+kForChache);
+                                get();
+                                return;
+                            }*/
+                            kForChache = Literal.this.copy();
+                            kForChache.apply(un);
+                            //System.out.println("try "+kForChache);
+                            cacheIt = qCache.getCache(kForChache);
+                            if (cacheIt != null) {
+                                //System.out.println("use cache for "+kForChache);
+                                get();
+                                if (current != null) // if it get a value
+                                    return;
+                            } 
+                            //System.out.println("start collecting "+kForChache);
+                            cacheResults = new ArrayList<Unifier>();                                
+                        }
+
                         Unifier ruleUn = new Unifier();
                         if (ruleUn.unifiesNoUndo(cloneAnnon, rule)) { // the rule head unifies with the literal
                             ruleIt = rule.getBody().logicalConsequence(ag,ruleUn);
@@ -364,7 +447,7 @@ public abstract class Literal extends DefaultTerm implements LogicalFormula {
                                         return;
                                 }
                             }
-                        } else {
+                        } else { // it is an ordinary query on a belief
                             Unifier u = un.clone();
                             if (u.unifiesNoUndo(Literal.this, belInBB)) {
                                 current = u;

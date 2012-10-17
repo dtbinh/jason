@@ -217,6 +217,14 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
         else 
             return 1; 
     }
+    
+    @Override
+    public boolean subsumes(Term t) {
+        if (value != null)
+            return value.subsumes(t);
+        else 
+            return true;
+    }
 
     // ----------
     // Term methods overridden

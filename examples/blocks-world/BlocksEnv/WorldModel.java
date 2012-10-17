@@ -2,6 +2,7 @@ package BlocksEnv;
 
 import jason.environment.grid.GridWorldModel;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
@@ -89,7 +90,8 @@ public class WorldModel extends GridWorldModel {
             stackList.remove(aS);
         }
         modelToGrid();
-        view.update();
+        if (view != null)
+            view.update();
       
         return true;
     }
@@ -103,6 +105,7 @@ public class WorldModel extends GridWorldModel {
         model.names = new String[GWidth][GHeight];
 
         Stack<String>  s1 = new Stack<String>();
+        s1.addAll(Arrays.asList(new String[] {"table", "c", "b", "a"}));
         s1.push("table"); s1.push("c"); s1.push("b"); s1.push("a");
         model.stackList.add(s1);
         Stack<String>  s2 = new Stack<String>();
@@ -133,6 +136,15 @@ public class WorldModel extends GridWorldModel {
         return model;
     }
     
+    static WorldModel world4() throws Exception {
+        GWidth =50;
+        GHeight=10;
+        WorldModel model = WorldModel.create(GWidth, GHeight, 0);
+        model.names = new String[GWidth][GHeight];
+        model.modelToGrid();
+        return model;
+    }
+
     void modelToGrid() {
         for (int i=0; i<GWidth; i++) {
             for (int j=0; j<GHeight-1; j++) {

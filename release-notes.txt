@@ -18,7 +18,11 @@ New features
   starts an idle period, rather than being generated again at every reasoning
   cycle as with +!idle in previous releases. 
 
-
+- new agent options:
+        [qcache=cycle]: it enables cache for queries on the same cycle, this could 
+	                           improve the agent performance in some applications.
+        [qprofiling=yes]: it generates some statistical data related to queries and is used
+                                   to measure the performance of the qcache option
 
 
 ---------------------------

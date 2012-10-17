@@ -37,13 +37,14 @@ import jason.asSyntax.UnnamedVar;
 import jason.asSyntax.VarTerm;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-public class Unifier implements Cloneable {
+public class Unifier implements Cloneable, Iterable<VarTerm> {
 
     private static Logger logger = Logger.getLogger(Unifier.class.getName());
 
@@ -75,6 +76,9 @@ public class Unifier implements Cloneable {
         return function.remove(v);
     }
     
+    public Iterator<VarTerm> iterator() {
+        return function.keySet().iterator();
+    }
     /**
      * gets the value for a Var, if it is unified with another var, gets this
      * other's value
@@ -364,6 +368,15 @@ public class Unifier implements Cloneable {
             logger.log(Level.SEVERE, "Error cloning unifier.",e);
             return null;
         }
+    }
+    
+    @Override
+    public int hashCode() {
+        int s = 0;
+        for (VarTerm v: function.keySet()) {
+            s += v.hashCode();
+        }
+        return s * 31;
     }
     
     public boolean equals(Object o) {

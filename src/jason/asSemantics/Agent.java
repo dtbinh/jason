@@ -47,6 +47,7 @@ import jason.bb.DefaultBeliefBase;
 import jason.functions.Count;
 import jason.functions.RuleToFunction;
 import jason.mas2j.ClassParameters;
+import jason.profiling.QueryProfiling;
 import jason.runtime.Settings;
 
 import java.io.File;
@@ -101,6 +102,9 @@ public class Agent {
     
     private ScheduledExecutorService scheduler = null; 
 
+    //private QueryCache qCache = null;
+    private QueryCacheSimple qCache = null;
+    private QueryProfiling    qProfiling = null;
     
     protected Logger logger = Logger.getLogger(Agent.class.getName());
 
@@ -147,6 +151,10 @@ public class Agent {
         initDefaultFunctions();
         
         if (ts == null) ts = new TransitionSystem(this, null, null, new AgArch());
+        
+        //if (ts.getSettings().hasQueryCache()) qCache = new QueryCache(this);
+        if (ts.getSettings().hasQueryProfiling()) qProfiling = new QueryProfiling(this);
+        if (ts.getSettings().hasQueryCache())     qCache = new QueryCacheSimple(this, qProfiling);
     }
     
     
@@ -233,7 +241,9 @@ public class Agent {
 
     public void stopAg() {
         bb.stop();
-        
+        if (qProfiling != null)
+            qProfiling.show();
+
         if (scheduler != null) 
             scheduler.shutdownNow();
     }
@@ -644,12 +654,10 @@ public class Agent {
             return;
         }
         
-        /*long startTime;
-        if (logger.isLoggable(Level.FINE)) {
-            startTime = System.nanoTime();
-        } else {
-            startTime = 0;
-        }*/       
+        // stat
+        int adds = 0;
+        int dels = 0;        
+        long startTime = System.nanoTime();
 
         // deleting percepts in the BB that is not perceived anymore
         Iterator<Literal> perceptsInBB = getBB().getPercepts();
@@ -675,6 +683,7 @@ public class Agent {
                 }
             }
             if (!wasPerceived) {
+                dels++;
                 // new version (it is sure that l is in BB, only clone l when the event is relevant)
                 perceptsInBB.remove(); // remove l as perception from BB
                 
@@ -707,6 +716,7 @@ public class Agent {
                 lp = lp.copy().forceFullLiteralImpl();
                 lp.addAnnot(BeliefBase.TPercept);
                 if (getBB().add(lp)) {
+                    adds++;
                     Trigger te = new Trigger(TEOperator.add, TEType.belief, lp);
                     ts.updateEvents(new Event(te, Intention.EmptyInt));
                 }
@@ -715,10 +725,19 @@ public class Agent {
             }
         }
         
-        //if (logger.isLoggable(Level.FINE))                    
-        //    logger.fine("Finished BUF for "+percepts+" in "+(System.nanoTime()-startTime)+" nanoseconds");
+        if (qCache != null)
+            qCache.reset();
+        if (qProfiling != null)
+            qProfiling.newUpdateCycle(getTS().getUserAgArch().getCycleNumber(), adds+dels, System.nanoTime()-startTime);
     }
 
+    public QueryCacheSimple getQueryCache() {
+        return qCache;
+    }
+    public QueryProfiling getQueryProfiling() {
+        return qProfiling;
+    }
+    
     /**
      * Returns true if BB contains the literal <i>bel</i> (using unification to test).
      * The unifier <i>un</i> is updated by the method.
@@ -808,7 +827,6 @@ public class Agent {
                         result[1] = Collections.singletonList(beliefToDel);
                     }
                 }
-    
             }
         } catch (Exception e) {
             logger.log(Level.WARNING, "Error at BRF.",e);

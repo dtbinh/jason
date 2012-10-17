@@ -20,10 +20,10 @@ import jason.asSyntax.StringTermImpl;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 import jason.asSyntax.Trigger;
-import jason.asSyntax.UnnamedVar;
-import jason.asSyntax.VarTerm;
 import jason.asSyntax.Trigger.TEOperator;
 import jason.asSyntax.Trigger.TEType;
+import jason.asSyntax.UnnamedVar;
+import jason.asSyntax.VarTerm;
 import jason.asSyntax.parser.ParseException;
 import jason.bb.BeliefBase;
 import jason.bb.DefaultBeliefBase;
@@ -31,9 +31,11 @@ import jason.bb.DefaultBeliefBase;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import junit.framework.TestCase;
 
@@ -44,7 +46,7 @@ public class TermTest extends TestCase {
         super.setUp();
     }
 
-    public void testEquals() {
+    public void testEquals() throws ParseException {
         Structure t1, t2, t3;
         t1 = new Structure("pos");
         t2 = new Structure(t1);
@@ -117,6 +119,22 @@ public class TermTest extends TestCase {
         assertTrue(x1.equals(ta));
         assertTrue(ta.equals(x1));
         assertEquals(x1.hashCode(), ta.hashCode());
+        
+        Term bp    = ASSyntax.parseTerm("back_pos(9,7)[source(self)]");
+        Term other = ASSyntax.parseTerm("back_pos(9,7)");
+        assertFalse(bp.equals(other));
+        
+        Set<Term> c1 = new HashSet<Term>();
+        c1.add(bp);
+        c1.add(ASSyntax.parseTerm("back_pos(9,7)"));
+        c1.add(ASSyntax.parseTerm("x"));
+
+        Set<Term> c2 = new HashSet<Term>();
+        c2.add(ASSyntax.parseTerm("back_pos(9,7)"));
+        c2.add(ASSyntax.parseTerm("x"));
+
+        c1.retainAll(c2);
+        assertEquals("[back_pos(9,7), x]",c1.toString());
     }
 
     public void testUnifies() throws ParseException {
@@ -549,6 +567,13 @@ public class TermTest extends TestCase {
         u.unifies(new Atom("xx"), new VarTerm("H"));
         l2.apply(u);
         assertEquals( "[c(H),d(4)]", u.get("T").toString());    
+        
+        Unifier u2 = new Unifier();
+        u2.unifies(new VarTerm("T"), ASSyntax.parseList("[c(H),d(4)]"));
+        u2.unifies(new VarTerm("H"), ASSyntax.parseTerm("xx"));
+        u2.unifies(new VarTerm("Y"), ASSyntax.parseTerm("1"));
+        u2.unifies(new VarTerm("X"), ASSyntax.parseTerm("3"));
+        assertTrue(u2.equals(u));
     }
     
     public void testAnnotUnifAsList() {

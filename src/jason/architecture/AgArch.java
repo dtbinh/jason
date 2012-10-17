@@ -29,6 +29,7 @@ import jason.asSemantics.TransitionSystem;
 import jason.asSyntax.Literal;
 import jason.infra.centralised.CentralisedAgArch;
 import jason.mas2j.ClassParameters;
+import jason.profiling.QueryProfiling;
 import jason.runtime.RuntimeServicesInfraTier;
 import jason.runtime.Settings;
 
@@ -146,6 +147,9 @@ public class AgArch implements AgArchInfraTier, Comparable<AgArch> {
      * when a new reasoning cycle is starting
      */
     public void reasoningCycleStarting() {
+        QueryProfiling q = getTS().getAg().getQueryProfiling();
+        if (q != null)
+            q.setNbReasoningCycles(getCycleNumber());
         if (successor != null)
             successor.reasoningCycleStarting();
     }

@@ -45,11 +45,13 @@ public class Settings {
     
     private static Logger logger = Logger.getLogger(Settings.class.getName());          
         
-    private byte    events    = ODiscard;
-    private boolean intBels   = OSameFocus;
-    private int     nrcbp     = ODefaultNRC;
-    private int     verbose   = ODefaultVerbose;
-    private boolean sync      = ODefaultSync; 
+    private byte    events     = ODiscard;
+    private boolean intBels    = OSameFocus;
+    private int     nrcbp      = ODefaultNRC;
+    private int     verbose    = ODefaultVerbose;
+    private boolean sync       = ODefaultSync; 
+    private boolean qCache     = false; // whether to use query cache
+    private boolean qProfiling = false; // whether has query profiling
     
     private Map<String,Object> userParameters = new HashMap<String,Object>();
     
@@ -105,12 +107,11 @@ public class Settings {
                 setVerbose(verbose);
     
             } else if (key.equals("synchronised")) {
-                String sSync = (String)options.get("synchronised");
-                if (sSync.equals("true")) {
-                    setSync(true);
-                } else {
-                    setSync(false);
-                }
+                setSync("true".equals((String)options.get("synchronised")));
+            } else if (key.equals("qcache")) {
+                setQueryCache( "cycle".equals((String)options.get("qcache")) );
+            } else if (key.equals("qprofiling")) {
+                setQueryProfiling( "yes".equals((String)options.get("qprofiling")) );
             } else {
                 //userParameters.put(key, options.get(key));
             }
@@ -197,6 +198,20 @@ public class Settings {
     
     public void setSync(boolean pSync) {
         sync = pSync;
+    }
+    
+    public boolean hasQueryCache() {
+        return qCache;
+    }
+    public void setQueryCache(boolean b) {
+        qCache = b;
+    }
+    
+    public boolean hasQueryProfiling() {
+        return qProfiling;
+    }
+    public void setQueryProfiling(boolean b) {
+        qProfiling = b;
     }
     
     public Map<String,Object> getUserParameters() {

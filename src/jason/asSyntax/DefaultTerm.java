@@ -103,6 +103,14 @@ public abstract class DefaultTerm implements Term, Serializable {
             return this.toString().compareTo(t.toString());
     }
 
+    public boolean subsumes(Term l) { 
+        if (l.isVar())
+            return false;
+        else
+            return true; 
+    }
+
+
     public boolean apply(Unifier u) {
         return false;
     }

@@ -536,7 +536,6 @@ public class BeliefBaseTest extends TestCase {
     }
     
     
-    @SuppressWarnings("unchecked")
     public void testBelBRF() throws RevisionFailedException {
         Agent ag = new Agent();
         ag.initAg();
@@ -580,6 +579,7 @@ public class BeliefBaseTest extends TestCase {
         assertEquals(u.get("Y").toString(),"10");
         assertEquals(u.get("A").toString(),"ag");
         
+        @SuppressWarnings("rawtypes")
         List[] rbrf = ag.brf(null, Literal.parseLiteral("c(20)"), Intention.EmptyInt);
         assertTrue(rbrf[0].size() == 0);
         assertTrue(rbrf[1].size() == 1);
@@ -621,8 +621,7 @@ public class BeliefBaseTest extends TestCase {
         assertEquals(ag.getBB().size(), c.size());
     }
     
-    @SuppressWarnings("unchecked")
-    private int iteratorSize(Iterator i) {
+    private int iteratorSize(@SuppressWarnings("rawtypes") Iterator i) {
         int c = 0;
         while (i.hasNext()) {
             i.next();
@@ -631,4 +630,241 @@ public class BeliefBaseTest extends TestCase {
         return c;
     }
     
+    public void testQueryCache() throws ParseException {
+        Agent ag = new Agent();
+        ag.initAg();
+        ag.getTS().getSettings().setQueryCache(true);
+        ag.initAg();
+        
+        ag.getBB().add(1,Literal.parseLiteral("c(x)"));
+        ag.getBB().add(1,Literal.parseLiteral("c(w)"));
+        ag.getBB().add(1,Literal.parseLiteral("c(k)"));
+        ag.getBB().add(1,Literal.parseLiteral("a(10)"));
+        ag.getBB().add(1,Literal.parseLiteral("a(20)[a]"));
+        ag.getBB().add(1,Literal.parseLiteral("a(30)[a,b]"));
+        ag.getBB().add(1,ASSyntax.parseRule("p(A,V) :- c(A) & a(V) & V < 30."));
+
+        Literal q = ASSyntax.parseLiteral("p(X,Y)");
+        Iterator<Unifier> i = q.logicalConsequence(ag, new Unifier());
+        String s1 = "";
+        while (i.hasNext()) {
+            Literal l = q.copy();
+            l.apply( i.next() );
+            s1 += l;        
+        }
+        
+        q = ASSyntax.parseLiteral("p(A,B)");
+        String s2 = "";
+        i = q.logicalConsequence(ag, new Unifier());
+        while (i.hasNext()) {
+            Literal l = q.copy();
+            Unifier u = i.next();
+            l.apply( u );
+            s2 += l;        
+        }
+        assertEquals(s1,s2);
+
+        q = ASSyntax.parseLiteral("p(x,B)");
+        s2 = "";
+        i = q.logicalConsequence(ag, new Unifier());
+        while (i.hasNext()) {
+            Literal l = q.copy();
+            Unifier u = i.next();
+            l.apply( u );
+            s2 += l;        
+        }
+        assertEquals("p(x,10)p(x,20)",s2);
+
+        q = ASSyntax.parseLiteral("p(x,B)");
+        s1 = "";
+        i = q.logicalConsequence(ag, new Unifier());
+        while (i.hasNext()) {
+            Literal l = q.copy();
+            Unifier u = i.next();
+            l.apply( u );
+            s1 += l;        
+        }
+        assertEquals(s1,s2);
+
+        ag.getQueryCache().reset();
+        
+        q = ASSyntax.parseLiteral("p(x,B)");
+        s1 = "";
+        i = q.logicalConsequence(ag, new Unifier());
+        while (i.hasNext()) {
+            Literal l = q.copy();
+            Unifier u = i.next();
+            l.apply( u );
+            s1 += l;        
+        }
+        assertEquals(s1,s2);
+
+        // must have cache for the following
+        assertNotNull(ag.getQueryCache().getCache(ASSyntax.parseLiteral("p(x,B)")));
+        /*assertNotNull(ag.getQueryCache().getCache(ASSyntax.parseLiteral("p(x,II)")));
+        assertNotNull(ag.getQueryCache().getCache(ASSyntax.parseLiteral("p(x,10)")));
+
+        // must NOT have cache for the following
+        assertNull(ag.getQueryCache().getCache(ASSyntax.parseLiteral("p(UU,II)")));
+        */
+        
+        // test partial results
+        ag.getQueryCache().reset();
+
+        q = ASSyntax.parseLiteral("p(A,B)");
+        i = q.logicalConsequence(ag, new Unifier());
+        // consumes 2 solutions
+        i.next();
+        i.next(); 
+
+        // has cache for it.
+        q = ASSyntax.parseLiteral("p(_,10)");
+        i = q.logicalConsequence(ag, new Unifier());
+        s1 = "";
+        while (i.hasNext()) {
+            Literal l = q.copy();
+            Unifier u = i.next();
+            l.apply( u );
+            s1 += l;        
+        }        
+        assertEquals("p(x,10)p(w,10)p(k,10)",s1);
+
+        // test order       
+        ag.getQueryCache().reset();
+        q = ASSyntax.parseLiteral("p(x,10)");
+        i = q.logicalConsequence(ag, new Unifier());
+        while (i.hasNext()) {
+            i.next();
+        }  
+
+        q = ASSyntax.parseLiteral("p(_,10)");
+        i = q.logicalConsequence(ag, new Unifier());
+        while (i.hasNext()) {
+            i.next();
+        }          
+
+        q = ASSyntax.parseLiteral("p(_,_)");
+        i = q.logicalConsequence(ag, new Unifier());
+        while (i.hasNext()) {
+            i.next();
+        }          
+
+        q = ASSyntax.parseLiteral("p(_,10)");
+        i = q.logicalConsequence(ag, new Unifier());
+        s1 = "";
+        while (i.hasNext()) {
+            Literal l = q.copy();
+            Unifier u = i.next();
+            l.apply( u );
+            s1 += l;        
+        }   
+        assertEquals("p(x,10)p(w,10)p(k,10)",s1);
+        
+        //System.out.println(ag.getQueryCache());
+    }
+    
+    public void testQueryCacheBW() throws ParseException {
+        Agent ag = new Agent();
+        ag.initAg();
+        addBWBB(ag);
+        
+        Literal q = ASSyntax.parseLiteral("tower([H|T])");
+        Iterator<Unifier> i = q.logicalConsequence(ag, new Unifier());
+        String s1 = ""; // without cache
+        while (i.hasNext()) {
+            Literal l = q.copy();
+            l.apply( i.next() );
+            s1 += l;        
+        }
+        
+        //System.out.println("*********************");
+        
+        // now with cache
+        ag = new Agent();
+        ag.initAg();
+        ag.getTS().getSettings().setQueryCache(true);
+        ag.getTS().getSettings().setQueryProfiling(true);        
+        ag.initAg();
+        addBWBB(ag);
+        
+        i = q.logicalConsequence(ag, new Unifier());
+        String s2 = "";
+        while (i.hasNext()) {
+            Literal l = q.copy();
+            l.apply( i.next() );
+            //System.out.println("           + "+l);
+            s2 += l;        
+        }
+        assertEquals(s1,s2);
+        //System.out.println(ag.getQueryCache());
+        ag.getQueryProfiling().newUpdateCycle(1,0,0);
+
+        i = q.logicalConsequence(ag, new Unifier());
+        while (i.hasNext()) {
+            i.next();
+        }        
+        
+        ag.getQueryProfiling().newUpdateCycle(2,0,0);
+        assertTrue(1.0 <= ag.getQueryProfiling().getP());
+        ag.getQueryProfiling().show();
+    }    
+    
+    public void testGen() throws ParseException {
+        // test generality
+        assertTrue(ASSyntax.parseLiteral("p(_,10)").subsumes(ASSyntax.parseLiteral("p(x,10)")));
+        assertTrue(ASSyntax.parseLiteral("p(x,10)").subsumes(ASSyntax.parseLiteral("p(x,10)")));
+        assertFalse(ASSyntax.parseLiteral("p(x,10)").subsumes(ASSyntax.parseLiteral("p(_,10)")));
+        
+        assertFalse(ASSyntax.parseLiteral("p(A,x)").subsumes(ASSyntax.parseLiteral("p(x,B)")));
+        assertFalse(ASSyntax.parseLiteral("p(A,x,Z)").subsumes(ASSyntax.parseLiteral("p(x,B,o)")));
+        assertFalse(ASSyntax.parseLiteral("p(x,B,o)").subsumes(ASSyntax.parseLiteral("p(A,x,Z)")));
+        assertTrue(ASSyntax.parseLiteral("p(A,B)").subsumes(ASSyntax.parseLiteral("p(X,Y)")));
+    }
+
+    void addBWBB(Agent ag) throws ParseException {
+        ag.getBB().add(1,Literal.parseLiteral("clear(table)"));
+        ag.getBB().add(1,Literal.parseLiteral("on(f,g)"));
+        ag.getBB().add(1,Literal.parseLiteral("on(g,table)"));
+        ag.getBB().add(1,Literal.parseLiteral("on(d,e)"));
+        ag.getBB().add(1,Literal.parseLiteral("on(e,table)"));
+        ag.getBB().add(1,Literal.parseLiteral("on(a,b)"));
+        ag.getBB().add(1,Literal.parseLiteral("on(b,c)"));
+        ag.getBB().add(1,Literal.parseLiteral("on(c,table)"));
+        
+        ag.getBB().add(1,ASSyntax.parseRule("clear(X) :- not(on(_,X))."));
+        ag.getBB().add(1,ASSyntax.parseRule("tower([X]) :- on(X,table)."));
+        ag.getBB().add(1,ASSyntax.parseRule("tower([X,Y|T]) :- on(X,Y) & tower([Y|T])."));        
+    }
+    
+    public void testQueryCacheRR() throws ParseException {
+        Agent ag = new Agent();
+        ag.initAg();
+        ag.getTS().getSettings().setQueryCache(true);
+        ag.initAg();
+
+        ag.getBB().add(1,Literal.parseLiteral("v(1)"));
+        ag.getBB().add(1,Literal.parseLiteral("v(2)"));
+        ag.getBB().add(1,Literal.parseLiteral("v(3)"));
+        
+        ag.getBB().add(1,ASSyntax.parseRule("r(X) :- v(X)."));
+        
+        LogicalFormula q = ASSyntax.parseFormula("r(L) & r(L2)");
+        Iterator<Unifier> i = q.logicalConsequence(ag, new Unifier());
+        assertTrue( i.hasNext() ); // get only one answer
+        Unifier a = i.next();
+        assertEquals(a.size(),2);
+        //assertTrue(ag.getQueryCache().getNbUses() > 0); // for adv cache
+
+        int c = 1;
+        while (i.hasNext()) {
+            i.next();
+            c++;
+        }
+        assertEquals(9,c);
+        //assertTrue(ag.getQueryCache().getNbUses() > 2); // for adv cache
+        
+        //System.out.println(ag.getQueryCache());
+        //ag.getQueryCache().newCycle(1);
+        //ag.getQueryCache().stop();
+    }    
 }

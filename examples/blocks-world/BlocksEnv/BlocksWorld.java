@@ -71,7 +71,7 @@ public class BlocksWorld extends jason.environment.Environment {
             switch (w) {
                    case 1: model = WorldModel.world1(); break;
                    case 2: model = WorldModel.world2(); break;
-                   case 3: model = WorldModel.world2(); break;
+                   case 3: model = WorldModel.world3(); break;
             default:
                 logger.info("Invalid index!");
                 return;

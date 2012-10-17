@@ -43,6 +43,6 @@ public class TestExampleEnvironment {
     @Test(timeout=3000)
     public void testAction() {
         ag.addGoal("start");           // add a new goal for the agent
-        ag.assertAct("a1", 10);        // the agent have to perform 'a1' in 10 reasoning cycles
+        ag.assertAct("a1", 20);        // the agent have to perform 'a1' in 10 reasoning cycles
     }
 }

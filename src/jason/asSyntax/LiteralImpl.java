@@ -30,7 +30,7 @@ import org.w3c.dom.Element;
 /**
  * A Literal extends a Pred with strong negation (~).
  */
-public class LiteralImpl extends Pred implements LogicalFormula {
+public class LiteralImpl extends Pred {
 
     private static final long serialVersionUID = 1L;
     //private static Logger logger = Logger.getLogger(LiteralImpl.class.getName());

@@ -38,6 +38,8 @@ public interface Term extends Cloneable, Comparable<Term>, Serializable, ToDOM {
 
     public boolean equals(Object o);
     
+    public boolean subsumes(Term l); 
+
     /** replaces variables by their values in the unifier, returns true if some variable was applied */
     public boolean apply(Unifier u);
 

@@ -24,7 +24,9 @@
 package jason.asSyntax;
 
 import jason.asSemantics.Agent;
+import jason.asSemantics.CacheKey;
 import jason.asSemantics.InternalAction;
+import jason.asSemantics.QueryCacheAdv;
 import jason.asSemantics.Unifier;
 
 import java.util.ConcurrentModificationException;
@@ -42,7 +44,7 @@ import org.w3c.dom.Element;
  @navassoc - ia - InternalAction
 
  */
-public class InternalActionLiteral extends Structure {
+public class InternalActionLiteral extends Structure implements LogicalFormula {
 
     private static final long serialVersionUID = 1L;
     private static Logger logger = Logger.getLogger(InternalActionLiteral.class.getName());
@@ -80,13 +82,41 @@ public class InternalActionLiteral extends Structure {
     public Iterator<Unifier> logicalConsequence(Agent ag, Unifier un) {
         if (ag == null || ag.getTS().getUserAgArch().isRunning()) {
             try {
+                /*final QueryCache qCache;
+                final CacheKey kForChache;
+                if (ag != null) { 
+                    qCache = ag.getQueryCache();
+                    if (qCache != null) {
+                        kForChache = qCache.prepareForCache(this, un);
+                        Iterator<Unifier> ic = qCache.getCache(kForChache);
+                        if (ic != null) {
+                            //ag.getLogger().info("from cache internal action "+this);
+                            return ic;
+                        }
+                    } else {
+                        kForChache = null;
+                    }
+                } else {
+                    qCache = null;
+                    kForChache = null;
+                }*/
+
                 InternalAction ia = getIA(ag);
                 // calls IA's execute method
                 Object oresult = ia.execute(ag.getTS(), un, ia.prepareArguments(this, un));
                 if (oresult instanceof Boolean && (Boolean)oresult) {
+                    /*if (kForChache != null) {
+                        qCache.addAnswer(kForChache, un);
+                        qCache.queryFinished(kForChache);
+                    }*/
                     return LogExpr.createUnifIterator(un);
                 } else if (oresult instanceof Iterator) {
-                    return ((Iterator<Unifier>)oresult);
+                    //if (kForChache == null) {
+                        return ((Iterator<Unifier>)oresult);
+                    /*} else {
+                        // add a wrapper to collect results into the cache
+                        return qCache.queryFilter(kForChache, (Iterator<Unifier>)oresult); 
+                    }*/
                 }
             } catch (ConcurrentModificationException e) {
                 System.out.println("*-*-* .count concurrent exception - try later");

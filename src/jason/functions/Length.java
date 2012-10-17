@@ -41,8 +41,10 @@ public class Length extends DefaultArithFunction  {
         return a == 1;
     }
     
+    /*
     @Override
     public boolean allowUngroundTerms() {
         return true;
     }
+    */
 }

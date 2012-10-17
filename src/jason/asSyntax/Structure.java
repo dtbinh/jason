@@ -153,6 +153,25 @@ public class Structure extends Atom {
     }  
     
     @Override
+    public boolean subsumes(Term t) {
+        if (t.isStructure()) { 
+            Structure tAsStruct = (Structure)t;
+
+            final int ma = getArity();
+            final int oa = tAsStruct.getArity();
+            for (int i=0; i<ma && i<oa; i++) {
+                //System.out.println(getTerm(i)+" comp "+tAsStruct.getTerm(i)+"="+getTerm(i).isMoreGeneral(tAsStruct.getTerm(i)));
+                if (! getTerm(i).subsumes(tAsStruct.getTerm(i)))
+                    return false;
+            }
+            return true;
+        } else {
+            return super.subsumes(t);
+        }
+    }
+
+    
+    @Override
     public boolean apply(Unifier u) {
         boolean r = false;
         // do not use iterator! (see ListTermImpl class)
