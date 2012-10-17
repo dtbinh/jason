@@ -850,12 +850,14 @@ public class TransitionSystem {
                 // should became
                 //   +!s: !z
                 im = i.peek();
-                if (im.isFinished() || !im.unif.unifies(im.getCurrentStep().getBodyTerm(), topLiteral) || im.getCurrentStep().getBodyTerm() instanceof VarTerm) {
+                if (im.isFinished() 
+                        || !(im.unif.unifies(im.getCurrentStep().getBodyTerm(), topLiteral) && im.getCurrentStep().getBodyType() == BodyType.achieve)
+                        || im.getCurrentStep().getBodyTerm() instanceof VarTerm) {
                     im = i.pop(); // +!c above
                 }
                 while (!i.isFinished() && //i.size() > 0 &&
-                       !im.unif.unifies(im.getTrigger().getLiteral(), topLiteral) &&
-                       !im.unif.unifies(im.getCurrentStep().getBodyTerm(), topLiteral)) {
+                       !(im.unif.unifies(im.getTrigger().getLiteral(), topLiteral) && im.getTrigger().isAchvGoal()) &&
+                       !(im.unif.unifies(im.getCurrentStep().getBodyTerm(), topLiteral) && im.getCurrentStep().getBodyType() == BodyType.achieve)) {
                     im = i.pop();
                 }
             }
