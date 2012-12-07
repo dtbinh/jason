@@ -19,7 +19,7 @@ public class QueryCacheAdv {
     private Agent ag; 
     private Map<PredicateIndicator, List<Pair<Literal,List<Unifier>>>> cache = null;
     private Map<PredicateIndicator, List<Pair<Literal,List<Unifier>>>> tmp   = null;
-    private Set<CacheKey> noCache = null;
+    private Set<QueryCacheKey> noCache = null;
 
     private QueryProfiling prof;
     
@@ -31,7 +31,7 @@ public class QueryCacheAdv {
         logger  = Logger.getLogger(QueryCacheAdv.class.getName()+"-"+ag.getTS().getUserAgArch().getAgName());
         cache   = new HashMap<PredicateIndicator, List<Pair<Literal,List<Unifier>>>>();
         tmp     = new HashMap<PredicateIndicator, List<Pair<Literal,List<Unifier>>>>();
-        noCache = new HashSet<CacheKey>();
+        noCache = new HashSet<QueryCacheKey>();
     }
     
     public void reset() {
@@ -58,7 +58,7 @@ public class QueryCacheAdv {
         }
 
         List<Pair<Literal,List<Unifier>>> optsTmp = tmp.get(f.getPredicateIndicator());
-        if (optsTmp != null && !noCache.contains(new CacheKey(f))) {
+        if (optsTmp != null && !noCache.contains(new QueryCacheKey(f))) {
             for (Pair<Literal,List<Unifier>> ic: optsTmp) { // for each possible entry in the cache
                 //System.out.println("  try opt tmp "+ic+" "+new Unifier().unifies(f, ic.getFirst()) + "  "+f.subsumes(ic.getFirst()));
                 if (new Unifier().unifies(f, ic.getFirst()) && ic.getFirst().subsumes(f)) { 
@@ -69,7 +69,7 @@ public class QueryCacheAdv {
                     final List<Unifier> listTmp = ic.getSecond();
                     final int           listSize = listTmp.size();
 
-                    noCache.add(new CacheKey(lTmp));
+                    noCache.add(new QueryCacheKey(lTmp));
                     
                     // use already obtained solutions
                     return new Pair<Literal,Iterator<Unifier>>(lTmp,new Iterator<Unifier>() {
@@ -118,7 +118,7 @@ public class QueryCacheAdv {
     }
 
     public void addAnswer(Literal f, Unifier a) {
-        if (noCache.contains(new CacheKey(f)))
+        if (noCache.contains(new QueryCacheKey(f)))
             return;
         
         List<Unifier> ans = null;

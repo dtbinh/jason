@@ -24,7 +24,7 @@
 package jason.asSyntax;
 
 import jason.asSemantics.Agent;
-import jason.asSemantics.CacheKey;
+import jason.asSemantics.QueryCacheKey;
 import jason.asSemantics.InternalAction;
 import jason.asSemantics.QueryCacheAdv;
 import jason.asSemantics.Unifier;
