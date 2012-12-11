@@ -59,6 +59,12 @@ public class JasonBridgeArch extends AgArch {
     }
 
     @Override
+    public void stop() {
+        getTS().getAg().stopAg();
+        super.stop();
+    }
+    
+    @Override
     public String getAgName() {
         return jadeAg.getLocalName();
     }
