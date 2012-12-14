@@ -103,6 +103,10 @@ public class Config extends Properties {
     public File getUserConfFile() {
         return new File(System.getProperties().get("user.home") + File.separator + ".jason/user.properties");
     }
+    
+    public File getMasterConfFile() {
+        return new File("jason.properties");
+    }
 
     /** Returns true if the file is loaded correctly */
     public boolean load() {
@@ -111,6 +115,13 @@ public class Config extends Properties {
             if (f.exists()) {
                 super.load(new FileInputStream(f));
                 return true;
+            } else { // load master configuration file
+                f = getMasterConfFile();
+                if (f.exists()) {
+                    System.out.println("User config file not found, loading master: "+f.getAbsolutePath());
+                    super.load(new FileInputStream(f));
+                    return true;
+                }
             }
         } catch (Exception e) {
             System.err.println("Error reading preferences");
