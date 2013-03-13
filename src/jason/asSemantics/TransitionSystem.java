@@ -744,20 +744,28 @@ public class TransitionSystem {
             
         // Rule AddBel
         case addBel:
+        case addBelBegin:
+        case addBelEnd:
+        case addBelNewFocus:
             body = prepareBodyForEvent(body, u);
 
             // calculate focus
             Intention newfocus = Intention.EmptyInt;
-            if (setts.sameFocus())
+            boolean isSameFocus = setts.sameFocus() && h.getBodyType() != BodyType.addBelNewFocus;
+            if (isSameFocus)
                 newfocus = conf.C.SI;
             
             // call BRF
             try {
-                List<Literal>[] result = ag.brf(body,null,conf.C.SI); // the intention is not the new focus
-                if (result != null) { // really add something
+                List<Literal>[] result;
+                if (h.getBodyType() == BodyType.addBelEnd)
+                    result = ag.brf(body,null,conf.C.SI, true); 
+                else
+                    result = ag.brf(body,null,conf.C.SI); // use default (well documented and used) method in case someone has overriden it 
+                if (result != null) { // really added something
                     // generate events
                     updateEvents(result,newfocus);
-                    if (!setts.sameFocus()) {
+                    if (!isSameFocus) {
                         updateIntention();
                     }                    
                 } else {
@@ -952,7 +960,7 @@ public class TransitionSystem {
             if (logger.isLoggable(Level.FINE)) logger.fine("Added event " + e);
         }
     }
-    
+  
     /** remove the top action and requeue the current intention */
     private void updateIntention() {
         if (!conf.C.SI.isFinished()) {

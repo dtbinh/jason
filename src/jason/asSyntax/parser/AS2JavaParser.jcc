@@ -448,7 +448,13 @@ Object body_formula() :
    [  "!"              { formType = BodyType.achieve; }
     | "!!"             { formType = BodyType.achieveNF; }
     | "?"              { formType = BodyType.test; }
-    | "+"              { formType = BodyType.addBel; }
+    | ( "+"            { formType = BodyType.addBel; }
+        [ ( "+"        { formType = BodyType.addBelNewFocus; } 
+          | "<"        { formType = BodyType.addBel; }
+          | ">"        { formType = BodyType.addBelEnd; }
+          )
+        ]
+      )      
     | ( "-"            { formType = BodyType.delBel; }
         ["+"           { formType = BodyType.delAddBel; }
         ]

@@ -15,6 +15,9 @@ public interface PlanBody extends Term {
         achieve {         public String toString() { return "!"; }},
         test {            public String toString() { return "?"; }},
         addBel {          public String toString() { return "+"; }},
+        addBelNewFocus {  public String toString() { return "++"; }},        
+        addBelBegin {     public String toString() { return "+<"; }},       // equivalent to simple +    
+        addBelEnd {       public String toString() { return "+>"; }},      
         delBel {          public String toString() { return "-"; }},
         delAddBel {       public String toString() { return "-+"; }},
         achieveNF {       public String toString() { return "!!"; }},

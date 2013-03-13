@@ -788,18 +788,35 @@ public class Agent {
      * this is used to generate the appropriate internal events. If
      * nothing change, returns null.
      */
-    @SuppressWarnings("unchecked")
     public List<Literal>[] brf(Literal beliefToAdd, Literal beliefToDel,  Intention i) throws RevisionFailedException {
+        return brf(beliefToAdd, beliefToDel, i, false);
+    }
+    
+    /**
+     * This function should revise the belief base with the given literal to
+     * add, to remove, and the current intention that triggered the operation.
+     * 
+     * <p>In its return, List[0] has the list of actual additions to
+     * the belief base, and List[1] has the list of actual deletions;
+     * this is used to generate the appropriate internal events. If
+     * nothing change, returns null.
+     */
+    @SuppressWarnings("unchecked")
+    public List<Literal>[] brf(Literal beliefToAdd, Literal beliefToDel,  Intention i, boolean addEnd) throws RevisionFailedException {
         // This class does not implement belief revision! It
         // is supposed that a subclass will do it.
         // It simply add/del the belief.
 
+        int position = 0; // add in the begin
+        if (addEnd)
+            position = 1;
+        
         List<Literal>[] result = null;
         try {
             if (beliefToAdd != null) {
                 if (logger.isLoggable(Level.FINE)) logger.fine("Adding belief " + beliefToAdd);
                 
-                if (getBB().add(beliefToAdd)) {
+                if (getBB().add(position, beliefToAdd)) {
                     result = new List[2];
                     result[0] = Collections.singletonList(beliefToAdd);
                     result[1] = Collections.emptyList();

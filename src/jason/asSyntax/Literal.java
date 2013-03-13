@@ -504,7 +504,10 @@ public abstract class Literal extends DefaultTerm implements LogicalFormula {
 			if (tfunctor.isLiteral() && ((Literal)tfunctor).negated()) {
 				pos = Literal.LNeg;
 			}
-
+			if (tfunctor.isString()) {
+			    tfunctor = ASSyntax.parseTerm( ((StringTerm)tfunctor).getString() );
+			}
+			
 			Literal l = new LiteralImpl(pos,((Atom)tfunctor).getFunctor());
 
 			if (i.hasNext()) {

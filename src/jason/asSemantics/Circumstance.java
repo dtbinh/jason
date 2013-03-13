@@ -115,8 +115,8 @@ public class Circumstance implements Serializable {
     /** Events */
 
     public void addEvent(Event ev) {
-        E.add(ev);        
-
+        E.add(ev);  
+        
         if (ev.isAtomic())
             hasAtomicEvent = true;
         
@@ -180,15 +180,18 @@ public class Circumstance implements Serializable {
     public Event removeAtomicEvent() {
         if (!hasAtomicEvent)
             return null;
-        
+
         Iterator<Event> i = E.iterator();
         while (i.hasNext()) {
             Event e = i.next();
             if (e.isAtomic()) {
                 i.remove();
+                hasAtomicEvent = false;
                 return e;
             }
         }
+        // there is no AtomicEvent!
+        hasAtomicEvent = false;
         return null;
     }
 
