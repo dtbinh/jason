@@ -99,7 +99,7 @@ public class AslHighlightingCalculator implements ISemanticHighlightingCalculato
 					
 				} else if (ALL_RESERVED_WORDS.contains(k.getValue())) {
 					setStyle( acceptor, node, RESERVED_WORD);
-				} else if (k.getValue().equals("+") && status == STATUS_BEGIN_BELIEF) {
+				} else if ((k.getValue().equals("+") || k.getValue().equals("-") || k.getValue().equals("<") || k.getValue().equals(">")) && status == STATUS_BEGIN_BELIEF) {
 					setStyle( acceptor, node, BELIEF);
 				} else if (k.getValue().equals("(")) {
 					openedParentheses++;

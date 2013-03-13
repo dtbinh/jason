@@ -53,7 +53,7 @@ StmtWHILE:
 ;
 
 Body_formula:
-	( '!' | '!!' | '?' | '+' | ( '-' ( '+' )? ) )? log_expr=Log_expr
+	( '!' | '!!' | '?' | '+' ('+' | '>' | '<')? | ( '-' ( '+' )? ) )? log_expr=Log_expr
 ;
 
 Plan_term:{Plan_term}
