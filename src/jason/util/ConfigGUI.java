@@ -67,6 +67,8 @@ public class ConfigGUI {
     protected JCheckBox  jadeSnifferCB;
     protected JCheckBox  jadeRmaCB;
 
+    protected JCheckBox  shortUnnamedVarCB;
+
     protected static Config userProperties = Config.get();
 
     static {
@@ -161,6 +163,12 @@ public class ConfigGUI {
         warnSingVarsCBox = new JCheckBox("Print out warnings about singleton variables in plans and rules", false);
         wsvPanel.add(warnSingVarsCBox);
         jasonHomePanel.add(wsvPanel);
+
+        // unamed vars style
+        JPanel unvPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        shortUnnamedVarCB = new JCheckBox("Use short names for unamed variables (those starting with _)", false);
+        unvPanel.add(shortUnnamedVarCB);
+        jasonHomePanel.add(unvPanel);
 
         pop.add(jasonHomePanel);
         
@@ -304,6 +312,7 @@ public class ConfigGUI {
         closeAllCBox.setSelected(userProperties.getBoolean(Config.CLOSEALL));
         checkVersionCBox.setSelected(userProperties.getBoolean(Config.CHECK_VERSION));
         warnSingVarsCBox.setSelected(userProperties.getBoolean(Config.WARN_SING_VAR));
+        shortUnnamedVarCB.setSelected(userProperties.getBoolean(Config.SHORT_UNNAMED_VARS));
         jadeSnifferCB.setSelected(userProperties.getBoolean(Config.JADE_SNIFFER));        
         jadeRmaCB.setSelected(userProperties.getBoolean(Config.JADE_RMA));
         
@@ -360,6 +369,7 @@ public class ConfigGUI {
         userProperties.put(Config.CLOSEALL, closeAllCBox.isSelected()+"");
         userProperties.put(Config.CHECK_VERSION, checkVersionCBox.isSelected()+"");
         userProperties.put(Config.WARN_SING_VAR, warnSingVarsCBox.isSelected()+"");
+        userProperties.put(Config.SHORT_UNNAMED_VARS, shortUnnamedVarCB.isSelected()+"");
         userProperties.put(Config.JADE_SNIFFER, jadeSnifferCB.isSelected()+"");
         userProperties.put(Config.JADE_RMA, jadeRmaCB.isSelected()+"");
         

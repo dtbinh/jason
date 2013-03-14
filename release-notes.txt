@@ -5,6 +5,13 @@ revision XXX on SVN
 ---------------------------
 
 New features
+- new operators do add beliefs
+	"++" add a belief with new focus (a new intention is created for the 
+	     event produced by the addition)
+	"+<" add a belief in the begin of the belief base (it is the same as
+	     the usual "+" operator)
+	'+>" add a belief in the end of the belief base
+
 - new special achievement goal events 
 	+!jag_sleeping 
 	+!jag_awaking
@@ -24,6 +31,21 @@ New features
         [qprofiling=yes]: it generates some statistical data related to queries and is used
                                    to measure the performance of the qcache option
 
+- new general configuration parameter the define whether short names will be used
+  for unnamed variables (those starting with _).
+  Usually these vars may have quite long names. With this option enabled, the names
+  will be kept short.
+
+  This parameter is stored in the ~/.jason/user.properties file and can be changed
+  either by editing the file or by running 
+
+	java -jar lib/jason.jar
+
+  NB: If in the user.properties file doesn't exist the first time someone runs 
+  Jason, the file 
+	<jason install directory>/jason.properties 
+  will be used for initial user's parameters.
+ 
 - new internal action .shuffle to shuffle the elements of lists 
 
 ---------------------------

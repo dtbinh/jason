@@ -163,6 +163,9 @@
         <SEQ TYPE="OPERATOR">&lt;</SEQ>
 
         <SEQ TYPE="OPERATOR">+</SEQ>
+        <SEQ TYPE="OPERATOR">++</SEQ>
+        <SEQ TYPE="OPERATOR">+&gt;</SEQ>
+        <SEQ TYPE="OPERATOR">+&lt;</SEQ>
         <SEQ TYPE="OPERATOR">-</SEQ>
         <SEQ TYPE="OPERATOR">/</SEQ>
         <SEQ TYPE="OPERATOR">*</SEQ>
@@ -326,6 +329,9 @@
         <SEQ TYPE="OPERATOR">&lt;</SEQ>
 
         <SEQ TYPE="OPERATOR">+</SEQ>
+        <SEQ TYPE="OPERATOR">++</SEQ>
+        <SEQ TYPE="OPERATOR">+&gt;</SEQ>
+        <SEQ TYPE="OPERATOR">+&lt;</SEQ>
         <SEQ TYPE="OPERATOR">-</SEQ>
         <SEQ TYPE="OPERATOR">/</SEQ>
         <SEQ TYPE="OPERATOR">*</SEQ>

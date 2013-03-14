@@ -78,6 +78,8 @@ public class Config extends Properties {
 
     public static final String jacamoHomeProp = "JaCaMoHome";
 
+    public static final String SHORT_UNNAMED_VARS = "shortUnnamedVars";
+
     private static Config      singleton     = null;
 
     public static Config get() {

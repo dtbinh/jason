@@ -25,6 +25,7 @@ package jason.asSyntax;
 
 import jason.asSemantics.Unifier;
 import jason.asSyntax.parser.as2j;
+import jason.jeditplugin.Config;
 
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -305,6 +306,8 @@ public class Structure extends Atom {
         return this;
     }
 
+    static boolean useShortUnnamedVars = Config.get().getBoolean(Config.SHORT_UNNAMED_VARS);
+    
     protected VarTerm varToReplace(Term t, Unifier un) {
         VarTerm vt    = (VarTerm)t;
         VarTerm deref = un.deref(vt);
@@ -314,7 +317,7 @@ public class Structure extends Atom {
         // if the variable hasn't been renamed given the input unifier, then rename it.
         if (deref.equals(vt)) {
             // forget the name
-            VarTerm var = new UnnamedVar("_" + UnnamedVar.getUniqueId() + t);
+            VarTerm var = useShortUnnamedVars ? new UnnamedVar() : new UnnamedVar("_" + UnnamedVar.getUniqueId() + t);
             // if deref has annotations then we need to replicate these in the new variable
             if (deref.hasAnnot()) {
                 var.setAnnots(deref.getAnnots().cloneLT());

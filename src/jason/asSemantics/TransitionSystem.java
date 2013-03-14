@@ -761,7 +761,7 @@ public class TransitionSystem {
                 if (h.getBodyType() == BodyType.addBelEnd)
                     result = ag.brf(body,null,conf.C.SI, true); 
                 else
-                    result = ag.brf(body,null,conf.C.SI); // use default (well documented and used) method in case someone has overriden it 
+                    result = ag.brf(body,null,conf.C.SI); // use default (well documented and used) method in case someone has overridden it 
                 if (result != null) { // really added something
                     // generate events
                     updateEvents(result,newfocus);
