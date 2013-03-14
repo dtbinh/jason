@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: jasonide.xtext.asl.ui
 Bundle-Vendor: Jason team
-Bundle-Version: 1.0.9
+Bundle-Version: 1.0.10
 Bundle-SymbolicName: jasonide.xtext.asl.ui; singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: jasonide.xtext.asl;visibility:=reexport,
