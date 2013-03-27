@@ -246,6 +246,13 @@ public class Agent {
 
         if (scheduler != null) 
             scheduler.shutdownNow();
+        
+        for (InternalAction ia: internalActions.values())
+            try {
+                ia.destroy();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }       
     }
     
     /** 

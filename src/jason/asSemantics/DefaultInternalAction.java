@@ -41,4 +41,8 @@ public class DefaultInternalAction implements InternalAction, Serializable {
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
         return false;
     }
+    
+    public void destroy() throws Exception {
+        
+    }
 }

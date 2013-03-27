@@ -48,4 +48,6 @@ public interface InternalAction {
      *  successfully executed. An Iterator result means that there is 
      *  more than one answer for this IA (e.g. see member internal action). */
     Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception;
+    
+    public void destroy() throws Exception;
 }
