@@ -38,6 +38,8 @@ import jason.asSyntax.Trigger;
 import jason.asSyntax.Trigger.TEOperator;
 import jason.asSyntax.Trigger.TEType;
 
+import java.util.Iterator;
+
 /**
   <p>Internal action:
   <b><code>.succeed_goal(<i>G</i>)</code></b>.
@@ -95,7 +97,9 @@ public class succeed_goal extends DefaultInternalAction {
         Circumstance C = ts.getC();
         Unifier bak = un.clone();
         
-        for (Intention i: C.getIntentions()) {
+        Iterator<Intention> itint = C.getAllIntentions();
+        while (itint.hasNext()) {
+            Intention i = itint.next();
             if (dropIntention(i, g, ts, un) > 1) {
                 C.dropIntention(i);
                 un = bak.clone();
@@ -107,7 +111,9 @@ public class succeed_goal extends DefaultInternalAction {
         un = bak.clone();
             
         // dropping G in Events
-        for (Event e: C.getEvents()) {
+        Iterator<Event> ie = C.getAllEvents();
+        while (ie.hasNext()) {
+            Event e = ie.next();
             // test in the intention
             Intention i = e.getIntention();
             int r = dropIntention(i, g, ts, un);

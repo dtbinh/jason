@@ -58,8 +58,9 @@ public class Circumstance implements Serializable {
     protected Option                   SO;
     protected Intention                SI;
     private   Intention                AI; // Atomic Intention
+    private   Event                    AE; // Atomic Event
     private   boolean                  atomicIntSuspended = false; // whether the current atomic intention is suspended in PA or PI
-    private   boolean                  hasAtomicEvent = false;         
+    //private   boolean                  hasAtomicEvent = false;         
 
     private Map<Integer, ActionExec>   PA; // Pending actions, waiting action execution (key is the intention id)
     private List<ActionExec>           FA; // Feedback actions, those that are already executed
@@ -115,10 +116,12 @@ public class Circumstance implements Serializable {
     /** Events */
 
     public void addEvent(Event ev) {
-        E.add(ev);  
         
         if (ev.isAtomic())
-            hasAtomicEvent = true;
+            //hasAtomicEvent = true;
+            AE = ev;
+        else
+            E.add(ev);  
         
         // notify listeners
         if (listeners != null)
@@ -147,38 +150,58 @@ public class Circumstance implements Serializable {
     }
 
     public boolean removeEvent(Event ev) {
-        if (E.remove(ev)) {
-            if (hasAtomicEvent && !ev.isAtomic()) {
-                hasAtomicEvent = false;
-            }
+        if (ev.equals(AE)) {
+            AE = null;
             return true;
-        } else {
-            return false;
         }
+        return E.remove(ev);
     }
     
     public void clearEvents() {
         // notify listeners
         if (listeners != null)
-            for (CircumstanceListener el : listeners)
+            for (CircumstanceListener el : listeners) {
                 for (Event ev: E)
                     el.intentionDropped(ev.getIntention());
+                if (AE != null)
+                    el.intentionDropped(AE.getIntention());
+            }
         
         E.clear();        
-        hasAtomicEvent = false;
+        AE = null;
     }
 
+    /** get the queue of events (which does not include the atomic event) */
     public Queue<Event> getEvents() {
         return E;
     }
-
-    public boolean hasEvent() {
-        return !E.isEmpty();
+    
+    /** get the all events (which include the atomic event, if it exists) */
+    public Iterator<Event> getAllEvents() {
+        if (AE == null) {
+            return E.iterator();
+        } else {
+            List<Event> l = new ArrayList<Event>(E.size()+1);
+            l.add(AE);
+            l.addAll(E);
+            return l.iterator();
+        }
     }
 
+    public boolean hasEvent() {
+        return AE != null || !E.isEmpty();
+    }
+
+    public Event getAtomicEvent() {
+        return AE;
+    }
+    
     /** remove and returns the event with atomic intention, null if none */
     public Event removeAtomicEvent() {
-        if (!hasAtomicEvent)
+        Event e = AE;
+        AE = null;
+        return e;
+        /*if (!hasAtomicEvent)
             return null;
 
         Iterator<Event> i = E.iterator();
@@ -192,7 +215,7 @@ public class Circumstance implements Serializable {
         }
         // there is no AtomicEvent!
         hasAtomicEvent = false;
-        return null;
+        return null;*/
     }
 
     /** Listeners */
@@ -212,7 +235,6 @@ public class Circumstance implements Serializable {
     }
 
     public boolean hasListener() {
-        //return listeners != null && !listeners.isEmpty();
         return !listeners.isEmpty();
     }
 
@@ -236,19 +258,36 @@ public class Circumstance implements Serializable {
 
     /** Intentions */
 
+    /** get the queue of intention (which does not include atomic intention) */
     public Queue<Intention> getIntentions() {
         return I;
     }
+    
+    /** get the all intentions (which include the atomic intention, if it exists) */
+    public Iterator<Intention> getAllIntentions() {
+        if (AI == null) {
+            return I.iterator();
+        } else {
+            List<Intention> l = new ArrayList<Intention>(I.size()+1);
+            l.add(AI);
+            l.addAll(I);
+            return l.iterator();
+        }
+    }
 
     public boolean hasIntention() {
-        return I != null && !I.isEmpty();
+        return (I != null && !I.isEmpty()) || AI != null;
+    }
+    public boolean hasIntention(Intention i) {
+        return i == AI || I.contains(i);
     }
 
     public void addIntention(Intention intention) {
-        I.offer(intention);
         if (intention.isAtomic())
             setAtomicIntention(intention);
-
+        else
+            I.offer(intention);
+        
         // notify 
         if (listeners != null)
             for (CircumstanceListener el : listeners)
@@ -268,8 +307,10 @@ public class Circumstance implements Serializable {
     public boolean removeIntention(Intention i) {
         if (i == AI) {
             setAtomicIntention(null);
+            return true;
+        } else {
+            return I.remove(i);
         }
-        return I.remove(i);
     }
 
     /** removes and produces events to signal that the intention was dropped */
@@ -313,6 +354,8 @@ public class Circumstance implements Serializable {
     }
 
     public boolean hasAtomicIntention() {
+        //String x = (AI != null ? ""+AI.size() : "");
+        //System.out.println(E.size()+" "+I.size()+" "+(AI != null)+" "+(AE != null)+" "+ x);
         return AI != null;
     }
     
@@ -554,7 +597,9 @@ public class Circumstance implements Serializable {
     /** clone E, I, MB, PA, PI, FA, and AI */
     public Circumstance clone() {
         Circumstance c = new Circumstance();
-        c.hasAtomicEvent     = this.hasAtomicEvent;
+        //c.hasAtomicEvent     = this.hasAtomicEvent;
+        if (this.AE != null)
+            c.AE             = (Event)this.AE.clone();
         c.atomicIntSuspended = this.atomicIntSuspended;
         
         for (Event e: this.E) {
@@ -616,8 +661,11 @@ public class Circumstance implements Serializable {
         // events
         Element events = (Element) document.createElement("events");
         add = false;
-        if (E != null && !E.isEmpty()) {
-            for (Event evt: E) {
+        if (E != null && hasEvent()) {
+            Iterator<Event> ie = getAllEvents();
+            while (ie.hasNext()) {
+                Event evt = ie.next();
+
                 add = true;
                 e = evt.getAsDOM(document);
                 events.appendChild(e);
@@ -692,7 +740,9 @@ public class Circumstance implements Serializable {
             selIntEle.setAttribute("selected", "true");
             ints.appendChild(selIntEle);
         }
-        for (Intention in : getIntentions()) {
+        Iterator<Intention> itint = getAllIntentions();
+        while (itint.hasNext()) {
+            Intention in = itint.next();
             if (getSelectedIntention() != in) {
                 ints.appendChild(in.getAsDOM(document));
             }
@@ -788,6 +838,7 @@ public class Circumstance implements Serializable {
         s.append("  SO="+SO+"\n");
         s.append("  SI="+SI+"\n");
         s.append("  AI="+AI+"\n");
+        s.append("  AE="+AE+"\n");
         s.append("  PA="+PA+"\n");
         s.append("  PI="+PI+"\n");
         s.append("  FA="+FA+".");

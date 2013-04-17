@@ -155,7 +155,7 @@ public class desire extends intend {
 
                 case evt:
                     if (evtIterator == null)
-                        evtIterator = C.getEvents().iterator();
+                        evtIterator = C.getAllEvents();
                     
                     if (evtIterator.hasNext()) {
                         Event ei = evtIterator.next();

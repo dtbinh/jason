@@ -24,6 +24,8 @@
 
 package jason.stdlib;
 
+import java.util.Iterator;
+
 import jason.asSemantics.Circumstance;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.Event;
@@ -79,7 +81,9 @@ public class drop_all_intentions extends DefaultInternalAction {
         C.clearPendingActions();
 
         // drop intentions in E
-        for (Event e: C.getEvents()) {
+        Iterator<Event> ie = C.getAllEvents();
+        while (ie.hasNext()) {
+            Event e = ie.next();
             if (e.isInternal()) {
                 C.removeEvent(e);
             }

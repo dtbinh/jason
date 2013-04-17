@@ -17,6 +17,6 @@
   <- .wait(30);
      .suspend(dots); // suspend the intention with goal dots
      .println;
-     .wait(200);
+     .wait(1000);
      .resume(dots);  // resume it
      !!control.

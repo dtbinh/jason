@@ -165,7 +165,7 @@ public class wait extends DefaultInternalAction {
                 public void run() {
                     try {
                         // add SI again in C.I if it was not removed and this wait was not dropped
-                        if (c.removePendingIntention(sTE) == si && !c.getIntentions().contains(si) && !dropped) {
+                        if (c.removePendingIntention(sTE) == si && !c.hasIntention(si) && !dropped) {
                             if (stopByTimeout && te != null && elapsedTimeTerm == null) {
                                 // fail the .wait by timeout
                                 if (si.isSuspended()) { // if the intention was suspended by .suspend

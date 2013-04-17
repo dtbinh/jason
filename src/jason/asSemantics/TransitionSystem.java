@@ -349,14 +349,14 @@ public class TransitionSystem {
             return;            
         }
 
-        if (conf.C.hasEvent()) {
-            // Rule for atomic, events from atomic intention has priority
-            confP.C.SE = C.removeAtomicEvent();
-            if (confP.C.SE != null) {
-                confP.step = State.RelPl;
-                return;
-            }
+        // Rule for atomic, events from atomic intention have priority
+        confP.C.SE = C.removeAtomicEvent();
+        if (confP.C.SE != null) {
+            confP.step = State.RelPl;
+            return;
+        }
 
+        if (conf.C.hasEvent()) {
             // Rule SelEv1
             confP.C.SE = conf.ag.selectEvent(confP.C.getEvents());
             if (logger.isLoggable(Level.FINE)) 
@@ -542,6 +542,7 @@ public class TransitionSystem {
         if (!conf.C.isAtomicIntentionSuspended() && conf.C.hasIntention()) { // the isAtomicIntentionSuspended is necessary because the atomic intention may be suspended (the above removeAtomicInt returns null in that case)
                                                                              // but no other intention could be selected
             confP.C.SI = conf.ag.selectIntention(conf.C.getIntentions());
+            if (logger.isLoggable(Level.FINE)) logger.fine("Selected intention "+confP.C.SI);            
             if (confP.C.SI != null) { // the selectIntention function returned null
                 return;             
             }
@@ -619,6 +620,8 @@ public class TransitionSystem {
 
         switch (h.getBodyType()) {
 
+        case none: break;
+        
         // Rule Action
         case action:
             body = body.copy(); body.apply(u);

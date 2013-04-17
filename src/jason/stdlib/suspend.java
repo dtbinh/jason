@@ -23,6 +23,8 @@
 
 package jason.stdlib;
 
+import java.util.Iterator;
+
 import jason.JasonException;
 import jason.asSemantics.ActionExec;
 import jason.asSemantics.Circumstance;
@@ -122,7 +124,9 @@ public class suspend extends DefaultInternalAction {
             }
         }
 
-        for (Intention i: C.getIntentions()) {
+        Iterator<Intention> itint = C.getAllIntentions();
+        while (itint.hasNext()) {
+            Intention i = itint.next();
             if (i.hasTrigger(g, un)) {
                 i.setSuspended(true);
                 C.removeIntention(i);
@@ -141,7 +145,9 @@ public class suspend extends DefaultInternalAction {
             
         // suspending G in Events
         int c = 0;
-        for (Event e: C.getEvents()) {
+        Iterator<Event> ie = C.getAllEvents();
+        while (ie.hasNext()) {
+            Event e = ie.next();
             i = e.getIntention();
             if (un.unifies(g, e.getTrigger()) || (i != null && i.hasTrigger(g, un))) {
                 C.removeEvent(e);

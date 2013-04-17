@@ -23,8 +23,7 @@ public interface RuntimeServicesInfraTier {
      * class (default value is DefaultBeliefBase), and <i>stts</i> as
      * Settings (default value is new Settings()).
      * 
-     * <p> Example: createAgent("bob", "bob.asl", "mypkg.MyAgent",
-     * null, null, null);
+     * <p> Example: createAgent("bob", "bob.asl", "mypkg.MyAgent", null, null, null);
      * 
      * Returns the name of the agent
      */

@@ -24,6 +24,8 @@
 
 package jason.stdlib;
 
+import java.util.Iterator;
+
 import jason.JasonException;
 import jason.asSemantics.ActionExec;
 import jason.asSemantics.Circumstance;
@@ -91,7 +93,9 @@ public class drop_intention extends DefaultInternalAction {
         Trigger g = new Trigger(TEOperator.add, TEType.achieve, l);
         
         // intention may be suspended in E or PE
-        for (Event e: C.getEvents()) {
+        Iterator<Event> ie = C.getAllEvents();
+        while (ie.hasNext()) {
+            Event e = ie.next();
             Intention i = e.getIntention();
             if (i != null && i.hasTrigger(g, un)) {
                 C.removeEvent(e);
@@ -115,7 +119,9 @@ public class drop_intention extends DefaultInternalAction {
             }
         }
     
-        for (Intention i: C.getIntentions()) {
+        Iterator<Intention> itint = C.getAllIntentions();
+        while (itint.hasNext()) {
+            Intention i = itint.next();
             if (i.hasTrigger(g, un)) {
                 C.dropIntention(i);
                 un = bak.clone();

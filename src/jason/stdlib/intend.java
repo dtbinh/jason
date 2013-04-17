@@ -24,8 +24,6 @@
 
 package jason.stdlib;
 
-import java.util.Iterator;
-
 import jason.JasonException;
 import jason.asSemantics.ActionExec;
 import jason.asSemantics.Circumstance;
@@ -39,6 +37,8 @@ import jason.asSyntax.Term;
 import jason.asSyntax.Trigger;
 import jason.asSyntax.Trigger.TEOperator;
 import jason.asSyntax.Trigger.TEType;
+
+import java.util.Iterator;
 
 
 /**
@@ -204,7 +204,7 @@ public class intend extends DefaultInternalAction {
                     
                 case evt:                    
                     if (evtIterator == null)
-                        evtIterator = C.getEvents().iterator();
+                        evtIterator = C.getAllEvents();
                     
                     if (evtIterator.hasNext()) {
                         solution = un.clone();
@@ -275,7 +275,7 @@ public class intend extends DefaultInternalAction {
 
                 case intentions:                    
                     if (intInterator == null)
-                        intInterator = C.getIntentions().iterator();
+                        intInterator = C.getAllIntentions();
                     
                     if (intInterator.hasNext()) {
                         solution = un.clone();

@@ -124,6 +124,8 @@ public class AgArch implements AgArchInfraTier, Comparable<AgArch> {
     }
 
     public void createCustomArchs(List<String> archs) throws Exception {
+        if (archs == null)
+            return;
         for (String agArchClass: archs) {
             // user custom arch
             if (!agArchClass.equals(AgArch.class.getName()) && !agArchClass.equals(CentralisedAgArch.class.getName())) {
