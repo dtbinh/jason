@@ -146,6 +146,8 @@ public class intend extends DefaultInternalAction {
 
     enum Step { selEvt, selInt, evt, pendEvt, pendAct, pendInt, intentions, end }
 
+    //private static Logger logger = Logger.getLogger(intend.class.getName());
+
     protected Iterator<Unifier> allIntentions(final Circumstance C, final Literal l, final Unifier un) {
         final Trigger g = new Trigger(TEOperator.add, TEType.achieve, l);
         
@@ -280,11 +282,17 @@ public class intend extends DefaultInternalAction {
                     if (intInterator.hasNext()) {
                         solution = un.clone();
                         Intention i = intInterator.next();
+                        //logger.info("* try "+i+"\n"+intInterator.hasNext());
                         if (i.hasTrigger(g, solution))
                             return;
                     } else {
                         curStep = Step.end; // set next step
                     }
+                    find();
+                    return;
+                    
+                case end:
+                    
                 }
                 solution = null; // nothing found
             }

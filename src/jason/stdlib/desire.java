@@ -108,6 +108,8 @@ public class desire extends intend {
     
     enum Step { selEvt, evt, useIntends, end }
 
+    //private static Logger logger = Logger.getLogger(desire.class.getName());
+
     protected Iterator<Unifier> allDesires(final Circumstance C, final Literal l, final Unifier un) {
         final Trigger teFromL = new Trigger(TEOperator.add, TEType.achieve, l);
         
@@ -120,6 +122,8 @@ public class desire extends intend {
             public boolean hasNext() {
                 if (solution == null) // the first call of hasNext should find the first response 
                     find();
+                //if (solution == null)
+                //    logger.info("* no more solution for "+teFromL+C);
                 return solution != null; 
             }
 
@@ -127,6 +131,7 @@ public class desire extends intend {
                 if (solution == null) find();
                 Unifier b = solution;
                 find(); // find next response
+                //logger.info("* try "+b+" for "+teFromL);
                 return b;
             }
             public void remove() {}
@@ -185,6 +190,8 @@ public class desire extends intend {
                     } else {
                         curStep = Step.end; // set next step
                     }
+                    
+                case end:
                                         
                 }
                 solution = null; // nothing found

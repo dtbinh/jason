@@ -126,7 +126,7 @@ public class IntendedMeans implements Serializable {
     }
     
     public String toString() {
-        return planBody + " / " + unif;
+        return trigger + " <- ... " + planBody + " / " + unif;
     }
 
     public Term getAsTerm() {
