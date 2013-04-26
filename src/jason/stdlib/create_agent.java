@@ -107,8 +107,6 @@ public class create_agent extends DefaultInternalAction {
             name = ((StringTerm)args[0]).getString();
         else
             name = args[0].toString();
-
-
         
         StringTerm source = (StringTerm)args[1];
 
