@@ -206,7 +206,7 @@ public class intend extends DefaultInternalAction {
                     
                 case evt:                    
                     if (evtIterator == null)
-                        evtIterator = C.getAllEvents();
+                        evtIterator = C.getEventsPlusAtomic();
                     
                     if (evtIterator.hasNext()) {
                         solution = un.clone();
@@ -277,7 +277,7 @@ public class intend extends DefaultInternalAction {
 
                 case intentions:                    
                     if (intInterator == null)
-                        intInterator = C.getAllIntentions();
+                        intInterator = C.getIntentionsPlusAtomic();
                     
                     if (intInterator.hasNext()) {
                         solution = un.clone();

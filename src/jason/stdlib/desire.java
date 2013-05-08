@@ -146,7 +146,7 @@ public class desire extends intend {
                     if (C.getSelectedEvent() != null) {
                         Trigger   t = C.getSelectedEvent().getTrigger();
                         Intention i = C.getSelectedEvent().getIntention(); 
-                        if (i != Intention.EmptyInt && !i.isFinished()) { //i.size() > 0) {
+                        if (i != Intention.EmptyInt && !i.isFinished()) {
                             t = t.clone();
                             t.apply(i.peek().getUnif());
                         }
@@ -160,13 +160,13 @@ public class desire extends intend {
 
                 case evt:
                     if (evtIterator == null)
-                        evtIterator = C.getAllEvents();
+                        evtIterator = C.getEventsPlusAtomic();
                     
                     if (evtIterator.hasNext()) {
                         Event ei = evtIterator.next();
                         Trigger   t = ei.getTrigger();
                         Intention i = ei.getIntention(); 
-                        if (i != Intention.EmptyInt && !i.isFinished()) { //i.size() > 0) {
+                        if (i != Intention.EmptyInt && !i.isFinished()) {
                             t = t.clone();
                             t.apply(i.peek().getUnif());
                         }

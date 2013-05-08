@@ -97,7 +97,7 @@ public class succeed_goal extends DefaultInternalAction {
         Circumstance C = ts.getC();
         Unifier bak = un.clone();
         
-        Iterator<Intention> itint = C.getAllIntentions();
+        Iterator<Intention> itint = C.getIntentionsPlusAtomic();
         while (itint.hasNext()) {
             Intention i = itint.next();
             if (dropIntention(i, g, ts, un) > 1) {
@@ -111,7 +111,7 @@ public class succeed_goal extends DefaultInternalAction {
         un = bak.clone();
             
         // dropping G in Events
-        Iterator<Event> ie = C.getAllEvents();
+        Iterator<Event> ie = C.getEventsPlusAtomic();
         while (ie.hasNext()) {
             Event e = ie.next();
             // test in the intention

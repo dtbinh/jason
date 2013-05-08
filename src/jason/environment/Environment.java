@@ -277,10 +277,11 @@ public class Environment {
                 agl = Collections.synchronizedList(new ArrayList<Literal>());
                 agPercepts.put( agName, agl);
             } 
-            if (! agl.contains(per)) {
-                uptodateAgs.remove(agName);
-                for (Literal p: per)
+            for (Literal p: per) {
+                if (! agl.contains(p)) {
+                    uptodateAgs.remove(agName);
                     agl.add(p);
+                }                
             }
         }
     }

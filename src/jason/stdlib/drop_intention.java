@@ -93,7 +93,7 @@ public class drop_intention extends DefaultInternalAction {
         Trigger g = new Trigger(TEOperator.add, TEType.achieve, l);
         
         // intention may be suspended in E or PE
-        Iterator<Event> ie = C.getAllEvents();
+        Iterator<Event> ie = C.getEventsPlusAtomic();
         while (ie.hasNext()) {
             Event e = ie.next();
             Intention i = e.getIntention();
@@ -119,7 +119,7 @@ public class drop_intention extends DefaultInternalAction {
             }
         }
     
-        Iterator<Intention> itint = C.getAllIntentions();
+        Iterator<Intention> itint = C.getIntentionsPlusAtomic();
         while (itint.hasNext()) {
             Intention i = itint.next();
             if (i.hasTrigger(g, un)) {

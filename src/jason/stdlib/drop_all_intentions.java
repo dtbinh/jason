@@ -81,7 +81,7 @@ public class drop_all_intentions extends DefaultInternalAction {
         C.clearPendingActions();
 
         // drop intentions in E
-        Iterator<Event> ie = C.getAllEvents();
+        Iterator<Event> ie = C.getEventsPlusAtomic();
         while (ie.hasNext()) {
             Event e = ie.next();
             if (e.isInternal()) {

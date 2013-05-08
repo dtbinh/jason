@@ -118,7 +118,6 @@ public class Circumstance implements Serializable {
     public void addEvent(Event ev) {
         
         if (ev.isAtomic())
-            //hasAtomicEvent = true;
             AE = ev;
         else
             E.add(ev);  
@@ -177,7 +176,7 @@ public class Circumstance implements Serializable {
     }
     
     /** get the all events (which include the atomic event, if it exists) */
-    public Iterator<Event> getAllEvents() {
+    public Iterator<Event> getEventsPlusAtomic() {
         if (AE == null) {
             return E.iterator();
         } else {
@@ -264,7 +263,7 @@ public class Circumstance implements Serializable {
     }
     
     /** get the all intentions (which include the atomic intention, if it exists) */
-    public Iterator<Intention> getAllIntentions() {
+    public Iterator<Intention> getIntentionsPlusAtomic() {
         if (AI == null) {
             return I.iterator();
         } else {
@@ -662,7 +661,7 @@ public class Circumstance implements Serializable {
         Element events = (Element) document.createElement("events");
         add = false;
         if (E != null && hasEvent()) {
-            Iterator<Event> ie = getAllEvents();
+            Iterator<Event> ie = getEventsPlusAtomic();
             while (ie.hasNext()) {
                 Event evt = ie.next();
 
@@ -740,7 +739,7 @@ public class Circumstance implements Serializable {
             selIntEle.setAttribute("selected", "true");
             ints.appendChild(selIntEle);
         }
-        Iterator<Intention> itint = getAllIntentions();
+        Iterator<Intention> itint = getIntentionsPlusAtomic();
         while (itint.hasNext()) {
             Intention in = itint.next();
             if (getSelectedIntention() != in) {

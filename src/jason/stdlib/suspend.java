@@ -124,7 +124,7 @@ public class suspend extends DefaultInternalAction {
             }
         }
 
-        Iterator<Intention> itint = C.getAllIntentions();
+        Iterator<Intention> itint = C.getIntentionsPlusAtomic();
         while (itint.hasNext()) {
             Intention i = itint.next();
             if (i.hasTrigger(g, un)) {
@@ -145,7 +145,7 @@ public class suspend extends DefaultInternalAction {
             
         // suspending G in Events
         int c = 0;
-        Iterator<Event> ie = C.getAllEvents();
+        Iterator<Event> ie = C.getEventsPlusAtomic();
         while (ie.hasNext()) {
             Event e = ie.next();
             i = e.getIntention();

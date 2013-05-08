@@ -85,7 +85,7 @@ public class drop_desire extends drop_intention {
         Trigger te = new Trigger(TEOperator.add, TEType.achieve, l);
         
         // search in E
-        dropEvt(te, un, C.getAllEvents());
+        dropEvt(te, un, C.getEventsPlusAtomic());
         
         // search in PE (only the event need to be checked, the related intention is handeled by dropInt)
         dropEvt(te, un, C.getPendingEvents().values().iterator());
