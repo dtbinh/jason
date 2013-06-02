@@ -288,8 +288,8 @@ public class DefaultBeliefBase implements BeliefBase {
     /** each predicate indicator has one BelEntry assigned to it */
     final class BelEntry {
         
-        final private List<Literal> list = new LinkedList<Literal>(); // maintains the order of the bels
-        final private Map<LiteralWrapper,Literal> map = new HashMap<LiteralWrapper,Literal>(); // to fastly find contents, from literal do list index
+        final private List<Literal> list = new LinkedList<Literal>(); // maintains the order of the beliefs
+        final private Map<LiteralWrapper,Literal> map = new HashMap<LiteralWrapper,Literal>(); // to find content faster
         
         public void add(Literal l, boolean addInEnd) {
             map.put(new LiteralWrapper(l), l);

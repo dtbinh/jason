@@ -233,6 +233,7 @@ public class CentralisedAgArch extends AgArch implements Runnable {
 
     // Default perception assumes Complete and Accurate sensing.
     public List<Literal> perceive() {
+        if (infraEnv == null) return null;
         List<Literal> percepts = infraEnv.getUserEnvironment().getPercepts(getAgName());
         if (logger.isLoggable(Level.FINE) && percepts != null) logger.fine("percepts: " + percepts);
         return percepts;
@@ -291,7 +292,7 @@ public class CentralisedAgArch extends AgArch implements Runnable {
     /** called by the TS to ask the execution of an action in the environment */
     public void act(ActionExec action, List<ActionExec> feedback) {
         if (logger.isLoggable(Level.FINE)) logger.info("doing: " + action.getActionTerm());
-        if (isRunning())
+        if (isRunning() && infraEnv != null)
             infraEnv.act(getAgName(), action);
     }
     
