@@ -1159,7 +1159,7 @@ The SVN repository maintains the latest version of the \jason's
 sources, so you will eventually need to build \jason from the SVN. To
 do this the following software is required:
 \begin{itemize}
-\item an \htlink{SVN}{http://sourceforge.net/docs/B01} client program and
+\item a SVN client program and
 \item \htlink{Ant}{http://ant.apache.org/} version >= 1.6.2.
 \end{itemize}
 
@@ -1167,9 +1167,7 @@ The steps to build Jason are:
 \begin{enumerate}
 \item download the sources from SVN:
 \begin{verbatim}
-mkdir Jason-svn
-cd Jason-svn
-svn co https://jason.svn.sourceforge.net/svnroot/jason/trunk .
+svn checkout svn://svn.code.sf.net/p/jason/svn/trunk jason-svn
 \end{verbatim}
 %When prompted for a password for anonymous, simply press the Enter key.
 
