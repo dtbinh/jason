@@ -229,9 +229,16 @@ public class JDBCPersistentBB extends ChainBBAdapter {
 
     @Override
     public boolean add(Literal l) {
+        return add(0, l);
+    }
+    
+    @Override
+    public boolean add(int index, Literal l) {
         if (!isDB(l))
             return nextBB.add(l);
-
+        if (index != 0) 
+            logger.severe("JDBC BB does not support insert index "+index+" for "+l+", using index = 0!");
+        
         Literal bl = contains(l);
         Statement stmt = null;
         try {
@@ -252,13 +259,16 @@ public class JDBCPersistentBB extends ChainBBAdapter {
 
                         // store bl annots
                         stmt = conn.createStatement();
-                        stmt.executeUpdate("update "+getTableName(bl)+" set "+COL_ANNOT+" = '"+bl.getAnnots()+"' "+getWhere(l));
+                        String q = "update "+getTableName(bl)+" set "+COL_ANNOT+" = '"+bl.getAnnots()+"' "+getWhere(l);
+                        if (logger.isLoggable(Level.FINE)) logger.fine("query for update "+q);
+                        stmt.executeUpdate(q);
                         return true;
                     }
                 }
             } else {
                 // create insert command
                 stmt = conn.createStatement();
+                if (logger.isLoggable(Level.FINE)) logger.fine("query for insert "+getInsert(l));
                 stmt.executeUpdate(getInsert(l));
                 // add it in the percepts list
                 if (l.hasAnnot(TPercept)) {
