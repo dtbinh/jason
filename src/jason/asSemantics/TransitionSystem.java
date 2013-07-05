@@ -46,6 +46,7 @@ import jason.asSyntax.Term;
 import jason.asSyntax.Trigger;
 import jason.asSyntax.Trigger.TEOperator;
 import jason.asSyntax.Trigger.TEType;
+import jason.asSyntax.UnnamedVar;
 import jason.asSyntax.VarTerm;
 import jason.asSyntax.parser.ParseException;
 import jason.bb.BeliefBase;
@@ -682,14 +683,14 @@ public class TransitionSystem {
 
         // Rule Achieve
         case achieve:
-            body = prepareBodyForEvent(body, u);
+            body = prepareBodyForEvent(body, u, conf.C.SI.peek());
             conf.C.addAchvGoal(body, conf.C.SI);
             confP.step = State.StartRC;
             break;
 
         // Rule Achieve as a New Focus (the !! operator)
         case achieveNF:
-            body = prepareBodyForEvent(body, u);
+            body = prepareBodyForEvent(body, u, null);
             conf.C.addAchvGoal(body, Intention.EmptyInt);
             updateIntention();
             break;
@@ -703,7 +704,7 @@ public class TransitionSystem {
                 boolean fail = true;
                 // generate event when using literal in the test (no events for log. expr. like ?(a & b))
                 if (f.isLiteral() && !(f instanceof BinaryStructure)) { 
-                    body = prepareBodyForEvent(body, u);
+                    body = prepareBodyForEvent(body, u, conf.C.SI.peek());
                     if (body.isLiteral()) { // in case body is a var with content that is not a literal (note the VarTerm pass in the instanceof Literal)
                         Trigger te = new Trigger(TEOperator.add, TEType.test, body);
                         Event evt = new Event(te, conf.C.SI);
@@ -726,7 +727,7 @@ public class TransitionSystem {
         case delAddBel: 
             // -+a(1,X) ===> remove a(_,_), add a(1,X)
             // change all vars to anon vars to remove it
-            Literal b2 = prepareBodyForEvent(body, u); 
+            Literal b2 = prepareBodyForEvent(body, u, conf.C.SI.peek()); 
             b2.makeTermsAnnon(); // do not change body (but b2), to not interfere in addBel
             // to delete, create events as external to avoid that
             // remove/add create two events for the same intention
@@ -750,13 +751,15 @@ public class TransitionSystem {
         case addBelBegin:
         case addBelEnd:
         case addBelNewFocus:
-            body = prepareBodyForEvent(body, u);
-
             // calculate focus
             Intention newfocus = Intention.EmptyInt;
             boolean isSameFocus = setts.sameFocus() && h.getBodyType() != BodyType.addBelNewFocus;
-            if (isSameFocus)
+            if (isSameFocus) {
                 newfocus = conf.C.SI;
+                body = prepareBodyForEvent(body, u, newfocus.peek());
+            } else {
+                body = prepareBodyForEvent(body, u, null);
+            }
             
             // call BRF
             try {
@@ -780,12 +783,14 @@ public class TransitionSystem {
             break;
             
         case delBel:
-            body = prepareBodyForEvent(body, u);
 
             newfocus = Intention.EmptyInt;
-            if (setts.sameFocus())
+            if (setts.sameFocus()) {
                 newfocus = conf.C.SI;
-
+                body = prepareBodyForEvent(body, u, newfocus.peek());
+            } else {
+                body = prepareBodyForEvent(body, u, null);
+            }
             // call BRF
             try {
                 List<Literal>[] result = ag.brf(null, body, conf.C.SI); // the intention is not the new focus
@@ -806,10 +811,14 @@ public class TransitionSystem {
     }
     
     // add the self source in the body in case no other source was given
-    private Literal prepareBodyForEvent(Literal body, Unifier u) {
+    private Literal prepareBodyForEvent(Literal body, Unifier u, IntendedMeans imRenamedVars) {
         body = body.copy();
         body.apply(u);
-        body.makeVarsAnnon(u); // free variables in an event cannot conflict with those in the plan
+        Unifier renamedVars = new Unifier();
+        if (imRenamedVars != null)
+            imRenamedVars.renamedVars = renamedVars;
+        body.makeVarsAnnon(renamedVars); // free variables in an event cannot conflict with those in the plan
+        //body.makeVarsAnnon(u); // free variables in an event cannot conflict with those in the plan
         body = body.forceFullLiteralImpl();
         if (!body.hasSource()) { // do not add source(self) in case the programmer set the source
             body.addAnnot(BeliefBase.TSelf);
@@ -878,8 +887,64 @@ public class TransitionSystem {
                 if (!im.isFinished()) {
                     // removes !b or ?s
                     // unifies the final event with the body that called it
-                    topLiteral.apply(topIM.unif);
+
+                    // old code:
+                    /*topLiteral.apply(topIM.unif);
+                    topLiteral.makeVarsAnnon();
                     im.unif.unifies(im.removeCurrentStep(), topLiteral);
+                    */
+                    
+                    // new code optimised: handle directly renamed vars for the call                    
+                    //System.out.println("* "+topLiteral+topIM.unif+"  "+im.unif+" "+im.renamedVars);
+                    /*VarTerm[] lvt = null;
+                    Term[]    lvl = null;
+                    int       n   = 0;
+                    // get vars in the unifier that comes from makeVarAnnon
+                    for (Term t: im.unif.function.values()) {
+                        if (t instanceof UnnamedVar) {
+                            UnnamedVar vt = (UnnamedVar)t;
+                            if (vt.isFromMakeVarAnnon()) {
+                                Term vl = topIM.unif.function.get(vt);
+                                if (vl != null) { // vt has value in top
+                                    vl = vl.clone();
+                                    vl.apply(topIM.unif);
+                                    if (vl.isLiteral())
+                                        ((Literal)vl).makeVarsAnnon();
+                                    if (lvt == null) {
+                                        int s = Math.max(im.unif.size(),topIM.unif.size());
+                                        lvt = new VarTerm[s];
+                                        lvl = new Term[s];
+                                    }
+                                    lvt[n] = vt;
+                                    lvl[n] = vl;
+                                    n++;
+                                }
+                            }
+                        }
+                    }
+                    for (int il=0; il<n; il++) {
+                        im.unif.bind(lvt[il], lvl[il]);
+                    }
+                    */
+                    
+                    
+                    // get vars in the unifier that comes from makeVarAnnon (stored in renamedVars)
+                    for (VarTerm ov: im.renamedVars.function.keySet()) {
+                        UnnamedVar vt = (UnnamedVar)im.renamedVars.function.get(ov);
+                        im.unif.unifiesNoUndo(ov, vt); // introduces the renameming in the current unif
+                        // if vt has got a value from the top (a "return" value), include this value in the current unif
+                        Term vl = topIM.unif.function.get(vt);
+                        //System.out.println(ov+"="+vt+"="+vl);
+                        if (vl != null) { // vt has value in top
+                            vl = vl.clone();
+                            vl.apply(topIM.unif);
+                            if (vl.isLiteral())
+                                ((Literal)vl).makeVarsAnnon();
+                            im.unif.bind(vt, vl);
+                        }
+                    }
+                    //System.out.println("=> "+im.unif);
+                    im.removeCurrentStep();               
                 }
             }
         }

@@ -45,6 +45,8 @@ public class IntendedMeans implements Serializable {
     protected Plan     plan;
     private   Trigger  trigger; // the trigger which created this IM
     
+    protected Unifier  renamedVars = null;
+        
     public IntendedMeans(Option opt, Trigger te) {
         plan     = opt.getPlan();
         planBody = plan.getBody(); 

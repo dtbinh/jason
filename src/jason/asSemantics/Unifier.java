@@ -38,6 +38,7 @@ import jason.asSyntax.VarTerm;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -48,7 +49,7 @@ public class Unifier implements Cloneable, Iterable<VarTerm> {
 
     private static Logger logger = Logger.getLogger(Unifier.class.getName());
 
-    protected HashMap<VarTerm, Term> function = new HashMap<VarTerm, Term>();
+    protected Map<VarTerm, Term> function = new HashMap<VarTerm, Term>();
 
     /** 
      * @deprecated use t.apply(un) instead.
@@ -109,13 +110,19 @@ public class Unifier implements Cloneable, Iterable<VarTerm> {
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public boolean unifies(Term t1, Term t2) {
-        HashMap cfunction = (HashMap)function.clone();
+        Map cfunction = cloneFunction();
         if (unifiesNoUndo(t1,t2)) {
             return true;
         } else {
             function = cfunction;
             return false;
         }
+    }
+    
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private Map<VarTerm, Term> cloneFunction() {
+        return (Map<VarTerm, Term>)((HashMap)function).clone();
+        //return new HashMap<VarTerm, Term>(function);
     }
 
     /** this version of unifies does not undo the variables' mapping 
@@ -357,11 +364,10 @@ public class Unifier implements Cloneable, Iterable<VarTerm> {
         }
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     public Unifier clone() {
         try {
             Unifier newUn = new Unifier();
-            newUn.function = (HashMap)function.clone();
+            newUn.function = cloneFunction();
             //newUn.compose(this);
             return newUn;
         } catch (Exception e) {

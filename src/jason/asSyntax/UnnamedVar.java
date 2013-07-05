@@ -34,6 +34,7 @@ public class UnnamedVar extends VarTerm {
 
     private static int varCont = 1;
     private int myId;
+    //private boolean fromRename = false;
     
     public UnnamedVar() {
         super("_" + (varCont++));
@@ -54,12 +55,23 @@ public class UnnamedVar extends VarTerm {
         return varCont++;
     }
 
+    /*
+    public void setFromMakeVarAnnon() {
+        fromRename = true;
+    }
+    
+    public boolean isFromMakeVarAnnon() {
+        return fromRename;
+    }
+    */
+    
     public Term clone() {
         if (hasValue()) {
             return getValue().clone();
         } else {
             UnnamedVar newv = new UnnamedVar(getFunctor());
             newv.myId = this.myId;
+            //newv.fromRename = this.fromRename;
             if (hasAnnot())
                 newv.addAnnots(this.getAnnots().cloneLT());
             return newv;

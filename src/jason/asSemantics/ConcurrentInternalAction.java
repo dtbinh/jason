@@ -151,7 +151,6 @@ public abstract class ConcurrentInternalAction implements InternalAction {
         ts.getUserAgArch().wake();        
     }
     
-    @Override
     public void destroy() throws Exception {
     }
 }
