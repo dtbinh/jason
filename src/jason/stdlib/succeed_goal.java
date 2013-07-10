@@ -194,7 +194,7 @@ public class succeed_goal extends DefaultInternalAction {
      *           2 = fail event was generated and added in C.E
      *           3 = simply removed without event
      */
-    int dropIntention(Intention i, Trigger g, TransitionSystem ts, Unifier un) throws JasonException {
+    public int dropIntention(Intention i, Trigger g, TransitionSystem ts, Unifier un) throws JasonException {
         if (i != null && i.dropGoal(g, un)) {
             if (ts.hasGoalListener())
                 for (GoalListener gl: ts.getGoalListeners())

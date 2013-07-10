@@ -1,4 +1,16 @@
 ---------------------------
+version 1.3.10
+
+revision XXX on SVN
+---------------------------
+
+New features
+- (sub)goals can have a deadline, e.g.
+	...; !g(4)[hard_deadline(3000)]; ...
+  if g(4) is not finished in 3 seconds, a failure event is produced.
+  
+
+---------------------------
 version 1.3.9
 
 revision 1721 on SVN

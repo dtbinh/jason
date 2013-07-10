@@ -58,6 +58,8 @@ import java.util.Collection;
  */
 public class ASSyntax {
 
+    public static final String hardDeadLineStr = "hard_deadline";
+
     // ----
     // ---- createX methods
     // ----

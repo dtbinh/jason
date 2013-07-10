@@ -77,7 +77,7 @@ import java.util.List;
   <code>.create_agent(bob,"x.asl", [agentClass("myp.MyAgent"),
   agentArchClass("myp.MyArch"),
   beliefBaseClass("jason.bb.TextPersistentBB")])</code>: creates the
-  agent with agent, acrchitecture and belief base customised.</li>
+  agent with agent, architecture and belief base customised.</li>
 
   </ul>
 
@@ -134,7 +134,6 @@ public class create_agent extends DefaultInternalAction {
                     }
                 }
             }
-
         }
         RuntimeServicesInfraTier rs = ts.getUserAgArch().getRuntimeServices();
         name = rs.createAgent(name, fSource.getAbsolutePath(), agClass, agArchClasses, bbPars, ts.getSettings());

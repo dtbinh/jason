@@ -148,7 +148,7 @@ public class intend extends DefaultInternalAction {
 
     //private static Logger logger = Logger.getLogger(intend.class.getName());
 
-    protected Iterator<Unifier> allIntentions(final Circumstance C, final Literal l, final Unifier un) {
+    public static Iterator<Unifier> allIntentions(final Circumstance C, final Literal l, final Unifier un) {
         final Trigger g = new Trigger(TEOperator.add, TEType.achieve, l);
         
         return new Iterator<Unifier>() {

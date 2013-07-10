@@ -110,7 +110,7 @@ public class desire extends intend {
 
     //private static Logger logger = Logger.getLogger(desire.class.getName());
 
-    protected Iterator<Unifier> allDesires(final Circumstance C, final Literal l, final Unifier un) {
+    public static Iterator<Unifier> allDesires(final Circumstance C, final Literal l, final Unifier un) {
         final Trigger teFromL = new Trigger(TEOperator.add, TEType.achieve, l);
         
         return new Iterator<Unifier>() {

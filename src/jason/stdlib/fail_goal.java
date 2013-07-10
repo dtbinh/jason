@@ -88,7 +88,7 @@ public class fail_goal extends succeed_goal {
      *           3 = simply removed without event
      */
     @Override
-    int dropIntention(Intention i, Trigger g, TransitionSystem ts, Unifier un) throws JasonException {
+    public int dropIntention(Intention i, Trigger g, TransitionSystem ts, Unifier un) throws JasonException {
         if (i != null) {
         	if (i.dropGoal(g, un)) {
         	    // notify listener
@@ -105,10 +105,10 @@ public class fail_goal extends succeed_goal {
 	            }
 	            if (failEvent != null) {
 	                ts.getC().addEvent(failEvent);
-	                ts.getLogger().info("'.fail_goal("+g+")' is generating a goal deletion event: " + failEvent.getTrigger());
+	                ts.getLogger().fine("'.fail_goal("+g+")' is generating a goal deletion event: " + failEvent.getTrigger());
 	                return 2;
 	            } else { // i is finished or without failure plan
-	                ts.getLogger().info("'.fail_goal("+g+")' is removing the intention without event:\n" + i);
+	                ts.getLogger().fine("'.fail_goal("+g+")' is removing the intention without event:\n" + i);
 	                return 3;
 	            }
         	}

@@ -136,6 +136,10 @@ public class Intention implements Serializable, Comparable<Intention>, Iterable<
         return null;
     }
     
+    public IntendedMeans getBottom() {
+        return intendedMeans.getLast();
+    }
+    
     /** returns true if the intention has an IM where TE = g, using u to verify equality */
     public boolean hasTrigger(Trigger g, Unifier u) {
         //return getIM(g,u) != null;

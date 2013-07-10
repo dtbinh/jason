@@ -175,6 +175,10 @@ public abstract class Literal extends DefaultTerm implements LogicalFormula {
      * in case that there is no such an annot, it returns an empty list. 
      */
     public ListTerm getAnnots(String functor) { return new ListTermImpl(); }
+
+    /** returns the first annotation (literal) that has the <i>functor</i> */
+    public Literal getAnnot(String functor) { return null; }
+    
     /**
      * returns the sources of this literal as a new list. e.g.: from annots
      * [source(a), source(b)], it returns [a,b]

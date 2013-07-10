@@ -35,6 +35,7 @@ import jason.asSyntax.ListTermImpl;
 import jason.asSyntax.Literal;
 import jason.asSyntax.LiteralImpl;
 import jason.asSyntax.LogicalFormula;
+import jason.asSyntax.NumberTerm;
 import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Plan;
 import jason.asSyntax.PlanBody;
@@ -52,6 +53,8 @@ import jason.asSyntax.parser.ParseException;
 import jason.bb.BeliefBase;
 import jason.runtime.Settings;
 import jason.stdlib.add_nested_source;
+import jason.stdlib.desire;
+import jason.stdlib.fail_goal;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,8 +64,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 
 public class TransitionSystem {
 
@@ -684,14 +689,16 @@ public class TransitionSystem {
         // Rule Achieve
         case achieve:
             body = prepareBodyForEvent(body, u, conf.C.SI.peek());
-            conf.C.addAchvGoal(body, conf.C.SI);
+            Event evt = conf.C.addAchvGoal(body, conf.C.SI);
             confP.step = State.StartRC;
+            checkHardDeadline(evt);
             break;
 
         // Rule Achieve as a New Focus (the !! operator)
         case achieveNF:
             body = prepareBodyForEvent(body, u, null);
-            conf.C.addAchvGoal(body, Intention.EmptyInt);
+            evt  = conf.C.addAchvGoal(body, Intention.EmptyInt);
+            checkHardDeadline(evt);
             updateIntention();
             break;
 
@@ -707,7 +714,7 @@ public class TransitionSystem {
                     body = prepareBodyForEvent(body, u, conf.C.SI.peek());
                     if (body.isLiteral()) { // in case body is a var with content that is not a literal (note the VarTerm pass in the instanceof Literal)
                         Trigger te = new Trigger(TEOperator.add, TEType.test, body);
-                        Event evt = new Event(te, conf.C.SI);
+                        evt = new Event(te, conf.C.SI);
                         if (ag.getPL().hasCandidatePlan(te)) {
                             if (logger.isLoggable(Level.FINE)) logger.fine("Test Goal '" + h + "' failed as simple query. Generating internal event for it: "+te);
                             conf.C.addEvent(evt);
@@ -931,7 +938,7 @@ public class TransitionSystem {
                     // get vars in the unifier that comes from makeVarAnnon (stored in renamedVars)
                     for (VarTerm ov: im.renamedVars.function.keySet()) {
                         UnnamedVar vt = (UnnamedVar)im.renamedVars.function.get(ov);
-                        im.unif.unifiesNoUndo(ov, vt); // introduces the renameming in the current unif
+                        im.unif.unifiesNoUndo(ov, vt); // introduces the renaming in the current unif
                         // if vt has got a value from the top (a "return" value), include this value in the current unif
                         Term vl = topIM.unif.function.get(vt);
                         //System.out.println(ov+"="+vt+"="+vl);
@@ -1164,18 +1171,113 @@ public class TransitionSystem {
         }
 
         // code
-        if (eventLiteral.getAnnots("code").isEmpty())
+        if (eventLiteral.getAnnot("code") == null)
             eventLiteral.addAnnot(ASSyntax.createStructure("code", bodyterm.copy().makeVarsAnnon()));
         
         // ASL source
-        if (eventLiteral.getAnnots("code_src").isEmpty())
+        if (eventLiteral.getAnnot("code_src") == null)
             eventLiteral.addAnnot(ASSyntax.createStructure("code_src", codesrc));
 
         // line in the source
-        if (eventLiteral.getAnnots("code_line").isEmpty())
+        if (eventLiteral.getAnnot("code_line") == null)
             eventLiteral.addAnnot(ASSyntax.createStructure("code_line", codeline));
     }
         
+    /* 
+     * check if the event is a goal addition with hard deadline, if so, schedule a verification after the deadline
+     */
+    protected void checkHardDeadline(final Event evt) {
+        final Literal body = evt.getTrigger().getLiteral();
+        Literal hdl  = body.getAnnot(ASSyntax.hardDeadLineStr);
+        if (hdl == null)
+            return;
+        if (hdl.getArity() < 1)
+            return;
+            
+        // schedule the verification of deadline for the intention
+        final Intention intention = evt.getIntention();
+        final int isize;
+        if (intention == null)
+            isize = 0;
+        else
+            isize = intention.size();
+        int deadline = (int)((NumberTerm)hdl.getTerm(0)).solve();
+
+        getAg().getScheduler().schedule(new Runnable() {                        
+            public void run() {
+                runAtBeginOfNextCycle(new Runnable() {
+                    public void run() {
+                        boolean drop = false;
+                        if (intention == null) { // deadline in !!g, test if the agent still desires it
+                            drop = desire.allDesires(C, body, new Unifier()).hasNext();
+                        } else if (intention.size() >= isize && intention.hasTrigger(evt.getTrigger(), new Unifier())) {
+                            drop = true;
+                        }
+                        if (drop) {
+                            try {
+                                FailWithDeadline ia = new FailWithDeadline(intention, evt.getTrigger());
+                                ia.drop(TransitionSystem.this, body, new Unifier());
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                });
+                getUserAgArch().wake();
+            }
+        }, deadline, TimeUnit.MILLISECONDS);
+    }
+    
+    class FailWithDeadline extends fail_goal {
+        Intention intToDrop;
+        Trigger   te;
+        
+        public FailWithDeadline(Intention i, Trigger t) {
+            intToDrop = i;
+            te        = t;
+        }
+        
+        /* returns: >0 the intention was changed
+         *           1 = intention must continue running
+         *           2 = fail event was generated and added in C.E
+         *           3 = simply removed without event
+         */
+        @Override
+        public int dropIntention(Intention i, Trigger g, TransitionSystem ts, Unifier un) throws JasonException {
+            if (i != null) {
+                // only consider dropping if the intention is the one that created the deadline goal
+                if (intToDrop == null) {
+                    if (te != i.getBottom().getTrigger()) { // no intention, then consider the bottom trigger
+                        return 0;                        
+                    }
+                } else if (!intToDrop.equals(i)) {
+                    return 0;
+                }
+            
+                if (i.dropGoal(g, un)) {
+                    // notify listener
+                    if (ts.hasGoalListener())
+                        for (GoalListener gl: ts.getGoalListeners())
+                            gl.goalFailed(g);
+                    
+                    // generate failure event
+                    Event failEvent = ts.findEventForFailure(i, g); // find fail event for the goal just dropped                  
+                    if (failEvent != null) {
+                        failEvent.getTrigger().getLiteral().addAnnots(JasonException.createBasicErrorAnnots("deadline_reached", ""));
+                        ts.getC().addEvent(failEvent);
+                        ts.getLogger().fine("'.fail_goal("+g+")' is generating a goal deletion event: " + failEvent.getTrigger());
+                        return 2;
+                    } else { // i is finished or without failure plan
+                        ts.getLogger().fine("'.fail_goal("+g+")' is removing the intention without event:\n" + i);
+                        return 3;
+                    }
+                }
+            }
+            return 0;        
+        }
+        
+    }
+
     public boolean canSleep() {
         return    (C.isAtomicIntentionSuspended() && !conf.C.hasMsg())               
                || (!conf.C.hasEvent() && !conf.C.hasIntention() && 

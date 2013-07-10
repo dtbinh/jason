@@ -87,7 +87,7 @@ public class drop_intention extends DefaultInternalAction {
         return true;
     }
     
-    public void dropInt(Circumstance C, Literal l, Unifier un) {
+    public static void dropInt(Circumstance C, Literal l, Unifier un) {
         Unifier bak = un.clone();
         
         Trigger g = new Trigger(TEOperator.add, TEType.achieve, l);

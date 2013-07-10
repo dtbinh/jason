@@ -210,6 +210,26 @@ public class Pred extends Structure {
         }
         return false; //annots.contains(t);
     }
+    
+    @Override       
+    public Literal getAnnot(String functor) {
+        if (annots == null) 
+            return null;
+        // annots are ordered
+        for (Term t: annots) {
+            if (t.isLiteral()) {
+                Literal l = (Literal)t;
+                int c = functor.compareTo(l.getFunctor());
+                if (c == 0) { // equals
+                    return l;
+                } else if (c < 0) {
+                    return null;
+                }
+            }
+        }
+        return null;
+    }
+
 
     @Override       
     public boolean hasAnnot() {
@@ -272,8 +292,8 @@ public class Pred extends Structure {
         if (annots != null) {
             ListTerm tail = ls;
             for (Term ta : annots) {
-                if (ta.isStructure()) {
-                    if (((Structure)ta).getFunctor().equals(functor)) {
+                if (ta.isLiteral()) {
+                    if (((Literal)ta).getFunctor().equals(functor)) {
                         tail = tail.append(ta);
                     }
                 }
