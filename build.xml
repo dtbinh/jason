@@ -19,7 +19,7 @@
     <property name="jedit.install.dir" value="${basedir}/bin/jedit" />
     <property name="plugin.jar.name" value="jason-jedit-plugin.jar" />
 
-	<!-- define Maven coordinates -->
+    <!-- define Maven coordinates -->
     <property name="groupId" value="net.sf.jason" />
     <property name="artifactId" value="jason" />
     <!-- define artifacts' name, which follows the convention of Maven -->

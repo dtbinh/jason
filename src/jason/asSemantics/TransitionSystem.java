@@ -936,18 +936,20 @@ public class TransitionSystem {
                     
                     
                     // get vars in the unifier that comes from makeVarAnnon (stored in renamedVars)
-                    for (VarTerm ov: im.renamedVars.function.keySet()) {
-                        UnnamedVar vt = (UnnamedVar)im.renamedVars.function.get(ov);
-                        im.unif.unifiesNoUndo(ov, vt); // introduces the renaming in the current unif
-                        // if vt has got a value from the top (a "return" value), include this value in the current unif
-                        Term vl = topIM.unif.function.get(vt);
-                        //System.out.println(ov+"="+vt+"="+vl);
-                        if (vl != null) { // vt has value in top
-                            vl = vl.clone();
-                            vl.apply(topIM.unif);
-                            if (vl.isLiteral())
-                                ((Literal)vl).makeVarsAnnon();
-                            im.unif.bind(vt, vl);
+                    if (im.renamedVars != null) {
+                        for (VarTerm ov: im.renamedVars.function.keySet()) {
+                            UnnamedVar vt = (UnnamedVar)im.renamedVars.function.get(ov);
+                            im.unif.unifiesNoUndo(ov, vt); // introduces the renaming in the current unif
+                            // if vt has got a value from the top (a "return" value), include this value in the current unif
+                            Term vl = topIM.unif.function.get(vt);
+                            //System.out.println(ov+"="+vt+"="+vl);
+                            if (vl != null) { // vt has value in top
+                                vl = vl.clone();
+                                vl.apply(topIM.unif);
+                                if (vl.isLiteral())
+                                    ((Literal)vl).makeVarsAnnon();
+                                im.unif.bind(vt, vl);
+                            }
                         }
                     }
                     //System.out.println("=> "+im.unif);
