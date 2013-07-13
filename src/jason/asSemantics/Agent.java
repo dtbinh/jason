@@ -840,16 +840,21 @@ public class Agent {
     
                 if (logger.isLoggable(Level.FINE)) logger.fine("Doing brf for " + beliefToDel + " in BB=" + believes(beliefToDel, u));
                 
-                if (believes(beliefToDel, u)) {
-                    beliefToDel.apply(u);
-                    if (getBB().remove(beliefToDel)) {
-                        if (logger.isLoggable(Level.FINE)) logger.fine("Removed:" + beliefToDel);
-                        if (result == null) {
-                            result = new List[2];
-                            result[0] = Collections.emptyList();
-                        }
-                        result[1] = Collections.singletonList(beliefToDel);
+                boolean removed = getBB().remove(beliefToDel);
+                if (!removed && !beliefToDel.isGround()) { // then try to unify the parameter with a belief in BB
+                    if (believes(beliefToDel, u)) {
+                        beliefToDel.apply(u);        
+                        removed = getBB().remove(beliefToDel);
                     }
+                }
+                    
+                if (removed) {
+                    if (logger.isLoggable(Level.FINE)) logger.fine("Removed:" + beliefToDel);
+                    if (result == null) {
+                        result = new List[2];
+                        result[0] = Collections.emptyList();
+                    }
+                    result[1] = Collections.singletonList(beliefToDel);                    
                 }
             }
         } catch (Exception e) {
