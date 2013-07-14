@@ -418,16 +418,24 @@ public class ListTermImpl extends Structure implements ListTerm {
     }
 
     /** returns all subsets that take k elements of this list */
-    public Iterator<List<Term>> subSets(int k) {
-        // DFS algorithm
-        final List<SubSetSearchState> open = new LinkedList<SubSetSearchState>(); // states to explore
-        open.add(new SubSetSearchState(new ArrayList<Term>(), getAsList(), k)); // initial state (root of search tree)
+    public Iterator<List<Term>> subSets(final int k) {
+        // based on a DFS algorithm
         return new Iterator<List<Term>>() {
+            LinkedList<SubSetSearchState> open = null;
+            Term[] thisAsArray = new Term[0];
+            
             List<Term> next = null;
             
             public boolean hasNext() {
-                if (next == null) 
+                if (open == null) {
+                    open = new LinkedList<SubSetSearchState>(); // states to explore
+                    //open.add(new SubSetSearchState(new ArrayList<Term>(), getAsList(), k)); // initial state (root of search tree)
+                    thisAsArray = getAsList().toArray(thisAsArray);
+                    open.add(new SubSetSearchState(0, k, null, null)); // initial state (root of search tree)
+                }
+                if (next == null) {
                     getNext();
+                }
                 return next != null;
             }
             
@@ -439,35 +447,69 @@ public class ListTermImpl extends Structure implements ListTerm {
             
             void getNext() {
                 while (! open.isEmpty() ) {
-                    SubSetSearchState s = open.remove(0);
-                    if (s.k == 0) {
-                        next = s.prefix;
+                    SubSetSearchState s = open.removeFirst();
+                    if (s.d == 0) {
+                        next = s.getAsList();
                         return;
                     } else {
-                        s.addNexts(open);
+                        s.addNexts();
                     }
                 }
                 next = null;
             }
             
             public void remove() { }
-        };
-    }
-    
-    class SubSetSearchState {
-        List<Term> prefix, elements; 
-        int k;
-        SubSetSearchState(List<Term> p, List<Term> e, int k) {  
-            prefix = p; elements = e; this.k = k; 
-        }
-        void addNexts(List<SubSetSearchState> open) {
-            int esize = elements.size();
-            for (int i = esize-1; i >= 0; i--) {
-                List<Term> np = new ArrayList<Term>(prefix);
-                np.add(elements.get(i));
-                open.add(0, new SubSetSearchState(np, elements.subList(i+1, esize), k-1));
+            
+            class SubSetSearchState {
+                int pos;
+                int d;  
+                Term value = null;
+                SubSetSearchState f = null;
+                
+                SubSetSearchState(int pos, int d, Term t, SubSetSearchState father) {  
+                    this.pos = pos; this.d = d; this.value = t; this.f = father; 
+                }
+                void addNexts() {
+                    int pSize = (k-d)+thisAsArray.length;
+                    for (int i = thisAsArray.length-1; i >= pos; i--) {
+                        if (pSize-i >= k) {
+                            open.addFirst(new SubSetSearchState(i+1, d-1, thisAsArray[i], this));
+                        } 
+                    }
+                }
+                
+                List<Term> getAsList() {
+                    LinkedList<Term> np = new LinkedList<Term>();
+                    SubSetSearchState c = this;
+                    while (c.value != null) {
+                        np.addFirst(c.value);
+                        c = c.f;
+                    }
+                    return np;
+                }
             }
-        }
+            
+            /*// old code
+            class SubSetSearchState {
+                List<Term> prefix, elements; 
+                int d;  
+                SubSetSearchState(List<Term> p, List<Term> e, int d) {  
+                    prefix = p; elements = e; this.d = d;  
+                }
+                void addNexts(List<SubSetSearchState> open) {
+                    int esize = elements.size();
+                    int maxNextSize = prefix.size()+esize;
+                    for (int i = esize-1; i >= 0; i--) {
+                        if (maxNextSize-i >= k) {
+                            List<Term> np = new ArrayList<Term>(prefix);
+                            np.add(elements.get(i));
+                            open.add(0, new SubSetSearchState(np, elements.subList(i+1, esize), d-1));
+                        }
+                    }
+                }
+            }
+            */
+        };
     }
     
     /*

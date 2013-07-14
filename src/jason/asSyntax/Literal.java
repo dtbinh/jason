@@ -351,7 +351,6 @@ public abstract class Literal extends DefaultTerm implements LogicalFormula {
                 if (annotsOptions != null) {
                     while (annotsOptions.hasNext()) {
                         Literal belToTry = belInBB.copy().setAnnots(null).addAnnots( annotsOptions.next() );
-                        
                         Unifier u = un.clone();
                         if (u.unifiesNoUndo(Literal.this, belToTry)) {
                             current = u;
@@ -445,8 +444,6 @@ public abstract class Literal extends DefaultTerm implements LogicalFormula {
                             if (belInBB.hasAnnot()) {
                                 int nbAnnotsB = belInBB.getAnnots().size();
                                 if (nbAnnotsB >= nbAnnots) {
-                                    if (nbAnnots > 5) 
-                                        logger.warning("I am generating "+Math.pow(2, nbAnnots)+" subsets for the annotation backtracking consult of "+Literal.this);
                                     annotsOptions = belInBB.getAnnots().subSets( nbAnnots );
                                     get();
                                     if (current != null) // if it get a value

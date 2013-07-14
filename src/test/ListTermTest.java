@@ -334,14 +334,17 @@ public class ListTermTest extends TestCase {
     
     public void testSubSet() {
         ListTerm l3 = ListTermImpl.parseList("[a,b,c,8]");
-        /*Set<PredicateIndicator> types = new HashSet<PredicateIndicator>();
-        types.add( ((Literal)l3.get(1) ).getPredicateIndicator());
-        types.add( ((Literal)l3.get(2) ).getPredicateIndicator());
-        types.add( ((Literal)l3.get(3) ).getPredicateIndicator());*/
         assertEquals("[[a], [b], [c], [8]]", iterator2list(l3.subSets(1)).toString());
         assertEquals("[[a, b], [a, c], [a, 8], [b, c], [b, 8], [c, 8]]", iterator2list(l3.subSets(2)).toString());
         assertEquals("[[a, b, c], [a, b, 8], [a, c, 8], [b, c, 8]]", iterator2list(l3.subSets(3)).toString());
         assertEquals("[[a, b, c, 8]]", iterator2list(l3.subSets(4)).toString());
+        
+        l3 = ListTermImpl.parseList("[a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12,a13,a14,a15,a16,a17,a18,a19,a20]");
+        //for (int i=0; i< 20;i++)
+        //    System.out.println(iterator2list(l3.subSets(i+1)).size());
+        assertEquals("[[a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20]]",iterator2list(l3.subSets(20)).toString());
+        assertEquals(38760, iterator2list(l3.subSets(6)).size());
+        assertEquals(38760, iterator2list(l3.subSets(14)).size());
     }
     
     public void testMkVarAn() {
