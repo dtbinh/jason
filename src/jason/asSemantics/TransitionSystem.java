@@ -1267,17 +1267,16 @@ public class TransitionSystem {
                     if (failEvent != null) {
                         failEvent.getTrigger().getLiteral().addAnnots(JasonException.createBasicErrorAnnots("deadline_reached", ""));
                         ts.getC().addEvent(failEvent);
-                        ts.getLogger().fine("'.fail_goal("+g+")' is generating a goal deletion event: " + failEvent.getTrigger());
+                        ts.getLogger().fine("'hard_deadline("+g+")' is generating a goal deletion event: " + failEvent.getTrigger());
                         return 2;
                     } else { // i is finished or without failure plan
-                        ts.getLogger().fine("'.fail_goal("+g+")' is removing the intention without event:\n" + i);
+                        ts.getLogger().fine("'hard_deadline("+g+")' is removing the intention without event:\n" + i);
                         return 3;
                     }
                 }
             }
             return 0;        
         }
-        
     }
 
     public boolean canSleep() {
