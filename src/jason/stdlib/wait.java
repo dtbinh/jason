@@ -147,11 +147,13 @@ public class wait extends DefaultInternalAction {
             
             startTime = System.currentTimeMillis();
 
-            ts.getAg().getScheduler().schedule(new Runnable() {
-                public void run() {
-                    resume(true);
-                }
-            }, timeout, TimeUnit.MILLISECONDS);
+            if (timeout >= 0) {
+                ts.getAg().getScheduler().schedule(new Runnable() {
+                    public void run() {
+                        resume(true);
+                    }
+                }, timeout, TimeUnit.MILLISECONDS);
+            }
         }
 
         void resume(final boolean stopByTimeout) {

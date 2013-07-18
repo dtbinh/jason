@@ -440,8 +440,10 @@ public class ListTermImpl extends Structure implements ListTerm {
             }
             
             public List<Term> next() {
+                if (next == null)
+                    getNext();
                 List<Term> r = next;
-                getNext();
+                next = null;
                 return r;
             }
             
