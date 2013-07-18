@@ -13,4 +13,3 @@
       show_winner(N,W); // show it in the GUI
       .broadcast(tell, winner(W));
       .abolish(place_bid(N,_)).
-

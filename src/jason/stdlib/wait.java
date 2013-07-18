@@ -32,6 +32,7 @@ import jason.asSemantics.Intention;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.InternalActionLiteral;
+import jason.asSyntax.LogicalFormula;
 import jason.asSyntax.NumberTerm;
 import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.PlanBody;
@@ -52,8 +53,10 @@ import java.util.logging.Level;
   <code>{+!go(X,Y)}</code>. 
   
   <p>Parameters:<ul>
-  <li><i>+ event</i> (trigger term): the event to wait for.<br/>
-  <li>+ timeout (number).<br/>
+  <li><i>+ event</i> (trigger term [optional]): the event to wait for.<br/>
+  <li><i>+ logical expression</i> ([optional]): the expression (as used on plans context) to wait to holds.<br/>
+  <li>+ timeout (number [optional]): how many miliseconds should be waited.<br/>
+  <li>- elapse time (var [optional]): the amount of time the intention was suspended waiting.<br/>
   </ul>
   
   
@@ -62,6 +65,9 @@ import java.util.logging.Level;
 
   <li> <code>.wait({+b(1)})</code>: suspend the intention until the belief
   <code>b(1)</code> is added in the belief base.
+
+  <li> <code>.wait(b(X) & X > 10)</code>: suspend the intention until the agent believes 
+  <code>b(X)</code> with X greater than 10.
 
   <li> <code>.wait({+!g}, 2000)</code>: suspend the intention until the goal
   <code>g</code> is triggered or 2 seconds have passed, whatever happens
@@ -95,29 +101,31 @@ public class wait extends DefaultInternalAction {
         
         long timeout = -1;
         Trigger te = null;
+        LogicalFormula f = null;
         Term elapsedTime = null;
         
         if (args[0].isNumeric()) {
             // time in milliseconds
             NumberTerm time = (NumberTerm)args[0];
             timeout = (long) time.solve();
-        } else { // if (args[0].isString()) 
-            // wait for event
-            te = Trigger.tryToGetTrigger(args[0]); //ASSyntax.parseTrigger( ((StringTerm) args[0]).getString());
-                                                   //te.getLiteral().apply(un);
-            
+        } else {
+            te = Trigger.tryToGetTrigger(args[0]);   // wait for event
+            if (te == null && args[0] instanceof LogicalFormula) { // wait for an expression to become true
+                f = (LogicalFormula)args[0];
+            }
             if (args.length >= 2)
                 timeout = (long) ((NumberTerm) args[1]).solve();
             if (args.length == 3)
                 elapsedTime = args[2];
         }
-        new WaitEvent(te, un, ts, timeout, elapsedTime);
+        new WaitEvent(te, f, un, ts, timeout, elapsedTime);
         return true;
     }    
 
     class WaitEvent implements CircumstanceListener { 
         private Trigger          te;
-        private String           sTE; // a string version of TE
+        private LogicalFormula   formula;
+        private String           sEvt; // a string version of what is being waited
         private Unifier          un;
         private Intention        si;
         private TransitionSystem ts;
@@ -126,8 +134,9 @@ public class wait extends DefaultInternalAction {
         private Term             elapsedTimeTerm;
         private long             startTime;
         
-        WaitEvent(Trigger te, Unifier un, TransitionSystem ts, long timeout, Term elapsedTimeTerm) {
+        WaitEvent(Trigger te, LogicalFormula f, Unifier un, TransitionSystem ts, long timeout, Term elapsedTimeTerm) {
             this.te = te;
+            this.formula = f;
             this.un = un;
             this.ts = ts;
             c = ts.getC();
@@ -138,12 +147,14 @@ public class wait extends DefaultInternalAction {
             c.addEventListener(this);
             
             if (te != null) {
-                sTE = te.toString();
+                sEvt = te.toString();
+            } else if (formula != null) {
+                sEvt = formula.toString();
             } else {
-                sTE = "time"+(timeout);
+                sEvt = "time"+(timeout);
             }
-            sTE = si.getId()+"/"+sTE;
-            c.addPendingIntention(sTE, si);
+            sEvt = si.getId()+"/"+sEvt;
+            c.addPendingIntention(sEvt, si);
             
             startTime = System.currentTimeMillis();
 
@@ -165,7 +176,7 @@ public class wait extends DefaultInternalAction {
                 public void run() {
                     try {
                         // add SI again in C.I if it was not removed and this wait was not dropped
-                        if (c.removePendingIntention(sTE) == si && !c.hasIntention(si) && !dropped) {
+                        if (c.removePendingIntention(sEvt) == si && !c.hasIntention(si) && !dropped) {
                             if (stopByTimeout && te != null && elapsedTimeTerm == null) {
                                 // fail the .wait by timeout
                                 if (si.isSuspended()) { // if the intention was suspended by .suspend
@@ -198,7 +209,11 @@ public class wait extends DefaultInternalAction {
         }
 
         public void eventAdded(Event e) {
-            if (te != null && !dropped && un.unifies(te, e.getTrigger())) {
+            if (dropped)
+                return;      
+            if (te != null && un.unifies(te, e.getTrigger())) {
+                resume(false);
+            } else if (formula != null && ts.getAg().believes(formula, un)) { // each new event, just test the formula being waited
                 resume(false);
             }
         }
@@ -214,7 +229,7 @@ public class wait extends DefaultInternalAction {
         public void intentionResumed(Intention i) { }
         public void intentionSuspended(Intention i, String reason) { }
         public String toString() {
-            return sTE;
+            return sEvt;
         }
     }
 }
