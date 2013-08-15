@@ -89,6 +89,9 @@ public abstract class ChainBBAdapter implements BeliefBase {
         nextBB.stop();
     }
 
+    public void clear() {
+        nextBB.clear();
+    }
     
     public boolean add(Literal l) {
         return nextBB.add(l);

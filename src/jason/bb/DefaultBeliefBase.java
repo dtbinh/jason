@@ -74,6 +74,12 @@ public class DefaultBeliefBase implements BeliefBase {
     public int size() {
         return size;
     }
+    
+    public void clear() {
+        size = 0;
+        percepts.clear();
+        belsMap.clear();
+    }
 
     public Iterator<Literal> getPercepts() {
         final Iterator<Literal> i = percepts.iterator();
@@ -188,13 +194,14 @@ public class DefaultBeliefBase implements BeliefBase {
             return new Iterator<Literal>() {
 
                 Iterator<Literal> il = ibe.next().list.iterator();
-
+                Literal l;
+                
                 public boolean hasNext() {
                     return il.hasNext();
                 }
 
                 public Literal next() {
-                    Literal l = il.next();
+                    l = il.next();
                     if (!il.hasNext() && ibe.hasNext()) {
                         il = ibe.next().list.iterator();
                     }
@@ -202,7 +209,11 @@ public class DefaultBeliefBase implements BeliefBase {
                 }
 
                 public void remove() {
-                    logger.warning("remove is not implemented for BB.iterator().");
+                    il.remove();
+                    if (l.hasAnnot(TPercept)) {
+                        percepts.remove(l);
+                    }
+                    size--;
                 }
             };
         } else {
@@ -213,10 +224,10 @@ public class DefaultBeliefBase implements BeliefBase {
     /** @deprecated use iterator() instead of getAll */
     public Iterator<Literal> getAll() {
         return iterator();
-    }
-    
+    }    
 
     public boolean abolish(PredicateIndicator pi) {
+        // TODO: remove also in percepts list!
         return belsMap.remove(pi) != null;
     }
 

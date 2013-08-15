@@ -180,6 +180,10 @@ public class JDBCPersistentBB extends ChainBBAdapter {
         }
         nextBB.stop();
     }
+    
+    public void clear() {
+        logger.warning("clear is still not implemented for JDBC BB!");
+    }
 
     /** returns true if the literal is stored in a DB */
     protected boolean isDB(Literal l) {

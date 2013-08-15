@@ -64,6 +64,9 @@ public interface BeliefBase extends Iterable<Literal>, Cloneable {
     /** Called just before the end of MAS execution */
     public void stop();
     
+    /** removes all beliefs from BB */
+    public void clear();
+    
     /** Adds a belief in the end of the BB, returns true if succeed.
      *  The annots of l may be changed to reflect what was changed in the BB,
      *  for example, if l is p[a,b] in a BB with p[a], l will be changed to

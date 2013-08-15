@@ -172,6 +172,19 @@ public class BeliefBaseTest extends TestCase {
         assertEquals(iteratorSize(bb.getPercepts()), 0);
         assertEquals(bb.size(), 1);
         
+        l2 = new LiteralImpl(true, new Pred("testRemIt"));
+        l2.addAnnot(new Structure("a"));
+        l2.addAnnot(BeliefBase.TPercept);
+        bb.add(l2);
+        Iterator<Literal> itl = bb.iterator();
+        while (itl.hasNext()) {
+            Literal l = itl.next();
+            if (l.getFunctor().startsWith("testRemIt")) {
+                itl.remove();
+            }
+        }
+        assertEquals(iteratorSize(bb.getPercepts()), 0);
+        
         l3 = Literal.parseLiteral("pos[source(ag1)]");
         assertFalse(l2.isAtom());
         assertTrue(bb.remove(l3));
