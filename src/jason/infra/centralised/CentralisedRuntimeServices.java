@@ -40,9 +40,12 @@ public class CentralisedRuntimeServices implements RuntimeServicesInfraTier {
         if (stts == null) 
             stts = new Settings();
         
-        while (masRunner.getAg(agName) != null)
-            agName += "_a";
-
+        String nb = "";
+        int n = 1;
+        while (masRunner.getAg(agName+nb) != null)
+            nb = "_" + (n++);
+        agName = agName + nb;
+        
         CentralisedAgArch agArch = newAgInstance();
         agArch.setAgName(agName);
         agArch.createArchs(ap.getAgArchClasses(), ap.agClass.getClassName(), ap.getBBClass(), agSource, stts, masRunner);

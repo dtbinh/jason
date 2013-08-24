@@ -28,15 +28,22 @@ import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.ListTerm;
+import jason.asSyntax.SourceInfo;
 import jason.asSyntax.StringTerm;
+import jason.asSyntax.StringTermImpl;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
+import jason.asSyntax.VarTerm;
 import jason.mas2j.ClassParameters;
 import jason.runtime.RuntimeServicesInfraTier;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
   <p>Internal action: <b><code>.create_agent</code></b>.
@@ -46,7 +53,9 @@ import java.util.List;
   
   <p>Parameters:<ul>
   
-  <li>+ name (atom or string): the name for the new agent.<br/>
+  <li>+ name (atom, string, or variable): the name for the new agent. 
+  If this parameter is a variable, it will be unified with the name given to the agent. 
+  The agent's name will be the name of the variable and some number that makes it unique.<br/>
   
   <li>+ source (string): path to the file where the AgentSpeak code
   for the new agent can be found.<br/>
@@ -60,6 +69,9 @@ import java.util.List;
 
   <li> <code>.create_agent(bob,"/tmp/x.asl")</code>: creates an agent named "bob" 
   from the source file in "/tmp/x.asl".</li>
+
+  <li> <code>.create_agent(Bob,"/tmp/x.asl")</code>: creates an agent named "bob" (or "bob_1", "bob_2", ...)
+  and unifies variable Bob with the given name.</li>
 
   <li>
   <code>.create_agent(bob,"x.asl", [agentClass("myp.MyAgent")])</code>:
@@ -108,6 +120,9 @@ public class create_agent extends DefaultInternalAction {
         else
             name = args[0].toString();
         
+        if (args[0].isVar())
+            name = name.substring(0,1).toLowerCase() + name.substring(1);
+        
         StringTerm source = (StringTerm)args[1];
 
         File fSource = new File(source.getString());
@@ -138,7 +153,11 @@ public class create_agent extends DefaultInternalAction {
         RuntimeServicesInfraTier rs = ts.getUserAgArch().getRuntimeServices();
         name = rs.createAgent(name, fSource.getAbsolutePath(), agClass, agArchClasses, bbPars, ts.getSettings());
         rs.startAgent(name);
-        return true;
+        
+        if (args[0].isVar())
+            return un.unifies(new StringTermImpl(name), args[0]);
+        else
+            return true;
     }
     
     private Structure testString(Term t) {
