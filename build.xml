@@ -12,7 +12,7 @@
 
     <property name="dist.properties" value="${basedir}/bin/dist.properties" />
     <property name="version" value="1" />
-    <property name="release" value="3.9" />
+    <property name="release" value="3.10" />
     <property name="distDir" value="${env.HOME}/tmp/x/Jason-${version}.${release}" />
     <property name="distFile" value="${env.HOME}/Jason-${version}.${release}" />
 
