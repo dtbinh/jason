@@ -1156,7 +1156,7 @@ public class TransitionSystem {
         if (failAnnots == null)
             failAnnots = JasonException.createBasicErrorAnnots( JasonException.UNKNOW_ERROR, "");
 
-        Literal eventLiteral = failEvent.getTrigger().getLiteral();
+        Literal eventLiteral = failEvent.getTrigger().getLiteral().forceFullLiteralImpl();
         eventLiteral.addAnnots(failAnnots);
         
         // add failure annots in the event related to the code source

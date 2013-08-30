@@ -20,6 +20,8 @@ public class VoidBB implements jason.bb.BeliefBase {
     }
     public void stop() {
     }
+    public void clear() {
+    }
     public int size() {
         return 0;
     }

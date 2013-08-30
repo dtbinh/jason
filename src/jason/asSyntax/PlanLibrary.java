@@ -342,7 +342,7 @@ public class PlanLibrary implements Iterable<Plan> {
     
     public List<Plan> getCandidatePlans(Trigger te) {
         List<Plan> l = relPlans.get(te.getPredicateIndicator());
-        if ((l == null || l.isEmpty()) && !varPlans.isEmpty()) {  // no rel plan, try varPlan
+        if ((l == null || l.isEmpty()) && !varPlans.isEmpty() && te != TE_JAG_SLEEPING && te != TE_JAG_AWAKING) {  // no rel plan, try varPlan
             for (Plan p: varPlans)
                 if (p.getTrigger().sameType(te)) {
                     if (l == null)

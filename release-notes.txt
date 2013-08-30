@@ -9,6 +9,10 @@ New features
 	...; !g(4)[hard_deadline(3000)]; ...
   if g(4) is not finished in 3 seconds, a failure event is produced.
   
+- the internal action .wait accepts a logical expression as argument, as in
+       ...; .wait(b(X) & X > 10); ....
+   The intention will be suspended until the agent belief b(X) with X > 10. 
+   Timeout and elapse time arguments can be used as previously. 
 
 ---------------------------
 version 1.3.9

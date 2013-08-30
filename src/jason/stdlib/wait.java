@@ -89,8 +89,8 @@ public class wait extends DefaultInternalAction {
 
     public static final String waitAtom = ".wait"; 
 
-    @Override public boolean canBeUsedInContext() {  return false;  }
-    @Override public boolean suspendIntention() { return true;  } 
+    @Override public boolean canBeUsedInContext() { return false;  }
+    @Override public boolean suspendIntention()   { return true;  } 
     
     @Override public int getMinArgs() { return 1; }
     @Override public int getMaxArgs() { return 3; }
@@ -175,8 +175,8 @@ public class wait extends DefaultInternalAction {
             ts.runAtBeginOfNextCycle(new Runnable() {
                 public void run() {
                     try {
-                        // add SI again in C.I if it was not removed and this wait was not dropped
-                        if (c.removePendingIntention(sEvt) == si && !c.hasIntention(si) && !dropped) {
+                        // add SI again in C.I if (1) it was not removed (2) is is not running (by some other reason) -- but this test does not apply to atomic intentions --, and (3) this wait was not dropped
+                        if (c.removePendingIntention(sEvt) == si && (si.isAtomic() || !c.hasIntention(si)) && !dropped) {
                             if (stopByTimeout && te != null && elapsedTimeTerm == null) {
                                 // fail the .wait by timeout
                                 if (si.isSuspended()) { // if the intention was suspended by .suspend
