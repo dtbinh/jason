@@ -275,7 +275,10 @@ boolean directive(Agent outerAg) throws jason.JasonException :
 /* Beliefs & Rules */
 Literal belief() : { Literal h; Object t; }
 { 
-    h=literal()
+    h=literal()              { if (h.isVar()) {
+                                  throw new ParseException(getSourceRef(h)+" variables cannot be beliefs!");
+                               }
+                             }
     [
       ":-" t = log_expr()    { h = new Rule(h,(LogicalFormula)t); 
                                // warning only not parsed files
@@ -294,7 +297,11 @@ Literal belief() : { Literal h; Object t; }
 /* Initial goals */
 Literal initial_goal() : { Literal g; }
 {
-  "!" g=literal() "."    { return g; } 
+  "!" g=literal() "."    { if (g.isVar()) {
+                                  throw new ParseException(getSourceRef(g)+". a variable cannot be a goal!");
+                           }
+                           return g; 
+                         } 
 }
 
 
@@ -342,9 +349,7 @@ Trigger trigger() :
     )
   ]
   
-  ( F=literal()
-  | F=var()
-  )            { return new Trigger(teOp,teType,F); }
+  F=literal()  { return new Trigger(teOp,teType,F); }
 }
 
 
@@ -539,7 +544,7 @@ Literal literal() :
 {
   ( ( [ <TK_NEG>              { type = Literal.LNeg; }
       ]
-      F=pred()                { 
+      (F=pred()               { 
                                 if (F.getFunctor().indexOf(".") >= 0) {
                                    if (F.hasAnnot())
                                       throw new ParseException(getSourceRef(F)+" Internal actions cannot have annotations.");
@@ -554,6 +559,12 @@ Literal literal() :
                                 }
                                 return new LiteralImpl(type,F);
                               }
+       | F = var()            {
+                                VarTerm vt = (VarTerm)F;
+                                vt.setNegated(type);
+                                return vt;
+                              }
+       )               
     )
   | k=<TK_TRUE>               { return Literal.LTrue; } 
   | k=<TK_FALSE>              { return Literal.LFalse; } 
@@ -781,7 +792,6 @@ Object arithm_expr_simple():
                                   return new ArithExpr(ArithmeticOp.plus, (NumberTerm)t); 
                                 }
  | "(" t = log_expr() ")"       { return t; }
- | v = var()                    { return v; }
  | t = function()               { return t; }
  )
 }
