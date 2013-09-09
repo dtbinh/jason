@@ -11,7 +11,7 @@ New features
   
 - the internal action .wait accepts a logical expression as argument, as in
        ...; .wait(b(X) & X > 10); ....
-   The intention will be suspended until the agent belief b(X) with X > 10. 
+   The intention will be suspended until the agent believes b(X) with X > 10. 
    Timeout and elapse time arguments can be used as previously. 
 
 ---------------------------

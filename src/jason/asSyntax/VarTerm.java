@@ -65,6 +65,9 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
             e.printStackTrace();
         }
     }
+    public VarTerm(boolean negated, String s) {
+        super(negated, s);        
+    }
 
     /** @deprecated prefer ASSyntax.parseVar(...) */
     public static VarTerm parseVar(String sVar) {
@@ -83,6 +86,7 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
         } else {
             // do not call constructor with term parameter!
             VarTerm t = new VarTerm(super.getFunctor());
+            t.setNegated(!negated());
             t.srcInfo = this.srcInfo;        
             if (hasAnnot())
                 t.setAnnots(getAnnots().cloneLT());
@@ -135,7 +139,7 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
         //         P[step(N)]
         if (vl.isPred() && this.hasAnnot())  // if this var has annots, add them in the value's annots (Experimental)
             ((Pred)vl).addAnnots(this.getAnnots());
-        
+
         value = vl;        
         resetHashCodeCache();
         return true;
@@ -148,8 +152,7 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
 
     public boolean apply(Unifier u) {
         if (value == null) {
-            Term vl = u.get(this);
-            //System.out.println("applying "+this+"="+vl+" un="+u);
+            Term vl = u.get(this);            
             if (vl != null) {
                 if (!vl.isCyclicTerm() && vl.hasVar(this, u)) {
                     //logger.warning("The value of a variable contains itself, variable "+super.getFunctor()+" "+super.getSrcInfo()+", value="+vl+", unifier="+u);
@@ -200,7 +203,7 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
             if (t instanceof VarTerm) {
                 final VarTerm tAsVT = (VarTerm) t;
                 if (tAsVT.getValue() == null) {
-                    return getFunctor().equals(((VarTerm)t).getFunctor());
+                    return negated() == ((VarTerm)t).negated() && getFunctor().equals(((VarTerm)t).getFunctor());
                 }
             }
         }
@@ -212,10 +215,14 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
             return value.compareTo(t);
         else if (t == null || t.isUnnamedVar())
             return -1;
-        else if (t.isVar())
-            return getFunctor().compareTo(((VarTerm)t).getFunctor());
-        else 
-            return 1; 
+        else if (t.isVar()) {
+            if (!negated() && ((VarTerm)t).negated())
+                return -1;
+            else
+                return getFunctor().compareTo(((VarTerm)t).getFunctor());
+        } else { 
+            return 1;
+        }
     }
     
     @Override
@@ -476,9 +483,10 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
     public String toString() {
         if (value == null) {
             String s = getFunctor();
-            if (hasAnnot()) {
+            if (hasAnnot())
                 s += getAnnots();
-            }
+            if (negated())
+                s = "~" + s;
             return s;
         } else {
             return value.toString();
@@ -668,7 +676,10 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
 
     @Override
     public boolean negated() {
-        return value != null && getValue().isLiteral() && ((Literal) getValue()).negated();
+        if (value == null)
+            return super.negated();
+        else
+            return getValue().isLiteral() && ((Literal) getValue()).negated();
     }
     
     @Override

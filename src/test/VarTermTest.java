@@ -5,6 +5,7 @@ import jason.asSemantics.Agent;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.ASSyntax;
 import jason.asSyntax.ArithExpr;
+import jason.asSyntax.ArithExpr.ArithmeticOp;
 import jason.asSyntax.Atom;
 import jason.asSyntax.ListTerm;
 import jason.asSyntax.ListTermImpl;
@@ -18,7 +19,6 @@ import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 import jason.asSyntax.UnnamedVar;
 import jason.asSyntax.VarTerm;
-import jason.asSyntax.ArithExpr.ArithmeticOp;
 import jason.asSyntax.parser.ParseException;
 import jason.asSyntax.parser.SimpleCharStream;
 import jason.asSyntax.parser.Token;
@@ -560,5 +560,108 @@ public class VarTermTest extends TestCase {
         X.setValue(new NumberTermImpl(2));
         assertTrue(X.compareTo(new NumberTermImpl(1)) > 0);
         assertTrue(new NumberTermImpl(1).compareTo(X) < 0);
+    }
+    
+    public void testUnifyNegVar() throws ParseException {
+        Literal l1 = ASSyntax.parseLiteral("~B");
+        Literal l2 = ASSyntax.parseLiteral("~p(1)");
+        Unifier u = new Unifier();
+        assertTrue(u.unifies(l1, l2)); // ~B = ~p(1)
+        assertEquals(u.get((VarTerm)l1).toString(),"~p(1)");
+        l1.apply(u); // apply in ~B should result in ~p(1)
+        assertEquals(l1.toString(),"~p(1)");
+
+        VarTerm b = new VarTerm("B");
+        b.apply(u);
+        assertEquals(b.toString(),"p(1)");
+
+        l1 = ASSyntax.parseLiteral("~B");
+        l2 = ASSyntax.parseLiteral("p(1)");
+        u = new Unifier();
+        assertFalse(u.unifies(l1, l2));
+
+        assertFalse(u.unifies(l1, ASSyntax.parseTerm("10")));
+
+        l1 = ASSyntax.parseLiteral("B");
+        l2 = ASSyntax.parseLiteral("~p(1)");
+        u = new Unifier();
+        assertTrue(u.unifies(l1, l2));
+        assertEquals(u.get("B").toString(),"~p(1)");
+        l1.apply(u);
+        assertEquals(l1.toString(),"~p(1)");
+
+        l1 = ASSyntax.parseLiteral("~B");
+        l2 = ASSyntax.parseLiteral("~A");
+        u = new Unifier();
+        assertTrue(u.unifies(l1, l2));
+        // if A = p(10), apply in ~B should be ~p(10).
+        VarTerm va = new VarTerm("A");
+        u.unifies(va,ASSyntax.parseLiteral("p(10)"));
+        va.apply(u);
+        assertEquals(va.toString(),"p(10)");
+        l1.apply(u);
+        assertEquals(l1.toString(),"~p(10)");
+        l2.apply(u);
+        assertEquals(l2.toString(),"~p(10)");
+
+        l1 = ASSyntax.parseLiteral("~B");
+        l2 = ASSyntax.parseLiteral("~A");
+        u = new Unifier();
+        assertTrue(u.unifies(l1, l2)); // A = B
+        // if ~A = ~p(10), apply in B should be p(10).
+        assertTrue(u.unifies(l2, ASSyntax.parseLiteral("~p(10)")));
+        l2.apply(u);
+        assertEquals(l2.toString(),"~p(10)");
+        l1.apply(u);
+        assertEquals(l1.toString(),"~p(10)"); // ~B is ~p(10)
+        VarTerm vb = new VarTerm("B");
+        vb.apply(u);
+        assertEquals(vb.toString(),"p(10)"); // B is p(10)
+                
+        u = new Unifier();
+        u.unifies(new VarTerm("A"),ASSyntax.parseLiteral("p(10)"));
+        u.unifies(new VarTerm("B"),ASSyntax.parseLiteral("~p(10)"));
+        assertFalse(u.unifies(new VarTerm("A"), new VarTerm("B")));
+        l1 = ASSyntax.parseLiteral("~B");
+        l2 = ASSyntax.parseLiteral("~A");
+        assertFalse(u.unifies(l1, l2));
+        
+        u = new Unifier();
+        u.unifies(new VarTerm("A"),ASSyntax.parseLiteral("p(10)"));
+        assertFalse(u.unifies(new VarTerm(Literal.LNeg,"B"),new VarTerm("A")));
+
+        u = new Unifier();
+        u.unifies(new VarTerm("A"),ASSyntax.parseLiteral("~p(10)"));
+        vb = new VarTerm(Literal.LNeg,"B");
+        assertTrue(u.unifies(vb,new VarTerm("A")));
+        vb.apply(u);
+        assertEquals(vb.toString(),"~p(10)"); 
+
+        u = new Unifier();
+        u.unifies(new VarTerm("A"),ASSyntax.parseLiteral("~p(10)"));
+        vb = new VarTerm(Literal.LNeg,"B");
+        assertTrue(u.unifies(vb,new VarTerm("A")));
+        vb = new VarTerm("B");
+        vb.apply(u);
+        assertEquals(vb.toString(),"p(10)");
+
+        // B = ~A
+        // A = p(10)
+        // => apply B is ~p(10)
+        //    apply A is p(10)
+        //    apply ~A is ~p(10)
+        l1 = ASSyntax.parseLiteral("B");
+        l2 = ASSyntax.parseLiteral("~A");
+        u = new Unifier();
+        assertTrue(u.unifies(l1, l2));
+        va = new VarTerm("A");
+        u.unifies(va,ASSyntax.parseLiteral("p(10)"));
+        va.apply(u);
+        assertEquals(va.toString(),"p(10)"); 
+        l1.apply(u);
+        assertEquals(l1.toString(),"~p(10)"); 
+        l2.apply(u);
+        assertEquals(l2.toString(),"~p(10)"); 
+        
     }
 }

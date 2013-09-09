@@ -25,6 +25,7 @@ import org.junit.runners.Suite.SuiteClasses;
     TestPlanFailure.class,
     TestVarInContext.class,
     TestUnnamedVar.class,
-    TestCopyTerm.class
+    TestCopyTerm.class,
+    TestNegatedVar.class
  })
 public class TestAll { }

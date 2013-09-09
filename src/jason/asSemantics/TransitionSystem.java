@@ -580,31 +580,36 @@ public class TransitionSystem {
         
         Term bTerm = h.getBodyTerm();
         // de-var bTerm
-        while (bTerm instanceof VarTerm) {
+        //while (bTerm instanceof VarTerm) {
+        if (bTerm instanceof VarTerm) {
             // check if bTerm is ground
-            //if (bTerm.isGround()) {
-            if (((VarTerm)bTerm).hasValue()) {
+            /*if (((VarTerm)bTerm).hasValue()) {
                 bTerm = ((VarTerm)bTerm).getValue();
                 continue; // restart the loop
-            }
+            }*/
             
             // h should be 'groundable' (considering the current unifier)
-            Term bValue = u.get((VarTerm)bTerm);
+            bTerm = bTerm.clone(); // clone before apply
+            bTerm.apply(u);
+            //Term bValue = u.get((VarTerm)bTerm);
             //System.out.println("*** "+bTerm+"="+bValue+"  "+bTerm.isGround()+"  "+u);           
-            if (bValue == null) { // the case of !A with A not ground
+            //if (bValue == null) { // the case of !A with A not ground
+            if (bTerm.isVar()) { // the case of !A with A not ground
                 String msg = h.getSrcInfo()+": "+ "Variable '"+bTerm+"' must be ground.";
                 if (!generateGoalDeletion(conf.C.SI, JasonException.createBasicErrorAnnots("body_var_without_value", msg)))
                     logger.log(Level.SEVERE, msg);
                 return;
             }
-            if (bValue.isPlanBody()) { 
+            //if (bValue.isPlanBody()) { 
+            if (bTerm.isPlanBody()) { 
                 if (h.getBodyType() != BodyType.action) { // the case of ...; A = { !g }; +g; ....
-                    String msg = h.getSrcInfo()+": "+ "The operator '"+h.getBodyType()+"' is lost with the variable '"+bTerm+"' unified with a plan body '"+bValue+"'. ";
+                    String msg = h.getSrcInfo()+": "+ "The operator '"+h.getBodyType()+"' is lost with the variable '"+bTerm+"' unified with a plan body. ";
                     if (!generateGoalDeletion(conf.C.SI, JasonException.createBasicErrorAnnots("body_var_with_op", msg))) 
                         logger.log(Level.SEVERE, msg);
                     return;
                 }
-                h = (PlanBody)bValue;
+                //h = (PlanBody)bValue;
+                h = (PlanBody)bTerm;
                 if (h.getPlanSize() > 1) { // the case of A unified with {a;b;c}
                     h.add(im.getCurrentStep().getBodyNext());
                     im.insertAsNextStep(h.getBodyNext());
@@ -612,7 +617,7 @@ public class TransitionSystem {
                 bTerm = h.getBodyTerm();
             } else {
                 ListTerm annots = ((VarTerm)bTerm).getAnnots();
-                bTerm = bValue;
+                //bTerm = bValue;
                 if (bTerm.isLiteral() && annots != null) {
                     bTerm = ((Literal)bTerm).forceFullLiteralImpl();
                     ((Literal)bTerm).addAnnots(annots);

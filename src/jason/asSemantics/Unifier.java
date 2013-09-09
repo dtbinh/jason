@@ -89,6 +89,18 @@ public class Unifier implements Cloneable, Iterable<VarTerm> {
         if (vl != null && vl.isVar()) { // optimised deref
             return get((VarTerm)vl);
         }
+        if (vl == null) { // try negated value of the var
+            //System.out.println("for "+vtp+" try "+new VarTerm(vtp.negated(), vtp.getFunctor())+" in "+this);
+            vl = function.get( new VarTerm(vtp.negated(), vtp.getFunctor()) );
+            //System.out.println(" and found "+vl);
+            if (vl != null && vl.isVar()) { 
+                vl = get((VarTerm)vl);
+            }
+            if (vl != null && vl.isLiteral()) {
+                vl = vl.clone();
+                ((Literal)vl).setNegated(((Literal)vl).negated());
+            }            
+        }
         return vl;
     }
 
@@ -233,21 +245,20 @@ public class Unifier implements Cloneable, Iterable<VarTerm> {
             final VarTerm t2gv = t2gisvar ? deref((VarTerm)t2g) : null;
 
             // get their values
-            final Term t1vl = t1gisvar ? function.get(t1gv) : t1g;
-            final Term t2vl = t2gisvar ? function.get(t2gv) : t2g;
+            //final Term t1vl = t1gisvar ? function.get(t1gv) : t1g;
+            //final Term t2vl = t2gisvar ? function.get(t2gv) : t2g;
+            final Term t1vl = t1gisvar ? get(t1gv) : t1g;
+            final Term t2vl = t2gisvar ? get(t2gv) : t2g;
             
-            if (t1vl != null && t2vl != null) {
-                // unifies the two values of the vars
+            if (t1vl != null && t2vl != null) { // unifies the two values of the vars                
                 return unifiesNoUndo(t1vl, t2vl); 
-            } else if (t1vl != null) {
-                bind(t2gv, t1vl);
+            } else if (t1vl != null) { // unifies var with value
+                return bind(t2gv, t1vl);
             } else if (t2vl != null) {
-                bind(t1gv, t2vl);
-            } else { //if (t1gv != null && t2gv != null) {
-                // unify two vars
-                bind(t1gv, t2gv);
+                return bind(t1gv, t2vl);
+            } else {                 // unify two vars
+                return bind(t1gv, t2gv);
             }
-            return true;
         }        
         
         // both terms are not vars
@@ -307,23 +318,43 @@ public class Unifier implements Cloneable, Iterable<VarTerm> {
         return v;
     }
     
-    
-    
-    public void bind(VarTerm vt1, VarTerm vt2) {
+    public boolean bind(VarTerm vt1, VarTerm vt2) {
+        if (vt1.negated() && vt2.negated()) { // in the case of ~A = ~B, put A=B in the unifier
+            vt1 = new VarTerm(vt1.getFunctor());
+            vt2 = new VarTerm(vt2.getFunctor());
+        }
+
         final int comp = vt1.compareTo(vt2); 
         if (comp < 0) {
-            function.put((VarTerm)vt1.clone(), vt2);
+            function.put((VarTerm)vt1.clone(), vt2.clone());
         } else if (comp > 0){
-            function.put((VarTerm)vt2.clone(), vt1);
+            function.put((VarTerm)vt2.clone(), vt1.clone());
         } // if they are the same (comp == 0), do not bind
+        return true;
     }
     
-    public void bind(VarTerm vt, Term vl) {
+    public boolean bind(VarTerm vt, Term vl) {
+        if (vt.negated()) { // negated vars unifies only with negated literals
+            if (vl.isLiteral()) {
+                if (!((Literal)vl).negated()) {
+                    return false;
+                } else {
+                    // put also the positive case in the unifier
+                    Literal vlp = (Literal)vl.clone();
+                    vlp.setNegated(Literal.LPos);
+                    unifies(new VarTerm(vt.getFunctor()), vlp);
+                }
+            } else {
+                return false;
+            }
+        }     
+
         if (!vl.isCyclicTerm() && vl.hasVar(vt, this)) { 
             vl = new CyclicTerm((Literal)vl, (VarTerm)vt.clone());
-            //System.out.println("changing "+vt+" <- "+vl+" in "+this);
         }
+
         function.put((VarTerm) vt.clone(), vl);
+        return true;
     }
         
     public void clear() {

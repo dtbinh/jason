@@ -40,6 +40,18 @@ public class ASParserTest extends TestCase {
         super.setUp();
     }
 
+    public void testNegVar() throws ParseException {
+        Literal l = ASSyntax.parseLiteral("~B");
+        assertTrue(l.isVar());
+        assertTrue(l.negated());
+        l = (Literal)l.clone();
+        assertTrue(l.isVar());
+        assertTrue(l.negated());
+        Literal l1 = ASSyntax.parseLiteral("~B");
+        Literal l2 = ASSyntax.parseLiteral("B");
+        assertFalse(l1.equals(l2));
+    }
+    
     public void testKQML() {
         Agent ag = new Agent();
         ag.initAg();
