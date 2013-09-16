@@ -26,7 +26,24 @@ public class BugListReturnUnification {
                 
                 "+!test3 <- !a(Y)[x(Z), y]; jason.asunit.print(Y, Z). "+
                 "+!a(Y)[x(Z),kk]           <- Y=3; Z=4. "+          
-                "+!a(Y)[x(Z),source(self)] <- Y=1; Z=2. "       
+                "+!a(Y)[x(Z),source(self)] <- Y=1; Z=2. "+
+                
+                "+!test4 <- X = [a,b,c]; !deleteb(X,Y); jason.asunit.print(Y)."+
+                "+!test5 <- X = [a,b,c]; !deleteb2(X,Y); jason.asunit.print(Y)."+
+                
+                "+!deleteb([], [])."+
+                "+!deleteb([b|L1], L2)"+
+                "  <- !deleteb(L1, L2)."+
+                "+!deleteb([H|L1], [H|L2])"+
+                "  <- !deleteb(L1, L2)."+
+
+                "+!deleteb2([], [])."+
+                "+!deleteb2([b|L1], L2)"+
+                "  <- !deleteb2(L1, L2)."+
+                "+!deleteb2([H|L1], R)"+
+                "  <- !deleteb2(L1, L2);"+
+                "     R = [H|L2]."
+
         );
     }
     
@@ -43,4 +60,16 @@ public class BugListReturnUnification {
         ag.addGoal("test3");
         ag.assertPrint("12", 10);
     }
+
+    @Test(timeout=2000)
+    public void testDelete1() {
+        ag.addGoal("test4");
+        ag.assertPrint("[a,c]", 10);
+    }
+    @Test(timeout=2000)
+    public void testDelete2() {
+        ag.addGoal("test5");
+        ag.assertPrint("[a,c]", 10);
+    }
+
 }

@@ -1,7 +1,7 @@
 ---------------------------
-version 1.3.10
+version 1.3.10a
 
-revision 1745 on SVN
+revision 1748 on SVN
 ---------------------------
 
 New features
@@ -13,6 +13,12 @@ New features
        ...; .wait(b(X) & X > 10); ....
    The intention will be suspended until the agent believes b(X) with X > 10. 
    Timeout and elapse time arguments can be used as previously. 
+
+
+New example:
+- Santa Claus: a classical benchmark for concurrent programming
+  http://www.cs.otago.ac.nz/staffpriv/ok/santa
+
 
 ---------------------------
 version 1.3.9
