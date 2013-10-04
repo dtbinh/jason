@@ -19,7 +19,12 @@ public class BugVarsAsGoal {
         ag.parseAScode(
                 "+!g <- +p(ggg); !gg; Y={!ggg}; Y. " + 
                 "+!gg : p(X) <- +X; !!X. " +
-                "+!ggg[source(A)] <- jason.asunit.print(A). "
+                "+!ggg[source(A)] <- jason.asunit.print(A). "+
+                "+!jig[scheme(S)]  <- jason.asunit.print(S)." +
+                "+!jig  <- jason.asunit.print(noscheme)." +
+                "+!test1(S) <- !run(jig,S)." +
+                "+!test2(G) <- !G." +
+                "+!run(G,S) <- !G[scheme(S)]."
         );
     }
        
@@ -28,5 +33,16 @@ public class BugVarsAsGoal {
         ag.addGoal("g");
         ag.assertPrint("self", 10);
         ag.assertPrint("self", 10);
+    }
+    
+    @Test(timeout=2000)
+    public void test1() {
+        ag.addGoal("test1(s1)");
+        ag.assertPrint("s1", 10);
+    }
+    @Test(timeout=2000)
+    public void test2() {
+        ag.addGoal("test2(jig)");
+        ag.assertPrint("noscheme", 10);
     }
 }

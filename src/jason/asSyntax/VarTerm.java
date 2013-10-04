@@ -137,8 +137,9 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
         //   +!p[a,b]
         // Answer: use annots of var, useful for meta-programming like
         //         P[step(N)]
-        if (vl.isPred() && this.hasAnnot())  // if this var has annots, add them in the value's annots (Experimental)
-            ((Pred)vl).addAnnots(this.getAnnots());
+        if (vl.isLiteral() && this.hasAnnot()) { // if this var has annots, add them in the value's annots (Experimental)
+            vl = ((Literal)vl).forceFullLiteralImpl().addAnnots(this.getAnnots());
+        }
 
         value = vl;        
         resetHashCodeCache();
