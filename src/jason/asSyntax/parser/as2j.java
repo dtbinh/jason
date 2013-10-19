@@ -1524,11 +1524,6 @@
     finally { jj_save(1, xla); }
   }
 
-  final private boolean jj_3R_54() {
-    if (jj_3R_61()) return true;
-    return false;
-  }
-
   final private boolean jj_3R_67() {
     if (jj_3R_79()) return true;
     return false;
@@ -2129,6 +2124,11 @@
 
   final private boolean jj_3R_45() {
     if (jj_scan_token(TK_TRUE)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_54() {
+    if (jj_3R_61()) return true;
     return false;
   }
 

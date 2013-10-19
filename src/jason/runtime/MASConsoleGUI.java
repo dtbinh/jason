@@ -43,6 +43,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
+import javax.swing.text.DefaultCaret;
 
 /** the GUI console to output log messages */
 public class MASConsoleGUI {
@@ -109,6 +110,7 @@ public class MASConsoleGUI {
     protected void initOutput() {
         output = new JTextArea();
         output.setEditable(false);        
+        ((DefaultCaret)output.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
         if (isTabbed) {
             tabPane.add("common", new JScrollPane(output));
         } else {
@@ -195,10 +197,8 @@ public class MASConsoleGUI {
                     int l = ta.getDocument().getLength();
                     if (l > 100000) {
                         ta.setText("");
-                        // l = output.getDocument().getLength();
                     }
                     ta.append(s);
-                    // output.setCaretPosition(l);
                 }
             }
 
@@ -210,6 +210,7 @@ public class MASConsoleGUI {
             }
             synchronized (this) {
                 output.append(s);
+                output.setCaretPosition(l);
             }
         } catch (Exception e) {
             close();

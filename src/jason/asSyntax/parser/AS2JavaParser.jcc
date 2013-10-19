@@ -25,6 +25,7 @@ options {
    FORCE_LA_CHECK=true;
    STATIC=false;
    IGNORE_CASE=false;
+   UNICODE_INPUT=true;
 }
 
 PARSER_BEGIN(as2j)

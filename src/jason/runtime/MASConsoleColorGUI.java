@@ -10,6 +10,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultCaret;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
@@ -45,6 +46,7 @@ public class MASConsoleColorGUI extends MASConsoleGUI {
     protected void initOutput() {
         output = new MASColorTextPane(Color.black);
         output.setEditable(false);
+        ((DefaultCaret)output.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
         if (isTabbed()) {
             tabPane.add("common", new JScrollPane(output));
         } else {
@@ -83,10 +85,8 @@ public class MASConsoleColorGUI extends MASConsoleGUI {
                     int l = ta.getDocument().getLength();
                     if (l > 100000) {
                         ta.setText("");
-                        // l = output.getDocument().getLength();
                     }
                     ta.append(s);
-                    // output.setCaretPosition(l);
                 }
             }
 
@@ -98,6 +98,7 @@ public class MASConsoleColorGUI extends MASConsoleGUI {
             }
             synchronized (this) {
                 output.append(c, s);
+                output.setCaretPosition(l);
             }
         } catch (Exception e) {
             close();
