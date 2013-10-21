@@ -12,7 +12,7 @@
 
     <property name="dist.properties" value="${basedir}/bin/dist.properties" />
     <property name="version" value="1" />
-    <property name="release" value="3.10a" />
+    <property name="release" value="3.10b" />
     <property name="distDir" value="${env.HOME}/tmp/x/Jason-${version}.${release}" />
     <property name="distFile" value="${env.HOME}/Jason-${version}.${release}" />
 
@@ -255,7 +255,7 @@ TARGETS:
         </not>
     </condition>
     
-    <target name="apidocsimple" unless="dot-ok" > <!-- stylesheetfile="doc/faq/faq.css" -->
+    <target name="apidocsimple" unless="dot-ok">  <!--   -->
         <javadoc 
             destdir="${basedir}/doc/api" 
             packagenames="jason.*" 
@@ -291,9 +291,9 @@ TARGETS:
                                     <param name="-qualify"/>
                                     <!--param name="-collapsible"/-->
                                     <param name="-postfixpackage"/>
-                                    <param name="-nodefontsize" value="14"/>
-                                    <param name="-nodefontpackagesize" value="8"/>
-                                    <param name="-edgefontsize" value="10"/>
+                                    <!--param name="-nodefontsize" value="14"/-->
+                                    <!--param name="-nodefontpackagesize" value="8"/-->
+                                    <!--param name="-edgefontsize" value="10"/-->
                                     <!--param name="-link" value="http://java.sun.com/j2se/1.5.0/docs/guide/javadoc/doclet/spec"/>
                                     <param name="-link" value="http://java.sun.com/j2se/1.5/docs/api"/-->
                 </doclet>           

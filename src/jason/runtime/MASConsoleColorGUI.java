@@ -94,7 +94,7 @@ public class MASConsoleColorGUI extends MASConsoleGUI {
             int l = output.getDocument().getLength();
             if (l > 60000) {
                 cleanConsole();
-                // l = output.getDocument().getLength();
+                l = 0;
             }
             synchronized (this) {
                 output.append(c, s);
