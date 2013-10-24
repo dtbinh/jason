@@ -311,7 +311,7 @@ public class TransitionSystem {
                     if (!setts.isSync() && !ag.getPL().hasUserKqmlReceivedPlans() && content.isLiteral() && !content.isList()) { // optimisation to jump kqmlPlans
                         if (m.getIlForce().equals("achieve") ) {                             
                             content = add_nested_source.addAnnotToList(content, new Atom(sender));
-                            updateEvents(new Event(new Trigger(TEOperator.add, TEType.achieve, (Literal)content), Intention.EmptyInt));
+                            C.addEvent(new Event(new Trigger(TEOperator.add, TEType.achieve, (Literal)content), Intention.EmptyInt));
                             added = true;                            
                         } else if (m.getIlForce().equals("tell") ) {
                             content = add_nested_source.addAnnotToList(content, new Atom(sender));
