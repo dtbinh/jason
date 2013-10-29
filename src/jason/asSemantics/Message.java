@@ -164,7 +164,7 @@ public class Message implements Serializable {
         if (msg.startsWith("<")) {
             one = msg.indexOf(",");
             int arrowIndex = msg.indexOf("->");
-            if (one < arrowIndex) { // If there is an arrow before the first comma
+            if (one > arrowIndex) { // If there is an arrow before the first comma
                 newmsg.msgId = msg.substring(1, arrowIndex);
                 newmsg.inReplyTo = msg.substring(arrowIndex + 2, one);
             } else { // If not (either there is no arrow, or there is one behind the first comma)

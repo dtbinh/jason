@@ -99,15 +99,13 @@ public class relevant_plans extends DefaultInternalAction {
                     np.getLabel().delSources();
                 np.setAsPlanTerm(true);
                 np.makeVarsAnnon();
-                //StringTerm stplan = new StringTermImpl(np.toASString().replaceAll("\\\"", "\\\\\""));
-                //last = last.append(stplan);
                 last = last.append(np);
                 if (args.length == 3) 
                     labels.add(np.getLabel());
             }
 		}
 
-        boolean ok = un.unifies(lt, args[1]); // second arg is a var;
+        boolean ok = un.unifies(lt, args[1]); // args[1] is a var;
         if (ok && args.length == 3)
             ok = un.unifies(labels, args[2]);
         

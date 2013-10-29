@@ -1,11 +1,13 @@
 package jason.asSyntax;
 
+import java.io.Serializable;
+
 /**
  * Represents the "type" of a predicate based on the functor and the arity, e.g.: ask/4
  * 
  * @author jomi
  */
-public final class PredicateIndicator {
+public final class PredicateIndicator implements Serializable {
 
     private final String functor;
     private final int    arity;
