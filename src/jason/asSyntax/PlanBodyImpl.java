@@ -144,7 +144,12 @@ public class PlanBodyImpl extends Structure implements PlanBody, Iterable<PlanBo
     @Override
     public void setTerm(int i, Term t) {
         if (i == 0) term = t;
-        if (i == 1) System.out.println("Should not setTerm(1) of body literal!");
+        if (i == 1) { // (NIDE) if next is the last VAR...
+            if (next != null && next.getBodyTerm().isVar() && next.getBodyNext() == null) 
+                next.setBodyTerm(t);
+            else
+                System.out.println("Should not setTerm(1) of body literal!");
+        }
     }
     
     private boolean applyHead(Unifier u) {
@@ -202,6 +207,8 @@ public class PlanBodyImpl extends Structure implements PlanBody, Iterable<PlanBo
 
     /** clone the plan body and adds it in the end of this plan */
     public boolean add(PlanBody bl) {
+        if (bl == null) // (NIDE) if bl is empty, do nothing
+            return true;
         if (term == null) {
             bl = bl.clonePB();
             swap(bl);
@@ -271,10 +278,11 @@ public class PlanBodyImpl extends Structure implements PlanBody, Iterable<PlanBo
     }
 
     public PlanBody clone() {
-        if (term == null) // empty
-            return new PlanBodyImpl();
-
-        PlanBodyImpl c = new PlanBodyImpl(formType, term.clone());
+        PlanBodyImpl c;    
+        if (term == null)  // (NIDE) must copy c.isTerm even if cloning empty plan
+            c = new PlanBodyImpl();
+        else 
+            c = new PlanBodyImpl(formType, term.clone());
         c.isTerm = isTerm;
         if (next != null)
             c.setBodyNext(getBodyNext().clonePB());
@@ -287,7 +295,7 @@ public class PlanBodyImpl extends Structure implements PlanBody, Iterable<PlanBo
     
     public String toString() {
         if (term == null) {
-            return "";
+            return isTerm ? "{ }" : ""; // NIDE
         } else {
             StringBuilder out = new StringBuilder();
             if (isTerm)

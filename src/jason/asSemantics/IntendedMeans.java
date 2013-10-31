@@ -132,9 +132,14 @@ public class IntendedMeans implements Serializable {
     }
 
     public Term getAsTerm() {
-        if (planBody instanceof PlanBodyImpl) {
+        if (planBody instanceof PlanBodyImpl || planBody == null) {
             // TODO: use same replacements (Var -> Unnamed var) for the plan and for the unifier
-            PlanBody bd = (PlanBody)((PlanBodyImpl)planBody.clone()).makeVarsAnnon();
+            PlanBody bd;
+            if (planBody == null) { // (NIDE) in case we must convert empty plan to Term
+                bd = new PlanBodyImpl();
+            } else {
+                bd = (PlanBody)((PlanBodyImpl)planBody.clone()).makeVarsAnnon();
+            }
             bd.setAsBodyTerm(true);
             return ASSyntax.createStructure("im", ASSyntax.createString(plan.getLabel()), bd, unif.getAsTerm());
         } else {
