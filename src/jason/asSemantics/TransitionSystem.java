@@ -493,6 +493,41 @@ public class TransitionSystem {
             confP.C.addIntention(intention);
         } else {
             // Rule IntEv
+            
+            // begin tail recursion optimisation (TRO)
+            if (setts.isTROon()) {
+                IntendedMeans top = confP.C.SE.intention.peek(); // top = the IM that will be removed from the intention due to TRO
+                if (top.getTrigger().isGoal() && im.getTrigger().isGoal() && // are both goal
+                    top.getTrigger().getPredicateIndicator().equals( im.getTrigger().getPredicateIndicator()) && // are they equals
+                    top.getCurrentStep().getBodyNext() == null) { // the plan below is finished
+                    confP.C.SE.intention.pop(); // remove the top IM
+                    
+                    IntendedMeans imBase = confP.C.SE.intention.peek(); // base = where the new IM will be place on top of
+                    // move top relevant values into the base (relevant = renamed vars in base)
+                    for (VarTerm v: imBase.renamedVars) {
+                        VarTerm vvl = (VarTerm)imBase.renamedVars.function.get(v);
+                        Term t = top.unif.get(vvl);
+                        if (t != null) { // if v has got a value in top unif, put the value in the unifier
+                            if (t instanceof Literal) {
+                                Literal l= (Literal)t.clone();
+                                l.apply(top.unif);
+                                l.makeVarsAnnon(top.renamedVars);
+                                im.unif.function.put(vvl, l);                        
+                            } else {
+                                im.unif.function.put(vvl, t);                        
+                            }
+                        } else {
+                            // the vvl was renamed again in top, just replace in base the new value
+                            VarTerm v0 = (VarTerm)top.renamedVars.function.get(vvl);
+                            if (v0 != null) {
+                                imBase.renamedVars.function.put(v, v0);
+                            }
+                        }
+                    }                                
+                }           
+                // end of TRO
+            }
+
             confP.C.SE.intention.push(im);
             confP.C.addIntention(confP.C.SE.intention);
         }
@@ -807,10 +842,30 @@ public class TransitionSystem {
         body = body.copy();
         body.apply(u);
         Unifier renamedVars = new Unifier();
-        if (imRenamedVars != null)
-            imRenamedVars.renamedVars = renamedVars;
+        //System.out.println("antes "+body+" "+u+" ");
         body.makeVarsAnnon(renamedVars); // free variables in an event cannot conflict with those in the plan
-        //body.makeVarsAnnon(u); // free variables in an event cannot conflict with those in the plan
+        if (imRenamedVars != null) {
+            imRenamedVars.renamedVars = renamedVars;
+            
+            // Code for TRO (Tail Recursion Opt)
+            if (setts.isTROon()) {
+                // renamed vars binded with another var in u need to be preserved (since u will be lost in TRO)
+                Map<VarTerm, Term> adds = null;
+                for (VarTerm v: renamedVars) {
+                    Term t = u.function.get(v);
+                    if (t != null) {
+                        //System.out.println("adding "+t+"="+renamedVars.function.get(v));
+                        if (adds == null)
+                            adds = new HashMap<VarTerm, Term>();
+                        adds.put((VarTerm)t,renamedVars.function.get(v));
+                    }
+                }
+                if (adds != null)
+                    renamedVars.function.putAll(adds);
+                //System.out.println("depois "+body+" "+renamedVars+" u="+u);
+                // end code for TRO
+            }
+        }
         body = body.forceFullLiteralImpl();
         if (!body.hasSource()) { // do not add source(self) in case the programmer set the source
             body.addAnnot(BeliefBase.TSelf);
@@ -883,52 +938,23 @@ public class TransitionSystem {
                     // old code:
                     /*topLiteral.apply(topIM.unif);
                     topLiteral.makeVarsAnnon();
-                    im.unif.unifies(im.removeCurrentStep(), topLiteral);
+                    Literal cstep = (Literal)im.removeCurrentStep();
+                    boolean r = im.unif.unifies(cstep,topLiteral);
                     */
                     
                     // new code optimised: handle directly renamed vars for the call                    
-                    //System.out.println("* "+topLiteral+topIM.unif+"  "+im.unif+" "+im.renamedVars);
-                    /*VarTerm[] lvt = null;
-                    Term[]    lvl = null;
-                    int       n   = 0;
-                    // get vars in the unifier that comes from makeVarAnnon
-                    for (Term t: im.unif.function.values()) {
-                        if (t instanceof UnnamedVar) {
-                            UnnamedVar vt = (UnnamedVar)t;
-                            if (vt.isFromMakeVarAnnon()) {
-                                Term vl = topIM.unif.function.get(vt);
-                                if (vl != null) { // vt has value in top
-                                    vl = vl.clone();
-                                    vl.apply(topIM.unif);
-                                    if (vl.isLiteral())
-                                        ((Literal)vl).makeVarsAnnon();
-                                    if (lvt == null) {
-                                        int s = Math.max(im.unif.size(),topIM.unif.size());
-                                        lvt = new VarTerm[s];
-                                        lvl = new Term[s];
-                                    }
-                                    lvt[n] = vt;
-                                    lvl[n] = vl;
-                                    n++;
-                                }
-                            }
-                        }
-                    }
-                    for (int il=0; il<n; il++) {
-                        im.unif.bind(lvt[il], lvl[il]);
-                    }
-                    */
-                    
-                    
                     // get vars in the unifier that comes from makeVarAnnon (stored in renamedVars)
                     if (im.renamedVars != null) {
                         for (VarTerm ov: im.renamedVars.function.keySet()) {
+                            //System.out.println("looking for a value for "+ov+" in "+im.renamedVars+" and "+topIM.unif);
                             UnnamedVar vt = (UnnamedVar)im.renamedVars.function.get(ov);
+                            //System.out.println("   via "+vt);
                             im.unif.unifiesNoUndo(ov, vt); // introduces the renaming in the current unif
                             // if vt has got a value from the top (a "return" value), include this value in the current unif
                             Term vl = topIM.unif.function.get(vt);
                             //System.out.println(ov+"="+vt+"="+vl);
                             if (vl != null) { // vt has value in top
+                                //System.out.println("   and found "+vl);
                                 vl = vl.clone();
                                 vl.apply(topIM.unif);
                                 if (vl.isLiteral())
@@ -937,8 +963,7 @@ public class TransitionSystem {
                             }
                         }
                     }
-                    //System.out.println("=> "+im.unif);
-                    im.removeCurrentStep();               
+                    im.removeCurrentStep();
                 }
             }
         }

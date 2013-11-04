@@ -1,3 +1,10 @@
+New features
+
+- implementation of tail recursion optimisation for sub-goals.
+  It can be turned off in agent options, e.g.:
+    agents: bob [tro=false];
+
+
 ---------------------------
 version 1.3.10b
 
@@ -218,7 +225,7 @@ New features
   these events can than be handled by plans such as
 	^!goto(X,Y)[state(S)] <- .print("goto state is ",S).
   for the state suspended, another annotation contains the 
-  suspension reason (.wait, .suspend, É)
+  suspension reason (.wait, .suspend, ...)
 	^!goto(X,Y)[state(S)[reason(R)]] 
            <- .print("goto state is ",S," due to ",R).
  

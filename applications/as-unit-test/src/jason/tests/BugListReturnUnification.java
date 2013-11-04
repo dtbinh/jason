@@ -28,8 +28,8 @@ public class BugListReturnUnification {
                 "+!a(Y)[x(Z),kk]           <- Y=3; Z=4. "+          
                 "+!a(Y)[x(Z),source(self)] <- Y=1; Z=2. "+
                 
-                "+!test4 <- X = [a,b,c]; !deleteb(X,Y); jason.asunit.print(Y)."+
-                "+!test5 <- X = [a,b,c]; !deleteb2(X,Y); jason.asunit.print(Y)."+
+                "+!test4 <- X = [a,b,c,b,b,d]; !deleteb(X,Y); jason.asunit.print(Y)."+
+                "+!test5 <- X = [a,b,c,b,b,d]; !deleteb2(X,Y); jason.asunit.print(Y)."+
                 
                 "+!deleteb([], [])."+
                 "+!deleteb([b|L1], L2)"+
@@ -64,12 +64,12 @@ public class BugListReturnUnification {
     @Test(timeout=2000)
     public void testDelete1() {
         ag.addGoal("test4");
-        ag.assertPrint("[a,c]", 10);
+        ag.assertPrint("[a,c,d]", 10);
     }
     @Test(timeout=2000)
     public void testDelete2() {
         ag.addGoal("test5");
-        ag.assertPrint("[a,c]", 10);
+        ag.assertPrint("[a,c,d]", 20);
     }
 
 }

@@ -103,6 +103,16 @@ public class Unifier implements Cloneable, Iterable<VarTerm> {
         }
         return vl;
     }
+    
+    public VarTerm getVarFromValue(Term vl) {
+        for (VarTerm v: function.keySet()) {
+            Term vvl = function.get(v);
+            if (vvl.equals(vl)) {
+                return v;
+            }
+        }
+        return null;
+    }
 
     public boolean unifies(Trigger te1, Trigger te2) {
         return te1.sameType(te2) && unifies(te1.getLiteral(), te2.getLiteral());

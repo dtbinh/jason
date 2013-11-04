@@ -52,6 +52,7 @@ public class Settings {
     private boolean sync       = ODefaultSync; 
     private boolean qCache     = false; // whether to use query cache
     private boolean qProfiling = false; // whether has query profiling
+    private boolean troON      = true;  // tail recursion optimisation is on by default
     
     private Map<String,Object> userParameters = new HashMap<String,Object>();
     
@@ -108,6 +109,8 @@ public class Settings {
     
             } else if (key.equals("synchronised")) {
                 setSync("true".equals((String)options.get("synchronised")));
+            } else if (key.equals("tro")) {
+                setTRO("true".equals((String)options.get("tro")));
             } else if (key.equals("qcache")) {
                 setQueryCache( "cycle".equals((String)options.get("qcache")) );
             } else if (key.equals("qprofiling")) {
@@ -198,6 +201,13 @@ public class Settings {
     
     public void setSync(boolean pSync) {
         sync = pSync;
+    }
+    
+    public boolean isTROon() {
+        return troON;
+    }
+    public void setTRO(boolean tro) {
+        troON = tro;
     }
     
     public boolean hasQueryCache() {

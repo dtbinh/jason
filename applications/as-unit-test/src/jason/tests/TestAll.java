@@ -26,6 +26,7 @@ import org.junit.runners.Suite.SuiteClasses;
     TestVarInContext.class,
     TestUnnamedVar.class,
     TestCopyTerm.class,
-    TestNegatedVar.class
+    TestNegatedVar.class,
+    TestTRO.class
  })
 public class TestAll { }
