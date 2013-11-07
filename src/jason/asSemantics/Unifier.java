@@ -51,20 +51,6 @@ public class Unifier implements Cloneable, Iterable<VarTerm> {
 
     protected Map<VarTerm, Term> function = new HashMap<VarTerm, Term>();
 
-    /** 
-     * @deprecated use t.apply(un) instead.
-     */
-    public void apply(Term t) {
-        t.apply(this);
-    }
-
-    /** 
-     * @deprecated use p.apply(un) instead.
-     */
-    public void apply(Pred p) {
-        p.apply(this);
-    }
-
     /**
      * gets the value for a Var, if it is unified with another var, gets this
      * other's value
@@ -235,14 +221,10 @@ public class Unifier implements Cloneable, Iterable<VarTerm> {
 
     protected boolean unifyTerms(Term t1g, Term t2g) {
         // if args are expressions, apply them and use their values
-        if (t1g.isArithExpr()) {
-            t1g = t1g.clone();
-            t1g.apply(this);
-        }
-        if (t2g.isArithExpr()) {
-            t2g = t2g.clone();
-            t2g.apply(this);
-        }
+        if (t1g.isArithExpr())
+            t1g = t1g.capply(this);
+        if (t2g.isArithExpr())
+            t2g = t2g.capply(this);
 
         final boolean t1gisvar = t1g.isVar();
         final boolean t2gisvar = t2g.isVar();

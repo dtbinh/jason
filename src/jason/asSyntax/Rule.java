@@ -56,6 +56,13 @@ public class Rule extends LiteralImpl {
         this.body = body;
     }
 
+    public Rule(Rule r, Unifier u) {
+        super(r,u);
+        body = (LogicalFormula)r.body.capply(u);
+        predicateIndicatorCache = null;
+    }
+    
+    
     @Override
     public boolean isRule() {
         return true;
@@ -71,8 +78,8 @@ public class Rule extends LiteralImpl {
     }
 
     @Override
-    public int hashCode() {
-        return super.hashCode() + body.hashCode();
+    protected int calcHashCode() {
+        return super.calcHashCode() + body.hashCode();
     }
     
     public LogicalFormula getBody() {
@@ -86,15 +93,24 @@ public class Rule extends LiteralImpl {
         return super.makeVarsAnnon(un);
     }
     
+    @Override
+    public Term capply(Unifier u) {
+        return new Rule(this,u);
+    }
+    
     public Rule clone() {
         Rule r = new Rule((Literal)super.clone(), (LogicalFormula)body.clone());
         r.predicateIndicatorCache = null;
         r.resetHashCodeCache();
         return r; 
     }
-
+    
     public Literal headClone() {
         return (Literal)super.clone();
+    }
+    
+    public Literal headCApply(Unifier u) {
+        return (Literal)super.capply(u);
     }
     
     public String toString() {

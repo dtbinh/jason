@@ -23,6 +23,8 @@
 
 package jason.asSyntax;
 
+import jason.asSemantics.Unifier;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -52,6 +54,13 @@ public class LiteralImpl extends Pred {
         super(l);
         type = !l.negated();
     }
+    
+    // used by capply
+    protected LiteralImpl(Literal l, Unifier u) {
+        super(l,u);
+        type = !l.negated();
+    }
+
     
     /** if pos == true, the literal is positive, otherwise it is negative */
     public LiteralImpl(boolean pos, Literal l) {
@@ -119,8 +128,14 @@ public class LiteralImpl extends Pred {
         return super.compareTo(t);
     }        
 
+    @Override
     public Term clone() {
         return new LiteralImpl(this);
+    }
+    
+    @Override
+    public Term capply(Unifier u) {
+        return new LiteralImpl(this,u);
     }
     
     @Override

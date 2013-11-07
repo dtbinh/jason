@@ -93,11 +93,11 @@ public class PlanTest extends TestCase {
         Unifier u = new Unifier();
         // X = !g1
         assertTrue(u.unifies(v, bl));
-        v.apply(u);
-        assertEquals(BodyType.achieve, v.getBodyType());
-        assertEquals(bl.getBodyTerm(),v.getBodyTerm());
+        PlanBody vb = (PlanBody)v.capply(u);
+        assertEquals(BodyType.achieve, vb.getBodyType());
+        assertEquals(bl.getBodyTerm(),vb.getBodyTerm());
         Plan p = Plan.parse("+te : a & b <- !g1.");
-        assertEquals(p.getBody(),v);
+        assertEquals(p.getBody(),vb);
     }
     
     public void testUnifyBody() {
@@ -120,17 +120,15 @@ public class PlanTest extends TestCase {
         
         Unifier u = new Unifier();
         u.unifies(new VarTerm("B"), ASSyntax.parseTerm("{ .print(a); .print(b); .print(c) }"));
-        pt.apply(u);
+        pt = pt.capply(u);
         assertEquals("{ +!g : c <- .print(a); .print(b); .print(c) }", pt.toString());
-        
-        
         pt = ASSyntax.parseTerm("{ +!g : c <- B; a1; B }");
-        pt.apply(u);
+        pt = pt.capply(u);
         assertEquals("{ +!g : c <- .print(a); .print(b); .print(c); a1; .print(a); .print(b); .print(c) }", pt.toString());
         
         pt = ASSyntax.parseTerm("{ +!g : c <- .print(0); B; B; .print(d); C }");
         u.unifies(new VarTerm("C"), ASSyntax.parseTerm("{ a1 }"));
-        pt.apply(u);
+        pt = pt.capply(u);
         assertEquals(9, ((Plan)pt).getBody().getPlanSize());
         assertEquals("{ +!g : c <- .print(0); .print(a); .print(b); .print(c); .print(a); .print(b); .print(c); .print(d); a1 }", pt.toString());
     }

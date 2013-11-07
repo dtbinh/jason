@@ -332,8 +332,7 @@ public abstract class Literal extends DefaultTerm implements LogicalFormula {
                 // try cache iterator
                 if (cacheIt != null) {
                     while (cacheIt.hasNext()) {
-                        Literal ltmp = Literal.this.copy();
-                        ltmp.apply( cacheIt.next() );
+                        Literal ltmp = (Literal)Literal.this.capply( cacheIt.next() );
                         Unifier u = un.clone();
                         //System.out.println("   try "+ltmp);
                         if (u.unifiesNoUndo(Literal.this, ltmp)) {
@@ -365,8 +364,9 @@ public abstract class Literal extends DefaultTerm implements LogicalFormula {
                     while (ruleIt.hasNext()) {
                         // unifies the rule head with the result of rule evaluation
                         Unifier ruleUn = ruleIt.next(); // evaluation result
-                        Literal rhead  = rule.headClone();
-                        rhead.apply(ruleUn);
+                        //Literal rhead  = rule.headClone();
+                        //rhead = (Literal)rhead.capply(ruleUn);
+                        Literal rhead  = rule.headCApply(ruleUn);
                         useDerefVars(rhead, ruleUn); // replace vars by the bottom in the var clusters (e.g. X=_2; Y=_2, a(X,Y) ===> A(_2,_2))
                         rhead.makeVarsAnnon(); // to remove vars in head with original names
                         
@@ -399,8 +399,7 @@ public abstract class Literal extends DefaultTerm implements LogicalFormula {
                         // it is used to define what will be the unifier used
                         // inside the rule.
                         if (cloneAnnon == null) {
-                            cloneAnnon = Literal.this.copy();
-                            cloneAnnon.apply(un);
+                            cloneAnnon = (Literal)Literal.this.capply(un);
                             cloneAnnon.makeVarsAnnon();
                         }
                         
@@ -418,8 +417,7 @@ public abstract class Literal extends DefaultTerm implements LogicalFormula {
                                 get();
                                 return;
                             }*/
-                            kForChache = Literal.this.copy();
-                            kForChache.apply(un);
+                            kForChache = (Literal)Literal.this.capply(un);
                             //System.out.println("try "+kForChache);
                             cacheIt = qCache.getCache(kForChache);
                             if (cacheIt != null) {

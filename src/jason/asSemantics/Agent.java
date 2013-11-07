@@ -488,8 +488,8 @@ public class Agent {
             if (!b.isRule() && !b.isGround())
                 b = new Rule(b,Literal.LTrue);
 
-            b.apply(new Unifier()); // to solve arithmetic expressions
-                            
+            b = (Literal)b.capply(null); // to solve arithmetic expressions
+            
             // does not do BRF for rules (and so do not produce events +bel for rules)
             if (b.isRule())
                 getBB().add(b);
@@ -843,7 +843,7 @@ public class Agent {
                 boolean removed = getBB().remove(beliefToDel);
                 if (!removed && !beliefToDel.isGround()) { // then try to unify the parameter with a belief in BB
                     if (believes(beliefToDel, u)) {
-                        beliefToDel.apply(u);        
+                        beliefToDel = (Literal)beliefToDel.capply(u);        
                         removed = getBB().remove(beliefToDel);
                     }
                 }

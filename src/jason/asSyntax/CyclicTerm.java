@@ -45,6 +45,11 @@ public class CyclicTerm extends LiteralImpl  {
         cyclicVar = v;
     }
 
+    public CyclicTerm(Literal t, VarTerm v, Unifier u) {
+        super(t,u);
+        cyclicVar = v;
+    }
+
     public VarTerm getCyclicVar() {
         return cyclicVar;
     }
@@ -75,6 +80,8 @@ public class CyclicTerm extends LiteralImpl  {
         return this;
     }
 
+
+    /*
     @Override
     public boolean apply(Unifier u) {
         Term v = u.remove(cyclicVar);
@@ -83,9 +90,19 @@ public class CyclicTerm extends LiteralImpl  {
             u.bind(cyclicVar, v);
         return b;
     }
+    */
     
+    @Override
+    public Term capply(Unifier u) {
+        Term v = u.remove(cyclicVar);
+        Term r = new CyclicTerm(this, (VarTerm)cyclicVar.clone(), u);
+        if (v != null)
+            u.bind(cyclicVar, v);
+        return r; 
+    }
+
     public Term clone() {
-        return new CyclicTerm(this, (VarTerm)cyclicVar.copy());
+        return new CyclicTerm(this, (VarTerm)cyclicVar.clone());
     }
     
     @Override

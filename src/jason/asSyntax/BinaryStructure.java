@@ -56,10 +56,6 @@ public abstract class BinaryStructure extends Structure {
         srcInfo = arg.getSrcInfo();
     }
     
-    public boolean isUnary() {
-        return getArity() == 1;
-    }
-    
     /** gets the LHS of this operation */
     public Term getLHS() {
         return getTerm(0);

@@ -68,8 +68,7 @@ public abstract class ConcurrentInternalAction implements InternalAction {
     public Term[] prepareArguments(Literal body, Unifier un) {
         Term[] terms = new Term[body.getArity()];
         for (int i=0; i<terms.length; i++) {
-            terms[i] = body.getTerm(i).clone();
-            terms[i].apply(un);
+            terms[i] = body.getTerm(i).capply(un);
         }
         return terms;
     }

@@ -35,12 +35,12 @@ public class ObjectTermImpl extends DefaultTerm implements ObjectTerm {
             return this.o.equals(((ObjectTermImpl) o).o);
         }
         
-        if (o instanceof VarTerm) {
+        /*if (o instanceof VarTerm) {
             Term value = ((VarTerm) o).getValue();
             if (value instanceof ObjectTermImpl) {
                 return this.o.equals(((ObjectTermImpl) value).o);
             }
-        }
+        }*/
         return false;        
     }
     

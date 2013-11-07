@@ -5,6 +5,7 @@ import jason.asSyntax.ASSyntax;
 import jason.asSyntax.Atom;
 import jason.asSyntax.ListTerm;
 import jason.asSyntax.ListTermImpl;
+import jason.asSyntax.Literal;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
 import jason.asSyntax.VarTerm;
@@ -67,8 +68,8 @@ public class ListTermTest extends TestCase {
     }
 
     public void testToString() {
-        assertEquals(l1.toString(),"[a,b,c]");
-        assertEquals(l2.toString(),"[a(1,2),b(r,t)|T]");
+        assertEquals("[a,b,c]",l1.toString());
+        assertEquals("[a(1,2),b(r,t)|T]",l2.toString());
     }
     
     public void testUnify() {
@@ -184,17 +185,17 @@ public class ListTermTest extends TestCase {
         // L6 = L5 concat [d]
         VarTerm l6 = new VarTerm("L6");
         u.unifies(l5, l6);
-        l6.apply(u);
-        assertEquals(l6.toString(), "[c,b,a,x,y]");
-        l6.concat(ListTermImpl.parseList("[d]"));
-        assertEquals(l6.toString(), "[c,b,a,x,y,d]");
+        ListTerm tl6 = (ListTerm)l6.capply(u);
+        assertEquals(tl6.toString(), "[c,b,a,x,y]");
+        tl6.concat(ListTermImpl.parseList("[d]"));
+        assertEquals(tl6.toString(), "[c,b,a,x,y,d]");
 
         ListTerm lf = ListTermImpl.parseList("[c,b,a,x,y,d]");
-        assertTrue(u.unifies(l6,lf));
+        assertTrue(u.unifies(tl6,lf));
 
         lf = ListTermImpl.parseList("[c,b,a,x,y]");
-        l5.apply(u);
-        assertTrue(u.unifies(l5,lf));
+        ListTerm tl5 = (ListTerm)l5.capply(u);
+        assertTrue(u.unifies(tl5,lf));
         
         ListTerm ll = lf.cloneLT();
         ll.concat(lf.cloneLT());
@@ -212,7 +213,7 @@ public class ListTermTest extends TestCase {
         Unifier u = new Unifier();
         u.unifies(new VarTerm("H"), new Atom("a"));
         u.unifies(new VarTerm("T"), ListTermImpl.parseList("[b,c]"));
-        lt5.apply(u);
+        lt5 = (ListTerm)lt5.capply(u);
         assertEquals("[a,b,c]",lt5.toString());
     }
 
@@ -357,9 +358,9 @@ public class ListTermTest extends TestCase {
         VarTerm v = new VarTerm("V");
         Unifier u = new Unifier();
         u.unifies(v, l);
-        v.apply(u);
-        v.makeVarsAnnon();
-        assertTrue(v.toString().indexOf("_") > 0);
+        Literal tv = (Literal)v.capply(u);
+        tv.makeVarsAnnon();
+        assertTrue(tv.toString().indexOf("_") > 0);
     }
     
     @SuppressWarnings("unchecked")

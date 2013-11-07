@@ -207,6 +207,25 @@ public class Plan extends Structure implements Cloneable, Serializable {
         return false;
     }
         
+    public Plan capply(Unifier u) {
+        Plan p = new Plan();
+        if (label != null) { 
+            p.label         = (Pred) label.capply(u);
+            p.isAtomic      = isAtomic;
+            p.hasBreakpoint = hasBreakpoint;
+            p.isAllUnifs    = isAllUnifs;
+        }
+        
+        p.tevent = tevent.capply(u);        
+        if (context != null) 
+            p.context = (LogicalFormula)context.capply(u);
+        p.body = (PlanBody)body.capply(u);
+        p.setSrcInfo(srcInfo);
+        p.isTerm = isTerm;
+
+        return p;
+    }
+
     public Term clone() {
         Plan p = new Plan();
         if (label != null) { 

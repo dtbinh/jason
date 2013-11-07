@@ -24,9 +24,7 @@
 package jason.asSyntax;
 
 import jason.asSemantics.Agent;
-import jason.asSemantics.QueryCacheKey;
 import jason.asSemantics.InternalAction;
-import jason.asSemantics.QueryCacheAdv;
 import jason.asSemantics.Unifier;
 
 import java.util.ConcurrentModificationException;
@@ -58,6 +56,12 @@ public class InternalActionLiteral extends Structure implements LogicalFormula {
     // used by clone
     public InternalActionLiteral(InternalActionLiteral l) {
         super((Structure) l);
+        this.ia = l.ia;
+    }
+
+    // used by capply
+    private InternalActionLiteral(InternalActionLiteral l, Unifier u) {
+        super((Structure) l, u);
         this.ia = l.ia;
     }
 
@@ -144,6 +148,11 @@ public class InternalActionLiteral extends Structure implements LogicalFormula {
     public String getErrorMsg() {
         String src = getSrcInfo() == null ? "" : " ("+ getSrcInfo() + ")"; 
         return "Error in internal action '"+this+"'"+ src;      
+    }
+    
+    @Override
+    public Term capply(Unifier u) {
+        return new InternalActionLiteral(this, u);
     }
     
     public InternalActionLiteral clone() {

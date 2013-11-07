@@ -106,19 +106,11 @@ public class TermTest extends TestCase {
         assertFalse(new VarTerm("X").equals(new Structure("X")));
         
         VarTerm x1 = new VarTerm("X1");
-        x1.setValue(new Structure("a"));
-        assertFalse(x1.equals(new VarTerm("X1")));
+        assertTrue(x1.equals(new VarTerm("X1")));
         
         VarTerm x2 = new VarTerm("X2");
-        x2.setValue(new Structure("a"));
-        assertTrue(x1.equals(x2));
-        assertTrue(x2.equals(x1));
-        assertEquals(x1.hashCode(), x2.hashCode());
-        
-        Term ta = new Structure("a");
-        assertTrue(x1.equals(ta));
-        assertTrue(ta.equals(x1));
-        assertEquals(x1.hashCode(), ta.hashCode());
+        assertFalse(x1.equals(x2));
+        assertFalse(x2.equals(x1));
         
         Term bp    = ASSyntax.parseTerm("back_pos(9,7)[source(self)]");
         Term other = ASSyntax.parseTerm("back_pos(9,7)");
@@ -150,10 +142,10 @@ public class TermTest extends TestCase {
         //System.out.println("u="+u);
         assertEquals(u.get(b).toString(), "a");
         assertEquals(u.get(x).toString(), "a");
-        b.apply(u);
+        Term tb = b.capply(u);
         //System.out.println("x="+x);
         //System.out.println("b="+b);
-        assertEquals(b.toString(), "a");
+        assertEquals(tb.toString(), "a");
         assertEquals(x.toString(), "X");
         
         u = new Unifier();
@@ -371,15 +363,15 @@ public class TermTest extends TestCase {
         Term t1 = parseTerm("p[a,X,c,d]");
         Unifier u = new Unifier();
         u.unifies(new VarTerm("X"), new Atom("z"));
-        t1.apply(u);
+        t1 = t1.capply(u);
         assertEquals("p[a,c,d,z]",t1.toString());
         
         t1 = parseTerm("p[X,b,c,d]");
-        t1.apply(u);
+        t1 = t1.capply(u);
         assertEquals("p[b,c,d,z]",t1.toString());
 
         t1 = parseTerm("p[a,b,c,X]");
-        t1.apply(u);
+        t1 = t1.capply(u);
         assertEquals("p[a,b,c,z]",t1.toString());
     }
     
@@ -414,7 +406,7 @@ public class TermTest extends TestCase {
         Unifier u = new Unifier();
         assertTrue(u.unifies(t1,t2));
         //System.out.println(u);
-        t2.apply(u);
+        t2 = t2.capply(u);
         //System.out.println("t2 with apply = "+t2);
         
         assertEquals(t1.toString(), t2.toString());
@@ -442,7 +434,7 @@ public class TermTest extends TestCase {
         Unifier u = new Unifier();
         assertTrue(u.unifies(l1,l2));
         //System.out.println(u);
-        l2.apply(u);
+        l2 = (Literal)l2.capply(u);
         //System.out.println("l2 with apply = "+l2);
         assertEquals(l1.toString(), l2.toString());
         
@@ -552,7 +544,7 @@ public class TermTest extends TestCase {
         assertEquals( "[c(H),d(4)]", u.get("T").toString());
         // if we apply H n l2, we should not change H on the unifier
         u.unifies(new Atom("xx"), new VarTerm("H"));
-        l2.apply(u);
+        l2 = (Literal)l2.capply(u);
         assertEquals( "[c(H),d(4)]", u.get("T").toString());
 
         // test clone of pannot used in hasSubsetAnnot
@@ -565,7 +557,7 @@ public class TermTest extends TestCase {
         assertEquals( "[c(H),d(4)]", u.get("T").toString());
         // if we apply H n l2, we should not change H on the unifier
         u.unifies(new Atom("xx"), new VarTerm("H"));
-        l2.apply(u);
+        l2 = (Literal)l2.capply(u);
         assertEquals( "[c(H),d(4)]", u.get("T").toString());    
         
         Unifier u2 = new Unifier();
@@ -592,7 +584,7 @@ public class TermTest extends TestCase {
         u = new Unifier();
         assertTrue(u.unifies(p1,p2));
         //System.out.println(u+"-"+p2);
-        p2.apply(u);
+        p2 = (Pred)p2.capply(u);
         assertEquals("p(t1,t2)[z,a(1),a(3),a(2,3)]", p2.toString());
     }
     
@@ -651,7 +643,7 @@ public class TermTest extends TestCase {
         Term v1 = new VarTerm("X1");
         Unifier u = new Unifier();
         u.unifies(v1, t1);
-        v1.apply(u);
+        v1 = v1.capply(u);
         assertEquals(0, v1.compareTo(t2));
         assertEquals(0, t2.compareTo(v1));
         
@@ -720,9 +712,9 @@ public class TermTest extends TestCase {
         // ensure that the anonymized instance of V unifies to 33
         assertEquals(u.get((VarTerm) l2.getTerm(2)), new NumberTermImpl(33));
         
-        l2.apply(u);
+        l2 = (Literal)l2.capply(u);
         assertEquals("calc(32,33,33)", l2.toString());
-        l1.apply(u);
+        l1 = (Literal)l1.capply(u);
         assertEquals("calc(32,33,33)", l1.toString());
 
     }
@@ -1000,7 +992,8 @@ public class TermTest extends TestCase {
         assertFalse(iterator.hasNext());
 
     }
-    
+
+    /*
     public void testVarObTerm() {
         ObjectTerm term = new ObjectTermImpl("test");
         VarTerm variable = new VarTerm("Variable");
@@ -1008,7 +1001,8 @@ public class TermTest extends TestCase {
         assertTrue(term.equals(variable));
         assertTrue(variable.equals(term));
         assertTrue(variable.equals(new ObjectTermImpl("test")));
-    }    
+    } 
+    */   
     
     public void testCyclicTerm1() throws ParseException {
         Term t1 = parseTerm("f(f(g(X)))");
@@ -1022,7 +1016,7 @@ public class TermTest extends TestCase {
         assertFalse(u.unifies(v1, parseTerm("f(f(g(f(f(g(f(g(_))))))))")));
         assertFalse(u.unifies(v1, parseTerm("f(f(g(f(f(p(_))))))")));
         
-        assertTrue(v1.apply(u));
+        v1 = v1.capply(u);
         assertTrue(new Unifier().unifies(v1, parseTerm("f(f(g(f(f(g(_))))))")));
         assertTrue(new Unifier().unifies(v1, parseTerm("f(f(g(f(f(g(f(f(g(_)))))))))")));
         assertTrue(new Unifier().unifies(v1, parseTerm("f(f(g(f(f(g(f(f(_))))))))")));
@@ -1033,15 +1027,15 @@ public class TermTest extends TestCase {
         u = new Unifier();
         assertTrue(u.unifies(v1, parseTerm("f(f(g(f(f(g(K))))))")));   
         assertTrue(u.get("K").isCyclicTerm());
-        VarTerm k = new VarTerm("K");
-        k.apply(u);
+        Term k = new VarTerm("K");
+        k = k.capply(u);
         assertTrue(k.isCyclicTerm());
 
         u = new Unifier();
         assertTrue(u.unifies(v1, parseTerm("f(f(g(f(f(H)))))")));   
         VarTerm h = new VarTerm("H");
-        h.apply(u);
-        assertTrue(h.getTerm(0).isCyclicTerm());
+        Literal lh = (Literal)h.capply(u);
+        assertTrue(lh.getTerm(0).isCyclicTerm());
     }
     
     public void testCyclicTerm2() throws ParseException {
@@ -1054,8 +1048,8 @@ public class TermTest extends TestCase {
         assertTrue(u.unifies(v1, parseTerm("f(f(g(f(f(g(_,_))),_)))")));
 
         assertTrue(u.unifies(new VarTerm("H"), parseTerm("100")));
-        assertTrue(v1.apply(u));
-        assertTrue(v1.toString().indexOf("100") > 0);        
+        Term tv1 = v1.capply(u);
+        assertTrue(tv1.toString().indexOf("100") > 0);        
     }
 
     public void testCyclicTerm3() throws ParseException {
@@ -1071,8 +1065,8 @@ public class TermTest extends TestCase {
         
         //System.out.println(u);
         VarTerm m = new VarTerm("Glob");
-        m.apply(u);
-        assertTrue(m.getTerm(1).isCyclicTerm());
+        Literal tm = (Literal)m.capply(u);
+        assertTrue(tm.getTerm(1).isCyclicTerm());
     }
     
     public void testCyclicTerm4() throws ParseException {
@@ -1083,11 +1077,11 @@ public class TermTest extends TestCase {
         
         //System.out.println(u);
         VarTerm x = new VarTerm("X");
-        x.apply(u);
-        assertTrue(x.isCyclicTerm());
+        Term tx = x.capply(u);
+        assertTrue(tx.isCyclicTerm());
         VarTerm y = new VarTerm("Y");
-        y.apply(u);
-        assertTrue(y.isCyclicTerm());
+        Term ty = y.capply(u);
+        assertTrue(ty.isCyclicTerm());
     }
 
     public void testCyclicTerm5() throws ParseException {

@@ -59,7 +59,7 @@ public class Atom extends Literal {
     public Term clone() {
         return this; // since this object is immutable
     }
-    
+
     @Override
     public boolean isAtom() {
         return true;

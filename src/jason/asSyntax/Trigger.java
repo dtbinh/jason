@@ -167,6 +167,15 @@ public class Trigger extends Structure implements Cloneable {
         c.isTerm = isTerm;
         return c; 
     }   
+
+    @Override
+    public Trigger capply(Unifier u) {
+        Trigger c = new Trigger(operator, type, (Literal)literal.capply(u));
+        c.predicateIndicatorCache = this.predicateIndicatorCache;
+        c.isTerm = isTerm;
+        return c; 
+    }
+
     
     /** return [+|-][!|?] super.getPredicateIndicator */
     @Override
@@ -177,9 +186,9 @@ public class Trigger extends Structure implements Cloneable {
         return predicateIndicatorCache;
     }
     
-    public boolean apply(Unifier u) {
+    /*public boolean apply(Unifier u) {
         return literal.apply(u);
-    }
+    }*/
 
     public Literal getLiteral() {
         return literal;
@@ -211,7 +220,7 @@ public class Trigger extends Structure implements Cloneable {
         if (t instanceof Trigger) {
             return (Trigger)t;
         }
-        if (t instanceof VarTerm) {
+        /*if (t instanceof VarTerm) {
             VarTerm v = (VarTerm)t;
             if (v.hasValue() && v.getValue() instanceof Trigger) {
                 return (Trigger)v.getValue();            
@@ -219,7 +228,7 @@ public class Trigger extends Structure implements Cloneable {
             if (v.hasValue() && v.getValue() instanceof Plan) {
                 return ((Plan)v.getValue()).getTrigger();            
             }
-        }
+        }*/
         if (t.isString()) {
             return ASSyntax.parseTrigger(((StringTerm)t).getString());
         }

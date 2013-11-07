@@ -38,10 +38,7 @@ public class setof extends DefaultInternalAction {
         Set<Term> all = new TreeSet<Term>();
         Iterator<Unifier> iu = logExpr.logicalConsequence(ts.getAg(), un);
         while (iu.hasNext()) {
-            Unifier nu = iu.next();
-            Term vl = var.clone();
-            vl.apply(nu);
-            all.add(vl);
+            all.add(var.capply(iu.next()));
         }
         return un.unifies(args[2], setToList(all));
     }

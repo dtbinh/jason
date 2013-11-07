@@ -27,7 +27,6 @@ import jason.asSemantics.Unifier;
 import jason.asSyntax.parser.as2j;
 
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -61,10 +60,20 @@ public class Pred extends Structure {
         }
     }
 
+    // used by capply
+    protected Pred(Literal l, Unifier u) {
+        super(l,u);
+        if (l.hasAnnot()) {
+            setAnnots( (ListTerm)l.getAnnots().capply(u) );
+        } else {
+            annots = null;
+        }
+    }
+
     public Pred(String functor, int termsSize) {
         super(functor, termsSize);
     }
-
+    
     public static Pred parsePred(String sPred) {
         as2j parser = new as2j(new StringReader(sPred));
         try {
@@ -94,19 +103,27 @@ public class Pred extends Structure {
         }
     }
 
+    /*
     @Override       
     public boolean apply(Unifier u) {
-        boolean r = super.apply(u);
+        boolean r1 = super.apply(u);
+        boolean r2 = applyAnnots(u);
+        return r1 || r2;
+    }
+    */
+    /*
+    private final boolean applyAnnots(Unifier u) {
+        boolean r  = false;
         if (annots != null) {
             // if some annotation has variables that become ground, they need to be replaced in the list to maintain the order
-            List<Term> toAdd = null; 
+            List<Term> toAdd = null;
             Iterator<ListTerm> i = annots.listTermIterator();
             while (i.hasNext()) {
                 ListTerm lt = i.next();
                 if (lt.isTail() && lt.getTail().apply(u)) { // have to test tail before term, since term test may lead to i.remove that remove also the tail
                     r = true;
                     lt.getTerm().apply(u); // apply for the term
-                    setAnnots(annots); // sort all annots given in from tail ground
+                    setAnnots(annots); // sort all annots given from tail ground
                     break; // the iterator is inconsistent
                 } else if (lt.getTerm() != null && lt.getTerm().apply(u)) {
                     r = true;
@@ -120,8 +137,9 @@ public class Pred extends Structure {
                 for (Term t: toAdd)
                     addAnnot(t);
         }
-        return r;
+        return r;        
     }
+    */
     
     @Override       
     public Literal setAnnots(ListTerm l) {
@@ -540,6 +558,11 @@ public class Pred extends Structure {
             if (ats > ots) return 1;
         }
         return 0;
+    }
+
+    @Override
+    public Term capply(Unifier u) {
+        return new Pred(this,u);
     }
 
     public Term clone() {

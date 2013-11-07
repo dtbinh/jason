@@ -53,11 +53,10 @@ public class IntendedMeans implements Serializable {
         unif     = opt.getUnifier();
         
         if (te == null) {
-            trigger = plan.getTrigger().clone();
+            trigger = plan.getTrigger().capply(unif);
         } else {
-            trigger = te;
+            trigger = te.capply(unif);
         }
-        trigger.apply(unif);
     }
     
     // used by clone

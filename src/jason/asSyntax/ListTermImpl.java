@@ -96,7 +96,16 @@ public class ListTermImpl extends Structure implements ListTerm {
     public ListTerm cloneLT() {
         return clone();
     }
-    
+
+    /** make a hard copy of the terms */
+    @Override
+    public ListTerm capply(Unifier u) {
+        ListTermImpl t = new ListTermImpl();
+        if (term != null) t.term = this.term.capply(u);
+        if (next != null) t.next = this.next.capply(u);
+        return t;
+    }
+
     /** make a shallow copy of the list (terms are not cloned, only the structure) */
     public ListTerm cloneLTShallow() {
         ListTermImpl t = new ListTermImpl();
@@ -242,6 +251,7 @@ public class ListTermImpl extends Structure implements ListTerm {
         return false;
     }
 
+    /*
     @Override
     public boolean apply(Unifier u) {
         if (isEmpty()) {
@@ -253,6 +263,7 @@ public class ListTermImpl extends Structure implements ListTerm {
         }
         return false;
     }
+    */
 
     @Override
     public Iterator<Unifier> logicalConsequence(Agent ag, Unifier un) {
@@ -625,7 +636,7 @@ public class ListTermImpl extends Structure implements ListTerm {
             s.append(l.getTerm());
             if (l.isTail()) {
                 s.append('|');
-                s.append(l.getNext());
+                s.append(l.getTail());
                 break;
             }
             l = l.getNext();

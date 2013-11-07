@@ -59,7 +59,7 @@ public class ExprTermTest extends TestCase {
         NumberTerm nb = ArithExpr.parseExpr("(30-X)/(2*X)");
         Unifier u = new Unifier();
         u.unifies(new VarTerm("X"), new NumberTermImpl(5));
-        nb.apply(u);
+        nb = (NumberTerm)nb.capply(u);
         //System.out.println(nb+"="+nb.solve());
         assertEquals(nb, new NumberTermImpl(2.5));
         assertEquals(new NumberTermImpl(2.5), nb);
@@ -73,14 +73,14 @@ public class ExprTermTest extends TestCase {
         u.unifies(new VarTerm("H"), new NumberTermImpl(5));
         u.unifies(new VarTerm("X"), new VarTerm("H"));
         assertTrue(u.unifies(t1, t2));
-        t1.apply(u);
+        t1 = (Literal)t1.capply(u);
         t1 = (Literal)t1.clone();
         assertEquals(t1.toString(), "p(10)");
         assertTrue(t1.getTerm(0).isNumeric());
-        VarTerm yvl = new VarTerm("Y");
-        yvl.apply(u);
+        Term yvl = new VarTerm("Y");
+        yvl = yvl.capply(u);
         assertEquals(yvl, new NumberTermImpl(10));
-        t2.apply(u);
+        t2 = (Literal)t2.capply(u);
         assertEquals(t2.toString(), "p(10)");
     }
 
@@ -88,14 +88,14 @@ public class ExprTermTest extends TestCase {
         Unifier u = new Unifier();
         u.unifies(new VarTerm("X"), new NumberTermImpl(3));
         Term e1 = ASSyntax.parseTerm("X-1");
-        e1.apply(u);
+        e1 = e1.capply(u);
         assertTrue(u.unifies(new NumberTermImpl(2), e1));
         assertTrue(u.unifies(e1, new NumberTermImpl(2)));
         assertTrue(u.unifies(new NumberTermImpl(2), e1.clone()));
 
         u.unifies(new VarTerm("Y"), new NumberTermImpl(1));
         Term e2 = ASSyntax.parseTerm("Y+1");
-        e2.apply(u);
+        e2 = e2.capply(u);
         assertFalse(e1.isLiteral());
         assertFalse(e2.isLiteral());
         assertTrue(u.unifies(e2, e1));
@@ -105,20 +105,20 @@ public class ExprTermTest extends TestCase {
         Literal t1 = Literal.parseLiteral("p(X+1)");
         Unifier u = new Unifier();
         u.unifies(new VarTerm("X"), new NumberTermImpl(0));
-        t1.apply(u);
+        t1 = (Literal)t1.capply(u);
         assertEquals(t1.toString(),"p(1)");
 
         u = new Unifier();
         u.unifies(Literal.parseLiteral("p(CurVl)"), t1);
         u.unifies(new VarTerm("CurVl"), new VarTerm("X"));
         t1 = Literal.parseLiteral("p(X+1)");
-        t1.apply(u);
+        t1 = (Literal)t1.capply(u);
 
         u = new Unifier();
         u.unifies(Literal.parseLiteral("p(CurVl)"), t1);
         u.unifies(new VarTerm("CurVl"), new VarTerm("X"));
         t1 = Literal.parseLiteral("p(X+1)");
-        t1.apply(u);
+        t1 = (Literal)t1.capply(u);
 
         assertEquals(t1.toString(), "p(3)");
     }
@@ -165,7 +165,7 @@ public class ExprTermTest extends TestCase {
         NumberTerm nb = ArithExpr.parseExpr("(30-math.abs(X))/(2*math.abs(X))");
         Unifier u = new Unifier();
         u.unifies(new VarTerm("X"), new NumberTermImpl(-5));
-        nb.apply(u);
+        nb = (NumberTerm)nb.capply(u);
         //System.out.println(nb+"="+nb.solve());
         assertEquals(nb, new NumberTermImpl(2.5));
         assertEquals(nb.clone(), new NumberTermImpl(2.5));
@@ -175,12 +175,12 @@ public class ExprTermTest extends TestCase {
         NumberTerm nb = ArithExpr.parseExpr("math.max(30-math.abs(X),2*math.abs(X))");
         Unifier u = new Unifier();
         u.unifies(new VarTerm("X"), new NumberTermImpl(-5));
-        nb.apply(u);
+        nb = (NumberTerm)nb.capply(u);
         assertEquals(nb, new NumberTermImpl(25));
         assertEquals(nb.clone(), new NumberTermImpl(25));
 
         nb = ArithExpr.parseExpr("math.max([a,3,b(100),400,1])");
-        nb.apply(u);
+        nb = (NumberTerm)nb.capply(u);
         assertEquals(nb, new NumberTermImpl(400));
     }
     
@@ -188,7 +188,7 @@ public class ExprTermTest extends TestCase {
         ListTerm l = ListTermImpl.parseList("[a(3),10,3,-1,math.abs(55),X+10,math.abs(X),math.max(X-1,X*30)]");
         Unifier u = new Unifier();
         u.unifies(new VarTerm("X"), new NumberTermImpl(-5));
-        l.apply(u);
+        l = (ListTerm)l.capply(u);
         Collections.sort(l);
         assertEquals("[-6,-1,3,5,5,10,55,a(3)]",l.toString());      
     }
@@ -196,11 +196,11 @@ public class ExprTermTest extends TestCase {
     public void testLength() {
         NumberTerm nb = ArithExpr.parseExpr(".length(\"aaa\")");
         Unifier u = new Unifier();
-        nb.apply(u);
+        nb = (NumberTerm)nb.capply(u);
         assertEquals(nb, new NumberTermImpl(3));
 
         nb = ArithExpr.parseExpr(".length([a,3,b(100),400,1])");
-        nb.apply(u);
+        nb = (NumberTerm)nb.capply(u);
         assertEquals(nb, new NumberTermImpl(5));        
     }
     
@@ -215,8 +215,8 @@ public class ExprTermTest extends TestCase {
         assertEquals(3, ag.getBB().size());
         
         ArithFunctionTerm nb = (ArithFunctionTerm)ArithExpr.parseExpr(ag,".count(b(_))");
-        nb.apply(new Unifier());
-        assertEquals(2.0,nb.solve());
+        NumberTerm tnb = (NumberTerm)nb.capply(new Unifier());
+        assertEquals(2.0,tnb.solve());
     }
     
     public void testRelExpType() throws ParseException {
@@ -231,7 +231,8 @@ public class ExprTermTest extends TestCase {
         ag.getBB().add(ASSyntax.parseLiteral("b(10, (vl(X) & not X > 10))"));
         Iterator<Unifier> i = l.logicalConsequence(ag, new Unifier());
         assertTrue(i.hasNext());
-        l.apply(i.next());
+        l = (Literal)l.capply(i.next());
+        System.out.println(l);
         assertEquals("b(10,(vl(X) & not ((X > 10))))", l.toString());
     }
 }

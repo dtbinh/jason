@@ -43,11 +43,11 @@ public class VarTermTest extends TestCase {
 
     /** test when a var is ground with a Term or another var */
     public void testVarTermAsTerm() throws ParseException {
-        VarTerm k = new VarTerm("K");
+        Structure k = new VarTerm("K");
         Unifier u = new Unifier();
         u.unifies(k, new Structure("a1"));
         assertTrue("K".equals(k.toString()));
-        k.apply(u);
+        k = (Structure)k.capply(u);
         assertTrue("a1".equals(k.toString()));
         k.addTerm(new Structure("p1"));
         k.addTerm(new Structure("p2"));
@@ -86,8 +86,7 @@ public class VarTermTest extends TestCase {
         assertEquals(u.get(x8).toString(),"a");
         assertEquals(u.get(x9).toString(),"a");
         
-        x1.apply(u);
-        assertEquals(x1.toString(),"a");
+        assertEquals(x1.capply(u).toString(),"a");
 
         // unification with lists
         VarTerm v1 = new VarTerm("L");
@@ -95,8 +94,9 @@ public class VarTermTest extends TestCase {
         u = new Unifier();
         u.unifies(new VarTerm("B"), new Structure("oi"));
         u.unifies(v1, lt); // L = [a,B,a(B)]
-        v1.apply(u);      
-        ListTerm vlt = (ListTerm) v1.getValue();
+        //v1.apply(u);      
+        //ListTerm vlt = (ListTerm) v1.getValue();
+        ListTerm vlt = (ListTerm) v1.capply(u);
         assertFalse(vlt.equals(lt)); // the apply in var should not change the original list
         Iterator<Term> i = vlt.iterator();
         i.next();
@@ -104,18 +104,18 @@ public class VarTermTest extends TestCase {
         Term third = i.next();
         Term toi1 = ASSyntax.parseTerm("a(oi)");
         Term toi2 = ASSyntax.parseTerm("a(B)");
-        toi2.apply(u);
+        toi2 = toi2.capply(u);
         assertEquals(toi1,toi2);
         assertTrue(third.equals(toi1));
     }
 
     // test when a var is ground with a Pred
     public void testVarTermAsPred() {
-        VarTerm k = new VarTerm("K");
+        Literal k = new VarTerm("K");
         Unifier u = new Unifier();
         u.unifies(k, new Pred("p"));
         assertFalse(k.isPred());
-        k.apply(u);
+        k = (Literal)k.capply(u);
         assertTrue(k.isPred());
         assertFalse(k.hasAnnot());
         k.addAnnot(new Structure("annot1"));
@@ -137,7 +137,7 @@ public class VarTermTest extends TestCase {
 
     // test when a var is ground with a Literal
     public void testVarTermAsLiteral() {
-        VarTerm k = new VarTerm("K");
+        Literal k = new VarTerm("K");
         Unifier u = new Unifier();
         assertTrue(k.isVar());
         Literal l = Literal.parseLiteral("~p(a1,a2)[n1,n2]");
@@ -146,7 +146,7 @@ public class VarTermTest extends TestCase {
         assertTrue(l.negated());
         assertTrue(u.unifies(k, l));
         assertFalse(k.isLiteral());
-        k.apply(u);
+        k = (Literal)k.capply(u);
         // System.out.println(k+" u="+u);
         assertFalse(k.isVar());
         assertTrue(k.isLiteral());
@@ -167,31 +167,31 @@ public class VarTermTest extends TestCase {
 
         ListTerm l2 = ListTermImpl.parseList("[d,e|K]");
         // System.out.println("l2="+l2);
-        VarTerm nl = new VarTerm("NK");
+        Literal nl = new VarTerm("NK");
         u.unifies(nl, (Term) l2);
-        nl.apply(u);
+        nl = (Literal)nl.capply(u);
         // System.out.println(nl+ " un="+u);
-        assertEquals(nl.size(), 5);
+        assertEquals(((ListTerm)nl).size(), 5);
 
-        l2.apply(u);
+        l2 = (ListTerm)l2.capply(u);
         assertEquals(l2.size(), 5);
         assertEquals(l2.toString(), "[d,e,a,b,c]");
     }
 
     // test when a var is ground with a Number
     public void testVarTermAsNumber() throws Exception {
-        VarTerm k = new VarTerm("K");
+        Term k = new VarTerm("K");
         Unifier u = new Unifier();
         NumberTermImpl n = new NumberTermImpl(10);
         assertTrue(n.isNumeric());
         assertFalse(n.isVar());
         assertTrue(u.unifies(k, n));
-        k.apply(u);
+        k = k.capply(u);
         // System.out.println(k+" u="+u);
         assertTrue(k.isNumeric());
         assertFalse(k.isLiteral());
 
-        ArithExpr exp = new ArithExpr(k, ArithmeticOp.plus, new NumberTermImpl(20));
+        ArithExpr exp = new ArithExpr((NumberTerm)k, ArithmeticOp.plus, new NumberTermImpl(20));
         assertTrue(exp.solve() == 30d);
         NumberTerm nt = ArithExpr.parseExpr("5 div 2");
         assertTrue(nt.solve() == 2d);
@@ -260,8 +260,7 @@ public class VarTermTest extends TestCase {
         // X[a,b,c] = p[a,c,b,d] ok (X is p)
         assertTrue(u.unifies(v1, p1));
         assertEquals(u.get("X").toString(), "p(t1,t2)");
-        v1.apply(u);
-        assertEquals("p(t1,t2)[a,b,c]",v1.toString());
+        assertEquals("p(t1,t2)[a,b,c]",v1.capply(u).toString());
     }
 
     public void testVarWithAnnots2() throws ParseException {
@@ -279,8 +278,7 @@ public class VarTermTest extends TestCase {
 
         assertTrue(u.unifies(v1, v2));
         assertTrue(u.unifies(new LiteralImpl("vvv"), v1));
-        v1.apply(u);
-        assertEquals("vvv[a]", v1.toString());
+        assertEquals("vvv[a]", v1.capply(u).toString());
     }
 
     public void testVarWithAnnots3() throws ParseException {
@@ -314,23 +312,20 @@ public class VarTermTest extends TestCase {
         assertEquals("[b,c]", u.get("R").toString());
         assertEquals("a", u.get("A").toString());
         assertEquals("p(1)", u.get(v).toString());
-        v.apply(u);
-        assertEquals("p(1)[a]", v.toString());
+        assertEquals("p(1)[a,b,c]", v.capply(u).toString());
     }
 
-    /*
-    public void testVarWithAnnots5() {
+    
+    public void testVarWithAnnots6() throws ParseException {
         // P -> open[source(a)]
         // P[source(self)]
         // apply on P is open[source(a),source(self)]?
         Unifier u = new Unifier();
         u.unifies(new VarTerm("P"), Literal.parseLiteral("open[source(a)]"));
-        VarTerm v1 = VarTerm.parseVar("P[source(self)]");
-        v1.apply(u);
-        assertEquals(v1.getAnnots().size(), 2);
+        VarTerm v1 = ASSyntax.parseVar("P[source(self)]");
+        Literal tv1 = (Literal)v1.capply(u);
+        assertEquals(2,tv1.getAnnots().size());
     }
-    */
-    
     
     public void testVarWithAnnotsInLogCons() throws RevisionFailedException, ParseException {
         Agent ag = new Agent();
@@ -345,8 +340,7 @@ public class VarTermTest extends TestCase {
         Iterator<Unifier> i = v1.logicalConsequence(ag, u);
         assertTrue(i.hasNext());
         u = i.next(); // u = {P[d]=b2}
-        v1.apply(u);
-        assertEquals("b2[d]",v1.toString());
+        assertEquals("b2[d]",v1.capply(u).toString());
     }
     
     @SuppressWarnings("unchecked")
@@ -366,7 +360,7 @@ public class VarTermTest extends TestCase {
         Unifier u = new Unifier();
         u.unifies(new VarTerm("X"), new NumberTermImpl(1));
         // X+1 not unifies with 1
-        exp.apply(u);
+        exp = exp.capply(u);
         assertFalse(u.unifies(exp, um));
         // X+1 unifies with 2
         assertTrue(u.unifies(exp, dois));
@@ -401,26 +395,21 @@ public class VarTermTest extends TestCase {
         assertEquals(u.get("X3").toString(),"1");
     }
     
-    /*
-     // TODO: allow ~X (?)
-    public void testUnify2() {
-        Term a1 = DefaultTerm.parse("~X");
-        Term a2 = DefaultTerm.parse("~s");
+    public void testUnify2() throws ParseException {
+        Term a1 = ASSyntax.parseTerm("~X");
+        Term a2 = ASSyntax.parseTerm("~s");
         Unifier u = new Unifier();
         assertTrue(u.unifies(a1,a2));
-        System.out.println(u);
         assertEquals("s",u.get("X").toString());
     }
-    */
 
     public void testInnerVarUnif() {
         Unifier u = new Unifier();
         Literal l = Literal.parseLiteral("op(X)");
         u.unifies(new VarTerm("M"), l);
         u.unifies(new VarTerm("M"), Literal.parseLiteral("op(1)"));
-        l.apply(u);
         //assertEquals(u.get("M").toString(),"op(1)");
-        assertEquals(l.toString(),"op(1)");
+        assertEquals(l.capply(u).toString(),"op(1)");
     }
     
     public void testUnnamedVar1() throws ParseException {
@@ -430,8 +419,7 @@ public class VarTermTest extends TestCase {
         Unifier u = new Unifier();
         assertTrue(u.unifies(a1,a2));
         assertFalse(u.unifies(a1,a3));
-        a1.apply(u);
-        assertEquals(a1.toString(), ASSyntax.parseTerm("a(10,20)").toString());
+        assertEquals(a1.capply(u).toString(), ASSyntax.parseTerm("a(10,20)").toString());
         
         UnnamedVar v1 = new UnnamedVar();
         UnnamedVar v2 = (UnnamedVar)v1.clone();
@@ -455,9 +443,9 @@ public class VarTermTest extends TestCase {
         u.unifies(v, t1cc);
         assertTrue(v.isVar());
         assertFalse(v.isGround());
-        v.apply(u);
-        assertFalse(v.isVar());
-        assertFalse(v.isGround());        
+        Term tv = v.capply(u);
+        assertFalse(tv.isVar());
+        assertFalse(tv.isGround());        
     }
     
     public void testUnamedVarAnnots() throws ParseException {
@@ -497,8 +485,7 @@ public class VarTermTest extends TestCase {
         // Y = 10
         u.unifies(y, new NumberTermImpl(10));
         
-        x.apply(u);
-        assertEquals(x.toString(), "10");
+        assertEquals(x.capply(u).toString(), "10");
     }
     
     public void testUnnamedvarsorder() {
@@ -519,25 +506,26 @@ public class VarTermTest extends TestCase {
         VarTerm x = new VarTerm("X");
         Unifier u = new Unifier();
         u.unifies(x, Literal.parseLiteral("goto(3,2)[source(bob)]"));
-        x.apply(u);
-        assertEquals("goto(3,2)[source(bob)]", x.copy().toString());        
+        assertEquals("goto(3,2)[source(bob)]", x.capply(u).toString());        
     }
     
     public void testCompare() {
-        VarTerm x = new VarTerm("X");
-        VarTerm y = new VarTerm("Y");
+        Term x = new VarTerm("X");
+        Term y = new VarTerm("Y");
         Unifier u = new Unifier();
         u.unifies(x, new NumberTermImpl(10));
         u.unifies(y, new NumberTermImpl(20));
-        x.apply(u);
-        y.apply(u);
+        x = x.capply(u);
+        y = y.capply(u);
         assertTrue(x.compareTo(y) < 0);
         assertTrue(y.compareTo(x) > 0);
 
         assertTrue(new StringTermImpl("z").compareTo(new VarTerm("X")) < 0);
         assertTrue(new VarTerm("X").compareTo(new StringTermImpl("z")) > 0);
-        VarTerm Z = new VarTerm("Z");
-        Z.setValue(new StringTermImpl("z"));
+        Term Z = new VarTerm("Z");
+        u = new Unifier();
+        u.unifies(Z, new StringTermImpl("z"));
+        Z = Z.capply(u);
         assertFalse(Z.compareTo(new StringTermImpl("z")) > 0);
         assertFalse(Z.compareTo(new StringTermImpl("z")) < 0);
         assertFalse(new StringTermImpl("z").compareTo(Z) > 0);
@@ -549,15 +537,16 @@ public class VarTermTest extends TestCase {
         assertTrue(l.compareTo(new VarTerm("X")) < 0);
         assertTrue(new VarTerm("X").compareTo(l) > 0);
         VarTerm L = new VarTerm("L");
-        L.setValue(ASSyntax.createList(new Atom("a"), new Atom("b")));
+        /*L.setValue(ASSyntax.createList(new Atom("a"), new Atom("b")));
         assertTrue(L.compareTo(l) < 0);
         assertTrue(l.compareTo(L) > 0);
-        
+        */
         // Tim Cleaver tests 
         assertTrue(new NumberTermImpl(1).compareTo(new VarTerm("X")) < 0);
         assertTrue(new VarTerm("X").compareTo(new NumberTermImpl(1)) > 0);
-        VarTerm X = new VarTerm("X");
-        X.setValue(new NumberTermImpl(2));
+        //VarTerm X = new VarTerm("X");
+        //X.setValue(new NumberTermImpl(2));
+        Term X = new NumberTermImpl(2);
         assertTrue(X.compareTo(new NumberTermImpl(1)) > 0);
         assertTrue(new NumberTermImpl(1).compareTo(X) < 0);
     }
@@ -568,12 +557,11 @@ public class VarTermTest extends TestCase {
         Unifier u = new Unifier();
         assertTrue(u.unifies(l1, l2)); // ~B = ~p(1)
         assertEquals(u.get((VarTerm)l1).toString(),"~p(1)");
-        l1.apply(u); // apply in ~B should result in ~p(1)
-        assertEquals(l1.toString(),"~p(1)");
+        // apply in ~B should result in ~p(1)
+        assertEquals(l1.capply(u).toString(),"~p(1)");
 
         VarTerm b = new VarTerm("B");
-        b.apply(u);
-        assertEquals(b.toString(),"p(1)");
+        assertEquals(b.capply(u).toString(),"p(1)");
 
         l1 = ASSyntax.parseLiteral("~B");
         l2 = ASSyntax.parseLiteral("p(1)");
@@ -587,8 +575,7 @@ public class VarTermTest extends TestCase {
         u = new Unifier();
         assertTrue(u.unifies(l1, l2));
         assertEquals(u.get("B").toString(),"~p(1)");
-        l1.apply(u);
-        assertEquals(l1.toString(),"~p(1)");
+        assertEquals(l1.capply(u).toString(),"~p(1)");
 
         l1 = ASSyntax.parseLiteral("~B");
         l2 = ASSyntax.parseLiteral("~A");
@@ -597,12 +584,12 @@ public class VarTermTest extends TestCase {
         // if A = p(10), apply in ~B should be ~p(10).
         VarTerm va = new VarTerm("A");
         u.unifies(va,ASSyntax.parseLiteral("p(10)"));
-        va.apply(u);
-        assertEquals(va.toString(),"p(10)");
-        l1.apply(u);
-        assertEquals(l1.toString(),"~p(10)");
-        l2.apply(u);
-        assertEquals(l2.toString(),"~p(10)");
+        //va.apply(u);
+        assertEquals(va.capply(u).toString(),"p(10)");
+        //l1.apply(u);
+        assertEquals(l1.capply(u).toString(),"~p(10)");
+        //l2.apply(u);
+        assertEquals(l2.capply(u).toString(),"~p(10)");
 
         l1 = ASSyntax.parseLiteral("~B");
         l2 = ASSyntax.parseLiteral("~A");
@@ -610,13 +597,13 @@ public class VarTermTest extends TestCase {
         assertTrue(u.unifies(l1, l2)); // A = B
         // if ~A = ~p(10), apply in B should be p(10).
         assertTrue(u.unifies(l2, ASSyntax.parseLiteral("~p(10)")));
-        l2.apply(u);
-        assertEquals(l2.toString(),"~p(10)");
-        l1.apply(u);
-        assertEquals(l1.toString(),"~p(10)"); // ~B is ~p(10)
+        //l2.apply(u);
+        assertEquals(l2.capply(u).toString(),"~p(10)");
+        //l1.apply(u);
+        assertEquals(l1.capply(u).toString(),"~p(10)"); // ~B is ~p(10)
         VarTerm vb = new VarTerm("B");
-        vb.apply(u);
-        assertEquals(vb.toString(),"p(10)"); // B is p(10)
+        //vb.apply(u);
+        assertEquals(vb.capply(u).toString(),"p(10)"); // B is p(10)
                 
         u = new Unifier();
         u.unifies(new VarTerm("A"),ASSyntax.parseLiteral("p(10)"));
@@ -634,16 +621,16 @@ public class VarTermTest extends TestCase {
         u.unifies(new VarTerm("A"),ASSyntax.parseLiteral("~p(10)"));
         vb = new VarTerm(Literal.LNeg,"B");
         assertTrue(u.unifies(vb,new VarTerm("A")));
-        vb.apply(u);
-        assertEquals(vb.toString(),"~p(10)"); 
+        //vb.apply(u);
+        assertEquals(vb.capply(u).toString(),"~p(10)"); 
 
         u = new Unifier();
         u.unifies(new VarTerm("A"),ASSyntax.parseLiteral("~p(10)"));
         vb = new VarTerm(Literal.LNeg,"B");
         assertTrue(u.unifies(vb,new VarTerm("A")));
         vb = new VarTerm("B");
-        vb.apply(u);
-        assertEquals(vb.toString(),"p(10)");
+        //vb.apply(u);
+        assertEquals(vb.capply(u).toString(),"p(10)");
 
         // B = ~A
         // A = p(10)
@@ -656,12 +643,12 @@ public class VarTermTest extends TestCase {
         assertTrue(u.unifies(l1, l2));
         va = new VarTerm("A");
         u.unifies(va,ASSyntax.parseLiteral("p(10)"));
-        va.apply(u);
-        assertEquals(va.toString(),"p(10)"); 
-        l1.apply(u);
-        assertEquals(l1.toString(),"~p(10)"); 
-        l2.apply(u);
-        assertEquals(l2.toString(),"~p(10)"); 
-        
+        //va.apply(u);
+        assertEquals(va.capply(u).toString(),"p(10)"); 
+        //l1.apply(u);
+        assertEquals(l1.capply(u).toString(),"~p(10)"); 
+        //l2.apply(u);
+        assertEquals(l2.capply(u).toString(),"~p(10)");         
     }
+
 }

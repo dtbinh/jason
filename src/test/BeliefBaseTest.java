@@ -203,11 +203,11 @@ public class BeliefBaseTest extends TestCase {
         assertTrue(bb.add(l2));
         assertEquals(bb.size(),1);
 
-        VarTerm c = new VarTerm("C");
+        Literal c = new VarTerm("C");
         Unifier u = new Unifier();
         Literal l3 = new LiteralImpl("pos");
         u.unifies(c, l3);
-        c.apply(u);
+        c = (Literal)c.capply(u);
         c.addSource(Structure.parse("ag3"));
         assertTrue(c.hasAnnot(ASSyntax.parseTerm("source(ag3)")));
         assertTrue(c.hasSource(ASSyntax.parseTerm("ag3")));
@@ -224,16 +224,16 @@ public class BeliefBaseTest extends TestCase {
         assertFalse(bb.add(c));
         
         c = new VarTerm("C");
-        VarTerm ca = new VarTerm("CA");
+        Literal ca = new VarTerm("CA");
         u = new Unifier();
         u.unifies(c, Literal.parseLiteral("pos"));
-        c.apply(u);
+        c = (Literal)c.capply(u);
         try {
             new jason.stdlib.add_annot().execute(null, u, new Term[] { c, ASSyntax.parseTerm("source(ag4)"), ca });
         } catch (Exception e) {
             e.printStackTrace();
         }
-        ca.apply(u);
+        ca = (Literal)ca.capply(u);
         assertTrue(bb.add(ca));
         assertFalse(bb.add(ca));
 
@@ -249,14 +249,12 @@ public class BeliefBaseTest extends TestCase {
         Literal s = Literal.parseLiteral("seen(L)");
         assertTrue(u.unifies(new VarTerm("L"), (Term)ListTermImpl.parseList("[a,b]")));
         //System.out.println("u="+u);
-        s.apply(u);
-        bb.add(s);
+        s = (Literal)s.capply(u);
+        bb.add((Literal)s);
 
-        VarTerm b1 = new VarTerm("B1");
+        Literal b1 = new VarTerm("B1");
         u.unifies(b1, Literal.parseLiteral("seen([a,b])"));
-        b1.apply(u);
-        //System.out.println("b1="+b1);
-        //System.out.println("test 1");
+        b1 = (Literal)b1.capply(u);
         assertTrue(b1.equalsAsStructure(Literal.parseLiteral("seen([a,b])")));
         assertTrue(b1.equalsAsStructure(s));
         assertTrue(bb.remove(b1));
@@ -271,7 +269,7 @@ public class BeliefBaseTest extends TestCase {
 
         Literal l = Literal.parseLiteral("pos(_,_)");
         assertTrue(ag.believes(l, u));
-        l.apply(u);
+        l = (Literal)l.capply(u);
         assertEquals(l, Literal.parseLiteral("pos(2,3)"));
         
         assertTrue(ag.getBB().remove(l));
@@ -570,8 +568,7 @@ public class BeliefBaseTest extends TestCase {
         Literal l = Literal.parseLiteral("c(_)");
         u = new Unifier();
         assertTrue(ag.believes(l, u));
-        l.apply(u);
-        assertEquals(l.toString(),"c(20)");
+        assertEquals(l.capply(u).toString(),"c(20)");
         
         assertFalse(ag.believes(Literal.parseLiteral("a(300)"), new Unifier()));
         assertTrue(ag.believes(Literal.parseLiteral("a(30)"), new Unifier()));
@@ -582,8 +579,7 @@ public class BeliefBaseTest extends TestCase {
         l = Literal.parseLiteral("a(X)[A,B|RA]");
         u = new Unifier();
         assertTrue(ag.believes(l,u));
-        l.apply(u);
-        assertEquals(l.toString(),"a(30)[a,b]");
+        assertEquals(l.capply(u).toString(),"a(30)[a,b]");
         assertEquals(u.get("RA").toString(),"[]");
 
         u = new Unifier();
@@ -610,7 +606,7 @@ public class BeliefBaseTest extends TestCase {
         Literal l4 = Literal.parseLiteral("b(_,_)[source(X)]");
         u = new Unifier();
         u.unifies(new VarTerm("X"), new Atom("ag"));
-        l4.apply(u);
+        l4 = (Literal)l4.capply(u);
         assertTrue(l4.hasSubsetAnnot( Literal.parseLiteral("b(20,10)[source(ag)]") ));
         rbrf = ag.brf(null, Literal.parseLiteral("b(_,_)[source(_)]"), Intention.EmptyInt);
         assertTrue(rbrf != null);
@@ -661,19 +657,14 @@ public class BeliefBaseTest extends TestCase {
         Iterator<Unifier> i = q.logicalConsequence(ag, new Unifier());
         String s1 = "";
         while (i.hasNext()) {
-            Literal l = q.copy();
-            l.apply( i.next() );
-            s1 += l;        
+            s1 += (Literal)q.capply( i.next() );
         }
         
         q = ASSyntax.parseLiteral("p(A,B)");
         String s2 = "";
         i = q.logicalConsequence(ag, new Unifier());
         while (i.hasNext()) {
-            Literal l = q.copy();
-            Unifier u = i.next();
-            l.apply( u );
-            s2 += l;        
+            s2 += (Literal)q.capply( i.next() );
         }
         assertEquals(s1,s2);
 
@@ -681,10 +672,7 @@ public class BeliefBaseTest extends TestCase {
         s2 = "";
         i = q.logicalConsequence(ag, new Unifier());
         while (i.hasNext()) {
-            Literal l = q.copy();
-            Unifier u = i.next();
-            l.apply( u );
-            s2 += l;        
+            s2 += (Literal)q.capply( i.next() );
         }
         assertEquals("p(x,10)p(x,20)",s2);
 
@@ -692,10 +680,7 @@ public class BeliefBaseTest extends TestCase {
         s1 = "";
         i = q.logicalConsequence(ag, new Unifier());
         while (i.hasNext()) {
-            Literal l = q.copy();
-            Unifier u = i.next();
-            l.apply( u );
-            s1 += l;        
+            s1 += (Literal)q.capply( i.next() );
         }
         assertEquals(s1,s2);
 
@@ -705,10 +690,7 @@ public class BeliefBaseTest extends TestCase {
         s1 = "";
         i = q.logicalConsequence(ag, new Unifier());
         while (i.hasNext()) {
-            Literal l = q.copy();
-            Unifier u = i.next();
-            l.apply( u );
-            s1 += l;        
+            s1 += (Literal)q.capply( i.next() );
         }
         assertEquals(s1,s2);
 
@@ -735,10 +717,7 @@ public class BeliefBaseTest extends TestCase {
         i = q.logicalConsequence(ag, new Unifier());
         s1 = "";
         while (i.hasNext()) {
-            Literal l = q.copy();
-            Unifier u = i.next();
-            l.apply( u );
-            s1 += l;        
+            s1 += (Literal)q.capply( i.next() );
         }        
         assertEquals("p(x,10)p(w,10)p(k,10)",s1);
 
@@ -766,10 +745,7 @@ public class BeliefBaseTest extends TestCase {
         i = q.logicalConsequence(ag, new Unifier());
         s1 = "";
         while (i.hasNext()) {
-            Literal l = q.copy();
-            Unifier u = i.next();
-            l.apply( u );
-            s1 += l;        
+            s1 += (Literal)q.capply( i.next() );
         }   
         assertEquals("p(x,10)p(w,10)p(k,10)",s1);
         
@@ -785,9 +761,7 @@ public class BeliefBaseTest extends TestCase {
         Iterator<Unifier> i = q.logicalConsequence(ag, new Unifier());
         String s1 = ""; // without cache
         while (i.hasNext()) {
-            Literal l = q.copy();
-            l.apply( i.next() );
-            s1 += l;        
+            s1 += (Literal)q.capply( i.next() );
         }
         
         //System.out.println("*********************");
@@ -803,10 +777,7 @@ public class BeliefBaseTest extends TestCase {
         i = q.logicalConsequence(ag, new Unifier());
         String s2 = "";
         while (i.hasNext()) {
-            Literal l = q.copy();
-            l.apply( i.next() );
-            //System.out.println("           + "+l);
-            s2 += l;        
+            s2 += (Literal)q.capply( i.next() );
         }
         assertEquals(s1,s2);
         //System.out.println(ag.getQueryCache());

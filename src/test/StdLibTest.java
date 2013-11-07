@@ -100,12 +100,10 @@ public class StdLibTest extends TestCase {
         Unifier u = new Unifier();
         VarTerm x = new VarTerm("X");
         u.unifies(x, new Atom("a"));
-        x.apply(u);
         Term annot = ASSyntax.parseTerm("jomi");
         VarTerm r = new VarTerm("R");
-        aa.execute(null, u, new Term[] { x, annot, r });
-        r.apply(u);
-        assertEquals("a[source(jomi)]", r.toString());
+        aa.execute(null, u, new Term[] { x.capply(u), annot, r });
+        assertEquals("a[source(jomi)]", r.capply(u).toString());
     }
 
     public void testFindAll() throws RevisionFailedException, ParseException {

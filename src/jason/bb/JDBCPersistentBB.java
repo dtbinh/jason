@@ -280,7 +280,7 @@ public class JDBCPersistentBB extends ChainBBAdapter {
                 }
                 return true;
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             logger.log(Level.SEVERE, "SQL Error", e);
         } finally {
             try {
@@ -606,7 +606,7 @@ public class JDBCPersistentBB extends ChainBBAdapter {
     }
 
     /** returns the SQL command to insert l into the DB */
-    protected String getInsert(Literal l) throws SQLException {
+    protected String getInsert(Literal l) throws Exception {
         StringBuilder q = new StringBuilder("insert into ");
         ResultSetMetaData meta = belsDB.get(l.getPredicateIndicator());
         q.append(meta.getTableName(1));
@@ -695,7 +695,7 @@ public class JDBCPersistentBB extends ChainBBAdapter {
     
     /** translates structure like "timestamp(Y,M,D,H,M,S)" into a SQL timestamp */
     @SuppressWarnings("deprecation")
-    public static Timestamp structure2timestamp(Term timestamp) throws SQLException {
+    public static Timestamp structure2timestamp(Term timestamp) throws Exception {
         if (timestamp.isStructure()) {
             Structure s = (Structure)timestamp;
             if (s.getFunctor().equals(timestampFunctor) && s.getArity() == 6) {

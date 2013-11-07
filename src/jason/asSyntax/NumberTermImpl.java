@@ -58,7 +58,7 @@ public final class NumberTermImpl extends DefaultTerm implements NumberTerm {
     }
     
     public NumberTermImpl(NumberTermImpl t) {
-        value   = t.solve();
+        value   = t.value;
         srcInfo = t.srcInfo;        
     }
 
@@ -90,7 +90,7 @@ public final class NumberTermImpl extends DefaultTerm implements NumberTerm {
 
     @Override
     protected int calcHashCode() {
-        return 37 * (int)solve();
+        return 37 * (int)value;
     }
     
     @Override
@@ -98,10 +98,10 @@ public final class NumberTermImpl extends DefaultTerm implements NumberTerm {
         if (o instanceof VarTerm) {
             return o.compareTo(this) * -1;
         }
-        if (o instanceof NumberTerm) {
-            NumberTerm st = (NumberTerm)o;
-            if (solve() > st.solve()) return 1;
-            if (solve() < st.solve()) return -1;
+        if (o instanceof NumberTermImpl) {
+            NumberTermImpl st = (NumberTermImpl)o;
+            if (value > st.value) return 1;
+            if (value < st.value) return -1;
             return 0;
         }
         return -1;

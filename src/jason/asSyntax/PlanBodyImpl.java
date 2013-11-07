@@ -152,6 +152,7 @@ public class PlanBodyImpl extends Structure implements PlanBody, Iterable<PlanBo
         }
     }
     
+    /*
     private boolean applyHead(Unifier u) {
         if (term != null && term.apply(u)) {
             if (term.isPlanBody()) { // we cannot have "inner" body literals
@@ -168,7 +169,9 @@ public class PlanBodyImpl extends Structure implements PlanBody, Iterable<PlanBo
         }        
         return false;
     }
+    */
 
+    /*
     @Override
     public boolean apply(Unifier u) {
         boolean ok = next != null && next.apply(u);
@@ -181,6 +184,7 @@ public class PlanBodyImpl extends Structure implements PlanBody, Iterable<PlanBo
 
         return ok;
     }
+    */
 
     @Override
     public Iterator<Unifier> logicalConsequence(Agent ag, Unifier un) {
@@ -275,6 +279,29 @@ public class PlanBodyImpl extends Structure implements PlanBody, Iterable<PlanBo
         Term l = this.term;
         this.term = bl.getBodyTerm();
         bl.setBodyTerm(l);
+    }
+
+    @Override
+    public PlanBody capply(Unifier u) {
+        //System.out.println(this+" with "+u);
+        PlanBodyImpl c;
+        if (term == null) { // (NIDE) must copy c.isTerm even if cloning empty plan
+            c = new PlanBodyImpl();
+        } else {
+            c = new PlanBodyImpl(formType, term.capply(u));
+            if (c.term.isPlanBody()) { // we cannot have "inner" body literals
+                c.formType = ((PlanBody)c.term).getBodyType();
+                c.next     = ((PlanBody)c.term).getBodyNext();
+                c.term     = ((PlanBody)c.term).getBodyTerm();
+            }
+        }
+        c.isTerm = isTerm;
+        
+        if (next != null)
+            c.add((PlanBody)next.capply(u));
+
+        //System.out.println(this+" = "+c+" using "+u+" term="+c.term+"/"+term.capply(u));
+        return c;
     }
 
     public PlanBody clone() {

@@ -41,8 +41,11 @@ public interface Term extends Cloneable, Comparable<Term>, Serializable, ToDOM {
     public boolean subsumes(Term l); 
 
     /** replaces variables by their values in the unifier, returns true if some variable was applied */
-    public boolean apply(Unifier u);
+    //public boolean apply(Unifier u);
 
+    /** clone and applies together (and faster than clone and then apply) */
+    public Term capply(Unifier u);
+    
     /** Removes the value cached for hashCode */
     //public void resetHashCodeCache();
 

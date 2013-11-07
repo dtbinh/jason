@@ -23,7 +23,9 @@
 
 package jason.asSyntax;
 
+import jason.NoValueForVarException;
 import jason.asSemantics.Agent;
+import jason.asSemantics.Unifier;
 import jason.asSyntax.parser.as2j;
 
 import java.io.StringReader;
@@ -38,7 +40,7 @@ import org.w3c.dom.Element;
  
   @navassoc - op - ArithmeticOp
  */
-public class ArithExpr extends ArithFunctionTerm {
+public class ArithExpr extends ArithFunctionTerm implements NumberTerm {
 
     private static final long serialVersionUID = 1L;
     private static Logger logger = Logger.getLogger(ArithExpr.class.getName());
@@ -162,34 +164,34 @@ public class ArithExpr extends ArithFunctionTerm {
             return null;
         }
     }
-
+    
     @Override
-    public double solve() {
-        double l = ((NumberTerm)getTerm(0)).solve();
-        if (isUnary()) {
-            if (op == ArithmeticOp.minus) {
-                return -l;
+    public Term capply(Unifier u) {
+        try {
+            double l = ((NumberTerm)getTerm(0).capply(u)).solve();
+            if (isUnary()) {
+                if (op == ArithmeticOp.minus) {
+                    value = new NumberTermImpl(-l);
+                } else {
+                    value = new NumberTermImpl(l);
+                }
             } else {
-                return l;
+                double r = ((NumberTerm)getTerm(1).capply(u)).solve();
+                value = new NumberTermImpl(op.eval(l, r));
             }
-        } else {
-            double r = ((NumberTerm)getTerm(1)).solve();
-            return op.eval(l, r);
+            return value;
+        } catch (NoValueForVarException e) {
+            return clone();
         }
     }
-
-    @Override
+    
     public boolean checkArity(int a) {
         return a == 1 || a == 2;
     }
     
     /** make a hard copy of the terms */
     public NumberTerm clone() {
-        if (isEvaluated()) {
-            return getValue();
-        } else {
-            return new ArithExpr(this);
-        }
+        return new ArithExpr(this);
     }
 
     /** gets the Operation of this Expression */
@@ -209,38 +211,30 @@ public class ArithExpr extends ArithFunctionTerm {
 
     @Override
     public String toString() {
-        if (isEvaluated()) {
-            return getValue().toString();
+        if (isUnary()) {
+            return "(" + op + getTerm(0) + ")";
         } else {
-            if (isUnary()) {
-                return "(" + op + getTerm(0) + ")";
-            } else {
-                return "(" + getTerm(0) + op + getTerm(1) + ")";
-            }
+            return "(" + getTerm(0) + op + getTerm(1) + ")";
         }
     }
 
     /** get as XML */
     public Element getAsDOM(Document document) {
-        if (isEvaluated()) {
-            return getValue().getAsDOM(document);
+        Element u = (Element) document.createElement("expression");
+        u.setAttribute("type", "arithmetic");
+        u.setAttribute("operator", op.toString());
+        if (isUnary()) {
+            Element r = (Element) document.createElement("right");
+            r.appendChild(getTerm(0).getAsDOM(document)); // put the left argument indeed!
+            u.appendChild(r);
         } else {
-            Element u = (Element) document.createElement("expression");
-            u.setAttribute("type", "arithmetic");
-            u.setAttribute("operator", op.toString());
-            if (isUnary()) {
-                Element r = (Element) document.createElement("right");
-                r.appendChild(getTerm(0).getAsDOM(document)); // put the left argument indeed!
-                u.appendChild(r);
-            } else {
-                Element l = (Element) document.createElement("left");
-                l.appendChild(getTerm(0).getAsDOM(document));
-                u.appendChild(l);
-                Element r = (Element) document.createElement("right");
-                r.appendChild(getTerm(1).getAsDOM(document));
-                u.appendChild(r);
-            }
-            return u;
+            Element l = (Element) document.createElement("left");
+            l.appendChild(getTerm(0).getAsDOM(document));
+            u.appendChild(l);
+            Element r = (Element) document.createElement("right");
+            r.appendChild(getTerm(1).getAsDOM(document));
+            u.appendChild(r);
         }
+        return u;
     }
 }

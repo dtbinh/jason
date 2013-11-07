@@ -69,6 +69,16 @@ public class Structure extends Atom {
             terms.add(l.getTerm(i).clone());
     }
 
+    // used by capply
+    protected Structure(Literal l, Unifier u) {
+        super(l);
+        final int tss = l.getArity();
+        terms = new ArrayList<Term>(tss);
+        for (int i = 0; i < tss; i++)
+            terms.add(l.getTerm(i).capply(u));
+        resetHashCodeCache();
+    }
+
     /** 
      * Create a structure with a defined number of terms.
      * 
@@ -172,6 +182,7 @@ public class Structure extends Atom {
     }
 
     
+    /*
     @Override
     public boolean apply(Unifier u) {
         boolean r = false;
@@ -185,7 +196,12 @@ public class Structure extends Atom {
             resetHashCodeCache();
         return r;
     }
+    */
     
+    @Override
+    public Term capply(Unifier u) {
+        return new Structure(this,u);
+    }
 
     /** make a deep copy of the terms */
     public Term clone() {
@@ -287,6 +303,10 @@ public class Structure extends Atom {
         return true;
     }
 
+    public boolean isUnary() {
+        return getArity() == 1;
+    }
+    
     @Override
     public Literal makeVarsAnnon() {
         return makeVarsAnnon(new Unifier());

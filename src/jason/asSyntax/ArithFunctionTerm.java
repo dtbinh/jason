@@ -1,5 +1,6 @@
 package jason.asSyntax;
 
+import jason.NoValueForVarException;
 import jason.asSemantics.Agent;
 import jason.asSemantics.ArithFunction;
 import jason.asSemantics.Unifier;
@@ -26,16 +27,12 @@ public class ArithFunctionTerm extends Structure implements NumberTerm {
 
     private static Logger logger = Logger.getLogger(ArithFunctionTerm.class.getName());
     
-    private NumberTerm value = null; // value, when evaluated
+    protected NumberTerm value = null; // value, when evaluated
 
     private ArithFunction function = null;
     
     private Agent agent = null; // the agent where this function was used
-    
-    public ArithFunctionTerm(String functor, int termsSize) {
-        super(functor, termsSize);        
-    }
-    
+
     public ArithFunctionTerm(ArithFunction function) {
         super(function.getName(), 2);
         this.function = function;   
@@ -43,15 +40,14 @@ public class ArithFunctionTerm extends Structure implements NumberTerm {
 
     public ArithFunctionTerm(ArithFunctionTerm af) {
         super(af); // clone args from af
-        value    = af.value;
         function = af.function;
         agent    = af.agent;
     }
     
-    public NumberTerm getValue() {
-        return value;
+    public ArithFunctionTerm(String functor, int arity) {
+        super(functor,arity);
     }
-    
+        
     @Override
     public boolean isNumeric() {
         return true;
@@ -68,62 +64,15 @@ public class ArithFunctionTerm extends Structure implements NumberTerm {
     }
     
     @Override
-    public Literal makeVarsAnnon(Unifier un) {
-        if (isEvaluated()) {
-            return null;
-        } else {
-            return super.makeVarsAnnon(un);            
-        }
-    }
-    
-    @Override
     public boolean isLiteral() {
         return false;
     }
 
     @Override
     public boolean isArithExpr() {
-        return !isEvaluated();
-    }
-
-    /** returns true if the function/expression was already evaluated */
-    public boolean isEvaluated() {
-        return value != null;
+        return true;
     }
     
-    @Override
-    public boolean isGround() {
-        return isEvaluated() || super.isGround();
-    }
-
-    public boolean isUnary() {
-        return getArity() == 1;
-    }
-    
-    /**
-     * Does a "normal" apply and then solve the expression and store the result,
-     * so future calls of solve do not need to compute the value again
-     */
-    @Override
-    public boolean apply(Unifier u) {
-        if (isEvaluated()) 
-            return false;
-        
-        super.apply(u);
-        if ((function != null && function.allowUngroundTerms()) || isGround()) {
-            try {
-                value = new NumberTermImpl(solve());
-                return true;
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, getErrorMsg()+ " -- "+ e);
-            }
-        //} else {
-        //  logger.warning(getErrorMsg()+ " -- this function has unground arguments and can not be evaluated! Unifier is "+u);
-        }
-        
-        return false;
-    }
-
     public void setAgent(Agent ag) {
         agent = ag;
     }
@@ -132,20 +81,38 @@ public class ArithFunctionTerm extends Structure implements NumberTerm {
     }
     
     /** computes the value for this arithmetic function (as defined in the NumberTerm interface) */
-    public double solve() {
-        if (isEvaluated())
-            return value.solve();
-        else if (function != null)
-            try {
-                return function.evaluate((agent == null ? null : agent.getTS()),getTermsArray());
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, getErrorMsg()+ " -- error in evaluate!", e);
-            }
-        else 
+    @Override
+    public Term capply(Unifier u) {
+        if (function == null) {
             logger.log(Level.SEVERE, getErrorMsg()+ " -- the function can not be evalutated, it has no function assigned to it!", new Exception());
-        return 0;
+        } else {
+            Term v = super.capply(u);
+            if (function.allowUngroundTerms() || v.isGround()) {
+                try {         
+                    value = new NumberTermImpl(function.evaluate((agent == null ? null : agent.getTS()), ((Literal)v).getTermsArray()));
+                    return value;
+                } catch (NoValueForVarException e) {
+                    // ignore and return this;
+                } catch (Exception e) {
+                    logger.log(Level.SEVERE, getErrorMsg()+ " -- error in evaluate!", e);
+                }
+            //} else {
+            //    logger.warning(getErrorMsg()+ " -- this function has unground arguments and can not be evaluated! Unifier is "+u);  
+            }
+        }
+        return clone();
     }
 
+    @Override
+    public double solve() throws NoValueForVarException {
+        if (value == null) // try to solve without unifier
+            capply(null);
+        if (value == null)
+            throw new NoValueForVarException();
+        else
+            return value.solve();
+    }
+    
     public boolean checkArity(int a) {
         return function != null && function.checkArity(a);
     }
@@ -159,44 +126,22 @@ public class ArithFunctionTerm extends Structure implements NumberTerm {
     @Override
     public boolean equals(Object t) {
         if (t == null) return false;
-        if (isEvaluated()) return value.equals(t);
         return super.equals(t);
     }
 
     @Override
     public int compareTo(Term o) {
-        /*if (o instanceof NumberTerm) {
-            NumberTerm st = (NumberTerm)o;
-            if (solve() > st.solve()) return 1;
-            if (solve() < st.solve()) return -1;
-        } 
-        return 0; */    
         if (o instanceof VarTerm) {
             return o.compareTo(this) * -1;
         }
-        if (o instanceof NumberTerm) {
+        return super.compareTo(o);
+        /*if (o instanceof NumberTerm) {
             NumberTerm st = (NumberTerm)o;
             if (solve() > st.solve()) return 1;
             if (solve() < st.solve()) return -1;
             return 0;
         }
-        return -1;
-    }
-
-    @Override
-    protected int calcHashCode() {
-        if (isEvaluated())
-            return value.hashCode();
-        else
-            return super.calcHashCode();
-    }
-
-    @Override
-    public String toString() {
-        if (isEvaluated())
-            return value.toString();
-        else
-            return super.toString();
+        return -1;*/
     }
 
     @Override    
@@ -206,22 +151,15 @@ public class ArithFunctionTerm extends Structure implements NumberTerm {
 
     @Override
     public NumberTerm clone() {
-        if (isEvaluated()) 
-            return value;
-        else 
-            return new ArithFunctionTerm(this);
+        return new ArithFunctionTerm(this);
     } 
     
     public Element getAsDOM(Document document) {
-        if (isEvaluated()) {
-            return value.getAsDOM(document);
-        } else {
-            Element u = (Element) document.createElement("expression");
-            u.setAttribute("type", "arithmetic");
-            Element r = (Element) document.createElement("right");
-            r.appendChild(super.getAsDOM(document)); // put the left argument indeed!
-            u.appendChild(r);
-            return u;
-        }
+        Element u = (Element) document.createElement("expression");
+        u.setAttribute("type", "arithmetic");
+        Element r = (Element) document.createElement("right");
+        r.appendChild(super.getAsDOM(document)); // put the left argument indeed!
+        u.appendChild(r);
+        return u;
     }
 }

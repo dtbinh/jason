@@ -23,6 +23,7 @@
 
 package jason.asSyntax;
 
+import jason.NoValueForVarException;
 import jason.asSemantics.Agent;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.parser.as2j;
@@ -50,12 +51,12 @@ import org.w3c.dom.Element;
  * 
  * @author jomi
  */
-public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, StringTerm, ObjectTerm, PlanBody {
+public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm { //, StringTerm, ObjectTerm, PlanBody {
 
     private static final long serialVersionUID = 1L;
     private static Logger logger = Logger.getLogger(VarTerm.class.getName());
 
-    private Term value  = null;
+    //private Term value  = null;
 
     public VarTerm(String s) {
         super(s);
@@ -79,33 +80,71 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
             return null;
         }
     }
+    
+    @Override
+    public Term capply(Unifier u) {
+        if (u != null) { 
+            Term vl = u.get(this);
+            if (vl != null) {
+                if (!vl.isCyclicTerm() && vl.hasVar(this, u)) {
+                    //logger.warning("The value of a variable contains itself, variable "+super.getFunctor()+" "+super.getSrcInfo()+", value="+vl+", unifier="+u);
+                    
+                    u.remove(this); // remove this var to avoid loops in the apply below
+                    Term tempVl = vl.capply(u);
+                    u.bind(this, vl);
+                    
+                    CyclicTerm ct = new CyclicTerm((Literal)tempVl, this);
+                    Unifier renamedVars = new Unifier(); // remove "this" from the value to avoid loops in apply
+                    ct.makeVarsAnnon(renamedVars);
+                    renamedVars.remove(this);
+                    u.compose(renamedVars);
+                    vl = ct;
+                }
+                
+                vl = vl.capply(u); // should clone here, since there is no cloning in unify
+                // decide whether to use var annots in apply
+                //   X = p[a]
+                //   !X[b]
+                // what's the event: 
+                //   +!p[a]
+                // or
+                //   +!p[a,b]
+                // Answer: use annots of var, useful for meta-programming like
+                //         P[step(N)]
+                if (vl.isLiteral() && this.hasAnnot()) { // if this var has annots, add them in the value's annots (Experimental)
+                    vl = ((Literal)vl).forceFullLiteralImpl().addAnnots((ListTerm)this.getAnnots().capply(u));
+                }
+                return vl;
+            }
+        }
+        return clone();            
+    }
 
     public Term clone() {
-        if (value != null) {
-            return value.clone();
-        } else {
-            // do not call constructor with term parameter!
-            VarTerm t = new VarTerm(super.getFunctor());
-            t.setNegated(!negated());
-            t.srcInfo = this.srcInfo;        
-            if (hasAnnot())
-                t.setAnnots(getAnnots().cloneLT());
-            return t;
-        }
+        // do not call constructor with term parameter!
+        VarTerm t = new VarTerm(super.getFunctor());
+        t.setNegated(!negated());
+        t.srcInfo = this.srcInfo;        
+        if (hasAnnot())
+            t.setAnnots(getAnnots().cloneLT());
+        return t;
     }
-    
+
+    /*
     public PlanBody clonePB() {
         return (PlanBody)clone();
     }
+    */
     
     public ListTerm cloneLT() {
         return (ListTerm)clone();
     }
+
     
     
     @Override
     public boolean isVar() {
-        return value == null;
+        return true;
     }
 
     public boolean isUnnamedVar() {
@@ -114,14 +153,14 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
     
     @Override
     public boolean isGround() {
-        return value != null && value.isGround();
+        return false;
     }
 
     /**
      * grounds a variable, set a value for this var 
      * (e.g. X = 10; Y = a(b,c); ...)
      */
-    public boolean setValue(Term vl) {
+    /*public boolean setValue(Term vl) {
         if (vl.isVar()) {
             logger.log(Level.WARNING, "Attempted set a variable as a value for a variable, in " + this.getFunctor(), new Exception());
             return false;
@@ -144,13 +183,15 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
         value = vl;        
         resetHashCodeCache();
         return true;
-    }
+    }*/
 
     /** returns true if this var has a value */
+/*
     public boolean hasValue() {
         return value != null;
     }
-
+*/
+    /*
     public boolean apply(Unifier u) {
         if (value == null) {
             Term vl = u.get(this);            
@@ -159,8 +200,9 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
                     //logger.warning("The value of a variable contains itself, variable "+super.getFunctor()+" "+super.getSrcInfo()+", value="+vl+", unifier="+u);
                     
                     u.remove(this); // remove this var to avoid loops in the apply below
-                    Term tempVl = vl.clone(); 
-                    tempVl.apply(u);
+                    //Term tempVl = vl.clone(); 
+                    //tempVl.apply(u);
+                    Term tempVl = vl.capply(u);
                     u.bind(this, vl);
                     
                     CyclicTerm ct = new CyclicTerm((Literal)tempVl, this);
@@ -170,7 +212,7 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
                     u.compose(renamedVars);
                     vl = ct;
                 }
-                setValue(vl);
+                vl = setValue(vl);
                 value.apply(u); // in case t has var args
                 return true;
             }
@@ -178,20 +220,21 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
             return getValue().apply(u);
         }
         return false;               
-    }    
+    }  
+    */  
     
     /**
      * returns the value of this var. 
      */
-    public Term getValue() {
+   /* public Term getValue() {
         return value;
-    }
+    }*/
 
     @Override
     public boolean equals(Object t) {
         if (t == null) return false;
         if (t == this) return true;
-        if (t instanceof Term) {
+        /*if (t instanceof Term) {
             Term vl = getValue();
             // System.out.println("checking equals form "+tAsTerm.getFunctor()+"
             // and this "+this.getFunctor()+" my value "+vl);
@@ -199,22 +242,22 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
                 // compare the values
                 return vl.equals(t);
             }
-
+    */
             // is t also a var? (its value must also be null)
             if (t instanceof VarTerm) {
-                final VarTerm tAsVT = (VarTerm) t;
-                if (tAsVT.getValue() == null) {
+                //final VarTerm tAsVT = (VarTerm) t;
+                //if (tAsVT.getValue() == null) {
                     return negated() == ((VarTerm)t).negated() && getFunctor().equals(((VarTerm)t).getFunctor());
-                }
+                //}
             }
-        }
+        //}
         return false;
     }
 
     public int compareTo(Term t) {
-        if (value != null)
+        /*if (value != null)
             return value.compareTo(t);
-        else if (t == null || t.isUnnamedVar())
+        else*/ if (t == null || t.isUnnamedVar())
             return -1;
         else if (t.isVar()) {
             if (!negated() && ((VarTerm)t).negated())
@@ -228,9 +271,9 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
     
     @Override
     public boolean subsumes(Term t) {
-        if (value != null)
+        /*if (value != null)
             return value.subsumes(t);
-        else 
+        else */
             return true;
     }
 
@@ -240,6 +283,7 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
     // in case this VarTerm has a value, use value's methods
     // ----------
 
+    /*
     @Override
     public String getFunctor() {
         if (value == null) {
@@ -260,7 +304,7 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
         }
         return predicateIndicatorCache;
     }
-
+    
     @Override
     public int hashCode() {
         if (value != null)
@@ -268,97 +312,99 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
         else
             return getFunctor().hashCode();
     }
+    */
 
     @Override
     public Iterator<Unifier> logicalConsequence(Agent ag, Unifier un) {
-        if (value != null && value instanceof LogicalFormula)
+        /*if (value != null && value instanceof LogicalFormula)
             return ((LogicalFormula)value).logicalConsequence(ag, un);
-        else {
+        else {*/
             // try to apply
-            Term t = this.clone();
-            if (t instanceof VarTerm) { // the clone is still a var
-                VarTerm c = (VarTerm)t;
-                c.apply(un);
-                if (c.hasValue() && c.getValue() instanceof LogicalFormula) {
-                    return ((LogicalFormula)c.getValue()).logicalConsequence(ag, un);
-                } else {
-                    // the variable is still a Var, find all bels that unify.
-                    return super.logicalConsequence(ag, un);                
-                }
+            Term t = this.capply(un);
+            if ( t.equals(this) ) {
+                // the variable is still a Var, find all bels that unify.
+                return super.logicalConsequence(ag, un);                
+            } else {
+                // the clone is still a var
+                return ((LogicalFormula)t).logicalConsequence(ag, un);
             }
-        }
-        return null;
+        //}
     }
 
     @Override
     public Term getTerm(int i) {
-        if (value != null && value.isStructure()) {
+        /*if (value != null && value.isStructure()) {
             return ((Structure)getValue()).getTerm(i);
-        } else {
+        } else {*/
             return null;
-        }
+        //}
     }
 
     @Override
     public void addTerm(Term t) {
-        if (value != null)
+        /*if (value != null)
             if (value.isStructure()) 
                 ((Structure)getValue()).addTerm(t);
-            else
-                logger.log(Level.WARNING, "The addTerm '"+t+"' in "+this+" was lost, since this var value is not a Structure. The value's class is "+getValue().getClass().getName(), new Exception());                
+            else*/
+                logger.log(Level.WARNING, "The addTerm '"+t+"' in "+this+" was lost, since I am a var.", new Exception());                
     }
 
+    
     @Override
     public int getArity() {
-        if (value != null && value.isStructure()) {
+        /*if (value != null && value.isStructure()) {
             return ((Structure)getValue()).getArity();
-        } else {
+        } else {*/
             return 0;
-        }
+        //}
     }
 
     @Override
     public List<Term> getTerms() {
-        if (value != null && value.isStructure()) {
+        /*if (value != null && value.isStructure()) {
             return ((Structure)getValue()).getTerms();
-        } else {
+        } else {*/
             return null;
-        }
+        //}
     }
+
 
     @Override
     public Literal setTerms(List<Term> l) {
-        if (value != null) {
+        /*if (value != null) {
             if (value.isStructure()) {
                 return ((Structure)getValue()).setTerms(l);
             } else {
                 logger.log(Level.WARNING, "The setTerms '"+l+"' in "+this+" was lost, since this var value is not a Structure. The value's class is "+getValue().getClass().getName(), new Exception());
                 return null;
             }
-        } else {
+        } else {*/
             return this;
-        }
+        //}
     }
 
     @Override
     public void setTerm(int i, Term t) {
-        if (value != null)
+        /*if (value != null)
             if (value.isStructure())
                 ((Structure)getValue()).setTerm(i,t);
             else
-                logger.log(Level.WARNING, "The setTerm '"+t+"' in "+this+" was lost, since this var value is not a Structure. The value's class is "+getValue().getClass().getName(), new Exception());                
+                logger.log(Level.WARNING, "The setTerm '"+t+"' in "+this+" was lost, since this var value is not a Structure. The value's class is "+getValue().getClass().getName(), new Exception());
+                */                
     }
 
     @Override
     public Literal addTerms(List<Term> l) {
-        if (value != null)
+        /*if (value != null)
             if (value.isStructure())
                 return ((Structure)getValue()).addTerms(l);
             else
-                logger.log(Level.WARNING, "The addTerms '"+l+"' in "+this+" was lost, since this var value is not a Structure. The value's class is "+getValue().getClass().getName(), new Exception());                
+                logger.log(Level.WARNING, "The addTerms '"+l+"' in "+this+" was lost, since this var value is not a Structure. The value's class is "+getValue().getClass().getName(), new Exception());
+                */                
         return this;
     }
 
+    /*
     @Override
     public Term[] getTermsArray() {
         if (value != null && value.isStructure()) {
@@ -367,67 +413,69 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
             return null;
         }
     }
+    */
 
     @Override
     public boolean isInternalAction() {
-        return value != null && getValue().isInternalAction();
+        return false;
     }
 
     @Override
     public boolean isList() {
-        return value != null && getValue().isList();
+        return false;
     }
 
     @Override
     public boolean isString() {
-        return value != null && getValue().isString();
+        return false;
     }
     
     @Override
     public boolean isPlanBody() {
-        return value != null && getValue().isPlanBody();
+        return false;
     }
 
     @Override
     public boolean isNumeric() {
-        return value != null && value.isNumeric();
+        return false;
     }
 
     @Override
     public boolean isPred() {
-        return value != null && getValue().isPred();
+        return false;
     }
 
     @Override
     public boolean isLiteral() {
-        return value != null && getValue().isLiteral();
+        return false;
     }
 
     @Override
     public boolean isStructure() {
-        return value != null && getValue().isStructure();
+        return false;
     }
 
     @Override
     public boolean isAtom() {
-        return value != null && getValue().isAtom();
+        return false;
     }
 
     @Override
     public boolean isRule() {
-        return value != null && getValue().isRule();
+        return false;
     }
 
     @Override
     public boolean isArithExpr() {
-        return value != null && value.isArithExpr();
+        return false;
     }
 
     @Override
     public boolean isCyclicTerm() {
-        return value != null && value.isCyclicTerm();
+        return false;
     }
     
+    /*
     @Override
     public VarTerm getCyclicVar() {
         if (value != null) 
@@ -435,11 +483,12 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
         else
             return super.getCyclicVar();
     }
+    */
     
     @Override
     public boolean hasVar(VarTerm t, Unifier u) {
-        if (value != null)
-            return value.hasVar(t, u);
+        /*if (value != null)
+            return value.hasVar(t, u);*/
         if (equals(t))
             return true;
 
@@ -447,7 +496,7 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
             Term vl = u.get(this);
             if (vl != null) {
                 try {
-                    u.remove(this); // remove this var from the unifier to avoid going to seach inside it again
+                    u.remove(this); // remove this var from the unifier to avoid going to search inside it again
                     return vl.hasVar(t, u);
                 } finally {
                     u.bind(this, vl);
@@ -461,15 +510,16 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
     
     @Override
     public void countVars(Map<VarTerm, Integer> c) {
-        if (value == null) {
+        //if (value == null) {
             int n = c.containsKey(this) ? c.get(this) : 0;
             c.put(this, n+1);
             super.countVars(c);
-        } else {
+        /*} else {
             value.countVars(c);
-        }
+        }*/
     }
 
+    /*
     @Override
     public Literal makeVarsAnnon(Unifier un) {
         if (value == null)
@@ -479,19 +529,20 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
         else
             return null;
     }
+    */
     
     @Override
     public String toString() {
-        if (value == null) {
+        //if (value == null) {
             String s = getFunctor();
             if (hasAnnot())
                 s += getAnnots();
             if (negated())
                 s = "~" + s;
             return s;
-        } else {
-            return value.toString();
-        }
+        //} else {
+          //  return value.toString();
+        //}
     }
 
     // ----------
@@ -500,6 +551,7 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
     // in case this VarTerm has a value, use value's methods
     // ----------
 
+    /*
     @Override
     public Literal setAnnots(ListTerm l) {
         if (value != null)
@@ -682,15 +734,16 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
         else
             return getValue().isLiteral() && ((Literal) getValue()).negated();
     }
-    
+    */
     @Override
     public boolean canBeAddedInBB() {
-        if (value != null && getValue().isLiteral())
-            return ((Literal) getValue()).canBeAddedInBB();
-        else
+        //if (value != null && getValue().isLiteral())
+        //    return ((Literal) getValue()).canBeAddedInBB();
+        //else
             return false;
     }
 
+    /*
     @Override
     public Literal forceFullLiteralImpl() {
         if (hasValue() && getValue().isLiteral()) 
@@ -698,13 +751,16 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
         else 
             return super.forceFullLiteralImpl();
     }
-
+    */
     // ----------
     // ArithmeticExpression methods overridden
     // Interface NumberTerm
     // ----------
 
-    public double solve() {
+    @Override
+    public double solve() throws NoValueForVarException {
+        throw new NoValueForVarException();
+        /*
         if (value != null && value.isNumeric())
             return ((NumberTerm) value).solve();
         else if (hasValue())
@@ -712,6 +768,7 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
         else
             logger.log(Level.SEVERE, getErrorMsg()+" Error getting numerical value of VarTerm " + super.getFunctor() + ", the variable hasn't a value.", new Exception());
         return 0;
+        */
     }
 
     // ----------
@@ -721,289 +778,284 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
     // ----------
 
     public void add(int index, Term o) {
-        if (value != null && getValue().isList())
-            ((ListTerm) getValue()).add(index, o);
+        //if (value != null && getValue().isList())
+        //    ((ListTerm) getValue()).add(index, o);
     }
 
     public boolean add(Term o) {
-        return value != null && getValue().isList() && ((ListTerm) getValue()).add(o);
+        return false; //value != null && getValue().isList() && ((ListTerm) getValue()).add(o);
     }
 
-    @SuppressWarnings("unchecked")
-    public boolean addAll(Collection c) {
-        return value != null && getValue().isList() && ((ListTerm) getValue()).addAll(c);
+    public boolean addAll(@SuppressWarnings("rawtypes") Collection c) {
+        return false; // value != null && getValue().isList() && ((ListTerm) getValue()).addAll(c);
     }
 
-    @SuppressWarnings("unchecked")
-    public boolean addAll(int index, Collection c) {
-        return value != null && getValue().isList() && ((ListTerm) getValue()).addAll(index, c);
+    public boolean addAll(int index, @SuppressWarnings("rawtypes") Collection c) {
+        return false; //value != null && getValue().isList() && ((ListTerm) getValue()).addAll(index, c);
     }
 
     public void clear() {
-        if (value != null && getValue().isList())
-            ((ListTerm) getValue()).clear();
+        //if (value != null && getValue().isList())
+        //    ((ListTerm) getValue()).clear();
     }
 
     public boolean contains(Object o) {
-        return value != null && getValue().isList() && ((ListTerm) getValue()).contains(o);
+        return false; //value != null && getValue().isList() && ((ListTerm) getValue()).contains(o);
     }
 
-    @SuppressWarnings("unchecked")
-    public boolean containsAll(Collection c) {
-        return value != null && getValue().isList() && ((ListTerm) getValue()).containsAll(c);
+    public boolean containsAll(@SuppressWarnings("rawtypes") Collection c) {
+        return false; //value != null && getValue().isList() && ((ListTerm) getValue()).containsAll(c);
     }
 
     public Term get(int index) {
-        if (value != null && getValue().isList())
+        /*if (value != null && getValue().isList())
             return ((ListTerm) getValue()).get(index);
-        else
+        else*/
             return null;
     }
 
     public int indexOf(Object o) {
-        if (value != null && getValue().isList())
+        /*if (value != null && getValue().isList())
             return ((ListTerm) getValue()).indexOf(o);
-        else
+        else*/
             return -1;
     }
 
     public int lastIndexOf(Object o) {
-        if (value != null && getValue().isList())
+        /*if (value != null && getValue().isList())
             return ((ListTerm) getValue()).lastIndexOf(o);
-        else
+        else*/
             return -1;
     }
 
     public Iterator<Term> iterator() {
-        if (value != null && getValue().isList())
+        /*if (value != null && getValue().isList())
             return ((ListTerm) getValue()).iterator();
-        else
+        else*/
             return null;
     }
 
     public ListIterator<Term> listIterator() {
-        if (value != null && getValue().isList())
+        /*if (value != null && getValue().isList())
             return ((ListTerm) getValue()).listIterator();
-        else
+        else*/
             return null;
     }
 
     public ListIterator<Term> listIterator(int index) {
-        if (value != null && getValue().isList())
+        /*if (value != null && getValue().isList())
             return ((ListTerm) getValue()).listIterator(index);
-        else
+        else*/
             return null;
     }
 
     public Term remove(int index) {
-        if (value != null && getValue().isList())
+        /*if (value != null && getValue().isList())
             return ((ListTerm) getValue()).remove(index);
-        else
+        else*/
             return null;
     }
 
     public boolean remove(Object o) {
-        if (value != null && getValue().isList())
+        /*if (value != null && getValue().isList())
             return ((ListTerm) getValue()).remove(o);
-        else
+        else*/
             return false;
     }
 
-    @SuppressWarnings("unchecked")
-    public boolean removeAll(Collection c) {
-        if (value != null && getValue().isList())
+    public boolean removeAll(@SuppressWarnings("rawtypes") Collection c) {
+        /*if (value != null && getValue().isList())
             return ((ListTerm) getValue()).removeAll(c);
-        else
+        else*/
             return false;
     }
 
-    @SuppressWarnings("unchecked")
-    public boolean retainAll(Collection c) {
-        if (value != null && getValue().isList())
+    public boolean retainAll(@SuppressWarnings("rawtypes") Collection c) {
+        /*if (value != null && getValue().isList())
             return ((ListTerm) getValue()).retainAll(c);
-        else
+        else*/
             return false;
     }
 
     public Term set(int index, Term o) {
-        if (value != null && getValue().isList())
+        /*if (value != null && getValue().isList())
             return ((ListTerm) getValue()).set(index, o);
-        else
+        else*/
             return null;
     }
 
     public List<Term> subList(int arg0, int arg1) {
-        if (value != null && getValue().isList())
+        /*if (value != null && getValue().isList())
             return ((ListTerm) getValue()).subList(arg0, arg1);
-        else
+        else*/
             return null;
     }
     
     public Iterator<List<Term>> subSets(int k) {
-        if (value != null && getValue().isList())
+        /*if (value != null && getValue().isList())
             return ((ListTerm) getValue()).subSets(k);
-        else
+        else*/
             return null;
     }
 
     public Object[] toArray() {
-        if (value != null && getValue().isList())
+        /*if (value != null && getValue().isList())
             return ((ListTerm) getValue()).toArray();
-        else
+        else*/
             return null;
     }
 
     @SuppressWarnings("unchecked")
     public Object[] toArray(Object[] arg0) {
-        if (value != null && getValue().isList())
+        /*if (value != null && getValue().isList())
             return ((ListTerm) getValue()).toArray(arg0);
-        else
+        else*/
             return null;
     }
 
     // from ListTerm
 
     public void setTerm(Term t) {
-        if (value != null && getValue().isList())
-            ((ListTerm) getValue()).setTerm(t);
+        //if (value != null && getValue().isList())
+          //  ((ListTerm) getValue()).setTerm(t);
     }
 
     public void setNext(Term t) {
-        if (value != null && getValue().isList())
-            ((ListTerm) getValue()).setNext(t);
+        //if (value != null && getValue().isList())
+         //   ((ListTerm) getValue()).setNext(t);
     }
 
     public ListTerm append(Term t) {
-        if (value != null && getValue().isList())
+        /*if (value != null && getValue().isList())
             return ((ListTerm) getValue()).append(t);
-        else
+        else*/
             return null;
     }
     public ListTerm insert(Term t) {
-        if (value != null && getValue().isList())
+        /*if (value != null && getValue().isList())
             return ((ListTerm) getValue()).insert(t);
-        else
+        else*/
             return null;
     }
     public ListTerm concat(ListTerm lt) {
-        if (value != null && getValue().isList())
+        /*if (value != null && getValue().isList())
             return ((ListTerm) getValue()).concat(lt);
-        else
+        else*/
             return null;
     }
 
     public ListTerm reverse() {
-        if (value != null && getValue().isList())
+        /*if (value != null && getValue().isList())
             return ((ListTerm) getValue()).reverse();
-        else
+        else*/
             return null;
     }
 
     public ListTerm union(ListTerm lt) {
-        if (value != null && getValue().isList())
+        /*if (value != null && getValue().isList())
             return ((ListTerm) getValue()).union(lt);
-        else
+        else*/
             return null;
     }
 
     public ListTerm intersection(ListTerm lt) {
-        if (value != null && getValue().isList())
+        /*if (value != null && getValue().isList())
             return ((ListTerm) getValue()).intersection(lt);
-        else
+        else*/
             return null;
     }
 
     public ListTerm difference(ListTerm lt) {
-        if (value != null && getValue().isList())
+        /*if (value != null && getValue().isList())
             return ((ListTerm) getValue()).difference(lt);
-        else
+        else*/
             return null;
     }
 
     public List<Term> getAsList() {
-        if (value != null && getValue().isList())
+        /*if (value != null && getValue().isList())
             return ((ListTerm) getValue()).getAsList();
-        else
+        else*/
             return null;
     }
 
     public ListTerm getLast() {
-        if (value != null && getValue().isList())
+        /*if (value != null && getValue().isList())
             return ((ListTerm) getValue()).getLast();
-        else
+        else*/
             return null;
     }
 
     public ListTerm getPenultimate() {
-        if (value != null && getValue().isList())
+        /*if (value != null && getValue().isList())
             return ((ListTerm) getValue()).getPenultimate();
-        else
+        else*/
             return null;
     }
     
     public Term removeLast() {
-        if (value != null && getValue().isList())
+        /*if (value != null && getValue().isList())
             return ((ListTerm) getValue()).removeLast();
-        else
+        else*/
             return null;
     }
 
     public ListTerm getNext() {
-        if (value != null && getValue().isList())
+        /*if (value != null && getValue().isList())
             return ((ListTerm) getValue()).getNext();
-        else
+        else*/
             return null;
     }
 
     public Term getTerm() {
-        if (value != null && getValue().isList())
+        /*if (value != null && getValue().isList())
             return ((ListTerm) getValue()).getTerm();
-        else
+        else*/
             return null;
     }
 
     public boolean isEmpty() {
-        return value != null && getValue().isList() && ((ListTerm) getValue()).isEmpty();
+        return false; //value != null && getValue().isList() && ((ListTerm) getValue()).isEmpty();
     }
 
     public boolean isEnd() {
-        return value != null && getValue().isList() && ((ListTerm) getValue()).isEnd();
+        return false; //value != null && getValue().isList() && ((ListTerm) getValue()).isEnd();
     }
 
     public boolean isTail() {
-        return value != null && getValue().isList() && ((ListTerm) getValue()).isTail();
+        return false; //value != null && getValue().isList() && ((ListTerm) getValue()).isTail();
     }
 
     public void setTail(VarTerm v) {
-        if (value != null && getValue().isList())
-            ((ListTerm) getValue()).setTail(v);
+        //if (value != null && getValue().isList())
+          //  ((ListTerm) getValue()).setTail(v);
     }
 
     public VarTerm getTail() {
-        if (value != null && getValue().isList())
+        /*if (value != null && getValue().isList())
             return ((ListTerm) getValue()).getTail();
-        else
+        else*/
             return null;
     }
 
     public Iterator<ListTerm> listTermIterator() {
-        if (value != null && getValue().isList())
+        /*if (value != null && getValue().isList())
             return ((ListTerm) getValue()).listTermIterator();
-        else
+        else*/
             return null;
     }
 
     public int size() {
-        if (value != null && getValue().isList())
+        /*if (value != null && getValue().isList())
             return ((ListTerm) getValue()).size();
-        else
+        else*/
             return -1;
     }
 
     public ListTerm cloneLTShallow() {
-        if (value != null && getValue().isList())
+        /*if (value != null && getValue().isList())
             return ((ListTerm) getValue()).cloneLTShallow();
-        else
+        else*/
             return null;        
     }
 
@@ -1012,6 +1064,7 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
     // StringTerm interface implementation
     // -----------------------
 
+    /*
     public String getString() {
         if (value != null && getValue().isString())
             return ((StringTerm) getValue()).getString();
@@ -1025,22 +1078,25 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
         else
             return -1;
     }
-
+    */
+    
     // -----------------------
     // ObjectTerm interface implementation
     // -----------------------
 
+    /*
     public Object getObject() {
         if (value != null && getValue() instanceof ObjectTerm)
             return ((ObjectTerm) getValue()).getObject();
         else
             return null;
     }
-
+    */
+    
     // -----------------------
     // PlanBody interface implementation
     // -----------------------
-    
+    /*
     public BodyType getBodyType() {
         if (value != null && getValue() instanceof PlanBody)
             return ((PlanBody) getValue()).getBodyType();
@@ -1130,13 +1186,13 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
         else
             return null;
     }
-    
+    */
 
     /** get as XML */
     public Element getAsDOM(Document document) {
-        if (hasValue()) {
+        /*if (hasValue()) {
             return value.getAsDOM(document);
-        } else {
+        } else {*/
             Element u = (Element) document.createElement("var-term");
             u.setAttribute("functor", getFunctor());
             if (hasAnnot()) {
@@ -1145,6 +1201,6 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm, String
                 u.appendChild(ea);
             }
             return u;
-        }
+        //}
     }
 }

@@ -147,8 +147,7 @@ public class desire extends intend {
                         Trigger   t = C.getSelectedEvent().getTrigger();
                         Intention i = C.getSelectedEvent().getIntention(); 
                         if (i != Intention.EmptyInt && !i.isFinished()) {
-                            t = t.clone();
-                            t.apply(i.peek().getUnif());
+                            t = (Trigger)t.capply(i.peek().getUnif());
                         }
                         solution = un.clone();
                         if (solution.unifiesNoUndo(teFromL, t)) {
@@ -167,8 +166,7 @@ public class desire extends intend {
                         Trigger   t = ei.getTrigger();
                         Intention i = ei.getIntention(); 
                         if (i != Intention.EmptyInt && !i.isFinished()) {
-                            t = t.clone();
-                            t.apply(i.peek().getUnif());
+                            t = t.capply(i.peek().getUnif());
                         }
                         solution = un.clone();
                         if (solution.unifiesNoUndo(teFromL, t)) {

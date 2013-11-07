@@ -81,13 +81,13 @@ public class RelExpr extends BinaryStructure implements LogicalFormula {
     }
     
     public Iterator<Unifier> logicalConsequence(final Agent ag, Unifier un) {
-        Term xp = getTerm(0).clone();
-        Term yp = getTerm(1).clone();
-        xp.apply(un);
-        yp.apply(un);
+        Term xp = getTerm(0).capply(un);
+        Term yp = getTerm(1).capply(un);
 
         switch (op) {
         
+        case none: break;
+
         case gt : if (xp.compareTo(yp)  >  0) return LogExpr.createUnifIterator(un);  break;
         case gte: if (xp.compareTo(yp)  >= 0) return LogExpr.createUnifIterator(un);  break;
         case lt : if (xp.compareTo(yp)  <  0) return LogExpr.createUnifIterator(un);  break;
@@ -143,9 +143,14 @@ public class RelExpr extends BinaryStructure implements LogicalFormula {
         return null;
     }
     
+    @Override
+    public Term capply(Unifier u) {
+        return new RelExpr(getTerm(0).capply(u), op, getTerm(1).capply(u));
+    }
+
     /** make a hard copy of the terms */
     public LogicalFormula clone() {
-        return  new RelExpr(getTerm(0).clone(), op, getTerm(1).clone());
+        return new RelExpr(getTerm(0).clone(), op, getTerm(1).clone());
     }
     
     /** gets the Operation of this Expression */

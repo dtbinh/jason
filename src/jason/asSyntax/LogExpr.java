@@ -104,6 +104,8 @@ public class LogExpr extends BinaryStructure implements LogicalFormula {
             
             switch (op) {
             
+            case none: break;
+            
             case not:
                 if (!getLHS().logicalConsequence(ag,un).hasNext()) {
                     return createUnifIterator(un);
@@ -236,6 +238,15 @@ public class LogExpr extends BinaryStructure implements LogicalFormula {
             logger.log(Level.SEVERE,"Error parsing expression "+sExpr,e);
         }
         return null;
+    }
+    
+    @Override
+    public Term capply(Unifier u) {
+        // do not call constructor with term parameter!
+        if (isUnary())
+            return new LogExpr(op, (LogicalFormula)getTerm(0).capply(u));
+        else
+            return new LogExpr((LogicalFormula)getTerm(0).capply(u), op, (LogicalFormula)getTerm(1).capply(u));
     }
     
     /** make a hard copy of the terms */

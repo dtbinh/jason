@@ -127,8 +127,7 @@ public class succeed_goal extends DefaultInternalAction {
                 // test in the event
                 Trigger t = e.getTrigger();
                 if (i != Intention.EmptyInt && !i.isFinished()) { //i.size() > 0) {
-                    t = t.clone();
-                    t.apply(i.peek().getUnif());
+                    t = t.capply(i.peek().getUnif());
                 }
                 if (un.unifies(g, t)) {                    
                     dropInEvent(ts,e,i);
@@ -153,8 +152,7 @@ public class succeed_goal extends DefaultInternalAction {
                 // test in the event
                 Trigger t = e.getTrigger();
                 if (i != Intention.EmptyInt && !i.isFinished()) { //i.size() > 0) {
-                    t = t.clone();
-                    t.apply(i.peek().getUnif());
+                    t = t.capply(i.peek().getUnif());
                 }
                 if (un.unifies(g, t)) {
                     dropInEvent(ts,e,i);

@@ -59,7 +59,7 @@ public class AgentJDBCPersistentBB extends JDBCPersistentBB {
     }
 
     @Override
-    protected String getInsert(Literal l) throws SQLException {
+    protected String getInsert(Literal l) throws Exception {
         StringBuilder q = new StringBuilder(super.getInsert(l));
         if (isCreatedByJason(l.getPredicateIndicator())) {
             q.insert(q.length()-1, ", '" + agentName + "'");

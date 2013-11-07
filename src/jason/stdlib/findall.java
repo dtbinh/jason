@@ -101,10 +101,7 @@ public class findall extends DefaultInternalAction {
         ListTerm tail = all;
         Iterator<Unifier> iu = logExpr.logicalConsequence(ts.getAg(), un);
         while (iu.hasNext()) {
-            Unifier nu = iu.next();
-            Term vl = var.clone();
-            vl.apply(nu);
-            tail = tail.append(vl);
+            tail = tail.append(var.capply(iu.next()));
         }
         return un.unifies(args[2], all);
     }

@@ -110,9 +110,8 @@ public abstract class DefaultTerm implements Term, Serializable {
             return true; 
     }
 
-
-    public boolean apply(Unifier u) {
-        return false;
+    public Term capply(Unifier u) {
+        return clone();
     }
     
     public SourceInfo getSrcInfo() {

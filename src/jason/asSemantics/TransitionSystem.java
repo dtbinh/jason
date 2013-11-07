@@ -24,6 +24,7 @@
 package jason.asSemantics;
 
 import jason.JasonException;
+import jason.NoValueForVarException;
 import jason.RevisionFailedException;
 import jason.architecture.AgArch;
 import jason.asSyntax.ASSyntax;
@@ -279,8 +280,7 @@ public class TransitionSystem {
                 
                 // test the case of sync ask with many receivers
                 Unifier un = intention.peek().getUnif();
-                Term rec = send.getTerm(0).clone();
-                rec.apply(un);
+                Term rec = send.getTerm(0).capply(un);
                 if (rec.isList()) { // send to many receivers
                     // put the answers in the unifier
                     VarTerm answers = new VarTerm("AnsList___"+m.getInReplyTo());
@@ -497,33 +497,37 @@ public class TransitionSystem {
             // begin tail recursion optimisation (TRO)
             if (setts.isTROon()) {
                 IntendedMeans top = confP.C.SE.intention.peek(); // top = the IM that will be removed from the intention due to TRO
-                if (top.getTrigger().isGoal() && im.getTrigger().isGoal() && // are both goal
-                    top.getTrigger().getPredicateIndicator().equals( im.getTrigger().getPredicateIndicator()) && // are they equals
-                    top.getCurrentStep().getBodyNext() == null) { // the plan below is finished
+                if (top != null && top.getTrigger().isGoal() && im.getTrigger().isGoal() && // are both goal
+                        top.getCurrentStep().getBodyNext() == null && // the plan below is finished
+                        top.getTrigger().getPredicateIndicator().equals( im.getTrigger().getPredicateIndicator()) // goals are equals
+                    ) { 
                     confP.C.SE.intention.pop(); // remove the top IM
                     
                     IntendedMeans imBase = confP.C.SE.intention.peek(); // base = where the new IM will be place on top of
-                    // move top relevant values into the base (relevant = renamed vars in base)
-                    for (VarTerm v: imBase.renamedVars) {
-                        VarTerm vvl = (VarTerm)imBase.renamedVars.function.get(v);
-                        Term t = top.unif.get(vvl);
-                        if (t != null) { // if v has got a value in top unif, put the value in the unifier
-                            if (t instanceof Literal) {
-                                Literal l= (Literal)t.clone();
-                                l.apply(top.unif);
-                                l.makeVarsAnnon(top.renamedVars);
-                                im.unif.function.put(vvl, l);                        
+                    if (imBase != null) {
+                        // move top relevant values into the base (relevant = renamed vars in base)
+                        for (VarTerm v: imBase.renamedVars) {
+                            VarTerm vvl = (VarTerm)imBase.renamedVars.function.get(v);
+                            Term t = top.unif.get(vvl);
+                            if (t != null) { // if v has got a value in top unif, put the value in the unifier
+                                if (t instanceof Literal) {
+                                    //Literal l= (Literal)t.clone();
+                                    //l.apply(top.unif);
+                                    Literal l= (Literal)t.capply(top.unif);
+                                    l.makeVarsAnnon(top.renamedVars);
+                                    im.unif.function.put(vvl, l);                        
+                                } else {
+                                    im.unif.function.put(vvl, t);                        
+                                }
                             } else {
-                                im.unif.function.put(vvl, t);                        
+                                // the vvl was renamed again in top, just replace in base the new value
+                                VarTerm v0 = (VarTerm)top.renamedVars.function.get(vvl);
+                                if (v0 != null) {
+                                    imBase.renamedVars.function.put(v, v0);
+                                }
                             }
-                        } else {
-                            // the vvl was renamed again in top, just replace in base the new value
-                            VarTerm v0 = (VarTerm)top.renamedVars.function.get(vvl);
-                            if (v0 != null) {
-                                imBase.renamedVars.function.put(v, v0);
-                            }
-                        }
-                    }                                
+                        }            
+                    }
                 }           
                 // end of TRO
             }
@@ -616,8 +620,7 @@ public class TransitionSystem {
         Term bTerm = h.getBodyTerm();
         
         if (bTerm instanceof VarTerm) { // de-var bTerm
-            bTerm = bTerm.clone(); // clone before apply
-            bTerm.apply(u);
+            bTerm = bTerm.capply(u);
             if (bTerm.isVar()) { // the case of !A with A not ground
                 String msg = h.getSrcInfo()+": "+ "Variable '"+bTerm+"' must be ground.";
                 if (!generateGoalDeletion(conf.C.SI, JasonException.createBasicErrorAnnots("body_var_without_value", msg)))
@@ -650,7 +653,7 @@ public class TransitionSystem {
         
         // Rule Action
         case action:
-            body = body.copy(); body.apply(u);
+            body = (Literal)body.capply(u);
             confP.C.A = new ActionExec(body, conf.C.SI);
             break;
 
@@ -839,8 +842,7 @@ public class TransitionSystem {
     
     // add the self source in the body in case no other source was given
     private Literal prepareBodyForEvent(Literal body, Unifier u, IntendedMeans imRenamedVars) {
-        body = body.copy();
-        body.apply(u);
+        body = (Literal)body.capply(u);
         Unifier renamedVars = new Unifier();
         //System.out.println("antes "+body+" "+u+" ");
         body.makeVarsAnnon(renamedVars); // free variables in an event cannot conflict with those in the plan
@@ -955,8 +957,7 @@ public class TransitionSystem {
                             //System.out.println(ov+"="+vt+"="+vl);
                             if (vl != null) { // vt has value in top
                                 //System.out.println("   and found "+vl);
-                                vl = vl.clone();
-                                vl.apply(topIM.unif);
+                                vl = vl.capply(topIM.unif);
                                 if (vl.isLiteral())
                                     ((Literal)vl).makeVarsAnnon();
                                 im.unif.bind(vt, vl);
@@ -1069,8 +1070,7 @@ public class TransitionSystem {
         } else {
             failEvent = new Event(im.getTrigger().clone(), i);
         }
-        Term bodyPart = im.getCurrentStep().getBodyTerm().clone();
-        bodyPart.apply(im.unif);
+        Term bodyPart = im.getCurrentStep().getBodyTerm().capply(im.unif);
         setDefaultFailureAnnots(failEvent, bodyPart, failAnnots);
 
         if (im.isGoalAdd()) {
@@ -1213,7 +1213,12 @@ public class TransitionSystem {
             isize = 0;
         else
             isize = intention.size();
-        int deadline = (int)((NumberTerm)hdl.getTerm(0)).solve();
+        int deadline = 0;
+        try {
+            deadline = (int)((NumberTerm)hdl.getTerm(0)).solve();
+        } catch (NoValueForVarException e1) {
+            e1.printStackTrace();
+        }
 
         getAg().getScheduler().schedule(new Runnable() {                        
             public void run() {

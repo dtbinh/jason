@@ -66,22 +66,22 @@ public class UnnamedVar extends VarTerm {
     */
     
     public Term clone() {
-        if (hasValue()) {
+        /*if (hasValue()) {
             return getValue().clone();
-        } else {
+        } else {*/
             UnnamedVar newv = new UnnamedVar(getFunctor());
             newv.myId = this.myId;
             //newv.fromRename = this.fromRename;
             if (hasAnnot())
                 newv.addAnnots(this.getAnnots().cloneLT());
             return newv;
-        }
+        //}
     }
     
     public int compareTo(Term t) {
-        if (hasValue()) {
+        /*if (hasValue()) {
             return super.compareTo(t);
-        } else if (t instanceof UnnamedVar) {
+        } else */if (t instanceof UnnamedVar) {
             if (myId > ((UnnamedVar)t).myId)
                 return 1;
             else if (myId < ((UnnamedVar)t).myId)
@@ -97,6 +97,6 @@ public class UnnamedVar extends VarTerm {
 
     @Override
     public boolean isUnnamedVar() {
-        return !hasValue();
+        return true; //!hasValue();
     }
 }

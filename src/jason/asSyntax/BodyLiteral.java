@@ -37,6 +37,7 @@ public class BodyLiteral extends PlanBodyImpl {
         case delAddBel: return PlanBody.BodyType.delAddBel;
         case achieveNF: return PlanBody.BodyType.achieveNF;
         case constraint: return PlanBody.BodyType.constraint;
+        default: break;
         }
         return PlanBody.BodyType.none;
     }

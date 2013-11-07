@@ -8,6 +8,7 @@ import jason.asSyntax.LogExpr;
 import jason.asSyntax.Rule;
 import jason.asSyntax.Structure;
 import jason.asSyntax.VarTerm;
+import jason.asSyntax.parser.ParseException;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -73,6 +74,14 @@ public class RuleTest extends TestCase {
         iun = Literal.parseLiteral("t(X)").logicalConsequence(ag, new Unifier());
         assertEquals(3,iteratorSize(iun));
     }
+    
+    public void testAdd() throws ParseException {
+        Agent ag = new Agent();
+        ag.initAg();
+        Literal r1 = ASSyntax.parseRule("price(_Service,X) :- .random(R) & X = (10*R)+100.");
+        Literal r2 = (Literal)r1.capply(null);
+        assertEquals(r1,r2);
+    }
 
     public void testLogCons2() {
         Agent ag = new Agent();
@@ -89,8 +98,7 @@ public class RuleTest extends TestCase {
         assertTrue(u.get("X").isStructure());
         assertEquals( ((Structure)u.get("X")).getArity(), 2);
         assertEquals( ((Structure)u.get("X")).getFunctor(), "b");
-        result.apply(u);
-        assertEquals(result, Literal.parseLiteral("r([],a(20),b(20,4))"));
+        assertEquals(result.capply(u), Literal.parseLiteral("r([],a(20),b(20,4))"));
         
         iun = Literal.parseLiteral("r([],a(20),b(X,Y))").logicalConsequence(ag, new Unifier());
         u = iun.next();

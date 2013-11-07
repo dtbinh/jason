@@ -107,7 +107,7 @@ public class TestKQML {
     public void testTellHow() {
         bob.addGoal("send_tellHow");
         bob.assertIdle(10); 
-        maria.assertPrint("Hello bob", 10); 
+        maria.assertPrint("Hello bob", 20); 
 
         bob.addGoal("send_untellHow");
         bob.assertIdle(10);
