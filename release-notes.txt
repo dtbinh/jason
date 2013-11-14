@@ -1,8 +1,29 @@
+---------------------------
+version 1.4.0
+
+revision XXX on SVN
+---------------------------
+ 
 New features
 
-- implementation of tail recursion optimisation for sub-goals.
+- implementation of tail recursion optimisation (TRO) for sub-goals.
   It can be turned off in agent options, e.g.:
     agents: bob [tro=false];
+
+
+Changes in the API
+
+- the method apply was removed and replaced by capply that
+  clones and applies an unifier. Usually a code like
+         Term t = ....
+         t = t.clone();
+         t.apply(u);
+
+  can be replaced by
+         Term t = .....
+         t = t.capply(u);
+      
+NB. the TRO and capply have improved the performance of some application by 30%.
 
 
 ---------------------------
