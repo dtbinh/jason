@@ -664,7 +664,7 @@ public class Agent {
         // stat
         int adds = 0;
         int dels = 0;        
-        long startTime = System.nanoTime();
+        long startTime = qProfiling == null ? 0 : System.nanoTime();
 
         // deleting percepts in the BB that is not perceived anymore
         Iterator<Literal> perceptsInBB = getBB().getPercepts();
@@ -821,7 +821,7 @@ public class Agent {
         List<Literal>[] result = null;
         try {
             if (beliefToAdd != null) {
-                if (logger.isLoggable(Level.FINE)) logger.fine("Adding belief " + beliefToAdd);
+                if (logger.isLoggable(Level.FINE)) logger.fine("Doing (add) brf for " + beliefToAdd);
                 
                 if (getBB().add(position, beliefToAdd)) {
                     result = new List[2];
@@ -838,7 +838,7 @@ public class Agent {
                     u = new Unifier();
                 }
     
-                if (logger.isLoggable(Level.FINE)) logger.fine("Doing brf for " + beliefToDel + " in BB=" + believes(beliefToDel, u));
+                if (logger.isLoggable(Level.FINE)) logger.fine("Doing (del) brf for " + beliefToDel + " in BB=" + believes(beliefToDel, u));
                 
                 boolean removed = getBB().remove(beliefToDel);
                 if (!removed && !beliefToDel.isGround()) { // then try to unify the parameter with a belief in BB

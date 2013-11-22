@@ -1045,7 +1045,7 @@ public class TransitionSystem {
         // b) create the failure event (it is done by SelRelPlan)
         if (e.isInternal() || C.hasListener() || ag.getPL().hasCandidatePlan(e.trigger)) {
             C.addEvent(e);
-            if (logger.isLoggable(Level.FINE)) logger.fine("Added event " + e);
+            if (logger.isLoggable(Level.FINE)) logger.fine("Added event " + e+ ", events = "+C.getEvents());
         }
     }
   

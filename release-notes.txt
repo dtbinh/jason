@@ -1,7 +1,7 @@
 ---------------------------
 version 1.4.0
 
-revision XXX on SVN
+revision 1759 on SVN
 ---------------------------
  
 New features

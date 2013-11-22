@@ -144,7 +144,7 @@ public class DefaultBeliefBase implements BeliefBase {
                 entry = new BelEntry();
                 belsMap.put(l.getPredicateIndicator(), entry);
             }
-            entry.add(l, addInEnd);
+            entry.add(l.copy(), addInEnd); // we need to clone for the consequent event to not have a ref to this bel (which can change before the event being processed); see bug from Viviana Marcardi 
             
             // add it in the percepts list
             if (l.hasAnnot(TPercept)) {
@@ -227,8 +227,22 @@ public class DefaultBeliefBase implements BeliefBase {
     }    
 
     public boolean abolish(PredicateIndicator pi) {
-        // TODO: remove also in percepts list!
-        return belsMap.remove(pi) != null;
+        BelEntry entry = belsMap.remove(pi);
+        if (entry != null) {
+            size -= entry.size();
+            
+            // remove also in percepts list!
+            Iterator<Literal> i = percepts.iterator();
+            while (i.hasNext()) {
+                Literal l = i.next();
+                if (l.getPredicateIndicator().equals(pi))
+                    i.remove();
+            }
+            return true;
+        } else {
+            return false;
+        }
+        //return belsMap.remove(pi) != null;
     }
 
     public Literal contains(Literal l) {
@@ -316,6 +330,10 @@ public class DefaultBeliefBase implements BeliefBase {
             if (linmap != null) {
                 list.remove(linmap);
             }
+        }
+        
+        public int size() {
+            return map.size();
         }
         
         public boolean isEmpty() {
