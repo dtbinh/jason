@@ -23,7 +23,7 @@
 
 package jason.asSyntax;
 
-import jason.NoValueForVarException;
+import jason.NoValueException;
 import jason.asSemantics.Agent;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.parser.as2j;
@@ -757,9 +757,8 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm { //, S
     // Interface NumberTerm
     // ----------
 
-    @Override
-    public double solve() throws NoValueForVarException {
-        throw new NoValueForVarException();
+    public double solve() throws NoValueException {
+        throw new NoValueException();
         /*
         if (value != null && value.isNumeric())
             return ((NumberTerm) value).solve();

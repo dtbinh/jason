@@ -1,6 +1,6 @@
 package jason.asSyntax;
 
-import jason.NoValueForVarException;
+import jason.NoValueException;
 
 
 /** The interface for numeric terms of AgentSpeak language
@@ -10,5 +10,5 @@ import jason.NoValueForVarException;
 public interface NumberTerm extends Term {
 
     /** returns the numeric value of the term */
-    public double solve() throws NoValueForVarException;
+    public double solve() throws NoValueException;
 }

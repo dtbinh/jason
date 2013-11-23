@@ -41,7 +41,7 @@ public class Atom extends Literal {
     
     public Atom(String functor) {
         if (functor == null)
-            logger.log(Level.WARNING, "A structure functor should not be null!", new Exception());
+            logger.log(Level.WARNING, "An atom functor should not be null!", new Exception());
         this.functor = functor;
     }
     

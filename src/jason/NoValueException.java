@@ -25,18 +25,18 @@
 package jason;
 
 
-public class NoValueForVarException extends JasonException {
+public class NoValueException extends JasonException {
     
     private static final long serialVersionUID = 1L;
 
-    public NoValueForVarException() {
+    public NoValueException() {
     }
     
-    public NoValueForVarException(String msg) {
+    public NoValueException(String msg) {
         super(msg);
     }
 
-    public NoValueForVarException(String msg, Exception cause) {
+    public NoValueException(String msg, Exception cause) {
         super(msg);
         initCause(cause);
     }

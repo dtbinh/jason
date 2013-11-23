@@ -1,6 +1,6 @@
 package jason.asSyntax;
 
-import jason.NoValueForVarException;
+import jason.NoValueException;
 import jason.asSemantics.Agent;
 import jason.asSemantics.ArithFunction;
 import jason.asSemantics.Unifier;
@@ -91,7 +91,7 @@ public class ArithFunctionTerm extends Structure implements NumberTerm {
                 try {         
                     value = new NumberTermImpl(function.evaluate((agent == null ? null : agent.getTS()), ((Literal)v).getTermsArray()));
                     return value;
-                } catch (NoValueForVarException e) {
+                } catch (NoValueException e) {
                     // ignore and return this;
                 } catch (Exception e) {
                     logger.log(Level.SEVERE, getErrorMsg()+ " -- error in evaluate!", e);
@@ -103,12 +103,11 @@ public class ArithFunctionTerm extends Structure implements NumberTerm {
         return clone();
     }
 
-    @Override
-    public double solve() throws NoValueForVarException {
+    public double solve() throws NoValueException {
         if (value == null) // try to solve without unifier
             capply(null);
         if (value == null)
-            throw new NoValueForVarException();
+            throw new NoValueException();
         else
             return value.solve();
     }
