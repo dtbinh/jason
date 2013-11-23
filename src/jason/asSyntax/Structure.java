@@ -54,7 +54,9 @@ public class Structure extends Atom {
     protected static final Term[]     emptyTermArray = new Term[0]; // just to have a type for toArray in the getTermsArray method  
 
     private List<Term> terms;
-
+    protected Boolean isGround = true;
+    
+    
     public Structure(String functor) {
         //this.functor = (functor == null ? null : functor.intern()); // it does not improve performance in test i did!
         super(functor);
@@ -66,7 +68,7 @@ public class Structure extends Atom {
         final int tss = l.getArity();
         terms = new ArrayList<Term>(tss);
         for (int i = 0; i < tss; i++)
-            terms.add(l.getTerm(i).clone());
+            addTerm(l.getTerm(i).clone());
     }
 
     // used by capply
@@ -75,8 +77,7 @@ public class Structure extends Atom {
         final int tss = l.getArity();
         terms = new ArrayList<Term>(tss);
         for (int i = 0; i < tss; i++)
-            terms.add(l.getTerm(i).capply(u));
-        resetHashCodeCache();
+            addTerm(l.getTerm(i).capply(u));
     }
 
     /** 
@@ -112,7 +113,7 @@ public class Structure extends Atom {
             result = 7 * result + getTerm(i).hashCode();
         return result;
     }
-
+    
     public boolean equals(Object t) {
         if (t == null) return false;
         if (t == this) return true;
@@ -212,6 +213,8 @@ public class Structure extends Atom {
     public void addTerm(Term t) {
         if (t == null) return;
         terms.add(t);
+        if (!t.isGround())
+            isGround = false;
         predicateIndicatorCache = null;
         resetHashCodeCache();
     }
@@ -221,23 +224,20 @@ public class Structure extends Atom {
         terms.remove(index);
         predicateIndicatorCache = null;
         resetHashCodeCache();
+        isGround = null;
     }
     
     @Override
     public Literal addTerms(Term ... ts ) {
         for (Term t: ts)
-            terms.add(t);
-        predicateIndicatorCache = null;
-        resetHashCodeCache();
+            addTerm(t);
         return this;
     }
 
     @Override
     public Literal addTerms(List<Term> l) {
         for (Term t: l)
-            terms.add(t);
-        predicateIndicatorCache = null;
-        resetHashCodeCache();
+            addTerm(t);
         return this;
     }
  
@@ -246,6 +246,7 @@ public class Structure extends Atom {
         terms = l;
         predicateIndicatorCache = null;
         resetHashCodeCache();
+        isGround = null;
         return this;
     }
     
@@ -253,6 +254,8 @@ public class Structure extends Atom {
     public void setTerm(int i, Term t) {
         terms.set(i,t);
         resetHashCodeCache();
+        if (isGround() && !t.isGround())
+            isGround = false;
     }
      
     public Term getTerm(int i) {
@@ -294,13 +297,17 @@ public class Structure extends Atom {
 
     @Override
     public boolean isGround() {
-        final int size = getArity();
-        for (int i=0; i<size; i++) {
-            if (!getTerm(i).isGround()) {
-                return false;
+        if (isGround == null) {
+            isGround = true;
+            final int size = getArity();
+            for (int i=0; i<size; i++) {
+                if (!getTerm(i).isGround()) {
+                    isGround = false;
+                    break;
+                }
             }
         }
-        return true;
+        return isGround;
     }
 
     public boolean isUnary() {

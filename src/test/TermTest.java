@@ -79,7 +79,9 @@ public class TermTest extends TestCase {
         
         // tests with variables
         t1.addTerm(new Structure("c"));
+        assertTrue(t3.isGround());
         t3.addTerm(new VarTerm("X"));
+        assertFalse(t3.isGround());
         assertFalse(t1.equals(t3));
         
         Literal l3 = new LiteralImpl(true, new Pred("pos"));
@@ -342,6 +344,7 @@ public class TermTest extends TestCase {
         // p[a,b,c,d] = p[a,c|R] - ok and R=[b,d]
         Term t1 = parseTerm("p[c,a,b,d,c]");
         Term t2 = parseTerm("p[c,a,c|R]");
+        assertFalse(t2.isGround());
         Unifier u = new Unifier();
         assertTrue(u.unifies(t1, t2));
         assertEquals("[b,d]",u.get("R").toString());
@@ -371,7 +374,9 @@ public class TermTest extends TestCase {
         assertEquals("p[b,c,d,z]",t1.toString());
 
         t1 = parseTerm("p[a,b,c,X]");
+        assertFalse(t1.isGround());
         t1 = t1.capply(u);
+        assertTrue(t1.isGround());
         assertEquals("p[a,b,c,z]",t1.toString());
     }
     
@@ -696,6 +701,7 @@ public class TermTest extends TestCase {
     
     public void testMakeVarAnnon2() {
         Literal l1 = Literal.parseLiteral("calc(AgY,QuadY2,QuadY2)");
+        assertFalse(l1.isGround());
         Literal l2 = Literal.parseLiteral("calc(32,33,V)");
         Unifier u = new Unifier();
         assertTrue(u.unifies(l1, l2));
@@ -715,8 +721,8 @@ public class TermTest extends TestCase {
         l2 = (Literal)l2.capply(u);
         assertEquals("calc(32,33,33)", l2.toString());
         l1 = (Literal)l1.capply(u);
+        assertTrue(l1.isGround());
         assertEquals("calc(32,33,33)", l1.toString());
-
     }
 
     public void testMakeVarAnnon3() {
@@ -728,7 +734,9 @@ public class TermTest extends TestCase {
         assertEquals("vl("+l1.getTerm(1)+")",l1.getAnnots("vl").get(0).toString());
         
         l1 = Literal.parseLiteral("calc(a)[a,b|T]");
+        assertFalse(l1.isGround());
         l1.makeVarsAnnon();
+        assertFalse(l1.isGround());
         assertTrue(l1.toString().contains("_"));
         assertFalse("calc(a)[a,b|T]".equals(l1.toString()));
     }

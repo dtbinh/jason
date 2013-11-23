@@ -23,7 +23,7 @@
 
 package jason.asSyntax;
 
-import jason.NoValueForVarException;
+import jason.NoValueException;
 import jason.asSemantics.Agent;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.parser.as2j;
@@ -180,7 +180,7 @@ public class ArithExpr extends ArithFunctionTerm implements NumberTerm {
                 value = new NumberTermImpl(op.eval(l, r));
             }
             return value;
-        } catch (NoValueForVarException e) {
+        } catch (NoValueException e) {
             return clone();
         }
     }

@@ -144,7 +144,8 @@ public class DefaultBeliefBase implements BeliefBase {
                 entry = new BelEntry();
                 belsMap.put(l.getPredicateIndicator(), entry);
             }
-            entry.add(l.copy(), addInEnd); // we need to clone for the consequent event to not have a ref to this bel (which can change before the event being processed); see bug from Viviana Marcardi 
+            l = l.copy(); // we need to clone l for the consequent event to not have a ref to this bel (which may change before the event is processed); see bug from Viviana Marcardi
+            entry.add(l, addInEnd);  
             
             // add it in the percepts list
             if (l.hasAnnot(TPercept)) {
@@ -162,7 +163,7 @@ public class DefaultBeliefBase implements BeliefBase {
             if (l.hasSubsetAnnot(bl)) { // e.g. removing b[a] or b[a,d] from BB b[a,b,c]
                                         // second case fails
                 if (l.hasAnnot(TPercept)) {
-                    percepts.remove(bl);
+                    boolean b = percepts.remove(bl);
                 }
                 boolean result = bl.delAnnots(l.getAnnots()); // note that l annots can be empty, in this case, nothing is deleted!
                 return removeFromEntry(bl) || result;

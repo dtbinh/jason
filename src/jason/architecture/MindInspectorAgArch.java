@@ -22,7 +22,7 @@
 
 package jason.architecture;
 
-import jason.NoValueForVarException;
+import jason.NoValueException;
 import jason.asSyntax.ASSyntax;
 import jason.asSyntax.NumberTerm;
 import jason.asSyntax.Structure;
@@ -120,7 +120,7 @@ public class MindInspectorAgArch extends AgArch {
         if (! hasMindInspectorByCycle) {
             try {
                 updateInterval = (int)((NumberTerm)sConf.getTerm(0)).solve();
-            } catch (NoValueForVarException e1) {
+            } catch (NoValueException e1) {
                 e1.printStackTrace();
             }
             new Thread("update agent mind inspector") {

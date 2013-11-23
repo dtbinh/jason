@@ -24,7 +24,7 @@
 package jason.asSemantics;
 
 import jason.JasonException;
-import jason.NoValueForVarException;
+import jason.NoValueException;
 import jason.RevisionFailedException;
 import jason.architecture.AgArch;
 import jason.asSyntax.ASSyntax;
@@ -1216,7 +1216,7 @@ public class TransitionSystem {
         int deadline = 0;
         try {
             deadline = (int)((NumberTerm)hdl.getTerm(0)).solve();
-        } catch (NoValueForVarException e1) {
+        } catch (NoValueException e1) {
             e1.printStackTrace();
         }
 
