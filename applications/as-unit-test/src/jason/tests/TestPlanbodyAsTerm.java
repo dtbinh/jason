@@ -31,7 +31,11 @@ public class TestPlanbodyAsTerm {
                 
                 "+!g({A; R}) <- A; !g(R). "+
                 "+!g(A)    <- A." +
-                "+!g2(A)     <- jason.asunit.print(A)."
+                "+!g2(A)     <- jason.asunit.print(A)."+
+                
+                "+!trl <- !myadd( { jason.asunit.print(a); jason.asunit.print(b) } ); !grl. "+
+                "+!myadd(Action) <- .add_plan( {+!grl : c <- Action} ); .add_plan( {+!grl <- jason.asunit.print(ops) } )."
+
         );
     }
     
@@ -84,5 +88,15 @@ public class TestPlanbodyAsTerm {
         ag.assertPrint("a100", 5);
         ag.assertPrint("b200", 5);
         ag.assertPrint("end50", 5);
+    }
+    
+    @Test(timeout=2000)
+    public void test8() {
+        ag.addGoal("trl");
+        ag.assertPrint("ops", 5);
+        ag.addBel("c");
+        ag.addGoal("trl");
+        ag.assertPrint("a", 5);
+        ag.assertPrint("b", 5);
     }
 }

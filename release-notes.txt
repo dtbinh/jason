@@ -125,7 +125,7 @@ revision 1687 on SVN
 ---------------------------
 
 New features
-- Initial implementation of Cycled Terms
+- Initial implementation of Cyclic Terms
 - JaCaMo infrastructure (in beta)
 
 Bugs fixed
@@ -231,7 +231,7 @@ revision 1603 on SVN
 New features
 - creation of meta events for goal state change.
   States are:
-        - created      the goal has been crated, e.g. !g in a plan
+        - started      the goal has been started, e.g. !g in a plan
         - finished     the goal has been achieved, e.g. a plan for !g 
                        has finished
         - failed       e.g. the goal has failed
