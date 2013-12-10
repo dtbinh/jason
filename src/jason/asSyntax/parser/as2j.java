@@ -77,11 +77,13 @@
 
     private Term changeToAtom(Object o) {
         Term u = (Term)o;
-        if (u.isAtom()) {
+        if (u == Literal.LTrue)
+            return u;
+        if (u == Literal.LFalse)
+            return u;
+        if (u.isAtom())
            return new Atom((Literal)u);
-        } else {
-           return u;
-        }
+        return u;
     }
 
 /* AgentSpeak Grammar */
@@ -1774,13 +1776,13 @@
     return false;
   }
 
-  final private boolean jj_3R_47() {
-    if (jj_3R_55()) return true;
+  final private boolean jj_3R_39() {
+    if (jj_3R_31()) return true;
     return false;
   }
 
-  final private boolean jj_3R_39() {
-    if (jj_3R_31()) return true;
+  final private boolean jj_3R_47() {
+    if (jj_3R_55()) return true;
     return false;
   }
 

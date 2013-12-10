@@ -163,7 +163,7 @@ public class DefaultBeliefBase implements BeliefBase {
             if (l.hasSubsetAnnot(bl)) { // e.g. removing b[a] or b[a,d] from BB b[a,b,c]
                                         // second case fails
                 if (l.hasAnnot(TPercept)) {
-                    boolean b = percepts.remove(bl);
+                    percepts.remove(bl);
                 }
                 boolean result = bl.delAnnots(l.getAnnots()); // note that l annots can be empty, in this case, nothing is deleted!
                 return removeFromEntry(bl) || result;

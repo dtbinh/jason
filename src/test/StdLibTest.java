@@ -104,6 +104,13 @@ public class StdLibTest extends TestCase {
         VarTerm r = new VarTerm("R");
         aa.execute(null, u, new Term[] { x.capply(u), annot, r });
         assertEquals("a[source(jomi)]", r.capply(u).toString());
+        Term t = ASSyntax.parseTerm(r.capply(u).toString());
+        Term s = ASSyntax.parseTerm("bob");
+        r = new VarTerm("R");
+        u = new Unifier();
+        aa.execute(null, u, new Term[] { t, s, r });
+        assertEquals("a[source(bob)[source(jomi)]]", r.capply(u).toString());
+        
     }
 
     public void testFindAll() throws RevisionFailedException, ParseException {

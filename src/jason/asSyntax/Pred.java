@@ -434,8 +434,34 @@ public class Pred extends Structure {
             return false;
     }
 
-    public static Term createSource(Term source) {
-        Structure s = new Structure("source",1);
+    public static Pred createSource(Term source) {
+        Pred s;
+        if (source.isGround()) {
+            s = new Pred("source",1) {
+                @Override
+                public Term clone() {
+                    return this;
+                }
+                @Override
+                public Term capply(Unifier u) {
+                    return this;
+                }
+                @Override
+                public boolean isGround() {
+                    return true;
+                }
+                @Override
+                public Literal makeVarsAnnon() {
+                    return this;
+                }
+                @Override
+                public Literal makeVarsAnnon(Unifier un) {
+                    return this;
+                }
+            };
+        } else { // source is a var, so cannot be optimised
+            s = new Pred("source",1);
+        }
         s.addTerm(source);
         return s;
     }

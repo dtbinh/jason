@@ -2,6 +2,7 @@ package jason.asSyntax;
 
 import jason.asSemantics.Agent;
 import jason.asSemantics.Unifier;
+import jason.bb.BeliefBase;
 
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -45,9 +46,30 @@ public class PlanBodyImpl extends Structure implements PlanBody, Iterable<PlanBo
         formType = t;
         if (b != null) { 
             srcInfo = b.getSrcInfo();
-            // the atom issue is solved in TS
-            //if (b.isAtom())
-            //    b = ((Atom)b).forceFullLiteralImpl();
+
+            // add source(self) in some commands (it is preferred to do this at compile time than runtime) 
+            if (b instanceof Literal) {
+                switch (t) {
+                case achieve:
+                case achieveNF:
+                case addBel:
+                case addBelBegin:
+                case addBelEnd:
+                case addBelNewFocus:
+                case delBel:
+                case delAddBel:
+                    
+                    Literal l = (Literal)b;
+                    l = l.forceFullLiteralImpl();
+                    if (!l.hasSource()) { // do not add source(self) in case the programmer set the source
+                        l.addAnnot(BeliefBase.TSelf);
+                    }
+                    b = l;
+
+                default:
+                    break;
+                }
+            }
         }
         term = b;
     }

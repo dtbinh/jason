@@ -85,8 +85,7 @@ public class add_nested_source extends DefaultInternalAction {
 
     @Override public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
         checkArguments(args);
-        Term result = addAnnotToList(args[0], args[1]);
-        return un.unifies(result,args[2]);
+        return un.unifies(addAnnotToList(args[0], args[1]),args[2]);
     }
 
     public static Term addAnnotToList(Term l, Term source) {
@@ -108,7 +107,8 @@ public class add_nested_source extends DefaultInternalAction {
             }
              
             // create the source annots
-            Literal ts = new Pred("source",1).addTerms(source).addAnnots(result.getAnnots("source"));
+            //Literal ts = new Pred("source",1).addTerms(source).addAnnots(result.getAnnots("source"));
+            Literal ts = Pred.createSource(source).addAnnots(result.getAnnots("source"));
             
             result.delSources();
             result.addAnnot(ts);

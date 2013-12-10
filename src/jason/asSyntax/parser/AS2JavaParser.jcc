@@ -108,11 +108,13 @@ PARSER_BEGIN(as2j)
 
     private Term changeToAtom(Object o) {
         Term u = (Term)o;
-        if (u.isAtom()) {
+        if (u == Literal.LTrue)
+            return u;
+        if (u == Literal.LFalse)
+            return u;
+        if (u.isAtom())
            return new Atom((Literal)u);
-        } else {
-           return u; 
-        }  
+        return u; 
     }
     
   }

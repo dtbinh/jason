@@ -278,7 +278,7 @@ public abstract class Literal extends DefaultTerm implements LogicalFormula {
             qProfiling = null;
             startTime  = 0;
         }
-        
+
         final Iterator<Literal> il   = ag.getBB().getCandidateBeliefs(this, un);
         if (il == null) // no relevant bels
             return LogExpr.EMPTY_UNIF_LIST.iterator();

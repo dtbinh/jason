@@ -108,9 +108,9 @@ public class PlanTest extends TestCase {
         //assertEquals(p1.getBody().getArity(), bl.getArity());
         Unifier u = new Unifier();
         assertTrue(u.unifies(p1.getBody(), bl));
-        assertEquals("a1", u.get("A1").toString());
+        assertEquals("a1[source(self)]", u.get("A1").toString());
         assertEquals("a2", u.get("A2").toString());
-        assertEquals(".print(a); !g1", u.get("A3").toString());  
+        assertEquals(".print(a); !g1[source(self)]", u.get("A3").toString());  
     }
     
     public void testPlanTermWithVarBody() throws ParseException {

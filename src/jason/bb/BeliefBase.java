@@ -47,10 +47,10 @@ public interface BeliefBase extends Iterable<Literal>, Cloneable {
     public static final Term APercept = new Atom("percept");
 
     /** represents the structure 'source(percept)' */
-    public static final Term TPercept = Pred.createSource(APercept);
+    public static final Pred TPercept = Pred.createSource(APercept);
 
     /** represents the structure 'source(self)' */
-    public static final Term TSelf    = Pred.createSource(ASelf);
+    public static final Pred TSelf    = Pred.createSource(ASelf);
     
     /** 
      * Called before the MAS execution with the agent that uses this

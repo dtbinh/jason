@@ -51,7 +51,6 @@ import jason.asSyntax.Trigger.TEType;
 import jason.asSyntax.UnnamedVar;
 import jason.asSyntax.VarTerm;
 import jason.asSyntax.parser.ParseException;
-import jason.bb.BeliefBase;
 import jason.runtime.Settings;
 import jason.stdlib.add_nested_source;
 import jason.stdlib.desire;
@@ -864,14 +863,14 @@ public class TransitionSystem {
                 }
                 if (adds != null)
                     renamedVars.function.putAll(adds);
-                //System.out.println("depois "+body+" "+renamedVars+" u="+u);
                 // end code for TRO
             }
         }
-        body = body.forceFullLiteralImpl();
-        if (!body.hasSource()) { // do not add source(self) in case the programmer set the source
-            body.addAnnot(BeliefBase.TSelf);
-        }
+        //the code below is done in the PlanBody constructor
+        //body = body.forceFullLiteralImpl();
+        //if (!body.hasSource()) { // do not add source(self) in case the programmer set the source
+        //    body.addAnnot(BeliefBase.TSelf);
+        //}
         return body;
     }
 
