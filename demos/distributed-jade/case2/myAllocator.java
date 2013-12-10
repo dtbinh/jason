@@ -39,9 +39,10 @@ public class myAllocator implements ContainerAllocation {
         }
         
         int agsByContainer = nbAgs / containers.size();
-        
+        System.out.println(agsByContainer+" agents will run in each container.");
+		
         // create allocation
-        int i=1;
+        int i=0;
         for (AgentParameters ap : project.getAgents()) {
             String agName = ap.name;
             for (int cAg = 0; cAg < ap.qty; cAg++) {
@@ -49,7 +50,9 @@ public class myAllocator implements ContainerAllocation {
                 if (ap.qty > 1) {
                     numberedAg += (cAg + 1);
                 }
-                allocation.put(numberedAg, containers.get( i % agsByContainer));
+				String c = containers.get( i % containers.size());
+				System.out.println("  - agent "+numberedAg+" will run at "+c);
+                allocation.put(numberedAg, c);
                 i++;
             }
         }

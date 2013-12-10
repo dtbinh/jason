@@ -41,6 +41,7 @@ public class JadeMASLauncherAnt extends CentralisedMASLauncherAnt implements MAS
                     out.write(line+"\n");
                 }
                 out.close();
+                in.close();
             } else {
                 sFile.delete();
                 if (Config.get().getBoolean(Config.JADE_SNIFFER)) {
@@ -160,7 +161,7 @@ public class JadeMASLauncherAnt extends CentralisedMASLauncherAnt implements MAS
                     String numberedAg = ap.getAgName();
                     if (ap.qty > 1)
                         numberedAg += (cAg + 1);
-                    if ( (container.equals("Main-Container") && ap.getHost() == null) ||
+                    if ( (container.equals("Main-Container") && ap.getHost() == null && allocator == null) ||
                          (ap.getHost() != null && ap.getHost().equals(container)) || 
                          (allocator != null && allocator.allocateAgent(numberedAg) != null && allocator.allocateAgent(numberedAg).equals(container))) {                        
                         agents.append(sep+numberedAg+":"+JadeAgArch.class.getName()+"(j-project,"+project.getProjectFile().getName()+","+ap.getAgName()+")");

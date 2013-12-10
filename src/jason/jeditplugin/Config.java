@@ -216,7 +216,7 @@ public class Config extends Properties {
         tryToFixJarFileConf(JASON_JAR,  "jason.jar",  700000);
         tryToFixJarFileConf(JADE_JAR,   "jade.jar",  2000000);
         tryToFixJarFileConf(MOISE_JAR,  "moise.jar",  300000);
-        tryToFixJarFileConf(JACAMO_JAR, "jacamo.jar",  10000);
+        tryToFixJarFileConf(JACAMO_JAR, "jacamo.jar",   5000);
 
         // fix java home
         if (get(JAVA_HOME) == null || !checkJavaHomePath(getProperty(JAVA_HOME))) {
