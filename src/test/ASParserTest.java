@@ -251,7 +251,7 @@ public class ASParserTest extends TestCase {
         Unifier un = new Unifier();
         Term t = ASSyntax.parseTerm("{ +a(10) }");
         assertTrue(t.isPlanBody());
-        assertEquals("{ +a(10)[source(self)] }", t.toString());
+        assertEquals("{ +a(10)[source(self)] }", t.toString()); // plan terms should not have default annotations
         
         t = ASSyntax.parseTerm("{ @label(a,b,10,test,long,label) +a(10) }");
         assertTrue(t instanceof Plan);

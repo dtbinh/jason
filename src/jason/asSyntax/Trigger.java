@@ -28,6 +28,7 @@ import jason.asSemantics.Unifier;
 import jason.asSyntax.PlanBody.BodyType;
 import jason.asSyntax.parser.ParseException;
 import jason.asSyntax.parser.as2j;
+import jason.bb.BeliefBase;
 
 import java.io.StringReader;
 import java.util.logging.Level;
@@ -220,26 +221,24 @@ public class Trigger extends Structure implements Cloneable {
         if (t instanceof Trigger) {
             return (Trigger)t;
         }
-        /*if (t instanceof VarTerm) {
-            VarTerm v = (VarTerm)t;
-            if (v.hasValue() && v.getValue() instanceof Trigger) {
-                return (Trigger)v.getValue();            
-            }
-            if (v.hasValue() && v.getValue() instanceof Plan) {
-                return ((Plan)v.getValue()).getTrigger();            
-            }
-        }*/
-        if (t.isString()) {
-            return ASSyntax.parseTrigger(((StringTerm)t).getString());
-        }
         if (t.isPlanBody()) {
             PlanBody p = (PlanBody)t;
             if (p.getPlanSize() == 1) {
-                if (p.getBodyType() == BodyType.addBel)
-                    return new Trigger(TEOperator.add, TEType.belief, (Literal)p.getBodyTerm());
-                if (p.getBodyType() == BodyType.delBel)
-                    return new Trigger(TEOperator.del, TEType.belief, (Literal)p.getBodyTerm());
+                TEOperator op = null;
+                if (p.getBodyType() == BodyType.addBel) 
+                    op = TEOperator.add;
+                else if (p.getBodyType() == BodyType.delBel)
+                    op = TEOperator.del;
+                if (op != null) {
+                    Literal l = (Literal)p.getBodyTerm().clone();
+                    l.delAnnot(BeliefBase.TSelf); // remove the eventual auto added annotation of source
+                    return new Trigger(op, TEType.belief, l);
+                    
+                }
             }
+        }
+        if (t.isString()) {
+            return ASSyntax.parseTrigger(((StringTerm)t).getString());
         }
         return null;
     }

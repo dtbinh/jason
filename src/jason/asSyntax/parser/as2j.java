@@ -778,10 +778,9 @@
                                 // handle the case of "+a1; +a2", parsed as "TE; Body"
                                 if (pb && L == null) {
                                   if (T.isAddition())
-                                     B1 = new PlanBodyImpl(BodyType.addBel, T.getLiteral());
+                                     B1 = new PlanBodyImpl(BodyType.addBel, T.getLiteral(), true);
                                   else
-                                     B1 = new PlanBodyImpl(BodyType.delBel, T.getLiteral());
-                                  B1.setAsBodyTerm(true);
+                                     B1 = new PlanBodyImpl(BodyType.delBel, T.getLiteral(), true);
                                   if (B != null)
                                      B1.setBodyNext(B);
                                   {if (true) return B1;}
@@ -1531,18 +1530,13 @@
     return false;
   }
 
-  final private boolean jj_3R_85() {
-    if (jj_3R_91()) return true;
-    return false;
-  }
-
   final private boolean jj_3R_66() {
     if (jj_3R_78()) return true;
     return false;
   }
 
-  final private boolean jj_3R_53() {
-    if (jj_3R_14()) return true;
+  final private boolean jj_3R_85() {
+    if (jj_3R_91()) return true;
     return false;
   }
 
@@ -1551,13 +1545,18 @@
     return false;
   }
 
-  final private boolean jj_3R_52() {
-    if (jj_scan_token(TK_NEG)) return true;
+  final private boolean jj_3R_53() {
+    if (jj_3R_14()) return true;
     return false;
   }
 
   final private boolean jj_3R_64() {
     if (jj_3R_76()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_52() {
+    if (jj_scan_token(TK_NEG)) return true;
     return false;
   }
 
@@ -1676,13 +1675,13 @@
     return false;
   }
 
-  final private boolean jj_3R_82() {
-    if (jj_3R_80()) return true;
+  final private boolean jj_3R_49() {
+    if (jj_3R_59()) return true;
     return false;
   }
 
-  final private boolean jj_3R_49() {
-    if (jj_3R_59()) return true;
+  final private boolean jj_3R_82() {
+    if (jj_3R_80()) return true;
     return false;
   }
 
@@ -1693,16 +1692,6 @@
 
   final private boolean jj_3R_33() {
     if (jj_scan_token(36)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_75() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_82()) {
-    jj_scanpos = xsp;
-    if (jj_3R_83()) return true;
-    }
     return false;
   }
 
@@ -1719,6 +1708,16 @@
   final private boolean jj_3R_18() {
     if (jj_scan_token(35)) return true;
     if (jj_3R_32()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_75() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_82()) {
+    jj_scanpos = xsp;
+    if (jj_3R_83()) return true;
+    }
     return false;
   }
 
@@ -1835,16 +1834,16 @@
     return false;
   }
 
-  final private boolean jj_3R_71() {
-    if (jj_3R_36()) return true;
-    return false;
-  }
-
   final private boolean jj_3R_79() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3R_84()) jj_scanpos = xsp;
     if (jj_3R_32()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_71() {
+    if (jj_3R_36()) return true;
     return false;
   }
 
@@ -2061,6 +2060,11 @@
     return false;
   }
 
+  final private boolean jj_3R_24() {
+    if (jj_3R_39()) return true;
+    return false;
+  }
+
   final private boolean jj_3R_14() {
     Token xsp;
     xsp = jj_scanpos;
@@ -2082,11 +2086,6 @@
     return false;
   }
 
-  final private boolean jj_3R_24() {
-    if (jj_3R_39()) return true;
-    return false;
-  }
-
   final private boolean jj_3R_23() {
     if (jj_3R_38()) return true;
     return false;
@@ -2094,11 +2093,6 @@
 
   final private boolean jj_3R_91() {
     if (jj_3R_92()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_46() {
-    if (jj_scan_token(TK_FALSE)) return true;
     return false;
   }
 
@@ -2121,6 +2115,11 @@
       if (jj_3R_26()) { jj_scanpos = xsp; break; }
     }
     if (jj_scan_token(0)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_46() {
+    if (jj_scan_token(TK_FALSE)) return true;
     return false;
   }
 

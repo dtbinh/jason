@@ -510,10 +510,9 @@ Term plan_term():            { Trigger T = null; Object C = null; PlanBody B = n
                                 // handle the case of "+a1; +a2", parsed as "TE; Body"
                                 if (pb && L == null) {
                                   if (T.isAddition())
-                                     B1 = new PlanBodyImpl(BodyType.addBel, T.getLiteral());
+                                     B1 = new PlanBodyImpl(BodyType.addBel, T.getLiteral(), true);
                                   else
-                                     B1 = new PlanBodyImpl(BodyType.delBel, T.getLiteral());
-                                  B1.setAsBodyTerm(true);
+                                     B1 = new PlanBodyImpl(BodyType.delBel, T.getLiteral(), true);
                                   if (B != null) 
                                      B1.setBodyNext(B); 
                                   return B1;

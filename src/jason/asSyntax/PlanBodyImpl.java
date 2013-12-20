@@ -41,15 +41,24 @@ public class PlanBodyImpl extends Structure implements PlanBody, Iterable<PlanBo
         super(BODY_PLAN_FUNCTOR, 0);
     }
     
+    public PlanBodyImpl(boolean planTerm) {
+        this();
+        setAsBodyTerm(planTerm);
+    }
+
     public PlanBodyImpl(BodyType t, Term b) {
-        super(BODY_PLAN_FUNCTOR, 0);
+        this(t,b,false);        
+    }
+    
+    public PlanBodyImpl(BodyType t, Term b, boolean planTerm) {
+        this(planTerm);
         formType = t;
         if (b != null) { 
             srcInfo = b.getSrcInfo();
 
             // add source(self) in some commands (it is preferred to do this at compile time than runtime) 
             if (b instanceof Literal) {
-                switch (t) {
+                switch (formType) {
                 case achieve:
                 case achieveNF:
                 case addBel:
@@ -309,15 +318,15 @@ public class PlanBodyImpl extends Structure implements PlanBody, Iterable<PlanBo
         PlanBodyImpl c;
         if (term == null) { // (NIDE) must copy c.isTerm even if cloning empty plan
             c = new PlanBodyImpl();
+            c.isTerm = isTerm;
         } else {
-            c = new PlanBodyImpl(formType, term.capply(u));
+            c = new PlanBodyImpl(formType, term.capply(u), isTerm);
             if (c.term.isPlanBody()) { // we cannot have "inner" body literals
                 c.formType = ((PlanBody)c.term).getBodyType();
                 c.next     = ((PlanBody)c.term).getBodyNext();
                 c.term     = ((PlanBody)c.term).getBodyTerm();
             }
         }
-        c.isTerm = isTerm;
         
         if (next != null)
             c.add((PlanBody)next.capply(u));
@@ -331,7 +340,7 @@ public class PlanBodyImpl extends Structure implements PlanBody, Iterable<PlanBo
         if (term == null)  // (NIDE) must copy c.isTerm even if cloning empty plan
             c = new PlanBodyImpl();
         else 
-            c = new PlanBodyImpl(formType, term.clone());
+            c = new PlanBodyImpl(formType, term.clone(), isTerm);
         c.isTerm = isTerm;
         if (next != null)
             c.setBodyNext(getBodyNext().clonePB());
