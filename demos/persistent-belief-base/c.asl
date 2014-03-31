@@ -6,7 +6,7 @@
      
 +!start : a(X) 
   <- -+a(X+1); // a is stored in a DB
-     .print("Not first run, I already run ",X," times.");
+     .print("It is not my first run, I already run ",X," times.");
      !show_book(X);
      .println; .print("All titles:");
      ?show_all_titles.
@@ -32,3 +32,4 @@
 // Rules used to show all books  
 show_all_titles :- book(_, Title, _, _Year, _ISBN) & .println("-- ", Title) & false.
 show_all_titles :- true.
+

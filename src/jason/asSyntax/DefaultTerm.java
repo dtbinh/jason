@@ -32,6 +32,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import c4jason.ToProlog;
+
 /**
  * Base class for all terms.
  * 
@@ -43,7 +45,7 @@ import java.util.logging.Logger;
  * 
  * @see ASSyntax
  */
-public abstract class DefaultTerm implements Term, Serializable {
+public abstract class DefaultTerm implements Term, Serializable, ToProlog {
 
     private static final long serialVersionUID = 1L;
     private static Logger logger = Logger.getLogger(Term.class.getName());
@@ -127,5 +129,10 @@ public abstract class DefaultTerm implements Term, Serializable {
             return "";
         else 
             return srcInfo.toString();
+    }
+    
+    @Override
+    public String getAsPrologStr() {
+        return toString();
     }
 }
