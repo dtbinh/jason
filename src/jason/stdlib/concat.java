@@ -101,7 +101,7 @@ public class concat extends DefaultInternalAction {
             return un.unifies(result, args[args.length-1]);
 
         
-        } else if (args[0].isString()) {
+        } else { //if (args[0].isString() || args) {
             // string concat
             if (!args[args.length-1].isVar() && !args[args.length-1].isString()) {
                 throw JasonException.createWrongArgument(this,"Last argument '"+args[args.length-1]+"' is not a string nor a variable.");
@@ -119,8 +119,8 @@ public class concat extends DefaultInternalAction {
                 sr.append(vl);
             }
             return un.unifies(new StringTermImpl(sr.toString()), args[args.length-1]);
-        } else {
-                throw JasonException.createWrongArgument(this,"First argument '"+args[0]+"' must be a list or string.");
+        //} else {
+        //    throw JasonException.createWrongArgument(this,"First argument '"+args[0]+"' must be a list, string or term.");
         }
     }
 }
