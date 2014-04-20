@@ -371,8 +371,9 @@ public class JDBCPersistentBB extends ChainBBAdapter {
             return iterator();
         } else {
             // get all rows of l's table
+            String q = null;
             try {
-                String q = getSelect(l);
+                q = getSelect(l);
                 if (logger.isLoggable(Level.FINE)) logger.fine("getRelevant query for "+l+": "+q);
                 final ResultSet rs = conn.createStatement().executeQuery(q);
                 return new Iterator<Literal>() {
@@ -409,7 +410,7 @@ public class JDBCPersistentBB extends ChainBBAdapter {
                     }
                 };
             } catch (SQLException e) {
-                logger.log(Level.SEVERE, "SQL Error in getRelevant for "+l, e);
+                logger.log(Level.SEVERE, "SQL Error in getRelevant for "+l+" with query "+q, e);
             }
         }
         return null;

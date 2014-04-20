@@ -201,7 +201,7 @@ public class AgArch implements AgArchInfraTier, Comparable<AgArch> {
      * Executes the action <i>action</i> and, when finished, add it back in
      * <i>feedback</i> actions.
      */
-    // TODO: remove feedback parameter and use getTS().addFeedbackAction 
+    // TODO: remove feedback parameter and use getTS().addFeedbackAction in a new method of this class to be executed when the action is finished (as actionExecuted of centralised) 
     // for jason 2.0 to avoid backward compatibility problems
     public void act(ActionExec action, List<ActionExec> feedback) {
         if (successor != null)

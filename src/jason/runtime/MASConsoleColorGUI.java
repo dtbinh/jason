@@ -48,7 +48,7 @@ public class MASConsoleColorGUI extends MASConsoleGUI {
         output.setEditable(false);
         ((DefaultCaret)output.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
         if (isTabbed()) {
-            tabPane.add("common", new JScrollPane(output));
+            tabPane.add(" all", new JScrollPane(output));
         } else {
             pcenter.add(BorderLayout.CENTER, new JScrollPane(output));
         }
@@ -75,10 +75,18 @@ public class MASConsoleColorGUI extends MASConsoleGUI {
             if (isTabbed() && agName != null) {
                 MASColorTextPane ta = agsTextArea.get(agName);
                 if (ta == null) {
-                    ta = new MASColorTextPane(c);
-                    ta.setEditable(false);
-                    agsTextArea.put(agName, ta);
-                    tabPane.add(agName, new JScrollPane(ta));
+                    synchronized (this) {                        
+                        ta = new MASColorTextPane(Color.black);
+                        ta.setEditable(false);
+                        agsTextArea.put(agName, ta);
+                        int i = 0;
+                        for (; i<tabPane.getTabCount(); i++) {
+                            if (agName.toUpperCase().compareTo( tabPane.getTitleAt(i).toUpperCase()) < 0) 
+                                break;
+                        }
+                        tabPane.add(new JScrollPane(ta),i);
+                        tabPane.setTitleAt(i, agName);
+                    }
                 }
                 if (ta != null) { // no new TA was created
                     // print out
@@ -124,7 +132,7 @@ class MASColorTextPane extends JTextPane {
     protected static int change = 0;
     protected static int lastColor = 0;
     
-    public static Color getNextAvailableColor() {
+    public synchronized static Color getNextAvailableColor() {
         if(change > 0) {
             seq[lastColor] = (change%2 == 1)?seq[lastColor].brighter():seq[lastColor].darker();
         }

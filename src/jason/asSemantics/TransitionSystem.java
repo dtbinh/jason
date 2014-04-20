@@ -858,7 +858,11 @@ public class TransitionSystem {
                         //System.out.println("adding "+t+"="+renamedVars.function.get(v));
                         if (adds == null)
                             adds = new HashMap<VarTerm, Term>();
-                        adds.put((VarTerm)t,renamedVars.function.get(v));
+                        try {
+                            adds.put((VarTerm)t,renamedVars.function.get(v));                            
+                        } catch (Exception e) {
+                            logger.log(Level.SEVERE, "*** Error adding var into renamed vars. var="+v+", value="+t+".", e);
+                        }
                     }
                 }
                 if (adds != null)
