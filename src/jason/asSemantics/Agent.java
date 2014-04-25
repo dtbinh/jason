@@ -504,7 +504,10 @@ public class Agent {
         if (sBels != null) {
             try {
                 for (Term t: ASSyntax.parseList("["+sBels+"]")) {
-                    getBB().add((Literal)t);
+                    Literal b = ((Literal)t).forceFullLiteralImpl();
+                    if (!b.hasSource())
+                        b.addAnnot(BeliefBase.TSelf);
+                    getBB().add(b);
                 }
             } catch (Exception e) {
                 logger.log(Level.WARNING, "Initial beliefs from project '["+sBels+"]' is not a list of literals.");
