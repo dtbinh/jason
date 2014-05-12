@@ -13,7 +13,6 @@ import jason.asSyntax.Literal;
 import jason.asSyntax.LogExpr;
 import jason.asSyntax.LogicalFormula;
 import jason.asSyntax.NumberTerm;
-import jason.asSyntax.NumberTermImpl;
 import jason.asSyntax.Plan;
 import jason.asSyntax.PlanBody;
 import jason.asSyntax.PlanBody.BodyType;
@@ -221,7 +220,7 @@ public class ASParserTest extends TestCase {
     
     public void testParsingPlanBodyTerm1() throws ParseException {
         Literal l = ASSyntax.parseLiteral("p( {a1({f}); a2}, a3, {!g}, {?b;.print(oi) }, 10)");
-        assertEquals("p({ a1({ f }); a2 },a3,{ !g[source(self)] },{ ?b; .print(oi) },10)", l.toString());
+        assertEquals("p({ a1({ f }); a2 },a3,{ !g },{ ?b; .print(oi) },10)", l.toString());
         assertEquals(5,l.getArity());
         assertTrue(l.getTerm(0) instanceof PlanBody);
         assertTrue(l.getTerm(0).isPlanBody());
@@ -251,7 +250,7 @@ public class ASParserTest extends TestCase {
         Unifier un = new Unifier();
         Term t = ASSyntax.parseTerm("{ +a(10) }");
         assertTrue(t.isPlanBody());
-        assertEquals("{ +a(10)[source(self)] }", t.toString()); // plan terms should not have default annotations
+        assertEquals("{ +a(10) }", t.toString()); // plan terms should not have default annotations
         
         t = ASSyntax.parseTerm("{ @label(a,b,10,test,long,label) +a(10) }");
         assertTrue(t instanceof Plan);
@@ -259,10 +258,10 @@ public class ASParserTest extends TestCase {
 
         t = ASSyntax.parseTerm("{ -+a(10) }");
         assertTrue(t.isPlanBody());
-        assertEquals("{ -+a(10)[source(self)] }", t.toString());
+        assertEquals("{ -+a(10) }", t.toString());
 
         t = ASSyntax.parseTerm("{ -a; +b }");
-        assertEquals("{ -a[source(self)]; +b[source(self)] }", t.toString());
+        assertEquals("{ -a; +b }", t.toString());
         assertTrue(t.isPlanBody());
         PlanBody pb = (PlanBody)t;
         assertEquals(2, pb.getPlanSize());
@@ -285,18 +284,18 @@ public class ASParserTest extends TestCase {
         assertTrue(t.isPlanBody());
         pb = (PlanBody)t;
         assertEquals(1, pb.getPlanSize());
-        assertEquals("a[source(self)]", pb.getBodyTerm().toString());
+        assertEquals("a", pb.getBodyTerm().toString());
         assertEquals(PlanBody.BodyType.achieve, pb.getBodyType());
         
         t = ASSyntax.parseTerm("{ +!a <- +b }");
-        assertEquals("{ +!a <- +b[source(self)] }", t.toString());
+        assertEquals("{ +!a <- +b }", t.toString());
         assertTrue(t.isStructure());
         s = (Structure)t;
         assertEquals(4, s.getArity());
         assertEquals("plan", s.getFunctor());
 
         t = ASSyntax.parseTerm("{ +a <- +c }");
-        assertEquals("{ +a <- +c[source(self)] }", t.toString());
+        assertEquals("{ +a <- +c }", t.toString());
         assertTrue(t.isStructure());
         s = (Structure)t;
         assertEquals(4, s.getArity());

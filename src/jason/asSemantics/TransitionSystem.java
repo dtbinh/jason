@@ -51,6 +51,7 @@ import jason.asSyntax.Trigger.TEType;
 import jason.asSyntax.UnnamedVar;
 import jason.asSyntax.VarTerm;
 import jason.asSyntax.parser.ParseException;
+import jason.bb.BeliefBase;
 import jason.runtime.Settings;
 import jason.stdlib.add_nested_source;
 import jason.stdlib.desire;
@@ -317,7 +318,7 @@ public class TransitionSystem {
                             getAg().addBel((Literal)content);
                             added = true;
                         }
-                    } 
+                    }
                     
                     if (!added) {
                         Literal received = new LiteralImpl(Message.kqmlReceivedFunctor).addTerms(
@@ -617,7 +618,7 @@ public class TransitionSystem {
         PlanBody    h = im.getCurrentStep();
         
         Term bTerm = h.getBodyTerm();
-        
+
         if (bTerm instanceof VarTerm) { // de-var bTerm
             bTerm = bTerm.capply(u);
             if (bTerm.isVar()) { // the case of !A with A not ground
@@ -870,11 +871,11 @@ public class TransitionSystem {
                 // end code for TRO
             }
         }
-        //the code below is done in the PlanBody constructor
-        //body = body.forceFullLiteralImpl();
-        //if (!body.hasSource()) { // do not add source(self) in case the programmer set the source
-        //    body.addAnnot(BeliefBase.TSelf);
-        //}
+        //the code below is done in the PlanBody constructor (to DO it as planbody constructor DOES NOT work)
+        body = body.forceFullLiteralImpl();
+        if (!body.hasSource()) { // do not add source(self) in case the programmer set the source
+            body.addAnnot(BeliefBase.TSelf);
+        }
         return body;
     }
 

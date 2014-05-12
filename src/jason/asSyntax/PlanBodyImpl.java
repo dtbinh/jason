@@ -2,7 +2,6 @@ package jason.asSyntax;
 
 import jason.asSemantics.Agent;
 import jason.asSemantics.Unifier;
-import jason.bb.BeliefBase;
 
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -56,7 +55,9 @@ public class PlanBodyImpl extends Structure implements PlanBody, Iterable<PlanBo
         if (b != null) { 
             srcInfo = b.getSrcInfo();
 
+            /*
             // add source(self) in some commands (it is preferred to do this at compile time than runtime) 
+            // DOES NOT work with variables (see the case of kqmlPlans.asl and the bug reported by Alexandro)
             if (b instanceof Literal) {
                 switch (formType) {
                 case achieve:
@@ -79,6 +80,7 @@ public class PlanBodyImpl extends Structure implements PlanBody, Iterable<PlanBo
                     break;
                 }
             }
+            */
         }
         term = b;
     }
