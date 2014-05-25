@@ -356,7 +356,7 @@ public class ConfigGUI {
             userProperties.put(Config.JASON_JAR, jasonTF.getText().trim());
         }
 
-        if (Config.checkJavaHomePath(javaTF.getText())) {
+        if (Config.checkJavaHomePath(javaTF.getText()) || Config.checkJREHomePath(javaTF.getText())) {
             userProperties.setJavaHome(javaTF.getText().trim());
         }
 

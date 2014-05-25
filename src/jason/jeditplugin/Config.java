@@ -224,7 +224,17 @@ public class Config extends Properties {
             if (checkJavaHomePath(javaHome)) {
                 setJavaHome(javaHome);
             } else {
-                setJavaHome(File.separator);
+                String javaHomeUp = javaHome + File.separator + "..";
+                if (checkJavaHomePath(javaHomeUp)) {
+                    setJavaHome(javaHomeUp);
+                } else {                
+                    // try JRE
+                    if (checkJREHomePath(javaHome)) {
+                        setJavaHome(javaHome);
+                    } else {
+                        setJavaHome(File.separator);
+                    }
+                }
             }
         }
 
@@ -470,6 +480,21 @@ public class Config extends Properties {
             }
             File javac1 = new File(javaHome + "bin" + File.separatorChar + "javac");
             File javac2 = new File(javaHome + "bin" + File.separatorChar + "javac.exe");
+            if (javac1.exists() || javac2.exists()) {
+                return true;
+            }
+        } catch (Exception e) {
+        }
+        return false;
+    }
+
+    public static boolean checkJREHomePath(String javaHome) {
+        try {
+            if (!javaHome.endsWith(File.separator)) {
+                javaHome += File.separator;
+            }
+            File javac1 = new File(javaHome + "bin" + File.separatorChar + "java");
+            File javac2 = new File(javaHome + "bin" + File.separatorChar + "java.exe");
             if (javac1.exists() || javac2.exists()) {
                 return true;
             }
