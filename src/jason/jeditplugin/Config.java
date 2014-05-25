@@ -217,22 +217,27 @@ public class Config extends Properties {
         tryToFixJarFileConf(JADE_JAR,   "jade.jar",  2000000);
         tryToFixJarFileConf(MOISE_JAR,  "moise.jar",  300000);
         tryToFixJarFileConf(JACAMO_JAR, "jacamo.jar",   5000);
-
+        
         // fix java home
         if (get(JAVA_HOME) == null || !checkJavaHomePath(getProperty(JAVA_HOME))) {
             String javaHome = System.getProperty("java.home");
             if (checkJavaHomePath(javaHome)) {
                 setJavaHome(javaHome);
             } else {
-                String javaHomeUp = javaHome + File.separator + "..";
-                if (checkJavaHomePath(javaHomeUp)) {
-                    setJavaHome(javaHomeUp);
-                } else {                
-                    // try JRE
-                    if (checkJREHomePath(javaHome)) {
-                        setJavaHome(javaHome);
-                    } else {
-                        setJavaHome(File.separator);
+                String javaEnvHome = System.getenv("JAVA_HOME");
+                if (javaEnvHome != null && checkJavaHomePath(javaEnvHome)) {
+                    setJavaHome(javaEnvHome);
+                } else {
+                    String javaHomeUp = javaHome + File.separator + "..";
+                    if (checkJavaHomePath(javaHomeUp)) {
+                        setJavaHome(javaHomeUp);
+                    } else {                
+                        // try JRE
+                        if (checkJREHomePath(javaHome)) {
+                            setJavaHome(javaHome);
+                        } else {
+                            setJavaHome(File.separator);
+                        }
                     }
                 }
             }
