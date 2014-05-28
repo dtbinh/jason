@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -98,7 +99,7 @@ public class Config extends Properties {
         return singleton;
     }
 
-    private Config() {
+    protected Config() {
     }
 
     /** returns the file where the user preferences are stored */
@@ -108,6 +109,10 @@ public class Config extends Properties {
     
     public File getMasterConfFile() {
         return new File("jason.properties");
+    }
+    
+    public String getFileConfComment() {
+        return "Jason user configuration";
     }
 
     /** Returns true if the file is loaded correctly */
@@ -253,6 +258,11 @@ public class Config extends Properties {
                     antlib = new File(".") + File.separator + "lib";
                     if (checkAntLib(antlib)) {
                         setAntLib(antlib);
+                    } else {
+                        antlib = new File("..") + File.separator + "lib";
+                        if (checkAntLib(antlib)) {
+                            setAntLib(antlib);
+                        }
                     }
                 }
             } catch (Exception e) {
@@ -304,13 +314,16 @@ public class Config extends Properties {
     }
 
     public void store() {
+        store(getUserConfFile());
+    }
+
+    public void store(File f) {
         try {
-            File f = getUserConfFile();
             if (!f.getParentFile().exists()) {
                 f.getParentFile().mkdirs();
             }
             System.out.println("Storing configuration at "+f);
-            super.store(new FileOutputStream(f), "Jason user configuration");
+            super.store(new FileOutputStream(f), getFileConfComment());
         } catch (Exception e) {
             System.err.println("Error writting preferences");
             e.printStackTrace();
@@ -360,8 +373,16 @@ public class Config extends Properties {
             Properties p = new Properties();
             p.load(Config.class.getResource("/dist.properties").openStream());
             return p.getProperty("version") + "." + p.getProperty("release");
-        } catch (Exception ex) {
-            return "?";
+        } catch (Exception ex1) {
+            try {
+                Properties p = new Properties();
+                System.out.println("try 2");
+                p.load(new FileReader("bin/dist.properties"));
+                return p.getProperty("version") + "." + p.getProperty("release");
+            } catch (Exception ex2) {
+                System.out.println("*"+ex2);
+                return "?";
+            }
         }
     }
 
@@ -390,31 +411,47 @@ public class Config extends Properties {
             // try current dir
             jarFile = "." + File.separator + jarName;
             if (checkJar(jarFile, minSize)) {
-                put(jarEntry, new File(jarFile).getAbsolutePath());
-                System.out.println("found at " + jarFile);
-                return;
+                try {
+                    put(jarEntry, new File(jarFile).getCanonicalFile().getAbsolutePath());
+                    System.out.println("found at " + jarFile);
+                    return;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
 
             // try current dir + lib
             jarFile = ".." + File.separator + "lib" + File.separator + jarName;
             if (checkJar(jarFile, minSize)) {
-                put(jarEntry, new File(jarFile).getAbsolutePath());
-                System.out.println("found at " + jarFile);
-                return;
+                try {
+                    put(jarEntry, new File(jarFile).getCanonicalFile().getAbsolutePath());
+                    System.out.println("found at " + jarFile);
+                    return;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
             jarFile = "." + File.separator + "lib" + File.separator + jarName;
             if (checkJar(jarFile, minSize)) {
-                put(jarEntry, new File(jarFile).getAbsolutePath());
-                System.out.println("found at " + jarFile);
-                return;
+                try {
+                    put(jarEntry, new File(jarFile).getCanonicalFile().getAbsolutePath());
+                    System.out.println("found at " + jarFile);
+                    return;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
 
             // try current dir + bin
             jarFile = "." + File.separator + "bin" + File.separator + jarName;
             if (checkJar(jarFile, minSize)) {
-                put(jarEntry, new File(jarFile).getAbsolutePath());
-                System.out.println("found at " + jarFile);
-                return;
+                try {
+                    put(jarEntry, new File(jarFile).getCanonicalFile().getAbsolutePath());
+                    System.out.println("found at " + jarFile);
+                    return;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
 
             // try from java web start
