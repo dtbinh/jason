@@ -16,6 +16,7 @@ import org.junit.runners.Suite.SuiteClasses;
     BugUnamedVars.class,
     BugList1.class,
     BugEval.class,
+    BugDelVar.class,
     TestAddLogExprInBB.class,
     TestGoalSource.class,
     TestIA.class, 

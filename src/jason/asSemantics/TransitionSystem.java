@@ -418,6 +418,7 @@ public class TransitionSystem {
             // relevant by chance, so just carry on instead of dropping the
             // intention
             confP.C.SI = conf.C.SE.intention;
+            joinRenamedVarsIntoIntentionUnifier(confP.C.SI.peek(), confP.C.SI.peek().unif);
             updateIntention();
         } else if (setts.requeue()) {  
             // if external, then needs to check settings
@@ -871,7 +872,7 @@ public class TransitionSystem {
                 // end code for TRO
             }
         }
-        //the code below is done in the PlanBody constructor (to DO it as planbody constructor DOES NOT work)
+
         body = body.forceFullLiteralImpl();
         if (!body.hasSource()) { // do not add source(self) in case the programmer set the source
             body.addAnnot(BeliefBase.TSelf);
@@ -950,30 +951,36 @@ public class TransitionSystem {
                     
                     // new code optimised: handle directly renamed vars for the call                    
                     // get vars in the unifier that comes from makeVarAnnon (stored in renamedVars)
-                    if (im.renamedVars != null) {
-                        for (VarTerm ov: im.renamedVars.function.keySet()) {
-                            //System.out.println("looking for a value for "+ov+" in "+im.renamedVars+" and "+topIM.unif);
-                            UnnamedVar vt = (UnnamedVar)im.renamedVars.function.get(ov);
-                            //System.out.println("   via "+vt);
-                            im.unif.unifiesNoUndo(ov, vt); // introduces the renaming in the current unif
-                            // if vt has got a value from the top (a "return" value), include this value in the current unif
-                            Term vl = topIM.unif.function.get(vt);
-                            //System.out.println(ov+"="+vt+"="+vl);
-                            if (vl != null) { // vt has value in top
-                                //System.out.println("   and found "+vl);
-                                vl = vl.capply(topIM.unif);
-                                if (vl.isLiteral())
-                                    ((Literal)vl).makeVarsAnnon();
-                                im.unif.bind(vt, vl);
-                            }
-                        }
-                    }
+                    joinRenamedVarsIntoIntentionUnifier(im,topIM.unif);
+                    
                     im.removeCurrentStep();
                 }
             }
         }
     }
 
+    private void joinRenamedVarsIntoIntentionUnifier(IntendedMeans im, Unifier values) {
+        if (im.renamedVars != null) {
+            for (VarTerm ov: im.renamedVars.function.keySet()) {
+                //System.out.println("looking for a value for "+ov+" in "+im.renamedVars+" and "+topIM.unif);
+                UnnamedVar vt = (UnnamedVar)im.renamedVars.function.get(ov);
+                //System.out.println("   via "+vt);
+                im.unif.unifiesNoUndo(ov, vt); // introduces the renaming in the current unif
+                // if vt has got a value from the top (a "return" value), include this value in the current unif
+                Term vl = values.function.get(vt);
+                //System.out.println(ov+"="+vt+"="+vl);
+                if (vl != null) { // vt has value in top
+                    //System.out.println("   and found "+vl);
+                    vl = vl.capply(values);
+                    if (vl.isLiteral())
+                        ((Literal)vl).makeVarsAnnon();
+                    im.unif.bind(vt, vl);
+                }
+            }
+        }
+        
+    }
+    
     /**********************************************/
     /* auxiliary functions for the semantic rules */
     /**********************************************/
@@ -1027,30 +1034,34 @@ public class TransitionSystem {
         return ap;
     }
     
-    public void updateEvents(List<Literal>[] result, Intention focus) {
-        if (result == null) return;
+    public boolean updateEvents(List<Literal>[] result, Intention focus) {
+        if (result == null) return false;
         // create the events
+        boolean eventProduced = false;
         for (Literal ladd: result[0]) {
             Trigger te = new Trigger(TEOperator.add, TEType.belief, ladd);
-            updateEvents(new Event(te, focus));
+            eventProduced = updateEvents(new Event(te, focus)) || eventProduced;
             focus = Intention.EmptyInt;
         }
         for (Literal lrem: result[1]) {
             Trigger te = new Trigger(TEOperator.del, TEType.belief, lrem);
-            updateEvents(new Event(te, focus));
+            eventProduced = updateEvents(new Event(te, focus)) || eventProduced;
             focus = Intention.EmptyInt;
         }
+        return eventProduced;
     }
 
     // only add External Event if it is relevant in respect to the PlanLibrary
-    public void updateEvents(Event e) {
+    public boolean updateEvents(Event e) {
         // Note: we have to add events even if they are not relevant to
         // a) allow the user to override selectOption and then provide an "unknown" plan; or then
         // b) create the failure event (it is done by SelRelPlan)
         if (e.isInternal() || C.hasListener() || ag.getPL().hasCandidatePlan(e.trigger)) {
             C.addEvent(e);
             if (logger.isLoggable(Level.FINE)) logger.fine("Added event " + e+ ", events = "+C.getEvents());
+            return true;
         }
+        return false;
     }
   
     /** remove the top action and requeue the current intention */
