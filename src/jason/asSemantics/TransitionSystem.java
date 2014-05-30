@@ -1034,34 +1034,30 @@ public class TransitionSystem {
         return ap;
     }
     
-    public boolean updateEvents(List<Literal>[] result, Intention focus) {
-        if (result == null) return false;
+    public void updateEvents(List<Literal>[] result, Intention focus) {
+        if (result == null) return;
         // create the events
-        boolean eventProduced = false;
         for (Literal ladd: result[0]) {
             Trigger te = new Trigger(TEOperator.add, TEType.belief, ladd);
-            eventProduced = updateEvents(new Event(te, focus)) || eventProduced;
+            updateEvents(new Event(te, focus));
             focus = Intention.EmptyInt;
         }
         for (Literal lrem: result[1]) {
             Trigger te = new Trigger(TEOperator.del, TEType.belief, lrem);
-            eventProduced = updateEvents(new Event(te, focus)) || eventProduced;
+            updateEvents(new Event(te, focus));
             focus = Intention.EmptyInt;
         }
-        return eventProduced;
     }
 
     // only add External Event if it is relevant in respect to the PlanLibrary
-    public boolean updateEvents(Event e) {
+    public void updateEvents(Event e) {
         // Note: we have to add events even if they are not relevant to
         // a) allow the user to override selectOption and then provide an "unknown" plan; or then
         // b) create the failure event (it is done by SelRelPlan)
         if (e.isInternal() || C.hasListener() || ag.getPL().hasCandidatePlan(e.trigger)) {
             C.addEvent(e);
             if (logger.isLoggable(Level.FINE)) logger.fine("Added event " + e+ ", events = "+C.getEvents());
-            return true;
         }
-        return false;
     }
   
     /** remove the top action and requeue the current intention */
