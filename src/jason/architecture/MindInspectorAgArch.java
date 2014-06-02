@@ -26,6 +26,8 @@ import jason.NoValueException;
 import jason.asSyntax.ASSyntax;
 import jason.asSyntax.NumberTerm;
 import jason.asSyntax.Structure;
+import jason.control.ExecutionControlGUI;
+import jason.jeditplugin.Config;
 import jason.util.asl2html;
 import jason.util.asl2xml;
 
@@ -37,8 +39,10 @@ import java.awt.Toolkit;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
@@ -52,6 +56,8 @@ import javax.swing.JTextPane;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 
 import org.w3c.dom.Document;
 
@@ -63,15 +69,22 @@ public class MindInspectorAgArch extends AgArch {
     // variables for mind inspector
     protected boolean hasMindInspectorByCycle = false;
     protected int     updateInterval = 0;
-    protected static JFrame       mindInspectorFrame = null;
-    protected static JTabbedPane  mindInspectorTab = null;
-    protected        JTextPane    mindInspectorPanel = null;
-    protected        JSlider      mindInspectorHistorySlider = null;
-    protected        JCheckBox    mindInspectorFreeze = null;
-    protected        List<String> mindInspectorHistory = null;    
-    protected        asl2xml      mindInspectorTransformer = null;
+    protected static JFrame         mindInspectorFrame = null;
+    protected static JTabbedPane    mindInspectorTab = null;
+    protected        JTextPane      mindInspectorPanel = null;
+    protected        JSlider        mindInspectorHistorySlider = null;
+    protected        JCheckBox      mindInspectorFreeze = null;
+    protected        List<Document> mindInspectorHistory = null;    
+    protected        asl2xml        mindInspectorTransformer = null;
 
-    protected        String       mindInspectorDirectory;
+    protected        String         mindInspectorDirectory;
+
+    // Which item is to be shown in HTML interface
+    Map<String,Boolean> show = new HashMap<String,Boolean>();
+
+    // what is currently shown
+    Document agState = null;
+
 
     @Override
     public void init() {
@@ -92,7 +105,7 @@ public class MindInspectorAgArch extends AgArch {
     @Override
     public void reasoningCycleStarting() {
         if (hasMindInspectorByCycle)
-            updateMindInspector();
+            addAgState();
         super.reasoningCycleStarting();
     }
     
@@ -128,7 +141,7 @@ public class MindInspectorAgArch extends AgArch {
                     try {
                         while (isRunning()) {
                             Thread.sleep(updateInterval);
-                            updateMindInspector();
+                            addAgState();
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -149,8 +162,8 @@ public class MindInspectorAgArch extends AgArch {
         String format = "text/html";
 
         if (mindInspectorFrame == null) { // Initiate the common window
-            mindInspectorFrame = new JFrame("Mind Inspector");
-            mindInspectorTab   = new JTabbedPane();
+            mindInspectorFrame = new JFrame(ExecutionControlGUI.title);
+            mindInspectorTab   = new JTabbedPane(JTabbedPane.LEFT);
             mindInspectorFrame.getContentPane().add(mindInspectorTab);
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
             mindInspectorFrame.setBounds(100, 200, (int)((screenSize.width-100)*0.7), (int)((screenSize.height-100)*0.9));
@@ -160,13 +173,27 @@ public class MindInspectorAgArch extends AgArch {
         mindInspectorPanel = new JTextPane();
         mindInspectorPanel.setEditable(false);
         mindInspectorPanel.setContentType(format);
+        mindInspectorPanel.addHyperlinkListener(new HyperlinkListener() {
+            public void hyperlinkUpdate(HyperlinkEvent evt) {
+                hyperLink(evt);
+            }
+        });
+        show.put("bels", true);
+        show.put("annots", Config.get().getBoolean(Config.SHOW_ANNOTS));
+        show.put("rules", false);
+        show.put("evt", true);
+        show.put("mb", false);
+        show.put("int", false);
+        show.put("int-details", false);
+        show.put("plan", false);
+        show.put("plan-details", false);
 
         // get history
         boolean hasHistory = sConf.getArity() == 3 && sConf.getTerm(2).toString().equals("history");
         if (! hasHistory) {
             mindInspectorTab.add(getAgName(), new JScrollPane(mindInspectorPanel));
         } else {
-            mindInspectorHistory = new ArrayList<String>();
+            mindInspectorHistory = new ArrayList<Document>();
             JPanel pHistory = new JPanel(new BorderLayout());//new FlowLayout(FlowLayout.CENTER));
             pHistory.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Agent History", TitledBorder.LEFT, TitledBorder.TOP));
             mindInspectorHistorySlider = new JSlider();
@@ -182,7 +209,7 @@ public class MindInspectorAgArch extends AgArch {
                 public void stateChanged(ChangeEvent e) {
                     try {
                         int c = (int)mindInspectorHistorySlider.getValue();
-                        mindInspectorPanel.setText(mindInspectorHistory.get(c));
+                        showAgState(mindInspectorHistory.get(c));
                     } catch (Exception e2) {                        }
                 }
             });
@@ -205,6 +232,26 @@ public class MindInspectorAgArch extends AgArch {
         }
     }
     
+    private void hyperLink(HyperlinkEvent evt) {
+        if (evt.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+            String uri = "show?";
+            int pos = evt.getDescription().indexOf(uri);
+            if (pos >= 0) {
+                String par = evt.getDescription().substring(pos+uri.length());
+                show.put(par,true);
+            } else {
+                uri = "hide?";
+                pos = evt.getDescription().indexOf(uri);
+                if (pos >= 0) {
+                    String par = evt.getDescription().substring(pos+uri.length());
+                    show.put(par,false);
+                }
+            }
+            showAgState(agState);
+        }
+    }
+
+
     
     private void setupSlider() {
         int size = mindInspectorHistory.size()-1;
@@ -246,22 +293,22 @@ public class MindInspectorAgArch extends AgArch {
     }
 
     
-    private String previousText = "";
+    private String lastHistoryText = "";
     private int    fileCounter = 0;
-    protected void updateMindInspector() {
+    
+    protected void addAgState() {
         try {
-            Document agState = getTS().getAg().getAgState(); // the XML representation of the agent's mind
-            String sMind = mindInspectorTransformer.transform(agState); // transform to HTML
-            if (sMind.equals(previousText)) 
-                return; // nothing to log
-            previousText = sMind;
+            Document state = getTS().getAg().getAgState(); // the XML representation of the agent's mind
+            String sMind = getAgStateAsString(state, true);
+            if (sMind.equals(lastHistoryText)) 
+                return;
+            lastHistoryText = sMind;
 
             if (mindInspectorPanel != null) { // output on GUI
-                if (mindInspectorFreeze == null || !mindInspectorFreeze.isSelected()) {
-                    mindInspectorPanel.setText(sMind); // show the HTML in the screen
-                }
+                if (mindInspectorFreeze == null || !mindInspectorFreeze.isSelected())
+                    showAgState(state);
                 if (mindInspectorHistory != null) {
-                    mindInspectorHistory.add(sMind);
+                    mindInspectorHistory.add(state);
                     setupSlider(); 
                     mindInspectorHistorySlider.setValue(mindInspectorHistory.size()-1);
                 }
@@ -275,4 +322,38 @@ public class MindInspectorAgArch extends AgArch {
             e.printStackTrace();
         }
     }
+    
+    private String previousShownText = "";    
+    /** show current agent state */
+    void showAgState(Document state) { // in GUI
+        if (state != null) {
+            try {
+                String sMind = getAgStateAsString(state, false);
+                if (sMind.equals(previousShownText)) 
+                    return; // nothing to log
+                previousShownText = sMind;
+                agState = state;
+                mindInspectorPanel.setText(sMind); // show the HTML in the screen
+            } catch (Exception e) {
+                mindInspectorPanel.setText("Error in XML transformation!" + e);
+                e.printStackTrace();
+            }
+        }        
+    }
+    
+    String getAgStateAsString(Document ag, boolean full) { // full means with show all
+        try {
+            for (String p: show.keySet())
+                if (full)
+                    mindInspectorTransformer.setParameter("show-"+p, "true");
+                else
+                    mindInspectorTransformer.setParameter("show-"+p, show.get(p)+"");
+            return mindInspectorTransformer.transform(ag); // transform to HTML
+        } catch (Exception e) {
+            mindInspectorPanel.setText("Error in XML transformation!" + e);
+            e.printStackTrace();
+            return "Error XML transformation (MindInspector)";
+        }
+    }
+
 }

@@ -81,6 +81,10 @@ public class asl2xml  {
         return transCache;
     }
 
+    public void setParameter(String name, Object value) {
+        if (transCache != null)
+            transCache.setParameter(name, value);
+    }
     
     TransformerFactory fac = null;
     TransformerFactory getFactory() throws Exception {

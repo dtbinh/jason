@@ -21,12 +21,13 @@
     <xsl:param name="var"    select="'rgb(0, 0, 200)'" />
     <xsl:param name="string" select="'rgb(0, 0, 250)'" />
     
-    <xsl:param name="show-bels"  select="'true'" />
-    <xsl:param name="show-rules" select="'true'" />
-    <xsl:param name="show-evt"   select="'true'" />
-    <xsl:param name="show-mb"    select="'true'" />
-    <xsl:param name="show-plan"  select="'true'" />
-    <xsl:param name="show-int"   select="'true'" />
+    <xsl:param name="show-bels"    select="'true'" />
+    <xsl:param name="show-annots"  select="'true'" />
+    <xsl:param name="show-rules"   select="'true'" />
+    <xsl:param name="show-evt"     select="'true'" />
+    <xsl:param name="show-mb"      select="'true'" />
+    <xsl:param name="show-plan"    select="'true'" />
+    <xsl:param name="show-int"     select="'true'" />
     <xsl:param name="show-plan-details"   select="'true'" />
     <xsl:param name="show-int-details"    select="'true'" />
     
@@ -52,6 +53,14 @@
                 <xsl:apply-templates select="circumstance/actions" />
                 
                 <!-- xsl:apply-templates select="plans" /-->
+                <tr style="{$trh-style}">
+	                <xsl:call-template name="hideshow">
+	                    <xsl:with-param name="show" select="$show-annots" />
+	                    <xsl:with-param name="item" select="'annots'" />
+	                    <xsl:with-param name="ds" select="'Annotations'" />
+	                </xsl:call-template>
+	                <th/>
+	            </tr>
             </table>
         </html>
     </xsl:template>
@@ -61,8 +70,7 @@
         <xsl:param name="show" select="'false'" />
         <xsl:param name="item" select="'none'" />
         <xsl:param name="ds"   select="'none'" />
-        <xsl:if test="$show='true'">
-            
+        <xsl:if test="$show='true'">       
             <th valign="top" style="{$th-style}">
                 <hr/>
                 <a href="hide?{$item}" style="text-decoration: none">
@@ -280,14 +288,17 @@
             <xsl:if test="$show-int-details='true'">
                 <!-- td valign="top" style="{$td-style}" -->
                 <br/>
-                <xsl:apply-templates select="plan"/>
+                
+                <font size="-2">
+                    <pre>     &lt;- ... <xsl:apply-templates select="body"/> </pre>
+                </font>
                 <!-- /td -->
             </xsl:if>
             </td>
             
             <xsl:if test="$show-int-details='true'">
                 <td valign="top" style="{$td-style}">
-                    <xsl:text> </xsl:text><xsl:text> </xsl:text>
+                    <br/>
                     <xsl:apply-templates select="unifier"/>
                 </td>
             </xsl:if>
@@ -550,11 +561,24 @@
     </xsl:template>
 
     <xsl:template match="annotations">
+        <xsl:if test="$show-annots='true'">
             <span style="color: rgb(0 ,190, 0)">
                 <sub>
                     <xsl:apply-templates />
                 </sub>
-            </span>
+            </span>            
+        </xsl:if>
+        <xsl:if test="$show-annots='false'">
+            <xsl:if test="count(list-term) > 0">
+                <sub>
+                    <span style="color: rgb(0 ,0, 200)">
+                    <a href="show?annots" style="text-decoration: none">
+                    <xsl:text>[...]</xsl:text>
+                    </a>
+                    </span>                
+                </sub>                
+            </xsl:if>
+        </xsl:if>
     </xsl:template>
     
     <xsl:template match="var-term">

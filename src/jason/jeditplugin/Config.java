@@ -77,6 +77,9 @@ public class Config extends Properties {
     public static final String CHECK_VERSION = "checkLatestVersion";
     public static final String WARN_SING_VAR = "warnSingletonVars";
 
+    public static final String SHOW_ANNOTS   = "showAnnots";
+    
+    
     public static final String jacamoHomeProp = "JaCaMoHome";
 
     public static final String SHORT_UNNAMED_VARS = "shortUnnamedVars";
@@ -305,7 +308,12 @@ public class Config extends Properties {
         if (getProperty(JADE_RMA) == null) {
             put(JADE_RMA, "true");
         }
-        
+
+        // show annots
+        if (getProperty(SHOW_ANNOTS) == null) {
+            put(SHOW_ANNOTS, "true");
+        }
+
         // Default infrastructures
         put("infrastructure.Centralised", CentralisedFactory.class.getName());
         put("infrastructure.Jade", JadeFactory.class.getName());

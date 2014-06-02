@@ -24,6 +24,7 @@
 package jason.control;
 
 import jason.infra.centralised.RunCentralisedMAS;
+import jason.jeditplugin.Config;
 import jason.util.asl2html;
 import jason.util.asl2tex;
 import jason.util.asl2xml;
@@ -124,7 +125,7 @@ public class ExecutionControlGUI extends ExecutionControl {
     // Which item is to be shown in HTML interface
     Map<String,Boolean> show = new HashMap<String,Boolean>();
 
-    static String title = ":: Jason Mind Inspector ::";
+    public static String title = ":: Jason Mind Inspector ::";
     
     void initComponents() {
         frame = new JFrame(title);
@@ -305,6 +306,7 @@ public class ExecutionControlGUI extends ExecutionControl {
         show.put("int-details", false);
         show.put("plan", false);
         show.put("plan-details", false);
+        show.put("annots", Config.get().getBoolean(Config.SHOW_ANNOTS));        
     }
 
     void setListOfAgsFromInfra() {
