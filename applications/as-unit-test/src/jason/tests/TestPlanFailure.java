@@ -26,7 +26,13 @@ public class TestPlanFailure {
                 "-!g3(failure)[error(ia_failed)] : true <- infailg3. "+
                 
                 "+!norel <- !j; endnorel. "+
-                "-!j[error(no_relevant)] <- infailj. "              
+                "-!j[error(no_relevant)] <- infailj. " +
+
+                "+!s <- ?bufferReady; jason.asunit.print(ok)." +
+                "+?bufferReady : a     <- jason.asunit.print(oka). " +
+                "+?bufferReady : not a <- .fail.  " +
+                "-?bufferReady <- jason.asunit.print(w); ?bufferReady."
+
         );
     }
     
@@ -46,4 +52,16 @@ public class TestPlanFailure {
         ag.assertAct("infailj", 10);
         ag.assertAct("endnorel", 5);
     }
+
+    @Test(timeout=2000)
+    public void testTestGoalFailure() {
+        ag.addGoal("s");      
+        ag.assertPrint("w", 10);
+        ag.assertPrint("w", 10);
+        ag.assertPrint("w", 10);
+        ag.addBel("a");
+        ag.assertPrint("oka", 10);
+        ag.assertPrint("ok", 10);
+    }
+
 }

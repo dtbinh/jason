@@ -375,6 +375,6 @@ public class Environment {
      */
     public boolean executeAction(String agName, Structure act) {
         logger.info("The action "+act+" done by "+agName+" is not implemented in the default environment.");
-        return true;
+        return false;
     }
 }

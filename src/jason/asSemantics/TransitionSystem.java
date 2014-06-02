@@ -929,8 +929,8 @@ public class TransitionSystem {
                         || im.getCurrentStep().getBodyTerm() instanceof VarTerm) {
                     im = i.pop(); // +!c above
                 }
-                while (!i.isFinished() && //i.size() > 0 &&
-                       !(im.unif.unifies(im.getTrigger().getLiteral(), topLiteral) && im.getTrigger().isAchvGoal()) &&
+                while (!i.isFinished() && 
+                       !(im.unif.unifies(im.getTrigger().getLiteral(), topLiteral) && im.getTrigger().isGoal()) &&
                        !(im.unif.unifies(im.getCurrentStep().getBodyTerm(), topLiteral) && im.getCurrentStep().getBodyType() == BodyType.achieve)) {
                     im = i.pop();
                 }
@@ -952,7 +952,6 @@ public class TransitionSystem {
                     // new code optimised: handle directly renamed vars for the call                    
                     // get vars in the unifier that comes from makeVarAnnon (stored in renamedVars)
                     joinRenamedVarsIntoIntentionUnifier(im,topIM.unif);
-                    
                     im.removeCurrentStep();
                 }
             }
