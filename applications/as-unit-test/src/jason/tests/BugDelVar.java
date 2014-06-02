@@ -19,7 +19,7 @@ public class BugDelVar {
         );
     }
        
-    @Test(timeout=2000)
+    @Test(timeout=3000)
     public void testGoal() {
         ag.addGoal("start");
         ag.assertPrint("10", 10);
