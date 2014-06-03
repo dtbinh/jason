@@ -109,6 +109,17 @@ public class JadeMASLauncherAnt extends CentralisedMASLauncherAnt implements MAS
                 e.printStackTrace();
             }
         }
+        int mainHostPort = -1;
+        int pos = mainHost.indexOf(":");
+        if (pos > 0) {
+            try {
+                mainHostPort = new Integer(mainHost.substring(pos+1));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            mainHost = mainHost.substring(0,pos);
+        }
+        
         
         // identify type of allocation (by class of info in .mas2h)
         ContainerAllocation allocator = null;
@@ -144,6 +155,8 @@ public class JadeMASLauncherAnt extends CentralisedMASLauncherAnt implements MAS
         for (String container: containers) {
             String sep = " ";
             String args = "-container -host "+mainHost+" -container-name "+container+" ";
+            if (mainHostPort > 0) 
+                args += "-port "+mainHostPort;
             
             StringBuilder agents = new StringBuilder();
             if (container.equals("Main-Container")) {
