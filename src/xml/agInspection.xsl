@@ -287,11 +287,8 @@
 	        <xsl:apply-templates select="@trigger"/>
             <xsl:if test="$show-int-details='true'">
                 <!-- td valign="top" style="{$td-style}" -->
-                <br/>
-                
-                <font size="-2">
-                    <pre>     &lt;- ... <xsl:apply-templates select="body"/> </pre>
-                </font>
+                <br/>                
+                <pre>     &lt;- ... <xsl:apply-templates select="body"/> </pre>
                 <!-- /td -->
             </xsl:if>
             </td>

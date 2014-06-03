@@ -125,7 +125,7 @@ public class ExecutionControlGUI extends ExecutionControl {
     // Which item is to be shown in HTML interface
     Map<String,Boolean> show = new HashMap<String,Boolean>();
 
-    public static String title = ":: Jason Mind Inspector ::";
+    public static String title = "..:: Mind Inspector ::..";
     
     void initComponents() {
         frame = new JFrame(title);

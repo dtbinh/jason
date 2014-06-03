@@ -84,8 +84,10 @@ public class MindInspectorAgArch extends AgArch {
 
     // what is currently shown
     Document agState = null;
-
-
+    
+    MindInspectorWeb webServer = null;
+    boolean hasHistory = false;
+    
     @Override
     public void init() {
         setupMindInspector(getTS().getSettings().getUserParameter("mindinspector"));
@@ -123,7 +125,7 @@ public class MindInspectorAgArch extends AgArch {
         try {
             sConf = ASSyntax.parseStructure(configuration);
         } catch (Exception e) {
-            getTS().getLogger().warning("The mindinspector argument does not parse as a predicate! "+configuration+" -- error: "+e);
+            getTS().getLogger().warning("The mindinspector argument does not parse as a predicate! "+configuration+" --  (see Jason FAQ) -- error: "+e);
             return;
         }
         
@@ -154,6 +156,8 @@ public class MindInspectorAgArch extends AgArch {
             createGUIMindInspector(sConf);
         } else if (sConf.getFunctor().equals("file")) {
             createFileMindInspector(sConf);            
+        } else if (sConf.getFunctor().equals("web")) {
+            createWebMindInspector(sConf);
         }
     }
     
@@ -251,8 +255,6 @@ public class MindInspectorAgArch extends AgArch {
         }
     }
 
-
-    
     private void setupSlider() {
         int size = mindInspectorHistory.size()-1;
         if (size < 0)
@@ -292,6 +294,12 @@ public class MindInspectorAgArch extends AgArch {
         new File(mindInspectorDirectory).mkdirs();
     }
 
+    private void createWebMindInspector(Structure sConf) {
+        webServer = MindInspectorWeb.get();
+        hasHistory = sConf.getArity() == 3 && sConf.getTerm(2).toString().equals("history");
+        mindInspectorTransformer = new asl2html("/xml/agInspection.xsl");
+    }
+
     
     private String lastHistoryText = "";
     private int    fileCounter = 0;
@@ -317,6 +325,8 @@ public class MindInspectorAgArch extends AgArch {
                 FileWriter outmind = new FileWriter(new File(mindInspectorDirectory+"/"+filename));
                 outmind.write(sMind);
                 outmind.close();
+            } else if (webServer != null) { // output on web
+                webServer.addAgState(getTS().getAg(), state, hasHistory);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -350,7 +360,9 @@ public class MindInspectorAgArch extends AgArch {
                     mindInspectorTransformer.setParameter("show-"+p, show.get(p)+"");
             return mindInspectorTransformer.transform(ag); // transform to HTML
         } catch (Exception e) {
-            mindInspectorPanel.setText("Error in XML transformation!" + e);
+            if (mindInspectorPanel != null) {
+                mindInspectorPanel.setText("Error in XML transformation!" + e);
+            }
             e.printStackTrace();
             return "Error XML transformation (MindInspector)";
         }

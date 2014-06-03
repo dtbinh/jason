@@ -6,7 +6,7 @@ MAS auction {
 
     agents: ag1; 
             ag2; 
-            ag3; 
-            auctioneer //[mindinspector="gui(cycle,html,history)"] 
+            ag3        [mindinspector="web(cycle,html,history)"]; // two agents with web view of their minds
+            auctioneer [mindinspector="web(cycle,html,history)"] 
                        agentArchClass AuctioneerGUI;
 }

@@ -613,6 +613,13 @@ mili-seconds:
       bob [mindinspector="gui(2000,html,history)"];
 \end{verbatim}
 
+
+You can also see the history of minds in a browser with the following configuration:
+\begin{verbatim}
+      bob [mindinspector="web(cycle,html,history)"];
+\end{verbatim}
+The URL is typically http://<your host up>:3272/.
+
 To store the history of minds in files, use the following configuration:
 \begin{verbatim}
       bob [mindinspector="file(cycle,xml,log)"];
@@ -620,6 +627,7 @@ To store the history of minds in files, use the following configuration:
 The last parameter is the name of the directory where files will be
 stored. Each file corresponds to a sample of the mind. They are XML
 files with suitable style sheets to be viewed in browsers.
+
 
 
 % ---------------------------------------------------------------------
