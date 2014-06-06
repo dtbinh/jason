@@ -26,6 +26,7 @@ package jason.asSemantics;
 import jason.JasonException;
 import jason.RevisionFailedException;
 import jason.architecture.AgArch;
+import jason.architecture.MindInspectorWeb;
 import jason.asSyntax.ASSyntax;
 import jason.asSyntax.ArithFunctionTerm;
 import jason.asSyntax.InternalActionLiteral;
@@ -46,6 +47,7 @@ import jason.bb.BeliefBase;
 import jason.bb.DefaultBeliefBase;
 import jason.functions.Count;
 import jason.functions.RuleToFunction;
+import jason.jeditplugin.Config;
 import jason.mas2j.ClassParameters;
 import jason.profiling.QueryProfiling;
 import jason.runtime.Settings;
@@ -155,6 +157,8 @@ public class Agent {
         //if (ts.getSettings().hasQueryCache()) qCache = new QueryCache(this);
         if (ts.getSettings().hasQueryProfiling()) qProfiling = new QueryProfiling(this);
         if (ts.getSettings().hasQueryCache())     qCache = new QueryCacheSimple(this, qProfiling);
+        
+        if (! "false".equals(Config.get().getProperty(Config.START_WEB_MI))) MindInspectorWeb.get().registerAg(this);
     }
     
     

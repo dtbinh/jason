@@ -118,7 +118,7 @@ public class MindInspectorAgArch extends AgArch {
      *    E.g. agents bob x.asl [mindinspector="gui(cycle,html)"];
      *    
      *    General syntax of the parameter:
-     *    [gui|file] ( [ cycle|number ] , [xml,html] [, history | directory] ) 
+     *    [gui|file|web] ( [ cycle|number ] , [xml,html] [, history | directory] ) 
      */
     protected void setupMindInspector(String configuration) {
         Structure sConf = null;

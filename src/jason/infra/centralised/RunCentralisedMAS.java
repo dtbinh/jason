@@ -206,7 +206,7 @@ public class RunCentralisedMAS {
     /** start agents, .... */
     public void start() {
         startAgs();
-        startSyncMode();        
+        startSyncMode();
     }
     
     public static boolean isDebug() {

@@ -83,6 +83,7 @@ public class Config extends Properties {
     public static final String jacamoHomeProp = "JaCaMoHome";
 
     public static final String SHORT_UNNAMED_VARS = "shortUnnamedVars";
+    public static final String START_WEB_MI       = "startWebMindInspector";
 
     private static Config      singleton     = null;
 
@@ -312,6 +313,10 @@ public class Config extends Properties {
         // show annots
         if (getProperty(SHOW_ANNOTS) == null) {
             put(SHOW_ANNOTS, "true");
+        }
+        
+        if (getProperty(START_WEB_MI) == null) {
+            put(START_WEB_MI, "true");
         }
 
         // Default infrastructures
