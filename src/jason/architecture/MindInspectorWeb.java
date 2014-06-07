@@ -50,6 +50,17 @@ public class MindInspectorWeb {
         return singleton;
     }
     
+    public static boolean isRunning() {
+        return singleton != null;
+    }
+    
+    public static String getURL() {
+        if (singleton != null)
+            return singleton.httpServerURL;
+        else
+            return null;
+    }
+    
     private MindInspectorWeb() {
     }
     
@@ -112,6 +123,7 @@ public class MindInspectorWeb {
 
     private String getAgNameFromPath(String path) {
         int nameStart = path.indexOf("agent-mind")+11;
+        if (nameStart < 0) return null;
         int nameEnd   = path.indexOf("/",nameStart+1);
         if (nameEnd >= 0)
             return path.substring(nameStart,nameEnd).trim();
@@ -172,8 +184,10 @@ public class MindInspectorWeb {
     /** add the agent in the list of available agent for mind inspection */
     public synchronized void registerAg(Agent ag) {
         String agName = ag.getTS().getUserAgArch().getAgName();
-        registeredAgents.put(agName, ag);
-        histories.put(agName, new ArrayList<Document>()); // just for the agent name to appear in the list of agents                        
+        if (!agName.equals("no-named")) {
+            registeredAgents.put(agName, ag);
+            histories.put(agName, new ArrayList<Document>()); // just for the agent name to appear in the list of agents
+        }
     }
     
     public synchronized void addAgState(Agent ag, Document mind, boolean hasHistory) {
