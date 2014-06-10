@@ -573,10 +573,14 @@ the java log level FINE).
 % \htlink{Log4J}{http://logging.apache.org/log4j/}
 to output messages into the console (the default console is called
 MASConsole). To change the log level or device, select the menu
-``Plugins -> Jason -> Edit Log properties''. The default configuration
-file has comments that helps you customise your log. For instance,
-to output messages both into an XML file and in the console, you only
-need to set the log handler as in the following line:
+``Plugins -> Jason -> Edit Log properties'' in the jEdit plugin. If
+you are not using jEdit, you can copy de default configuration file
+from
+\texttt{..../JASON_HOME_DIRECTORY/src/templates/logging.properties} to
+your application directory. The default configuration file has
+comments that helps you customise your log. For instance, to output
+messages both into an XML file and in the console, you only need to
+set the log handler as in the following line:
 \begin{verbatim}
 handlers = java.util.logging.FileHandler, java.util.logging.ConsoleHandler
 \end{verbatim}

@@ -1,13 +1,17 @@
 package jason.stdlib;
 
+import jason.JasonException;
 import jason.asSemantics.DefaultInternalAction;
 import jason.asSemantics.InternalAction;
 import jason.asSemantics.TransitionSystem;
 import jason.asSemantics.Unifier;
 import jason.asSyntax.ASSyntax;
+import jason.asSyntax.Literal;
 import jason.asSyntax.StringTerm;
 import jason.asSyntax.StringTermImpl;
+import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
+import jason.asSyntax.VarTerm;
 import jason.asSyntax.parser.ParseException;
 
 import java.util.regex.Matcher;
@@ -73,15 +77,21 @@ public class puts extends DefaultInternalAction {
     }
 
     //Pattern regex = Pattern.compile("#\\{\\p{Upper}\\p{Alnum}*\\}");
-    Pattern regex = Pattern.compile("#\\{\\p{Alnum}+\\}");
+    Pattern regex = Pattern.compile("#\\{[\\p{Alnum}_]+\\}");
+    
+    @Override public int getMinArgs() { return 1; }
+    @Override public int getMaxArgs() { return 2; }
 
+    @Override protected void checkArguments(Term[] args) throws JasonException {
+        super.checkArguments(args); // check number of arguments
+        if (!args[0].isString())
+            throw JasonException.createWrongArgument(this,"first argument must be a string");
+    }
+    
     @Override
-    public Object execute(TransitionSystem ts, Unifier un, Term[] args)
-            throws Exception {
-        if (!args[0].isString()) {
-            return false;
-        }
-
+    public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception {
+        checkArguments(args);
+        
         StringBuffer sb = new StringBuffer();
         for (Term term : args) {
             if (!term.isString()) {
@@ -121,6 +131,33 @@ public class puts extends DefaultInternalAction {
         } else {
             ts.getLogger().info(sb.toString());
             return true;
+        }
+    }
+    
+    public void makeVarsAnnon(Literal l, Unifier un) {
+        try {
+            for (int i=0; i<l.getArity(); i++) {
+                Term t = l.getTerm(i);
+                if (t.isString()) {
+                    StringTerm st = (StringTerm)t;
+                    Matcher matcher = regex.matcher(st.getString());
+                    StringBuffer sb = new StringBuffer();
+
+                    while (matcher.find()) {
+                        String sVar = matcher.group();
+                        sVar = sVar.substring(2, sVar.length() - 1);
+                        Term v = ASSyntax.parseTerm(sVar);
+                        if (v.isVar()) {
+                            VarTerm to = ((Structure)l).varToReplace(v, un);
+                            matcher.appendReplacement(sb, "#{"+to.toString()+"}");
+                        }
+                    }
+                    matcher.appendTail(sb);
+                    l.setTerm(i, new StringTermImpl(sb.toString()));
+                }
+            }
+        } catch (ParseException pe) {
+            pe.printStackTrace();
         }
     }
 }

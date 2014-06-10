@@ -26,6 +26,7 @@ package jason.asSyntax;
 import jason.asSemantics.Agent;
 import jason.asSemantics.InternalAction;
 import jason.asSemantics.Unifier;
+import jason.stdlib.puts;
 
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
@@ -80,6 +81,16 @@ public class InternalActionLiteral extends Structure implements LogicalFormula {
     @Override
     public boolean isAtom() {
         return false;
+    }
+    
+    @Override
+    public Literal makeVarsAnnon(Unifier un) {
+        Literal t =  super.makeVarsAnnon(un);
+        if (t.getFunctor().equals(".puts")) { // vars inside strings like in .puts("bla #{X}") should be also replace
+                                              // TODO: should it work for any string? if so, proceed this replacement inside StringTermImpl
+            ((puts)puts.create()).makeVarsAnnon(t,un);
+        }
+        return t;
     }
         
     @SuppressWarnings("unchecked")

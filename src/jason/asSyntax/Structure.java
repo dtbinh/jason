@@ -346,7 +346,7 @@ public class Structure extends Atom {
 
     private final static boolean useShortUnnamedVars = Config.get().getBoolean(Config.SHORT_UNNAMED_VARS);
     
-    protected VarTerm varToReplace(Term t, Unifier un) {
+    public VarTerm varToReplace(Term t, Unifier un) {
         VarTerm vt    = (VarTerm)t;
         VarTerm deref = un.deref(vt);
         //if (deref.isUnnamedVar())
