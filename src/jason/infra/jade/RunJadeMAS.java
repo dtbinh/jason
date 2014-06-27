@@ -32,6 +32,9 @@ import jade.wrapper.ContainerController;
 import jade.wrapper.StaleProxyException;
 import jason.JasonException;
 import jason.architecture.MindInspectorAgArch;
+import jason.asSyntax.ASSyntax;
+import jason.asSyntax.Literal;
+import jason.asSyntax.StringTerm;
 import jason.asSyntax.directives.DirectiveProcessor;
 import jason.asSyntax.directives.Include;
 import jason.control.ExecutionControlGUI;
@@ -53,6 +56,7 @@ import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+
 
 /**
  * Runs MASProject using JADE infrastructure.
@@ -96,7 +100,6 @@ public class RunJadeMAS extends RunCentralisedMAS {
                 targetContainer = args[i+1];
             }
         }
-
         return super.init(args);
     }
 
@@ -145,12 +148,30 @@ public class RunJadeMAS extends RunCentralisedMAS {
     protected boolean startContainer() {
         try {
             // source based on jade.Boot
+            try {
+                String m = getProject().getInfrastructure().getParameter("main_container_host");
+                if (m != null) {
+                    Literal ml = ASSyntax.parseLiteral(m);
+                    m = ((StringTerm)(ml.getTerm(0))).getString();
+                    int pos = m.indexOf(":");
+                    if (pos > 0) {
+                        try {
+                            initArgs.add("-port"); initArgs.add(m.substring(pos+1));
+                            initArgs.add("-host"); initArgs.add(m.substring(0,pos));
+                            initArgs.add("-container"); initArgs.add(m.substring(0,pos));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            } catch (Exception e) {}
             profile = new BootProfileImpl(prepareArgs( (String[])initArgs.toArray(new String[0])));
-            
+            //System.out.println(profile);
             if (profile.getBooleanProperty(Profile.MAIN, true)) { 
                 cc = Runtime.instance().createMainContainer(profile);
             } else {
                 cc = Runtime.instance().createAgentContainer(profile);
+                logger.info("Agent Container started with "+profile);
             }            
             //Runtime.instance().setCloseVM(true); // Exit the JVM when there are no more containers around
             return cc != null;
@@ -219,7 +240,7 @@ public class RunJadeMAS extends RunCentralisedMAS {
                         String numberedAg = agName;
                         if (ap.qty > 1)
                             numberedAg += (cAg + 1); //String.format("%0"+String.valueOf(ap.qty).length()+"d", cAg + 1);
-                        logger.fine("Creating agent " + numberedAg + " (" + (cAg + 1) + "/" + ap.qty + ")");
+                        logger.info("Creating agent " + numberedAg + " (" + (cAg + 1) + "/" + ap.qty + ")");
                         AgentController ac = cc.createNewAgent(numberedAg, JadeAgArch.class.getName(), new Object[] { ap, isDebug(), getProject().getControlClass() != null });
                         ags.put(numberedAg,ac);
                     }
