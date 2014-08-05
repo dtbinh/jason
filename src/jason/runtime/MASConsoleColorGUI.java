@@ -122,7 +122,7 @@ class MASColorTextPane extends JTextPane {
                                           Color.blue, 
                                           Color.red,
                                           Color.gray, 
-                                          Color.cyan,
+                                          //Color.cyan,
                                           Color.magenta,
                                           //Color.orange,
                                           //Color.pink,
