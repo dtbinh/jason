@@ -32,6 +32,13 @@ public class ClassParameters {
         }
     }
     
+    public ClassParameters copy() {
+        ClassParameters newcp = new ClassParameters(this.className);
+        newcp.parameters = new ArrayList<String>(this.parameters);
+        newcp.host = this.host;
+        return newcp;
+    }
+    
     public void setClassName(String cn) {
         className = cn;
     }

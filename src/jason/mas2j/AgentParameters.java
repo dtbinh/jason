@@ -25,13 +25,28 @@ public class AgentParameters {
     public File                  asSource  = null;
     public ClassParameters       agClass   = null;
     public ClassParameters       bbClass   = null;
-    private List<ClassParameters> archClasses = new ArrayList<ClassParameters>();
-    public int                   qty       = 1;
-    private Map<String, String>  options   = null;
-    private String               host      = null;
+    protected int                   nbInstances       = 1;
+    protected Map<String, String>   options   = null;
+    protected List<ClassParameters> archClasses = new ArrayList<ClassParameters>();
+
+    protected String               host      = null;
     
     public AgentParameters() {
         setupDefault();
+    }
+    
+    public AgentParameters copy() {
+        AgentParameters newap = new AgentParameters();
+        newap.name = this.name;
+        newap.asSource = new File(this.asSource.toString());
+        newap.agClass = this.agClass.copy();
+        newap.bbClass = this.bbClass.copy();
+        newap.nbInstances = this.nbInstances;
+        if (this.options != null)
+            newap.options = new HashMap<String, String>(this.options);
+        newap.archClasses = new ArrayList<ClassParameters>(this.archClasses);
+        newap.host = this.host;
+        return newap;
     }
     
     public String toString() {
@@ -63,8 +78,15 @@ public class AgentParameters {
         return bbClass;
     }
     
+    public void setNbInstances(int i) {
+        nbInstances = i;
+    }
+    public int getNbInstances() {
+        return nbInstances;
+    }
+    
     public void setHost(String h) {
-        if (h.startsWith("\""))
+        if (h != null && h.startsWith("\""))
             host = h.substring(1,h.length()-1);
         else 
             host = h;
@@ -156,8 +178,8 @@ public class AgentParameters {
         if (bbClass != null && bbClass.getClassName().length() > 0 && !bbClass.getClassName().equals(DefaultBeliefBase.class.getName())) {
             s.append("beliefBaseClass "+bbClass+" ");
         }
-        if (qty > 1) {
-            s.append("#"+qty+" ");
+        if (nbInstances > 1) {
+            s.append("#"+nbInstances+" ");
         }
         if (host != null && host.length() > 0) {
             s.append("at \""+host+"\"");
@@ -168,13 +190,17 @@ public class AgentParameters {
     public Settings getAsSetts(boolean debug, boolean forceSync) {
         Settings stts = new Settings();
         if (options != null) {
-            String s = ""; String v = "";
+            Map<String,Object> opt = new HashMap<String, Object>();
+            //String s = ""; String v = "";
             for (String key: options.keySet()) {
-                s += v + key + "=" + options.get(key);
-                v = ",";
+                opt.put(key, options.get(key));
+                //s += v + key + "=" + options.get(key);
+                //v = ",";
             }
-            if (s.length() > 0) {
-                stts.setOptions("["+s+"]");
+            if (!opt.isEmpty()) {
+                stts.setOptions(opt);
+            //if (s.length() > 0) {
+            //    stts.setOptions("["+s+"]");
             }
         }
         if (debug) {

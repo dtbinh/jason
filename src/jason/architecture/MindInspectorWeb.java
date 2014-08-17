@@ -122,8 +122,9 @@ public class MindInspectorWeb {
     }
 
     private String getAgNameFromPath(String path) {
-        int nameStart = path.indexOf("agent-mind")+11;
+        int nameStart = path.indexOf("agent-mind");
         if (nameStart < 0) return null;
+        nameStart += "agent-mind".length() + 1;
         int nameEnd   = path.indexOf("/",nameStart+1);
         if (nameEnd >= 0)
             return path.substring(nameStart,nameEnd).trim();
@@ -138,7 +139,7 @@ public class MindInspectorWeb {
                 AgArch arch = ag.getTS().getUserAgArch();
                 if (arch != null) {
                     // should add a new conf for mindinspector, otherwise will start a new gui for the agent
-                    arch.getTS().getSettings().addOption("mindinspector","web(cycle,html,history)");
+                    arch.getTS().getSettings().addOption("mindinspector","web(cycle,html,no_history)");
                     MindInspectorAgArch miArch = new MindInspectorAgArch();
                     arch.insertAgArch(miArch);
                     miArch.init();

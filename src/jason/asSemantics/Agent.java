@@ -540,7 +540,7 @@ public class Agent {
         if (sGoals != null) {
             try {
                 for (Term t: ASSyntax.parseList("["+sGoals+"]")) {
-                    Literal g = (Literal)t;
+                    Literal g = ((Literal)t).forceFullLiteralImpl();
                     g.makeVarsAnnon();
                     if (! g.hasSource())
                         g.addAnnot(BeliefBase.TSelf);

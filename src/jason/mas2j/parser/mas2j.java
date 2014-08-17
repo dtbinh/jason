@@ -174,7 +174,7 @@ public class mas2j implements mas2jConstants {
       case 40:
         jj_consume_token(40);
         qty = jj_consume_token(NUMBER);
-                            ag.qty = Integer.parseInt(qty.image);
+                            ag.setNbInstances( Integer.parseInt(qty.image) );
         break;
       case AT:
         jj_consume_token(AT);

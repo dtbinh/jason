@@ -35,7 +35,7 @@ public class myAllocator implements ContainerAllocation {
         // computes the number of agents in the project
         int nbAgs = 0;
         for (AgentParameters ap : project.getAgents()) {
-            nbAgs += ap.qty;
+            nbAgs += ap.getNbInstances();
         }
         
         int agsByContainer = nbAgs / containers.size();
@@ -45,9 +45,9 @@ public class myAllocator implements ContainerAllocation {
         int i=0;
         for (AgentParameters ap : project.getAgents()) {
             String agName = ap.name;
-            for (int cAg = 0; cAg < ap.qty; cAg++) {
+            for (int cAg = 0; cAg < ap.getNbInstances(); cAg++) {
                 String numberedAg = agName;
-                if (ap.qty > 1) {
+                if (ap.getNbInstances() > 1) {
                     numberedAg += (cAg + 1);
                 }
                 String c = containers.get( i % containers.size());

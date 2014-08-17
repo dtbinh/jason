@@ -116,9 +116,9 @@ public class StartNewAgentGUI extends BaseDialogGUI {
                     if (ap.agClass != null) {
                         agClass = ap.agClass.getClassName();
                     }
-                    for (int i = 0; i < ap.qty; i++) {
+                    for (int i = 0; i < ap.getNbInstances(); i++) {
                         String name = ap.name;
-                        if (ap.qty > 1) {
+                        if (ap.getNbInstances() > 1) {
                             name = name + (i + 1);
                         }
                         // TODO: implements bb class
@@ -164,7 +164,7 @@ public class StartNewAgentGUI extends BaseDialogGUI {
         }
         if (!nbAgs.getText().trim().equals("1")) {
             try {
-                ap.qty = Integer.parseInt(nbAgs.getText().trim());
+                ap.setNbInstances( Integer.parseInt(nbAgs.getText().trim()) );
             } catch (Exception e) {
                 System.err.println("Number of hosts is not a number!");
             }

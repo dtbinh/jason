@@ -172,9 +172,9 @@ public class JadeMASLauncherAnt extends CentralisedMASLauncherAnt implements MAS
                     args += " -gui ";
             }
             for (AgentParameters ap: project.getAgents()) {
-                for (int cAg = 0; cAg < ap.qty; cAg++) {
+                for (int cAg = 0; cAg < ap.getNbInstances(); cAg++) {
                     String numberedAg = ap.getAgName();
-                    if (ap.qty > 1)
+                    if (ap.getNbInstances() > 1)
                         numberedAg += (cAg + 1);
                     if ( (container.equals("Main-Container") && ap.getHost() == null && allocator == null) ||
                          (ap.getHost() != null && ap.getHost().equals(container)) || 

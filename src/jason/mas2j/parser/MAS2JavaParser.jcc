@@ -242,7 +242,7 @@ void agent() :              { Token agName;
   |
   <BBCLASS> ag.bbClass = classDef()
   |  
-  "#" qty = <NUMBER>      { ag.qty = Integer.parseInt(qty.image); }
+  "#" qty = <NUMBER>      { ag.setNbInstances( Integer.parseInt(qty.image) ); }
   |
   <AT> host = <STRING>    { ag.setHost(host.image); }
   )*

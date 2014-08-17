@@ -76,16 +76,16 @@ public class RunCentralisedMAS {
     public final static String       stopMASFileName = ".stop___MAS";
     public final static String       defaultProjectFileName = "default.mas2j";
 
-    private   static Logger            logger        = Logger.getLogger(RunCentralisedMAS.class.getName());
+    protected static Logger            logger        = Logger.getLogger(RunCentralisedMAS.class.getName());
     protected static RunCentralisedMAS runner        = null;
-    private   static String            urlPrefix     = "";
-    private   static boolean           readFromJAR   = false;
-    private   static MAS2JProject      project;
-    private   static boolean           debug         = false;
+    protected static String            urlPrefix     = "";
+    protected static boolean           readFromJAR   = false;
+    protected static MAS2JProject      project;
+    protected static boolean           debug         = false;
     
-    private CentralisedEnvironment        env         = null;
-    private CentralisedExecutionControl   control     = null;
-    private Map<String,CentralisedAgArch> ags         = new ConcurrentHashMap<String,CentralisedAgArch>();
+    protected CentralisedEnvironment        env         = null;
+    protected CentralisedExecutionControl   control     = null;
+    protected Map<String,CentralisedAgArch> ags         = new ConcurrentHashMap<String,CentralisedAgArch>();
 
     public JButton                   btDebug;
     
@@ -112,7 +112,7 @@ public class RunCentralisedMAS {
             } else {
                 System.out.println("Jason "+Config.get().getJasonRunningVersion());
                 System.err.println("You should inform the MAS project file.");
-                JOptionPane.showMessageDialog(null,"Jason version "+Config.get().getJasonRunningVersion()+" library built on "+Config.get().getJasonBuiltDate(),"Jason", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null,"You should inform the project file as a parameter.\n\nJason version "+Config.get().getJasonRunningVersion()+" library built on "+Config.get().getJasonBuiltDate(),"Jason", JOptionPane.INFORMATION_MESSAGE);
                 System.exit(0);
             }
         } else {
@@ -367,16 +367,16 @@ public class RunCentralisedMAS {
                 
                 String agName = ap.name;
 
-                for (int cAg = 0; cAg < ap.qty; cAg++) {
+                for (int cAg = 0; cAg < ap.getNbInstances(); cAg++) {
                     nbAg++;
                     
                     String numberedAg = agName;
-                    if (ap.qty > 1) {
+                    if (ap.getNbInstances() > 1) {
                         numberedAg += (cAg + 1);
                         // cannot add zeros before, it causes many compatibility problems and breaks dynamic creation 
                         // numberedAg += String.format("%0"+String.valueOf(ap.qty).length()+"d", cAg + 1);
                     }
-                    logger.fine("Creating agent " + numberedAg + " (" + (cAg + 1) + "/" + ap.qty + ")");
+                    logger.fine("Creating agent " + numberedAg + " (" + (cAg + 1) + "/" + ap.getNbInstances() + ")");
                     CentralisedAgArch agArch;
                     if (isPool) {
                         agArch = new CentralisedAgArchForPool();

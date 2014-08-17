@@ -236,11 +236,11 @@ public class RunJadeMAS extends RunCentralisedMAS {
                         ap.addArchClass(MindInspectorAgArch.class.getName());
                     }
 
-                    for (int cAg = 0; cAg < ap.qty; cAg++) {
+                    for (int cAg = 0; cAg < ap.getNbInstances(); cAg++) {
                         String numberedAg = agName;
-                        if (ap.qty > 1)
+                        if (ap.getNbInstances() > 1)
                             numberedAg += (cAg + 1); //String.format("%0"+String.valueOf(ap.qty).length()+"d", cAg + 1);
-                        logger.info("Creating agent " + numberedAg + " (" + (cAg + 1) + "/" + ap.qty + ")");
+                        logger.info("Creating agent " + numberedAg + " (" + (cAg + 1) + "/" + ap.getNbInstances() + ")");
                         AgentController ac = cc.createNewAgent(numberedAg, JadeAgArch.class.getName(), new Object[] { ap, isDebug(), getProject().getControlClass() != null });
                         ags.put(numberedAg,ac);
                     }
