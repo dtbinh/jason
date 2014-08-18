@@ -37,6 +37,10 @@ public class AgentParameters {
     
     public AgentParameters copy() {
         AgentParameters newap = new AgentParameters();
+        copyTo(newap);
+        return newap;
+    }
+    protected void copyTo(AgentParameters newap) {
         newap.name = this.name;
         newap.asSource = new File(this.asSource.toString());
         newap.agClass = this.agClass.copy();
@@ -46,7 +50,6 @@ public class AgentParameters {
             newap.options = new HashMap<String, String>(this.options);
         newap.archClasses = new ArrayList<ClassParameters>(this.archClasses);
         newap.host = this.host;
-        return newap;
     }
     
     public String toString() {
@@ -210,6 +213,7 @@ public class AgentParameters {
         if (forceSync || debug) {
             stts.setSync(true);
         }
+        stts.addOption("project-parameter", this); // place of copy of this object anyway
         
         return stts;
     }

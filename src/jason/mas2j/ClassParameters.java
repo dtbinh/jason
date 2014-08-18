@@ -99,8 +99,8 @@ public class ClassParameters {
     
     public String toString() {
         StringBuilder out = new StringBuilder(className);
+        out.append("(");
         if (parameters.size() > 0) {
-            out.append("(");
             Iterator<String> i = parameters.iterator();
             while (i.hasNext()) {
                 out.append(i.next());
@@ -108,8 +108,8 @@ public class ClassParameters {
                     out.append(",");
                 }
             }
-            out.append(")");
         }
+        out.append(")");
         return out.toString();
     }
 

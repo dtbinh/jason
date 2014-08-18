@@ -376,6 +376,13 @@ public class RunCentralisedMAS {
                         // cannot add zeros before, it causes many compatibility problems and breaks dynamic creation 
                         // numberedAg += String.format("%0"+String.valueOf(ap.qty).length()+"d", cAg + 1);
                     }
+                    
+                    String nb = "";
+                    int    n  = 1;
+                    while (getAg(numberedAg+nb) != null)
+                        nb = "_" + (n++);
+                    numberedAg += nb;
+                    
                     logger.fine("Creating agent " + numberedAg + " (" + (cAg + 1) + "/" + ap.getNbInstances() + ")");
                     CentralisedAgArch agArch;
                     if (isPool) {
@@ -518,7 +525,7 @@ public class RunCentralisedMAS {
     }
     
     /** an agent architecture for the infra based on thread pool */
-    private final class CentralisedAgArchForPool extends CentralisedAgArch {
+    protected final class CentralisedAgArchForPool extends CentralisedAgArch {
 
         private volatile boolean runWakeAfterTS = false;
         
