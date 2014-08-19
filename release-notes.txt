@@ -1,12 +1,12 @@
 ---------------------------
 version 1.4.1
 
-revision X on SVN
+revision 1792 on SVN
 ---------------------------
 
 New features
 
-- web view of agent's mind (url usually is http://localhost:3272)
+- web view of agent's mind (the url usually is http://localhost:3272)
 
 
 ---------------------------

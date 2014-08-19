@@ -19,9 +19,9 @@ public class MAS2JParserTest extends TestCase {
      
     protected void setUp() throws Exception {
         super.setUp();
-        StringBuffer source = new StringBuffer("MAS auctionCent { ");
-        source.append("infrastructure: Centralised ");
-        source.append("environment: myEnv at \"x.edu\" ");
+        StringBuffer source = new StringBuffer("MAS auctionCent { \n");
+        source.append("infrastructure: Centralised \n");
+        source.append("environment: myEnv at \"x.edu\" \n");
         source.append("executionControl: myController ");
         source.append("agents: ag1 [events=discard,intBels=newFocus,osfile=\"a/x.xml\"]; ag2 /home/agTest.asl agentClass mypkg.MyAgent #2; ag3 at \"x.edu\"; auctionner agentArchClass AuctionnerGUI;");
         source.append("directives: md1=mypkg.DebugDirective; md2=mypkg.LogDirective;");
@@ -74,20 +74,27 @@ public class MAS2JParserTest extends TestCase {
         parser = new mas2j(new StringReader(source.toString()));
 
         MAS2JProject project = parser.mas();
-        
         assertEquals(2,  project.getAg("bob").getBBClass().getParametersArray().length);
         
         ChainBB bb = new ChainBB();
         bb.init(null, project.getAg("bob").getBBClass().getParametersArray());
+        /*
         
-        bb.add(Literal.parseLiteral("b(1)"));
+        bb.add(Literal.parseLiteral("b(1)"));*/
     }
     
-    public void testClassDef() throws ParseException {
+    public void testClassDef1() throws ParseException {
         String archClass = "my.Arch(test)";
         mas2j parser = new mas2j(new StringReader(archClass));
         ClassParameters c = parser.classDef();
         assertEquals("my.Arch", c.getClassName());
         assertEquals(1,c.getParametersArray().length);
+    }
+    public void testClassDef2() throws ParseException {
+        String archClass = "my.Arch()";
+        mas2j parser = new mas2j(new StringReader(archClass));
+        ClassParameters c = parser.classDef();
+        assertEquals("my.Arch", c.getClassName());
+        assertEquals(0,c.getParametersArray().length);
     }
 }
