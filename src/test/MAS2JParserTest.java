@@ -1,6 +1,8 @@
 package test;
 
+import jason.asSyntax.ASSyntax;
 import jason.asSyntax.Literal;
+import jason.asSyntax.Structure;
 import jason.bb.ChainBB;
 import jason.mas2j.ClassParameters;
 import jason.mas2j.MAS2JProject;
@@ -78,9 +80,7 @@ public class MAS2JParserTest extends TestCase {
         
         ChainBB bb = new ChainBB();
         bb.init(null, project.getAg("bob").getBBClass().getParametersArray());
-        /*
-        
-        bb.add(Literal.parseLiteral("b(1)"));*/
+        bb.add(Literal.parseLiteral("b(1)"));
     }
     
     public void testClassDef1() throws ParseException {
@@ -90,11 +90,14 @@ public class MAS2JParserTest extends TestCase {
         assertEquals("my.Arch", c.getClassName());
         assertEquals(1,c.getParametersArray().length);
     }
-    public void testClassDef2() throws ParseException {
+    public void testClassDef2() throws ParseException, jason.asSyntax.parser.ParseException {
         String archClass = "my.Arch()";
         mas2j parser = new mas2j(new StringReader(archClass));
         ClassParameters c = parser.classDef();
         assertEquals("my.Arch", c.getClassName());
         assertEquals(0,c.getParametersArray().length);
+        
+        Structure s = ASSyntax.parseStructure(c.toString()); // a classDef should be parsed as a structure
+        assertEquals("my.Arch", s.toString());
     }
 }

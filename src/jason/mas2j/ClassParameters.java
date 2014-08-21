@@ -3,6 +3,7 @@ package jason.mas2j;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 import jason.asSyntax.*;
 
 /** 
@@ -73,6 +74,33 @@ public class ClassParameters {
         }
         return p;
     }
+    
+    public Object[] getTypedParametersArray() {        
+        Object[] p = new Object[parameters.size()];
+        int i=0;
+        for (String s: parameters) {
+            s = removeQuotes(s);
+            try {
+                p[i] = Integer.parseInt(s);
+            } catch (Exception e) {
+                try {
+                    p[i] = Double.parseDouble(s);
+                } catch (Exception e3) {
+                    if (s.equals("true"))
+                        p[i] = true;
+                    else if (s.equals("false"))
+                        p[i] = false;
+                    else
+                        p[i] = s;              
+                }
+            }
+
+            i++;
+        }
+        return p;
+    }
+
+    
     /** returns parameters with space as separator */
     public String getParametersStr(String sep) {
         StringBuilder out = new StringBuilder();
