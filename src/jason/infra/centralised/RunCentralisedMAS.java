@@ -43,6 +43,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -233,13 +234,21 @@ public class RunCentralisedMAS {
                 }
             } else {
                 try {
-                    LogManager.getLogManager().readConfiguration(RunCentralisedMAS.class.getResource("/templates/" + logPropFile).openStream());
+                    if (runner != null) {
+                        LogManager.getLogManager().readConfiguration(runner.getDefaultLogProperties());
+                    } else {
+                        LogManager.getLogManager().readConfiguration(RunCentralisedMAS.class.getResource("/templates/" + logPropFile).openStream());                        
+                    }
                 } catch (Exception e) {
                     System.err.println("Error setting up logger:" + e);
                     e.printStackTrace();
                 }
             }
         }
+    }
+    
+    protected InputStream getDefaultLogProperties() throws IOException {
+        return RunCentralisedMAS.class.getResource("/templates/" + logPropFile).openStream();
     }
     
     public static void setupDefaultConsoleLogger() {
