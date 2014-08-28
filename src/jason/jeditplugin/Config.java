@@ -33,6 +33,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -608,7 +609,12 @@ public class Config extends Properties {
                 if (bt.exists()) {
                     in = new BufferedReader(new FileReader(bt));
                 } else {
-                    in = new BufferedReader(new InputStreamReader(TransitionSystem.class.getResource("/templates/"+templateName).openStream()));
+                    bt = new File(Config.get().getJasonHome()+"/src/templates/"+templateName);
+                    if (bt.exists()) {
+                        in = new BufferedReader(new FileReader(bt));
+                    } else {
+                        in = new BufferedReader(new InputStreamReader(getDetaultResource(templateName)));
+                    }
                 }
             }
             
@@ -624,6 +630,10 @@ public class Config extends Properties {
             e.printStackTrace();
             return null;
         }
+    }
+    
+    public InputStream getDetaultResource(String templateName) throws IOException {
+        return TransitionSystem.class.getResource("/templates/"+templateName).openStream();
     }
     
     public static void main(String[] args) {
