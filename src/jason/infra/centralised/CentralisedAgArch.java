@@ -210,13 +210,16 @@ public class CentralisedAgArch extends AgArch implements Runnable {
     }
 
     private Object sleepSync = new Object();
+    private int    sleepTime = 50;
     
     public void sleep() {
         try {
             if (!getTS().getSettings().isSync()) {
                 logger.fine("Entering in sleep mode....");
                 synchronized (sleepSync) {
-                    sleepSync.wait(500); // wait for messages
+                    sleepSync.wait(sleepTime); // wait for messages
+                    if (sleepTime < 1000)
+                        sleepTime += 100;
                 }
             }
         } catch (InterruptedException e) {
@@ -227,6 +230,7 @@ public class CentralisedAgArch extends AgArch implements Runnable {
     
     public void wake() {
         synchronized (sleepSync) {
+            sleepTime = 50;
             sleepSync.notifyAll(); // notify sleep method
         }
     }
