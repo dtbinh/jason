@@ -51,7 +51,7 @@ import java.util.List;
   If this parameter is a variable, it will be unified with the name given to the agent. 
   The agent's name will be the name of the variable and some number that makes it unique.<br/>
   
-  <li>+ source (string): path to the file where the AgentSpeak code
+  <li><i>+ source</i> (string): path to the file where the AgentSpeak code
   for the new agent can be found.<br/>
 
   <li><i>+ customisations</i> (list -- optional): list of optional parameters
@@ -93,12 +93,12 @@ import java.util.List;
 */
 public class create_agent extends DefaultInternalAction {
 
-    @Override public int getMinArgs() { return 2; }
+    @Override public int getMinArgs() { return 1; }
     @Override public int getMaxArgs() { return 3; }
 
     @Override protected void checkArguments(Term[] args) throws JasonException {
         super.checkArguments(args); // check number of arguments
-        if (!args[1].isString())
+        if (args.length > 1 && !args[1].isString())
             throw JasonException.createWrongArgument(this,"second argument must be a string");
         if (args.length == 3 && !args[2].isList())
             throw JasonException.createWrongArgument(this,"third argument must be a list");  
@@ -117,15 +117,22 @@ public class create_agent extends DefaultInternalAction {
         if (args[0].isVar())
             name = name.substring(0,1).toLowerCase() + name.substring(1);
         
-        StringTerm source = (StringTerm)args[1];
+        String source = null;
+        if (args.length > 1) {
 
-        File fSource = new File(source.getString());
-        if (!fSource.exists()) {
-            fSource = new File("src/asl/"+source.getString());
+            File fSource = new File( ((StringTerm)args[1]).getString());
             if (!fSource.exists()) {
-                throw new JasonException("The source file " + source + " was not found!");
+                fSource = new File("src/asl/"+((StringTerm)args[1]).getString());
+                if (!fSource.exists()) {
+                    fSource = new File("src/agt/"+((StringTerm)args[1]).getString());
+                    if (!fSource.exists()) {
+                        throw new JasonException("The source file " + source + " was not found!");
+                    }
+                }
             }
+            source = fSource.getAbsolutePath();
         }
+        
         String agClass = null;
         List<String> agArchClasses = new ArrayList<String>();
         ClassParameters bbPars = null;
@@ -145,7 +152,7 @@ public class create_agent extends DefaultInternalAction {
             }
         }
         RuntimeServicesInfraTier rs = ts.getUserAgArch().getRuntimeServices();
-        name = rs.createAgent(name, fSource.getAbsolutePath(), agClass, agArchClasses, bbPars, ts.getSettings());
+        name = rs.createAgent(name, source, agClass, agArchClasses, bbPars, ts.getSettings());
         rs.startAgent(name);
         
         if (args[0].isVar())

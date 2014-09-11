@@ -227,6 +227,7 @@ public class Config extends Properties {
         tryToFixJarFileConf(JADE_JAR,   "jade.jar",  2000000);
         tryToFixJarFileConf(MOISE_JAR,  "moise.jar",  300000);
         tryToFixJarFileConf(JACAMO_JAR, "jacamo.jar",   5000);
+        tryToFixJarFileConf(JASON_JAR,  "jason.jar",  700000); // in case jacamo is found
         
         // fix java home
         if (get(JAVA_HOME) == null || !checkJavaHomePath(getProperty(JAVA_HOME))) {
@@ -271,6 +272,7 @@ public class Config extends Properties {
                     }
                 }
             } catch (Exception e) {
+                System.out.println("Error setting ant lib!");
                 e.printStackTrace();
             }
         }
@@ -418,9 +420,31 @@ public class Config extends Properties {
             jarFile = getJavaHomePathFromClassPath(jarName);
             if (checkJar(jarFile, minSize)) {
                 put(jarEntry, jarFile);
-                System.out.println("found at " + jarFile);
+                System.out.println("found at " + jarFile+" by classpath");
                 return;
             }
+            
+            try {
+                // try jason jar
+                File jasonjardir = new File(getJasonJar()).getAbsoluteFile().getCanonicalFile().getParentFile();
+                jarFile = jasonjardir+File.separator+jarName;
+                if (checkJar(jarFile, minSize)) {
+                    put(jarEntry, jarFile);
+                    System.out.println("found at " + jarFile+" by jason.jar directory");
+                    return;
+                }
+            } catch (Exception e) {}
+
+            try {
+                // try jacamo jar
+                File jacamojardir= new File(getProperty(JACAMO_JAR)).getAbsoluteFile().getCanonicalFile().getParentFile();
+                jarFile = jacamojardir+File.separator+jarName;
+                if (checkJar(jarFile, minSize)) {
+                    put(jarEntry, jarFile);
+                    System.out.println("found at " + jarFile+" by jacamo.jar directory");
+                    return;
+                }
+            } catch (Exception e) {}
 
             // try current dir
             jarFile = "." + File.separator + jarName;

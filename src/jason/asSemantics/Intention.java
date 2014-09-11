@@ -194,8 +194,14 @@ public class Intention implements Serializable, Comparable<Intention>, Iterable<
         
     public String toString() {
         StringBuilder s = new StringBuilder("intention "+id+": \n");
-        for (IntendedMeans im: intendedMeans)
+        int i = 0;
+        for (IntendedMeans im: intendedMeans) {
             s.append("    " + im + "\n");
+            if (i++ > 40) {
+                s.append("..... to more "+ (size()-40) + " intended means!\n");
+                break;
+            }
+        }
         if (isFinished())
             s.append("<finished intention>");
         return s.toString();

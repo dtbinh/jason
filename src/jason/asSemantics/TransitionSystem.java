@@ -408,9 +408,19 @@ public class TransitionSystem {
         confP.step = State.ProcAct; // default next step
         if (conf.C.SE.trigger.isGoal() && !conf.C.SE.trigger.isMetaEvent()) {
             // can't carry on, no relevant/applicable plan.
-            String msg = "Found a goal for which there is no "+m+" plan:" + conf.C.SE;
-            if (!generateGoalDeletionFromEvent(JasonException.createBasicErrorAnnots("no_"+m, msg))) 
-                logger.warning(msg);                
+            try {
+                if (conf.C.SE.getIntention() != null && conf.C.SE.getIntention().size() > 3000) {
+                    logger.warning("we are likely in a problem with event "+conf.C.SE.getTrigger()+" the intention stack has already "+conf.C.SE.getIntention().size()+" intended means!");                     
+                } 
+                String msg = "Found a goal for which there is no "+m+" plan:" + conf.C.SE.getTrigger();
+                if (!generateGoalDeletionFromEvent(JasonException.createBasicErrorAnnots("no_"+m, msg))) { 
+                    logger.warning(msg);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return;
+            }
+                            
         } else if (conf.C.SE.isInternal()) {
             // e.g. belief addition as internal event, just go ahead
             // but note that the event was relevant, yet it is possible
