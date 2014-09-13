@@ -28,6 +28,7 @@ import jason.asSemantics.Agent;
 import jason.asSyntax.directives.DirectiveProcessor;
 import jason.asSyntax.directives.Include;
 import jason.control.ExecutionControlGUI;
+import jason.infra.repl.ReplAg;
 import jason.jeditplugin.Config;
 import jason.mas2j.AgentParameters;
 import jason.mas2j.ClassParameters;
@@ -38,6 +39,7 @@ import jason.runtime.MASConsoleLogFormatter;
 import jason.runtime.MASConsoleLogHandler;
 import jason.runtime.Settings;
 
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -67,6 +69,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 /**
  * Runs MASProject using centralised infrastructure.
@@ -311,7 +314,9 @@ public class RunCentralisedMAS {
                 new KillAgentGUI(MASConsoleGUI.get().getFrame(), "Kill an agent of the current MAS");
             }
         });
-        MASConsoleGUI.get().addButton(btKillAg);        
+        MASConsoleGUI.get().addButton(btKillAg);
+        
+        createNewReplAgButton();
     }
 
     protected void createPauseButton() {
@@ -341,6 +346,45 @@ public class RunCentralisedMAS {
             }
         });
         MASConsoleGUI.get().addButton(btStop);
+    }
+    
+    protected void createNewReplAgButton() {
+        // add Button debug
+        final JButton btStartAg = new JButton("New REPL agent", new ImageIcon(RunCentralisedMAS.class.getResource("/images/newAgent.gif")));
+        btStartAg.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                final JFrame f = new JFrame("New REPL Agent, give it a name");
+                //f.getContentPane().setLayout(new BorderLayout());
+                //f.getContentPane().add(BorderLayout.NORTH,command);    
+                //f.getContentPane().add(BorderLayout.CENTER,mindPanel);
+                final JTextField n = new JTextField(30);
+                n.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        f.setVisible(false);
+                        
+                        CentralisedAgArch agArch = new CentralisedAgArch();
+                        agArch.setAgName(n.getText());
+                        agArch.setEnvInfraTier(env);
+                        try {
+                            agArch.createArchs(null, ReplAg.class.getName(), null, null, new Settings(), RunCentralisedMAS.this);
+                            Thread agThread = new Thread(agArch);
+                            agArch.setThread(agThread);
+                            agThread.start();                            
+                        } catch (JasonException e1) {
+                            e1.printStackTrace();
+                        }
+                        addAg(agArch);                        
+                    }
+                });
+                f.setLayout(new FlowLayout());
+                f.add(n);
+                f.pack();
+                f.setLocation((int)btStartAg.getLocationOnScreen().x, (int)btStartAg.getLocationOnScreen().y+30);
+                f.setVisible(true);
+            }
+        });
+        MASConsoleGUI.get().addButton(btStartAg);
     }
     
     public static RunCentralisedMAS getRunner() {

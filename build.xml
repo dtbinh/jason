@@ -7,6 +7,7 @@
     <property name="jasonJar"     value="${basedir}/lib/jason.jar" />
     <property name="jadeJar"      value="${basedir}/lib/jade.jar" />
     <property name="jasonSJar"    value="${basedir}/lib/s-jason.jar" />
+    <property name="replJar"      value="${basedir}/lib/jason-repl.jar" />
 
     <property name="build.dir" value="${basedir}/bin/classes" />
 
@@ -167,6 +168,25 @@ TARGETS:
         </jar>
         <!-- copy file="${jasonJar}" todir="applications/jason-eclipse-plugin/lib" /-->
     </target>
+	
+	<target name="repl" depends="jar" >
+        <delete file="${replJar}" />
+        <copy file="${jasonJar}" tofile="${replJar}" />
+		<echo file="default.mas2j">
+			MAS repl { 
+			     agents: repl_agent agentClass jason.infra.repl.ReplAg;
+			}
+		</echo>
+        <jar update="yes" jarfile="${replJar}" >
+            <fileset dir="${basedir}">
+                <include name="default.mas2j" />
+            </fileset>
+            <manifest>
+                  <attribute name="Main-Class" value="jason.infra.centralised.RunCentralisedMAS"/>
+            </manifest>
+        </jar>
+        <!--delete file="default.mas2j" /-->
+	</target>
 
     <target name="signjar" depends="jar">
         <copy file="${jasonJar}" tofile="${jasonSJar}" />

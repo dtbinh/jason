@@ -127,15 +127,21 @@ public class Agent {
             
             new TransitionSystem(ag, null, stts, arch);
 
-            BeliefBase bb = (BeliefBase) Class.forName(bbPars.getClassName()).newInstance();
+            BeliefBase bb = null;
+            if (bbPars == null)
+                bb = new DefaultBeliefBase();
+            else
+                bb = (BeliefBase) Class.forName(bbPars.getClassName()).newInstance();
+
             ag.setBB(bb);     // the agent's BB have to be already set for the BB initialisation
             ag.initAg();
 
-            bb.init(ag, bbPars.getParametersArray());  
+            if (bbPars != null)
+                bb.init(ag, bbPars.getParametersArray());  
             ag.load(asSrc); // load the source code of the agent
             return ag;
         } catch (Exception e) {
-            throw new JasonException("as2j: error creating the customised Agent class! - ", e);
+            throw new JasonException("as2j: error creating the customised Agent class! - "+agClass, e);
         }
     }
 
