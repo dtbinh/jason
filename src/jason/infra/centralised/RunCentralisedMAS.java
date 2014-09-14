@@ -28,7 +28,7 @@ import jason.asSemantics.Agent;
 import jason.asSyntax.directives.DirectiveProcessor;
 import jason.asSyntax.directives.Include;
 import jason.control.ExecutionControlGUI;
-import jason.infra.repl.ReplAg;
+import jason.infra.repl.ReplAgGUI;
 import jason.jeditplugin.Config;
 import jason.mas2j.AgentParameters;
 import jason.mas2j.ClassParameters;
@@ -367,7 +367,7 @@ public class RunCentralisedMAS {
                         agArch.setAgName(n.getText());
                         agArch.setEnvInfraTier(env);
                         try {
-                            agArch.createArchs(null, ReplAg.class.getName(), null, null, new Settings(), RunCentralisedMAS.this);
+                            agArch.createArchs(null, ReplAgGUI.class.getName(), null, null, new Settings(), RunCentralisedMAS.this);
                             Thread agThread = new Thread(agArch);
                             agArch.setThread(agThread);
                             agThread.start();                            

@@ -174,7 +174,7 @@ TARGETS:
         <copy file="${jasonJar}" tofile="${replJar}" />
 		<echo file="default.mas2j">
 			MAS repl { 
-			     agents: repl_agent agentClass jason.infra.repl.ReplAg;
+			     agents: repl_agent agentClass jason.infra.repl.ReplAgGUI;
 			}
 		</echo>
         <jar update="yes" jarfile="${replJar}" >
