@@ -346,7 +346,7 @@ TARGETS:
 
     <!-- distribution related tasks -->
     
-    <target name="dist" depends="cleanExamples,plugin" description="Build distribution.">
+    <target name="dist" depends="cleanExamples,plugin,repl" description="Build distribution.">
 
         <echo message="Generating Jason ${version}.${release}" />
 

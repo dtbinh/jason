@@ -73,7 +73,7 @@ public class MAS2JProject {
             return null;
         }
     }
-    
+        
     public void setupDefault() {
         if (envClass == null) {
             envClass = new ClassParameters(jason.environment.Environment.class.getName());

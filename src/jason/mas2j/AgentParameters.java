@@ -35,6 +35,11 @@ public class AgentParameters {
         setupDefault();
     }
     
+    public AgentParameters(AgentParameters a) {
+        this();
+        a.copyTo(this);
+    }
+    
     public AgentParameters copy() {
         AgentParameters newap = new AgentParameters();
         copyTo(newap);
