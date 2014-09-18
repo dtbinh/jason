@@ -102,7 +102,7 @@ public class Agent {
     
     private boolean hasCustomSelOp = true;
     
-    private ScheduledExecutorService scheduler = null; 
+    private static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(20); //null; 
 
     //private QueryCache qCache = null;
     private QueryCacheSimple qCache = null;
@@ -254,8 +254,8 @@ public class Agent {
         if (qProfiling != null)
             qProfiling.show();
 
-        if (scheduler != null) 
-            scheduler.shutdownNow();
+        //if (scheduler != null) 
+        //    scheduler.shutdownNow();
         
         for (InternalAction ia: internalActions.values())
             try {
@@ -345,8 +345,8 @@ public class Agent {
     }
     
     public ScheduledExecutorService getScheduler() {
-        if (scheduler == null)
-            scheduler = Executors.newScheduledThreadPool(2);
+        //if (scheduler == null)
+        //    scheduler = Executors.newScheduledThreadPool(2);
         return scheduler;
     }
     
