@@ -552,10 +552,13 @@ public class TransitionSystem {
     private void applyProcAct() throws JasonException {
         confP.step = State.SelInt; // default next step
         if (conf.C.hasFeedbackAction()) {
-            ActionExec a = conf.ag.selectAction(conf.C.getFeedbackActions());
+            ActionExec a = null;
+            synchronized (conf.C.getFeedbackActions()) {
+                a = conf.ag.selectAction(conf.C.getFeedbackActions());
+            }
             if (a != null) {
                 confP.C.SI = a.getIntention();
-    
+
                 // remove the intention from PA (PA has all pending action, including those in FA;
                 // but, if the intention is not in PA, it means that the intention was dropped
                 // and should not return to I)
@@ -1315,7 +1318,7 @@ public class TransitionSystem {
     }
 
     public boolean canSleep() {
-        return    (C.isAtomicIntentionSuspended() && !conf.C.hasMsg())               
+        return    (C.isAtomicIntentionSuspended() && !C.hasFeedbackAction() && !conf.C.hasMsg())               
                || (!conf.C.hasEvent() && !conf.C.hasIntention() && 
                    !conf.C.hasFeedbackAction() &&
                    !conf.C.hasMsg() && 

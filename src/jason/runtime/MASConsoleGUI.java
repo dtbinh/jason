@@ -210,10 +210,12 @@ public class MASConsoleGUI {
             }
             synchronized (this) {
                 output.append(s);
-                output.setCaretPosition(l);
+                try {
+                    output.setCaretPosition(l);
+                } catch (java.lang.IllegalArgumentException e) {}
             }
         } catch (Exception e) {
-            close();
+            //close();
             System.out.println(e); 
         }
     }

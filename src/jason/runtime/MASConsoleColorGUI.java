@@ -106,10 +106,12 @@ public class MASConsoleColorGUI extends MASConsoleGUI {
             }
             synchronized (this) {
                 output.append(c, s);
-                output.setCaretPosition(l);
+                try {
+                    output.setCaretPosition(l);
+                } catch (IllegalArgumentException e) {}
             }
         } catch (Exception e) {
-            close();
+            //close();
             System.out.println(e);
             e.printStackTrace();
         }

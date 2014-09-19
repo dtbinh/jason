@@ -341,7 +341,7 @@ public class Circumstance implements Serializable {
 
     public Intention removeAtomicIntention() {
         if (AI != null) {
-            if (atomicIntSuspended) {
+            if (atomicIntSuspended) {                
                 //throw new JasonException("Internal error: trying to remove the atomic intention, but it is suspended! it should be removed only when back to I!");
                 return null;
             }
@@ -369,7 +369,7 @@ public class Circumstance implements Serializable {
     }
 
     public boolean hasPendingIntention() {
-        return PI != null && PI.size() > 0;
+        return PI != null && !PI.isEmpty();
     }
     
     public void clearPendingIntentions() {
@@ -499,10 +499,11 @@ public class Circumstance implements Serializable {
         if (act.getIntention() != null) {
             synchronized (FA) {
                 FA.add(act);
+                /*if (act.getIntention().isAtomic()) {
+                    ts.getLogger().info("feedback atomic "+act.getIntention().getId());
+                    //atomicIntSuspended = false; // TODO: here is the bug (reported by Olivier @ ALTISSIMO)
+                }*/                       
             }
-            if (act.getIntention().isAtomic()) {
-                atomicIntSuspended = false;
-            }                        
         }
     }
     
@@ -537,7 +538,7 @@ public class Circumstance implements Serializable {
     }
 
     public boolean hasPendingAction() {
-        return PA != null && PA.size() > 0;
+        return PA != null && !PA.isEmpty();
     }
 
     
