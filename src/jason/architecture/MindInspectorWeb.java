@@ -76,7 +76,7 @@ public class MindInspectorWeb {
             } catch (BindException e) {
                 httpServerPort++;
                 return startHttpServer();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 return null;
             }
