@@ -23,6 +23,8 @@
 
 package jason.asSyntax;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * Represents an unnamed variable '_'.
  * 
@@ -32,56 +34,53 @@ public class UnnamedVar extends VarTerm {
 
     private static final long serialVersionUID = 1L;
 
-    private static int varCont = 1;
-    private int myId;
-    //private boolean fromRename = false;
+    private static AtomicInteger varCont = new AtomicInteger(0);
+    public int myId;
     
     public UnnamedVar() {
-        super("_" + (varCont++));
-        myId = varCont;
-    }
-
-    public UnnamedVar(String name) {
-        super( name.length() == 1 ? "_" + (varCont++) : name);
-        myId = varCont;
+        this(varCont.incrementAndGet());
     }
 
     public UnnamedVar(int id) {
         super("_" + id);
         myId = id;
     }
-    
-    public static int getUniqueId() {
-        return varCont++;
+
+    // do not allow the creation of unnamed var by name since the myId attribute should be defined!
+    // this constructor is for internal use (see create below)
+    private UnnamedVar(String name) {
+        super(name);
     }
 
-    /*
-    public void setFromMakeVarAnnon() {
-        fromRename = true;
+    public static UnnamedVar create(String name) {
+        if (name.length() == 1) { // the case of "_"
+            return new UnnamedVar();
+        } else {
+            int id = varCont.incrementAndGet();            
+            UnnamedVar v = new UnnamedVar("_"+id+name);
+            v.myId = id;
+            return v;
+        }
     }
-    
-    public boolean isFromMakeVarAnnon() {
-        return fromRename;
-    }
-    */
-    
+
     public Term clone() {
-        /*if (hasValue()) {
-            return getValue().clone();
-        } else {*/
-            UnnamedVar newv = new UnnamedVar(getFunctor());
-            newv.myId = this.myId;
-            //newv.fromRename = this.fromRename;
-            if (hasAnnot())
-                newv.addAnnots(this.getAnnots().cloneLT());
-            return newv;
-        //}
+        UnnamedVar newv = new UnnamedVar(getFunctor());
+        newv.myId = this.myId;
+        if (hasAnnot())
+            newv.addAnnots(this.getAnnots().cloneLT());
+        return newv;
+    }
+    
+    @Override
+    public boolean equals(Object t) {
+        if (t == null) return false;
+        if (t == this) return true;
+        if (t instanceof UnnamedVar) return ((UnnamedVar)t).myId == this.myId;
+        return false;
     }
     
     public int compareTo(Term t) {
-        /*if (hasValue()) {
-            return super.compareTo(t);
-        } else */if (t instanceof UnnamedVar) {
+        if (t instanceof UnnamedVar) {
             if (myId > ((UnnamedVar)t).myId)
                 return 1;
             else if (myId < ((UnnamedVar)t).myId)
@@ -97,6 +96,6 @@ public class UnnamedVar extends VarTerm {
 
     @Override
     public boolean isUnnamedVar() {
-        return true; //!hasValue();
+        return true;
     }
 }

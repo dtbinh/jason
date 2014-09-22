@@ -1034,7 +1034,7 @@
           break;
         case UNNAMEDVAR:
           K = jj_consume_token(UNNAMEDVAR);
-                            last.setNext(new UnnamedVar(K.image));
+                            last.setNext(UnnamedVar.create(K.image));
           break;
         case 48:
           f = list();
@@ -1482,7 +1482,7 @@
       break;
     case UNNAMEDVAR:
       K = jj_consume_token(UNNAMEDVAR);
-                      v = new UnnamedVar(K.image);
+                      v = UnnamedVar.create(K.image);
       break;
     default:
       jj_la1[58] = jj_gen;

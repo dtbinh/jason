@@ -717,7 +717,7 @@ public class TransitionSystem {
                 im.unif = iu.next();
                 updateIntention();
             } else {
-                String msg = "Constraint "+h+" was not satisfied ("+h.getSrcInfo()+").";
+                String msg = "Constraint "+h+" was not satisfied ("+h.getSrcInfo()+") un="+u;
                 generateGoalDeletion(conf.C.SI, JasonException.createBasicErrorAnnots(new Atom("constraint_failed"), msg));
                 logger.fine(msg);
             }

@@ -629,7 +629,7 @@ ListTermImpl list() :     { ListTermImpl lt = new ListTermImpl(); ListTerm last;
   ( "," f=term_in_list()  { last = last.append(f); }
   )*
   [ "|"  ( K=<VAR>        { last.setNext(new VarTerm(K.image)); }
-         | K=<UNNAMEDVAR> { last.setNext(new UnnamedVar(K.image)); }
+         | K=<UNNAMEDVAR> { last.setNext(UnnamedVar.create(K.image)); }
          | f=list()       { last = last.concat((ListTerm)f); }
          )           
   ]
@@ -818,7 +818,7 @@ Term function():          { Literal l; }
 VarTerm var():      { Token K; VarTerm v; ListTerm lt; }
 {
  ( K = <VAR>        { v = new VarTerm(K.image); v.setSrcInfo(new SourceInfo(asSource, K.beginLine));}
- | K = <UNNAMEDVAR> { v = new UnnamedVar(K.image); }
+ | K = <UNNAMEDVAR> { v = UnnamedVar.create(K.image); }
  )
  [ 
    lt = list()      { v.setAnnots(lt); }

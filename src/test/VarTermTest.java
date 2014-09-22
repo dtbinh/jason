@@ -500,6 +500,12 @@ public class VarTermTest extends TestCase {
         Collections.sort(l);
         //assertEquals("[B, F, _11, _6, _5]", l.toString()); // this order is VERY important for unification!
         assertEquals("[B, F, _5, _6, _11]", l.toString()); // this order is VERY important for unification!
+        
+        VarTerm v1 = new UnnamedVar();
+        VarTerm v2 = new UnnamedVar();
+        assertTrue(v1.clone().compareTo(v2.clone()) < 0);
+        assertTrue(v1.clone().compareTo(v1.clone()) == 0);
+        assertTrue(v2.clone().compareTo(v1.clone()) > 0);
     }
     
     public void testCopy() {

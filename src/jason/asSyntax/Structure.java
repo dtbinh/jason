@@ -355,7 +355,7 @@ public class Structure extends Atom {
         // if the variable hasn't been renamed given the input unifier, then rename it.
         if (deref.equals(vt)) {
             // forget the name
-            UnnamedVar var = useShortUnnamedVars ? new UnnamedVar() : new UnnamedVar("_" + UnnamedVar.getUniqueId() + t);
+            UnnamedVar var = useShortUnnamedVars ? new UnnamedVar() : UnnamedVar.create(t.toString());
             //var.setFromMakeVarAnnon();
             
             // if deref has annotations then we need to replicate these in the new variable

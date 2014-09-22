@@ -364,7 +364,7 @@ public class Unifier implements Cloneable, Iterable<VarTerm> {
             Term vl = function.get(k).clone();
             if (vl instanceof Literal)
                 ((Literal)vl).makeVarsAnnon();
-            Structure pair = ASSyntax.createStructure("map", new UnnamedVar("_"+UnnamedVar.getUniqueId()+k), vl); // the var must be changed to avoid cyclic references latter
+            Structure pair = ASSyntax.createStructure("map", UnnamedVar.create(k.toString()), vl); // the var must be changed to avoid cyclic references latter
             tail = tail.append(pair);
         }
         return lf;

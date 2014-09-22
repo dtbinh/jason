@@ -198,7 +198,7 @@ public class Intention implements Serializable, Comparable<Intention>, Iterable<
         for (IntendedMeans im: intendedMeans) {
             s.append("    " + im + "\n");
             if (i++ > 40) {
-                s.append("..... to more "+ (size()-40) + " intended means!\n");
+                s.append("... more "+ (size()-40) + " intended means!\n");
                 break;
             }
         }
