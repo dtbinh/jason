@@ -1007,7 +1007,16 @@ instantiated) as in the following code:
 \end{verbatim}
 In this case, the !! is used to avoid Jason creating long stacks of
 (empty) plans, so the operator just allows Jason to process the
-recursion more efficiently.
+recursion more efficiently. 
+
+Jason 1.4.0 implements \textbf{tail recursion optimisation} and thus
+we don't need to worry about the stack size anymore. The above code
+should be written as:
+\begin{verbatim}
++!g : end_recursion_context.
++!g : true <- action1; !g.
+\end{verbatim}
+
 
 
 \subsection{Why is \jason's plan failure mechanism different from

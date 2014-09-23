@@ -110,9 +110,9 @@ reactive solution and finish with a more goal-oriented version.
 ----------------------------------------
 !clean. // initial goal
 
-+!clean : clean <- !move; !!clean.
-+!clean : dirty <- suck; !move; !!clean.
--!clean         <- !!clean.
++!clean : clean <- !move; !clean.
++!clean : dirty <- suck; !move; !clean.
+-!clean         <- !clean.
 
 +!move : pos(1) <- right.
 +!move : pos(2) <- down.
@@ -136,8 +136,6 @@ reactive solution and finish with a more goal-oriented version.
   circumstances (note the empty plan context); this is what causes the
   "blind commitment" behaviour mentioned above
 - this agent is thus more 'robust' against action failures
-- '!!' is used in the recursions for efficiency, see
-  http://jason.sourceforge.net/faq/faq.html#SECTION00075000000000000000
 
 - the use of goals also allows us to easily code plans that handle
   other goals. For instance, suppose we want to code the robot in a way
@@ -149,9 +147,9 @@ reactive solution and finish with a more goal-oriented version.
 !clean. // initial goal to clean
 !pause. // initial goal to break
 
-+!clean : clean <- !move; !!clean.
-+!clean : dirty <- suck; !move; !!clean.
--!clean         <- !!clean.
++!clean : clean <- !move; !clean.
++!clean : dirty <- suck; !move; !clean.
+-!clean         <- !clean.
 
 +!move : pos(1) <- right.
 +!move : pos(2) <- down.
@@ -165,7 +163,7 @@ reactive solution and finish with a more goal-oriented version.
      .wait(1000);     // suspend this intention again for 1 second
      .print(cleaning);
      .resume(clean);  // resume the clean intention
-     !!pause.
+     !pause.
 ----------------------------------------
 
 Just to see how flexible it is to program with goals, you might want
