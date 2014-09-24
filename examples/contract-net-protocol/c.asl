@@ -9,12 +9,13 @@ all_proposals_received(CNPId)
 /* Initial goals */
 
 !startCNP(1,fix(computer)).
+//!startCNP(2,banana).
 
 /* Plans */
 
 // start the CNP
 +!startCNP(Id,Task) 
-   <- .print("Waiting participants...");
+   <- .print(" Waiting participants for task ",Task,"...");
       .wait(2000);  // wait participants introduction
       +cnp_state(Id,propose);   // remember the state of the CNP
       .findall(Name,introduction(participant,Name),LP);
@@ -41,7 +42,8 @@ all_proposals_received(CNPId)
 @lc1[atomic]
 +!contract(CNPId)
    :  cnp_state(CNPId,propose)
-   <- -+cnp_state(CNPId,contract);
+   <- -cnp_state(CNPId,_);
+      +cnp_state(CNPId,contract);  
       .findall(offer(O,A),propose(CNPId,O)[source(A)],L);
       .print("Offers are ",L);
       L \== []; // constraint the plan execution to at least one offer
