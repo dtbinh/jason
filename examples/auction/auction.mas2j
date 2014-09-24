@@ -1,4 +1,4 @@
-// creates an MAS called auction 
+// simple implementation of first-price sealed-bid auction 
 
 MAS auction {
     

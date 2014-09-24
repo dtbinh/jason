@@ -4,6 +4,7 @@ import jason.asSemantics.Agent;
 import jason.asSyntax.Pred;
 import jason.asSyntax.StringTerm;
 import jason.asSyntax.parser.as2j;
+import jason.jeditplugin.Config;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,40 +30,48 @@ public class Include implements Directive {
             return null;
         String file = ((StringTerm)directive.getTerm(0)).getString().replaceAll("\\\\", "/");
         try {
-            String outerPrefix = outerContent.getASLSrc(); // the source file that has the include directive
-            InputStream in;
-            if (outerContent != null && outerPrefix != null) {
-                // check if the outer is URL
-                if (outerPrefix.startsWith("jar")) {
-                    outerPrefix = outerPrefix.substring(0,outerPrefix.indexOf("!")+1) + "/";
-                    file = checkPathAndFixWithSourcePath(file, aslSourcePath, outerPrefix);
-                    in = new URL(file).openStream();
-                    
-                } if (outerPrefix.startsWith(CRPrefix)) {
-                    // outer is loaded from a resource ("application".jar) file, used for java web start
-                    int posSlash = outerPrefix.lastIndexOf("/");
-
-                    List<String> newpath = new ArrayList<String>();
-                    if (outerPrefix.indexOf("/") != posSlash) { // has only one slash
-                        newpath.add(outerPrefix.substring(CRPrefix.length()+1,posSlash));
-                    }
-                    newpath.addAll(aslSourcePath);
-                    
-                    file = checkPathAndFixWithSourcePath(file, newpath, CRPrefix+"/");
-                    in = Agent.class.getResource(file.substring(CRPrefix.length())).openStream();
-                } else {
-                    // get the directory of the source of the outer agent and 
-                    // try to find the included source in the same directory
-                    // or in the source paths
-                    List<String> newpath = new ArrayList<String>();
-                    newpath.add(new File(outerPrefix).getAbsoluteFile().getParent());
-                    if (aslSourcePath != null)
-                        newpath.addAll(aslSourcePath);
-                    file = checkPathAndFixWithSourcePath(file, newpath, null);
-                    in = new FileInputStream(file);
-                }
+            InputStream in = null;
+            // test include from jar
+            if (file.startsWith("$")) { // the case of "$jasonJar/src/a.asl"
+                String jar = file.substring(1,file.indexOf("/"));
+                String path = Config.get().get(jar).toString();
+                file = "jar:file:" + path + "!" + file.substring(file.indexOf("/"));
+                in = new URL(file).openStream();
             } else {
-                in = new FileInputStream(checkPathAndFixWithSourcePath(file, aslSourcePath, null));         
+                String outerPrefix = outerContent.getASLSrc(); // the source file that has the include directive
+                if (outerContent != null && outerPrefix != null) {
+                    // check if the outer is URL
+                    if (outerPrefix.startsWith("jar")) {
+                        outerPrefix = outerPrefix.substring(0,outerPrefix.indexOf("!")+1) + "/";
+                        file = checkPathAndFixWithSourcePath(file, aslSourcePath, outerPrefix);
+                        in = new URL(file).openStream();
+                        
+                    } if (outerPrefix.startsWith(CRPrefix)) {
+                        // outer is loaded from a resource ("application".jar) file, used for java web start
+                        int posSlash = outerPrefix.lastIndexOf("/");
+    
+                        List<String> newpath = new ArrayList<String>();
+                        if (outerPrefix.indexOf("/") != posSlash) { // has only one slash
+                            newpath.add(outerPrefix.substring(CRPrefix.length()+1,posSlash));
+                        }
+                        newpath.addAll(aslSourcePath);
+                        
+                        file = checkPathAndFixWithSourcePath(file, newpath, CRPrefix+"/");
+                        in = Agent.class.getResource(file.substring(CRPrefix.length())).openStream();
+                    } else {
+                        // get the directory of the source of the outer agent and 
+                        // try to find the included source in the same directory
+                        // or in the source paths
+                        List<String> newpath = new ArrayList<String>();
+                        newpath.add(new File(outerPrefix).getAbsoluteFile().getParent());
+                        if (aslSourcePath != null)
+                            newpath.addAll(aslSourcePath);
+                        file = checkPathAndFixWithSourcePath(file, newpath, null);
+                        in = new FileInputStream(file);
+                    }
+                } else {
+                    in = new FileInputStream(checkPathAndFixWithSourcePath(file, aslSourcePath, null));         
+                }
             }
 
             Agent ag = new Agent();

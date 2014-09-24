@@ -19,8 +19,7 @@ plays(initiator,c).
 
 @r1 +accept_proposal(CNPId)
    :  proposal(CNPId,Task,Offer)
-   <- .print("My proposal '",Offer,"' won CNP ",CNPId,
-             " for ",Task,"!").
+   <- .print("My proposal '",Offer,"' won CNP ",CNPId, " for ",Task,"!").
       // do the task and report to initiator
       
 @r2 +reject_proposal(CNPId)
