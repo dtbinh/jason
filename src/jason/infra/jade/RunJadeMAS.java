@@ -115,7 +115,7 @@ public class RunJadeMAS extends RunCentralisedMAS {
     }
     
     @Override
-    protected void createButtons() {
+    public void createButtons() {
         createStopButton();
         createPauseButton();
 
