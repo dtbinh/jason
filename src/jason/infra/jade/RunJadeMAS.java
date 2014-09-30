@@ -145,7 +145,7 @@ public class RunJadeMAS extends RunCentralisedMAS {
     }
 
     
-    protected boolean startContainer() {
+    public boolean startContainer() {
         try {
             // source based on jade.Boot
             try {
@@ -221,7 +221,7 @@ public class RunJadeMAS extends RunCentralisedMAS {
         try {
             // set the aslSrcPath in the include
             ((Include)DirectiveProcessor.getDirective("include")).setSourcePath(getProject().getSourcePaths());
-            
+
             // create the agents
             for (AgentParameters ap : getProject().getAgents()) {
                 try {

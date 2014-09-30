@@ -402,6 +402,9 @@ public class RunCentralisedMAS {
     public MAS2JProject getProject() {
         return project;
     }
+    public void setProject(MAS2JProject p) {
+        project = p;
+    }
 
     public void createEnvironment() throws JasonException {
         logger.fine("Creating environment " + project.getEnvClass());
