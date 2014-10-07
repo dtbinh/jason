@@ -26,6 +26,8 @@ public class CentralisedMASLauncherAnt implements MASLauncherInfraTier {
     protected boolean            stop       = false;
     protected Process            masProcess = null;
     protected OutputStream       processOut;
+    
+    protected boolean            useBuildFileName = true;
 
     public static String         bindir = "bin"+File.separator;
     
@@ -118,8 +120,8 @@ public class CentralisedMASLauncherAnt implements MASLauncherInfraTier {
 
     /** returns the operating system command that runs the MAS */
     public String[] getStartCommandArray() {
-        String build = bindir+"build.xml";
-        if (hasCBuild()) build = bindir+"c-build.xml";
+        String build = bindir+getBuildFileName();;
+        if (hasCBuild()) build = bindir+getCustomBuildFileName();
         
         return new String[] { Config.get().getJavaHome() + "bin" + File.separator + "java", 
                 "-classpath",
@@ -127,8 +129,25 @@ public class CentralisedMASLauncherAnt implements MASLauncherInfraTier {
                 "-e", "-f", build, task};
     }
 
+    public String getBuildFileName() {
+        if (useBuildFileName) {
+            return "build.xml";
+        } else {
+            return project.getSocName()+".xml";
+        }
+    }
+    public String getCustomBuildFileName() {
+        if (useBuildFileName) {
+            return "c-build.xml";
+        } else {
+            return "c-"+project.getSocName()+".xml";
+        }
+    }
+    
     /** write the scripts necessary to run the project */
-    public boolean writeScripts(boolean debug) {
+    public boolean writeScripts(boolean debug, boolean useBuildFileName) {
+        this.useBuildFileName = useBuildFileName;
+        
         //if (hasCBuild()) {
         //    System.out.println("The build.xml file is not being created, the user c-build.xml file is used instead.");
         //    return true; // if the user has a c-build.xml file, use his build
@@ -147,7 +166,7 @@ public class CentralisedMASLauncherAnt implements MASLauncherInfraTier {
             }
                 
             // write the script
-            FileWriter out = new FileWriter(project.getDirectory() + File.separator + bindir + "build.xml");
+            FileWriter out = new FileWriter(project.getDirectory() + File.separator + bindir + getBuildFileName());
             out.write(script);
             out.close();
             return true;
@@ -239,7 +258,7 @@ public class CentralisedMASLauncherAnt implements MASLauncherInfraTier {
     }
 
     protected boolean hasCBuild() {
-        return new File(project.getDirectory() + File.separator + bindir + "c-build.xml").exists();
+        return new File(project.getDirectory() + File.separator + bindir + getCustomBuildFileName()).exists();
     }
 
 }

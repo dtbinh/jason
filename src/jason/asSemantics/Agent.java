@@ -102,7 +102,7 @@ public class Agent {
     
     private boolean hasCustomSelOp = true;
     
-    private static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(20); //null; 
+    private static ScheduledExecutorService scheduler = null; 
 
     //private QueryCache qCache = null;
     private QueryCacheSimple qCache = null;
@@ -344,9 +344,16 @@ public class Agent {
         return logger;
     }
     
-    public ScheduledExecutorService getScheduler() {
-        //if (scheduler == null)
-        //    scheduler = Executors.newScheduledThreadPool(2);
+    public static synchronized ScheduledExecutorService getScheduler() {
+        if (scheduler == null) {
+            int n;
+            try {
+                n = new Integer( Config.get().get(Config.NB_TH_SCH).toString() );
+            } catch (Exception e) {
+                n = 2;
+            }
+            scheduler = Executors.newScheduledThreadPool(n);
+        }
         return scheduler;
     }
     

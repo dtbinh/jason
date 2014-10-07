@@ -525,7 +525,7 @@ public class JasonID extends JPanel implements EBComponent, RunProjectListener {
                     masLauncher = project.getInfrastructureFactory().createMASLauncher();
                     masLauncher.setProject(project);
                     masLauncher.setListener(JasonID.this);
-                    if (masLauncher.writeScripts(debug)) {
+                    if (masLauncher.writeScripts(debug, true)) {
                         new Thread(masLauncher, "MAS-Launcher").start();
                     }
                 } catch (Exception ex) {
@@ -665,7 +665,7 @@ public class JasonID extends JPanel implements EBComponent, RunProjectListener {
             return;
         CentralisedMASLauncherAnt script = new CentralisedMASLauncherAnt(task);
         script.setProject(project);
-        if (script.writeScripts(false)) {
+        if (script.writeScripts(false, true)) {
             new Thread(script, "Ant-Task").start();
         }
         

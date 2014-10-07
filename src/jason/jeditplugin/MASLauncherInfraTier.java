@@ -33,7 +33,7 @@ public interface MASLauncherInfraTier extends Runnable {
      * Writes the script(s), normally Ant scripts, used to launch the
      * MAS.
      */
-    public boolean writeScripts(boolean debug);
+    public boolean writeScripts(boolean debug, boolean useBuildFileName);
 
     /**
      * Stops the MAS execution.

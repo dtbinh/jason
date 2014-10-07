@@ -86,6 +86,8 @@ public class Config extends Properties {
     public static final String SHORT_UNNAMED_VARS = "shortUnnamedVars";
     public static final String START_WEB_MI       = "startWebMindInspector";
 
+    public static final String NB_TH_SCH      = "numberOfThreadsForScheduler";
+
     private static Config      singleton     = null;
 
     public static Config get() {
@@ -320,6 +322,10 @@ public class Config extends Properties {
         
         if (getProperty(START_WEB_MI) == null) {
             put(START_WEB_MI, "true");
+        }
+        
+        if (getProperty(NB_TH_SCH) == null) {
+            put(NB_TH_SCH, "2");
         }
 
         // Default infrastructures

@@ -50,7 +50,7 @@ public class mas2j implements mas2jConstants {
                 System.out.println("mas2j: "+name+" parsed successfully!\n");
                 MASLauncherInfraTier launcher = project.getInfrastructureFactory().createMASLauncher();
                 launcher.setProject(project);
-                launcher.writeScripts(debugmas);
+                launcher.writeScripts(debugmas, true);
 
                 if (runmas) {
                     new Thread(launcher, "MAS-Launcher").start();

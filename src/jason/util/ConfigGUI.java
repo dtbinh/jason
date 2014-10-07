@@ -107,6 +107,13 @@ public class ConfigGUI {
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         JPanel pBt = new JPanel(new FlowLayout());
+        JButton bQuit = new JButton("Exit without saving");
+        bQuit.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                System.exit(0);
+            }
+        });
+        pBt.add(bQuit);
         JButton bSave = new JButton("Save configuration and Exit");
         bSave.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
@@ -115,14 +122,7 @@ public class ConfigGUI {
             }
         });
         pBt.add(bSave);
-        JButton bQuit = new JButton("Exit without saving");
-        bQuit.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
-                System.exit(0);
-            }
-        });
-        pBt.add(bQuit);
-        
+
         JPanel p = new JPanel(new BorderLayout());
         p.add(BorderLayout.CENTER, jid.getJasonConfigPanel());
         p.add(BorderLayout.SOUTH, pBt);
