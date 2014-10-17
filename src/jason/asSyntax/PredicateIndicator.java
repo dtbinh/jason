@@ -7,7 +7,7 @@ import java.io.Serializable;
  * 
  * @author jomi
  */
-public final class PredicateIndicator implements Serializable {
+public final class PredicateIndicator implements Comparable<PredicateIndicator>, Serializable {
 
     private final String functor;
     private final int    arity;
@@ -45,6 +45,15 @@ public final class PredicateIndicator implements Serializable {
     @Override
     public int hashCode() {
         return hash;
+    }
+    
+    @Override
+    public int compareTo(PredicateIndicator pi) {
+        int c = this.functor.compareTo(pi.functor);
+        if (c != 0) return c;
+        if (pi.arity > this.arity) return -1;
+        if (this.arity > pi.arity) return 1;
+        return 0;
     }
     
     private int calcHash() {

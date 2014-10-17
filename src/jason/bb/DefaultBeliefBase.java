@@ -362,12 +362,13 @@ public class DefaultBeliefBase implements BeliefBase {
         }
         
         /** a literal that uses equalsAsTerm for equals */
-        final class LiteralWrapper {
+        final class LiteralWrapper implements Comparable<LiteralWrapper> {
             final private Literal l;
             public LiteralWrapper(Literal l) { this.l = l; }
             public int hashCode() { return l.hashCode(); }
             public boolean equals(Object o) { return o instanceof LiteralWrapper && l.equalsAsStructure(((LiteralWrapper)o).l); }
             public String toString() { return l.toString(); }
+            public int compareTo(LiteralWrapper o) { return l.compareTo(o.l); }
         }
     }
 }

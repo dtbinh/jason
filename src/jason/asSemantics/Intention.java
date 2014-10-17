@@ -167,6 +167,9 @@ public class Intention implements Serializable, Comparable<Intention>, Iterable<
     public int compareTo(Intention o) {
         if (o.atomicCount > this.atomicCount) return 1;
         if (this.atomicCount > o.atomicCount) return -1;
+        
+        if (o.id > this.id) return 1;
+        if (this.id > o.id) return -1;
         return 0;
     }
     
@@ -178,7 +181,7 @@ public class Intention implements Serializable, Comparable<Intention>, Iterable<
     }
     
     public int hashCode() {
-        return String.valueOf(id).hashCode();
+        return new Integer(id).hashCode();
     }
     
     public Intention clone() {

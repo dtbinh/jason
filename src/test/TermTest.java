@@ -16,6 +16,7 @@ import jason.asSyntax.ObjectTerm;
 import jason.asSyntax.ObjectTermImpl;
 import jason.asSyntax.Plan;
 import jason.asSyntax.Pred;
+import jason.asSyntax.PredicateIndicator;
 import jason.asSyntax.StringTermImpl;
 import jason.asSyntax.Structure;
 import jason.asSyntax.Term;
@@ -656,6 +657,18 @@ public class TermTest extends TestCase {
         assertTrue(new NumberTermImpl(1).compareTo(new StringTermImpl("string")) < 0);
         assertTrue(new StringTermImpl("string").compareTo(new ListTermImpl()) < 0);
         assertTrue(new ListTermImpl().compareTo(new StringTermImpl("string")) > 0);
+    }
+    
+    public void testComparePI() {
+        List<PredicateIndicator> l = new ArrayList<PredicateIndicator>();
+        l.add(new PredicateIndicator("b", 2));
+        l.add(new PredicateIndicator("b", 7));
+        l.add(new PredicateIndicator("a", 2));
+        l.add(new PredicateIndicator("a", 4));
+        l.add(new PredicateIndicator("a", 1));
+        l.add(new PredicateIndicator("b", 5));
+        Collections.sort(l);
+        assertEquals("[a/1, a/2, a/4, b/2, b/5, b/7]", l.toString());
     }
     
     public void testUnify4() throws ParseException {
