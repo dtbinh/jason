@@ -675,10 +675,13 @@ public class Agent {
         return pl;
     }
 
-    /** Belief Update Function: adds/removes percepts into belief base */
-    public void buf(List<Literal> percepts) {
+    /** Belief Update Function: adds/removes percepts into belief base.
+     * 
+     *  @return the number of changes (add + dels)
+     */
+    public int buf(List<Literal> percepts) {
         if (percepts == null) {
-            return;
+            return 0;
         }
         
         // stat
@@ -756,6 +759,7 @@ public class Agent {
             qCache.reset();
         if (qProfiling != null)
             qProfiling.newUpdateCycle(getTS().getUserAgArch().getCycleNumber(), adds+dels, System.nanoTime()-startTime);
+        return adds + dels;
     }
 
     public QueryCacheSimple getQueryCache() {

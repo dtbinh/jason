@@ -181,7 +181,7 @@ public class Intention implements Serializable, Comparable<Intention>, Iterable<
     }
     
     public int hashCode() {
-        return new Integer(id).hashCode();
+        return id;
     }
     
     public Intention clone() {

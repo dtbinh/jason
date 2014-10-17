@@ -129,7 +129,7 @@ public class TermTest extends TestCase {
         c2.add(ASSyntax.parseTerm("x"));
 
         c1.retainAll(c2);
-        assertEquals("[back_pos(9,7), x]",c1.toString());
+        assertTrue("[back_pos(9,7), x]".equals(c1.toString()) || "[x, back_pos(9,7)]".equals(c1.toString()));
     }
 
     public void testUnifies() throws ParseException {
