@@ -16,7 +16,8 @@ public class ReplAgGUI extends ReplAg {
     
     JTextField command = null;
     JTextArea output = null;
-
+    JFrame frame;
+    
     //asl2html agTransformer = new asl2html("/xml/agInspection.xsl");
     //JTextPane mindPanel = null;
     
@@ -83,19 +84,19 @@ public class ReplAgGUI extends ReplAg {
         output.append("\n");
         
 
-        JFrame f = new JFrame(".::  REPL Interface for "+getTS().getUserAgArch().getAgName()+"  ::.");
-        f.getContentPane().setLayout(new BorderLayout());
-        f.getContentPane().add(BorderLayout.NORTH,command);    
+        frame = new JFrame(".::  REPL Interface for "+getTS().getUserAgArch().getAgName()+"  ::.");
+        frame.getContentPane().setLayout(new BorderLayout());
+        frame.getContentPane().add(BorderLayout.NORTH,command);    
         //f.getContentPane().add(BorderLayout.CENTER, new JScrollPane(mindPanel));
-        f.getContentPane().add(BorderLayout.CENTER,new JScrollPane(output));
+        frame.getContentPane().add(BorderLayout.CENTER,new JScrollPane(output));
 
-        f.pack();
+        frame.pack();
         int h = 200;
         int w = (int)(h*2*1.618);
-        f.setBounds((int)(h*0.618), 20, w, h);
-        f.setLocation(lastPos, 200+lastPos);
+        frame.setBounds((int)(h*0.618), 20, w, h);
+        frame.setLocation(lastPos, 200+lastPos);
         lastPos += 50;
-        f.setVisible(true);
+        frame.setVisible(true);
     }
 
     @Override
@@ -106,6 +107,12 @@ public class ReplAgGUI extends ReplAg {
     @Override
     public void print(String s) {
         output.append(s+"\n");
+    }
+    
+    @Override
+    public void stopAg() {
+        frame.setVisible(false);
+        super.stopAg();
     }
     
     /*

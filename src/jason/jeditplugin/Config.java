@@ -191,7 +191,10 @@ public class Config extends Properties {
 
     /** Returns the path to the java  home directory */    
     public String getJavaHome() {
-        return getProperty(JAVA_HOME);
+        String h = getProperty(JAVA_HOME);
+        if (! h.endsWith(File.separator))
+            h += File.separator;
+        return h;
     }
 
     /** Returns the path to the ant home directory (where its jars are stored) */    
@@ -639,7 +642,7 @@ public class Config extends Properties {
                 if (bt.exists()) {
                     in = new BufferedReader(new FileReader(bt));
                 } else {
-                    bt = new File(Config.get().getJasonHome()+"/src/templates/"+templateName);
+                    bt = new File(getHome()+"/src/templates/"+templateName);
                     if (bt.exists()) {
                         in = new BufferedReader(new FileReader(bt));
                     } else {
@@ -660,6 +663,10 @@ public class Config extends Properties {
             e.printStackTrace();
             return null;
         }
+    }
+    
+    protected String getHome() {
+        return getJasonHome();
     }
     
     public InputStream getDetaultResource(String templateName) throws IOException {

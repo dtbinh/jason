@@ -37,6 +37,7 @@ import jason.mas2j.parser.ParseException;
 import jason.runtime.MASConsoleGUI;
 import jason.runtime.MASConsoleLogFormatter;
 import jason.runtime.MASConsoleLogHandler;
+import jason.runtime.RuntimeServicesInfraTier;
 import jason.runtime.Settings;
 
 import java.awt.FlowLayout;
@@ -362,19 +363,7 @@ public class RunCentralisedMAS {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         f.setVisible(false);
-                        
-                        CentralisedAgArch agArch = new CentralisedAgArch();
-                        agArch.setAgName(n.getText());
-                        agArch.setEnvInfraTier(env);
-                        try {
-                            agArch.createArchs(null, ReplAgGUI.class.getName(), null, null, new Settings(), RunCentralisedMAS.this);
-                            Thread agThread = new Thread(agArch);
-                            agArch.setThread(agThread);
-                            agThread.start();                            
-                        } catch (JasonException e1) {
-                            e1.printStackTrace();
-                        }
-                        addAg(agArch);                        
+                        createReplAg(n.getText());                        
                     }
                 });
                 f.setLayout(new FlowLayout());
@@ -387,10 +376,30 @@ public class RunCentralisedMAS {
         MASConsoleGUI.get().addButton(btStartAg);
     }
     
+    protected void createReplAg(String n) {
+        CentralisedAgArch agArch = new CentralisedAgArch();
+        agArch.setAgName(n);
+        agArch.setEnvInfraTier(env);
+        try {
+            agArch.createArchs(null, ReplAgGUI.class.getName(), null, null, new Settings(), RunCentralisedMAS.this);
+            Thread agThread = new Thread(agArch);
+            agArch.setThread(agThread);
+            agThread.start();                            
+        } catch (JasonException e1) {
+            e1.printStackTrace();
+        }
+        addAg(agArch);
+    }
+
+    
     public static RunCentralisedMAS getRunner() {
         return runner;
     }
 
+    public RuntimeServicesInfraTier getRuntimeServices() {
+        return new CentralisedRuntimeServices(runner);
+    }
+    
     public CentralisedExecutionControl getControllerInfraTier() {
         return control;
     }

@@ -13,6 +13,7 @@ public class print_unifier extends DefaultInternalAction {
             //if (! v.getFunctor().equals("Cmd__TR"))
                 ts.getLogger().info(v+"="+un.get(v));            
         }
+        ts.getLogger().info("done");
         return true;
     }
     

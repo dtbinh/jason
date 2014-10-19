@@ -191,6 +191,12 @@ public class MindInspectorWeb {
         }
     }
     
+    public synchronized void removeAg(Agent ag) {
+        String agName = ag.getTS().getUserAgArch().getAgName();
+        registeredAgents.remove(agName);
+        histories.remove(agName);
+    }
+    
     public synchronized void addAgState(Agent ag, Document mind, boolean hasHistory) {
         String agName = ag.getTS().getUserAgArch().getAgName();
         List<Document> h = histories.get(agName);
