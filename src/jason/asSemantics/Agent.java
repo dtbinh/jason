@@ -508,14 +508,14 @@ public class Agent {
             // if l is not a rule and has free vars (like l(X)), convert it into a rule like "l(X) :- true."
             if (!b.isRule() && !b.isGround())
                 b = new Rule(b,Literal.LTrue);
-
-            b = (Literal)b.capply(null); // to solve arithmetic expressions
             
             // does not do BRF for rules (and so do not produce events +bel for rules)
-            if (b.isRule())
+            if (b.isRule()) {
                 getBB().add(b);
-            else
+            } else {
+                b = (Literal)b.capply(null); // to solve arithmetic expressions
                 addBel(b);
+            }
         }
         initialBels.clear();
     }

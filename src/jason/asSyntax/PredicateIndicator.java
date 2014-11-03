@@ -57,9 +57,8 @@ public final class PredicateIndicator implements Comparable<PredicateIndicator>,
     }
     
     private int calcHash() {
-        final int PRIME = 31;
-        int t  = PRIME * arity;
-        if (functor != null) t = PRIME * t + functor.hashCode();
+        int t  = 31 * arity;
+        if (functor != null) t = 31 * t + functor.hashCode();
         return t;
     }
       

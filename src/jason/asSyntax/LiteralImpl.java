@@ -130,7 +130,9 @@ public class LiteralImpl extends Pred {
 
     @Override
     public Term clone() {
-        return new LiteralImpl(this);
+        Literal l = new LiteralImpl(this);
+        l.hashCodeCache = this.hashCodeCache;
+        return l;
     }
     
     @Override

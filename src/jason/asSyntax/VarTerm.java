@@ -82,6 +82,13 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm { //, S
     }
     
     @Override
+    protected int calcHashCode() {
+        int result = getFunctor().hashCode();
+        if (negated()) result += 3271;
+        return result;
+    }
+    
+    @Override
     public Term capply(Unifier u) {
         if (u != null) { 
             Term vl = u.get(this);
@@ -124,7 +131,8 @@ public class VarTerm extends LiteralImpl implements NumberTerm, ListTerm { //, S
         // do not call constructor with term parameter!
         VarTerm t = new VarTerm(super.getFunctor());
         t.setNegated(!negated());
-        t.srcInfo = this.srcInfo;        
+        t.srcInfo = this.srcInfo;
+        t.hashCodeCache = this.hashCodeCache;
         if (hasAnnot())
             t.setAnnots(getAnnots().cloneLT());
         return t;

@@ -209,7 +209,9 @@ public class Structure extends Atom {
 
     /** make a deep copy of the terms */
     public Term clone() {
-        return new Structure(this);
+        Structure s = new Structure(this);
+        s.hashCodeCache = this.hashCodeCache;
+        return s;
     }
 
     @Override

@@ -66,6 +66,7 @@ public class UnnamedVar extends VarTerm {
     public Term clone() {
         UnnamedVar newv = new UnnamedVar(getFunctor());
         newv.myId = this.myId;
+        newv.hashCodeCache = this.hashCodeCache;
         if (hasAnnot())
             newv.addAnnots(this.getAnnots().cloneLT());
         return newv;

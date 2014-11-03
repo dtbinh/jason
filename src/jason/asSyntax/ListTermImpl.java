@@ -89,6 +89,7 @@ public class ListTermImpl extends Structure implements ListTerm {
         ListTermImpl t = new ListTermImpl();
         if (term != null) t.term = this.term.clone();
         if (next != null) t.next = this.next.clone();
+        t.hashCodeCache = this.hashCodeCache;
         return t;
     }
     
