@@ -32,6 +32,8 @@
     <property name="maven-snapshots-repository-url" value="https://oss.sonatype.org/content/repositories/snapshots/" />
     <property name="maven-staging-repository-id" value="sonatype-nexus-staging" />
     <property name="maven-staging-repository-url" value="https://oss.sonatype.org/service/local/staging/deploy/maven2/" />
+    <property name="ossrh-snapshots-repository-url"    value="https://oss.sonatype.org/content/repositories/snapshots/" />
+    <property name="ossrh-server-id" value="ossrh" />
 
     <target name="usage">
         <echo>
@@ -410,15 +412,15 @@ TARGETS:
 	        </jar>
 	</target>
 
-    <!--target name="maven-deploy" depends="maven-init" description="generate the maven distribution">
+    <target name="maven-deploy" depends="maven-init" description="generate the maven distribution">
         <artifact:mvn>
                 <arg value="org.apache.maven.plugins:maven-deploy-plugin:2.6:deploy-file" />
-                <arg value="-Durl=${maven-snapshots-repository-url}" />
-                <arg value="-DrepositoryId=${maven-snapshots-repository-id}" />
+                <arg value="-Durl=${ossrh-snapshots-repository-url}" />
+                <arg value="-DrepositoryId=${ossrh-server-id}" />
                 <arg value="-DpomFile=pom.xml" />
                 <arg value="-Dfile=${maven-jar}" />
         </artifact:mvn>       
-    </target-->
+    </target>
 	
     <target name="maven-stage" depends="maven-init" description="generate the maven distribution">
    	    <!-- sign and deploy the main artifact -->
